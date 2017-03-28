@@ -1,6 +1,6 @@
 ---
 title: "Untitled"
-author: "First Last"
+author: "Shengtong Han"
 date: YYYY-MM-DD
 output: html_document
 ---
@@ -25,6 +25,13 @@ knitr::read_chunk("chunks.R")
 ```
 
 <!-- Add your analysis here -->
+## Whole exome sequencing data of ASD
+Annotating the exome sequencing data. 
+
+
+```{r Quality-control, echo=FALSE}
+```
+
 
 ## Session information
 
