@@ -12,7 +12,7 @@
 <meta name="author" content="Shengtong Han" />
 
 
-<title>rare-var-project</title>
+<title>Simulation study</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -301,9 +301,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">rare-var-project</h1>
+<h1 class="title toc-ignore">Simulation study</h1>
 <h4 class="author"><em>Shengtong Han</em></h4>
-<h4 class="date"><em>YYYY-MM-DD</em></h4>
 
 </div>
 
@@ -312,15 +311,59 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-03-27</p>
+<p><strong>Last updated:</strong> 2017-03-28</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> 665ffa6</p>
+<p><strong>Code version:</strong> 624b493</p>
 <!-- Add your analysis here -->
-<div id="whole-exome-sequencing-data-of-asd" class="section level2">
-<h2>Whole exome sequencing data of ASD</h2>
-<p>The raw data is a txt file-CCTD.txt at midway cluster. Annotating the exome sequencing data.</p>
-<p>this is the data</p>
+<div id="set-up" class="section level2">
+<h2>set up</h2>
+<p>Defined R function gene.simu is used to generate case control data. N0, N1 are sample size in case and controls.<br />
+m: number of variants per gene.</p>
+<pre class="r"><code>gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
+{
+  pheno=c(rep(0,N0), rep(1,N1))  # filtering step
+  q &lt;- rbeta(m, alpha0, beta0)
+  x1x0=matrix(nrow=(N0+N1), ncol=m)
+  for (i in 1:m)  # generate the data with certain variants full of zeros
+    x1x0[,i]=rpois((N0+N1), q[i])
+  filter.x1x0=x1x0[,!apply(x1x0==0,2,all)]  # filter variants with 0 counts in both cases and controls since these variants are noninformative
+  mm=ncol(filter.x1x0)
+  var.index=which(colSums(x1x0!=0)&gt;0) # get the variant index in the original data before filtering
+  
+  ##################
+  #mm=m
+  gamma &lt;- rep(1,mm)
+  Zij=rep(0,mm)
+  qq=rbeta(mm, alpha0, beta0)
+  if (model==1)
+  {
+  #  for (k in 1:num.group)
+  #  {
+  #    from=split.ratio[k]*mm+1; to=split.ratio[k+1]*mm
+  #    Zij[from:to]=rbinom((to-from+1), 1, pi[k])
+  #  }
+    for (i in 1:mm)
+      Zij[i]=rbinom(1,1,pi[var.index[mm]])
+    
+    qq[Zij==1] &lt;- rbeta(sum(Zij==1), alpha, beta)
+    gamma[Zij==1] &lt;- rgamma(sum(Zij==1), gamma.mean*sigma, sigma)
+  }
+  
+  x &lt;- array(0, dim=c(length(pheno), mm))
+  for (j in 1:mm)
+  {
+    x1=rbinom(1, sum(filter.x1x0[,j]), N1*gamma[j]/(gamma[j]*N1+N0))
+    #x1=sum(filter.x1x0[,j])-x0
+    x0=sum(filter.x1x0[,j])-x1
+    x[sample.int(N0,x0),j]=1
+    x[N0+sample.int(N1,x1),j]=1
+  }
+  x=as.matrix(x)
+  return (list(geno=x,pheno=pheno,q=q,gamma=gamma, Zij=Zij, var.index=var.index))
+  
+}
+################################################</code></pre>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>

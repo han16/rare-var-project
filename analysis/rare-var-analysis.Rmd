@@ -17,6 +17,7 @@ knitr::read_chunk("chunks.R")
 
 <!-- Insert the date the file was last updated -->
 ```{r last-updated, echo=FALSE, results='asis'}
+
 ```
 
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R

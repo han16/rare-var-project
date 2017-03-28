@@ -1,0 +1,83 @@
+---
+title: "Simulation study"
+author: "Shengtong Han"
+output: html_document
+---
+
+<!-- The file analysis/chunks.R contains chunks that define default settings
+shared across the workflowr files. -->
+```{r read-chunk, include=FALSE, cache=FALSE}
+knitr::read_chunk("chunks.R")
+```
+
+<!-- Update knitr chunk options -->
+```{r knitr-opts-chunk, include=FALSE}
+```
+
+<!-- Insert the date the file was last updated -->
+```{r last-updated, echo=FALSE, results='asis'}
+```
+
+<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed -->
+```{r code-version, echo=FALSE, results='asis'}
+```
+
+<!-- Add your analysis here -->
+## set up
+Defined R function gene.simu is  used to generate case control data. N0, N1 are sample size in case and controls.  
+m: number of variants per gene. 
+```{r data generation, echo=T}
+gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
+{
+  pheno=c(rep(0,N0), rep(1,N1))  # filtering step
+  q <- rbeta(m, alpha0, beta0)
+  x1x0=matrix(nrow=(N0+N1), ncol=m)
+  for (i in 1:m)  # generate the data with certain variants full of zeros
+    x1x0[,i]=rpois((N0+N1), q[i])
+  filter.x1x0=x1x0[,!apply(x1x0==0,2,all)]  # filter variants with 0 counts in both cases and controls since these variants are noninformative
+  mm=ncol(filter.x1x0)
+  var.index=which(colSums(x1x0!=0)>0) # get the variant index in the original data before filtering
+  
+  ##################
+  #mm=m
+  gamma <- rep(1,mm)
+  Zij=rep(0,mm)
+  qq=rbeta(mm, alpha0, beta0)
+  if (model==1)
+  {
+  #  for (k in 1:num.group)
+  #  {
+  #    from=split.ratio[k]*mm+1; to=split.ratio[k+1]*mm
+  #    Zij[from:to]=rbinom((to-from+1), 1, pi[k])
+  #  }
+    for (i in 1:mm)
+      Zij[i]=rbinom(1,1,pi[var.index[mm]])
+    
+    qq[Zij==1] <- rbeta(sum(Zij==1), alpha, beta)
+    gamma[Zij==1] <- rgamma(sum(Zij==1), gamma.mean*sigma, sigma)
+  }
+  
+  x <- array(0, dim=c(length(pheno), mm))
+  for (j in 1:mm)
+  {
+    x1=rbinom(1, sum(filter.x1x0[,j]), N1*gamma[j]/(gamma[j]*N1+N0))
+    #x1=sum(filter.x1x0[,j])-x0
+    x0=sum(filter.x1x0[,j])-x1
+    x[sample.int(N0,x0),j]=1
+    x[N0+sample.int(N1,x1),j]=1
+  }
+  x=as.matrix(x)
+  return (list(geno=x,pheno=pheno,q=q,gamma=gamma, Zij=Zij, var.index=var.index))
+  
+}
+################################################
+
+```
+
+
+## Session information
+
+<!-- Insert the session information into the document -->
+```{r session-info}
+```
