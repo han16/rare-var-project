@@ -26,7 +26,9 @@ knitr::read_chunk("chunks.R")
 
 <!-- Add your analysis here -->
 ## Whole exome sequencing data of ASD
-Annotating the exome sequencing data. 
+The raw data is a txt file-CCTD.txt at midway cluster.  Annotating the exome sequencing data. 
+
+this is the data 
 
 
 ```{r Quality-control, echo=FALSE}
