@@ -10,6 +10,8 @@ Specifically,
 
 *  Easier to build and extend the website using the new tools in the [rmarkdown][] package and [latest RStudio release][rstudio]
 *  Easier to deploy the website with Git and GitHub by only using one branch
+* Click here[The result][] to see the result
 
 [rmarkdown]: http://rmarkdown.rstudio.com/rmarkdown_websites.htm
 [rstudio]: https://www.rstudio.com/products/rstudio/download/preview/
+[The result]:D://ResearchWork//StatisticalGenetics/Rare-variant-project//rare-var-project//docs//first-analysis.html
