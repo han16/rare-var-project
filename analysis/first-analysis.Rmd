@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "rare-var-project"
 author: "Shengtong Han"
 date: YYYY-MM-DD
 output: html_document
