@@ -311,15 +311,13 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-03-28</p>
-<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed -->
-<p><strong>Code version:</strong> 624b493</p>
+<p><strong>Last updated:</strong> 2017-03-29 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> df4b5b9</p>
 <!-- Add your analysis here -->
 <div id="set-up" class="section level2">
-<h2>set up</h2>
-<p>Defined R function gene.simu is used to generate case control data. N0, N1 are sample size in case and controls.<br />
-m: number of variants per gene.</p>
+<h2>Set up</h2>
+<p>Defined R function gene.simu is used to generate case control data. The data generation work flow is as <img src="figure/chart.png" alt="Data generation workflow." /></p>
+<p>N0, N1 are sample size in case and controls. m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: anohter parameter in gamma distribution; pi: probability of a variant being causal.</p>
 <pre class="r"><code>gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
 {
   pheno=c(rep(0,N0), rep(1,N1))  # filtering step
@@ -364,6 +362,9 @@ m: number of variants per gene.</p>
   
 }
 ################################################</code></pre>
+<div id="case-1-one-annotation-feature" class="section level3">
+<h3>case 1: one annotation feature</h3>
+</div>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>

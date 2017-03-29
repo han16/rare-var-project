@@ -17,16 +17,18 @@ knitr::read_chunk("chunks.R")
 <!-- Insert the date the file was last updated -->
 ```{r last-updated, echo=FALSE, results='asis'}
 ```
-
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
 ```{r code-version, echo=FALSE, results='asis'}
 ```
 
 <!-- Add your analysis here -->
-## set up
-Defined R function gene.simu is  used to generate case control data. N0, N1 are sample size in case and controls.  
-m: number of variants per gene. 
+## Set up
+Defined R function gene.simu is  used to generate case control data. The data generation work flow is as 
+![Data generation workflow.](figure/chart.png)
+
+
+N0, N1 are sample size in case and controls.  m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: anohter parameter in gamma distribution; pi: probability of a variant being causal.   
 ```{r data generation, echo=T}
 gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
 {
@@ -74,7 +76,7 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
 ################################################
 
 ```
-
+### case 1: one annotation feature 
 
 ## Session information
 
