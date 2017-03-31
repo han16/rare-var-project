@@ -311,8 +311,8 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-03-29 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> df4b5b9</p>
+<p><strong>Last updated:</strong> 2017-03-30 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> 8d351f1</p>
 <!-- Add your analysis here -->
 <div id="set-up" class="section level2">
 <h2>Set up</h2>
@@ -360,10 +360,81 @@ shared across the workflowr files. -->
   x=as.matrix(x)
   return (list(geno=x,pheno=pheno,q=q,gamma=gamma, Zij=Zij, var.index=var.index))
   
-}
-################################################</code></pre>
+}</code></pre>
+<pre class="r"><code>num.gene=1000
+m=200
+N0=5000; N1=5000
+delta=1
+alpha0 &lt;- 0.1
+beta0 &lt;- 1000
+alpha &lt;- 0.1
+beta &lt;- 2000
+gamma.mean &lt;- 10
+sigma &lt;- 1
+split.ratio=c(0,1)
+num.group=length(split.ratio)-1
+anno.num=1</code></pre>
 <div id="case-1-one-annotation-feature" class="section level3">
 <h3>case 1: one annotation feature</h3>
+<p>This is the simplest case in that every variant has one annotation feature if any. Use large <span class="math inline">\(\beta=100\)</span> to make all variant being causal. Set <span class="math inline">\(\bar{\gamma}=10\)</span> to make signal strong with burden close to 10. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages.</p>
+<p>Parameter Settings: N1=N0=5000; <span class="math inline">\(\bar{\gamma}=10\)</span>; <span class="math inline">\(\sigma=1\)</span>; <span class="math inline">\(\alpha_0=\alpha=0.1\)</span>; <span class="math inline">\(\beta_0=1000\)</span>; <span class="math inline">\(\beta=2000\)</span>. Below is the estimate of <span class="math inline">\(\widehat{\beta}\)</span> with true <span class="math inline">\(\beta=100\)</span> by different optimization methods and tuning parameters <span class="math inline">\(\lambda\)</span>. Initial values are randomly generated.</p>
+<div id="section" class="section level30">
+<p></p>
+<table style="width:93%;">
+<colgroup>
+<col width="19%" />
+<col width="13%" />
+<col width="12%" />
+<col width="11%" />
+<col width="12%" />
+<col width="11%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>MLE (<span class="math inline">\(\lambda=0\)</span>)</th>
+<th><span class="math inline">\(\lambda=1e-4\)</span></th>
+<th><span class="math inline">\(\lambda=1e-3\)</span></th>
+<th><span class="math inline">\(\lambda=1e-2\)</span></th>
+<th><span class="math inline">\(\lambda=0.1\)</span></th>
+<th><span class="math inline">\(\lambda=1\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BFGS</td>
+<td>432.1624</td>
+<td>16.2113</td>
+<td>21.2945</td>
+<td>11.9403</td>
+<td>9.8104</td>
+<td>7.7513</td>
+</tr>
+<tr class="even">
+<td>L-BFGS-B</td>
+<td>19.2061</td>
+<td>16.1686</td>
+<td>14.0535</td>
+<td>11.9159</td>
+<td>9.8101</td>
+<td>7.7421</td>
+</tr>
+<tr class="odd">
+<td>CG</td>
+<td>272.6388</td>
+<td>142.0048</td>
+<td>168.9808</td>
+<td>49.8334</td>
+<td>9.8101</td>
+<td>7.7442</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="section-1" class="section level30">
+<p></p>
+</div>
 </div>
 </div>
 <div id="session-information" class="section level2">

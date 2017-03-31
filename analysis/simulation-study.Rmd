@@ -28,7 +28,8 @@ Defined R function gene.simu is  used to generate case control data. The data ge
 ![Data generation workflow.](figure/chart.png)
 
 
-N0, N1 are sample size in case and controls.  m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: anohter parameter in gamma distribution; pi: probability of a variant being causal.   
+N0, N1 are sample size in case and controls.  m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: anohter parameter in gamma distribution; pi: probability of a variant being causal.  
+
 ```{r data generation, echo=T}
 gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
 {
@@ -73,10 +74,102 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
   return (list(geno=x,pheno=pheno,q=q,gamma=gamma, Zij=Zij, var.index=var.index))
   
 }
-################################################
-
 ```
-### case 1: one annotation feature 
+
+```{r calculate BF of single variant by integration, echo=F}
+intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+  
+  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma) 
+  BF.var <- marglik1.CC/marglik0.CC
+  
+  return(BF.var)
+}
+```
+
+```{r objective functions, echo=F}
+objec.func=function(beta.est) # this is the log likelihood function to be maximized
+{
+  lkhd=0
+  for (i in 1:num.var)
+    lkhd=lkhd+log(1+BF.var[i]*exp(Ajk.effect[i]*beta.est))-log(1+exp(Ajk.effect[i]*beta.est))
+  
+  lkhd=lkhd-lambda/2*sum(beta.est^2)
+  
+  return(lkhd)  
+}
+
+objec.func.min=function(beta.est) # this is the log likelihood function to be maximized
+{
+  lkhd=0
+  for (i in 1:num.var)
+    lkhd=lkhd-log(1+BF.var[i]*exp(Ajk.effect[i]*beta.est))+log(1+exp(Ajk.effect[i]*beta.est))
+  
+  lkhd=lkhd+lambda/2*sum(beta.est^2)
+  
+  return(lkhd)  
+}
+
+deriv.objec.func=function(beta.est)
+{
+  par.beta=numeric(anno.num)
+  for (k in 1:anno.num) # k: annotattion index
+  {
+    par.beta.k=0
+    for (j in 1:num.var) # j: variant index
+    {
+      delta.j=exp(Ajk.effect[j]*beta.est)
+      par.beta.k=par.beta.k+Ajk.effect[j]*delta.j*(BF.var[j]/(1+delta.j*BF.var[j])-1/(1+delta.j))
+    }  
+    par.beta[k]=par.beta.k-lambda*beta.est[k] # k th element of first derivative
+  }
+  
+  return(par.beta)
+}
+```
+
+```{r parameter settings, echo=T}
+num.gene=1000
+m=200
+N0=5000; N1=5000
+delta=1
+alpha0 <- 0.1
+beta0 <- 1000
+alpha <- 0.1
+beta <- 2000
+gamma.mean <- 10
+sigma <- 1
+split.ratio=c(0,1)
+num.group=length(split.ratio)-1
+anno.num=1
+```
+
+
+### case 1: one annotation feature
+
+
+This is the simplest case in that every variant has one annotation feature if any. Use large $\beta=100$ to make all variant being causal. Set $\bar{\gamma}=10$ to make signal strong with burden close to 10. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. 
+
+
+Parameter Settings: N1=N0=5000; $\bar{\gamma}=10$; $\sigma=1$; $\alpha_0=\alpha=0.1$; $\beta_0=1000$; $\beta=2000$. Below is the estimate of $\widehat{\beta}$ with true $\beta=100$ by different optimization methods and tuning parameters $\lambda$. Initial values are randomly generated. 
+
+
+##############################
+Method | MLE ($\lambda=0$) | $\lambda=1e-4$ | $\lambda=1e-3$ | $\lambda=1e-2$ | $\lambda=0.1$ | $\lambda=1$
+-------------|---------|--------|-------|--------|-------|--------|
+BFGS         | 432.1624|16.2113 |21.2945| 11.9403| 9.8104| 7.7513 |
+L-BFGS-B     | 19.2061 |16.1686 |14.0535| 11.9159| 9.8101| 7.7421 |
+CG           | 272.6388| 142.0048| 168.9808| 49.8334| 9.8101 |7.7442| 
+  
+##############################
+
 
 ## Session information
 

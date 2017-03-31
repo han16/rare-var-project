@@ -7,7 +7,10 @@ output:
 
 Below is the outline of the project. 
 
+* [This][project] is the project.
 * click this [link](simulation-study.html) to see simulation studies. 
 
+
+[project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf
 [rmarkdown]: http://rmarkdown.rstudio.com/rmarkdown_websites.htm
 [rstudio]: https://www.rstudio.com/products/rstudio/download/preview/
