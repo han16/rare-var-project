@@ -153,9 +153,15 @@ anno.num=1
 
 
 ### case 1: one annotation feature
-This is the simplest case in that every variant has one annotation feature if any. Use large $\beta=0.5$ to make all variant being causal. Set $\bar{\gamma}=10$ to make signal strong with burden close to 10. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. 
+This is the simplest case in that every variant has one annotation feature if any. Set $\beta=0.5$,  $\bar{\gamma}=10$ to make signal strong with burden close to 10; 80\% elements of of Ajk are 1. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of $\beta$ (true $\beta=0.5$)is as ![loglikelihood](figure/loglikelihood.png). 
 
-```{r main algorithm, echo=F}
+This plot tells us the likelihood only has one mode in one dimension case. It looks like $\beta$ is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of $\hat{\beta}=0.7631$ and SD=2.344796e-05. 
+
+Important Note: $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood.  
+
+
+
+```{r main algorithm, echo=F, results="hide", cache=T, eval=F}
 Ajk=rep(0, (num.gene*m))
 Ajk[sample(length(Ajk), (0.8*length(Ajk)))]=1
 ############## generate beta 
@@ -198,6 +204,7 @@ Ui=rbinom(num.gene, 1, delta)
   for (i in 1:length(beta.range))
   log.lkhd[i]=objec.func(beta.range[i])
   plot(beta.range, log.lkhd, type="o", xlab=expression(beta), ylab="log(likelihood)")
+  abline(v=0.5, col=2)
 ###################################  
   
   

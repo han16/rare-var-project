@@ -312,7 +312,7 @@ shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
 <p><strong>Last updated:</strong> 2017-03-31 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> 8c21f27</p>
+ package git2r is installed --> <strong>Code version:</strong> 3cdc5b9</p>
 <!-- Add your analysis here -->
 <div id="set-up" class="section level2">
 <h2>Set up</h2>
@@ -376,59 +376,9 @@ num.group=length(split.ratio)-1
 anno.num=1</code></pre>
 <div id="case-1-one-annotation-feature" class="section level3">
 <h3>case 1: one annotation feature</h3>
-<p>This is the simplest case in that every variant has one annotation feature if any. Use large <span class="math inline">\(\beta=0.5\)</span> to make all variant being causal. Set <span class="math inline">\(\bar{\gamma}=10\)</span> to make signal strong with burden close to 10. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages.</p>
-<p><img src="figure/simulation-study.Rmd/main%20algorithm-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>1 is running 
-2 is running 
-3 is running 
-4 is running 
-5 is running 
-6 is running 
-7 is running 
-8 is running 
-9 is running 
-10 is running 
-11 is running 
-12 is running 
-13 is running 
-14 is running 
-15 is running 
-16 is running 
-17 is running 
-18 is running 
-19 is running 
-20 is running 
-21 is running 
-22 is running 
-23 is running 
-24 is running 
-25 is running 
-26 is running 
-27 is running 
-28 is running 
-29 is running 
-30 is running 
-31 is running 
-32 is running 
-33 is running 
-34 is running 
-35 is running 
-36 is running 
-37 is running 
-38 is running 
-39 is running 
-40 is running 
-41 is running 
-42 is running 
-43 is running 
-44 is running 
-45 is running 
-46 is running 
-47 is running 
-48 is running 
-49 is running 
-50 is running </code></pre>
-<p><img src="figure/simulation-study.Rmd/main%20algorithm-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>This is the simplest case in that every variant has one annotation feature if any. Set <span class="math inline">\(\beta=0.5\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span> to make signal strong with burden close to 10; 80% elements of of Ajk are 1. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of <span class="math inline">\(\beta\)</span> (true <span class="math inline">\(\beta=0.5\)</span>)is as <img src="figure/loglikelihood.png" alt="loglikelihood" />.</p>
+<p>This plot tells us the likelihood only has one mode in one dimension case. It looks like <span class="math inline">\(\beta\)</span> is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of <span class="math inline">\(\hat{\beta}=0.7631\)</span> and SD=2.344796e-05.</p>
+<p>Important Note: <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood.</p>
 </div>
 </div>
 <div id="session-information" class="section level2">
