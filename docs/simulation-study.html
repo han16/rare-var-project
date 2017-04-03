@@ -311,13 +311,12 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-03-31 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> 3cdc5b9</p>
+<p><strong>Last updated:</strong> 2017-04-02 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> 763a3c8</p>
 <!-- Add your analysis here -->
 <div id="set-up" class="section level2">
 <h2>Set up</h2>
 <p>Defined R function gene.simu is used to generate case control data. The data generation work flow is as <img src="figure/chart.png" alt="Data generation workflow." /></p>
-<p>N0, N1 are sample size in case and controls. m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: anohter parameter in gamma distribution; pi: probability of a variant being causal.</p>
 <pre class="r"><code>gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
 {
   pheno=c(rep(0,N0), rep(1,N1))  # filtering step
@@ -361,6 +360,8 @@ shared across the workflowr files. -->
   return (list(geno=x,pheno=pheno,q=q,gamma=gamma, Zij=Zij, var.index=var.index))
   
 }</code></pre>
+<p>N1, N0 are sample size in case and controls. m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: another parameter in gamma distribution; pi: probability of a variant being causal.</p>
+<p>Goal: estimate <span class="math inline">\(\beta\)</span> in logistic priors.</p>
 <pre class="r"><code>num.gene=1000
 m=200
 N0=5000; N1=5000
@@ -376,9 +377,125 @@ num.group=length(split.ratio)-1
 anno.num=1</code></pre>
 <div id="case-1-one-annotation-feature" class="section level3">
 <h3>case 1: one annotation feature</h3>
-<p>This is the simplest case in that every variant has one annotation feature if any. Set <span class="math inline">\(\beta=0.5\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span> to make signal strong with burden close to 10; 80% elements of of Ajk are 1. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of <span class="math inline">\(\beta\)</span> (true <span class="math inline">\(\beta=0.5\)</span>)is as <img src="figure/loglikelihood.png" alt="loglikelihood" />.</p>
-<p>This plot tells us the likelihood only has one mode in one dimension case. It looks like <span class="math inline">\(\beta\)</span> is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of <span class="math inline">\(\hat{\beta}=0.7631\)</span> and SD=2.344796e-05.</p>
-<p>Important Note: <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood.</p>
+<div id="paramster-settings" class="section level4">
+<h4>Paramster settings:</h4>
+<p>This is the simplest case in that every variant has one annotation feature if any. Set <span class="math inline">\(\beta=0.5\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span> to make signal strong with burden close to 10; 80% elements of of Ajk are 1.</p>
+</div>
+<div id="likelihood-function" class="section level4">
+<h4>likelihood function:</h4>
+<p>If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of <span class="math inline">\(\beta\)</span> (true <span class="math inline">\(\beta=0.5\)</span>)is as <img src="figure/loglikelihood.png" alt="loglikelihood" />.</p>
+<p>This plot tells us the likelihood only has one mode in one dimension case. It looks like <span class="math inline">\(\beta\)</span> is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of <span class="math inline">\(\hat{\beta}_{MLE}=0.7631\)</span> and SD=2.344796e-05.</p>
+</div>
+<div id="effect-of-sparsity-of-a_jk-k-is-the-number-of-features-here-k1-on-mle-of-beta" class="section level4">
+<h4>Effect of Sparsity of <span class="math inline">\(A_{jk}\)</span> (<span class="math inline">\(k\)</span> is the number of features, here <span class="math inline">\(k=1\)</span>) on MLE of <span class="math inline">\(\beta\)</span></h4>
+<p>Set <span class="math inline">\(\beta_{true}=0.5\)</span>, vary the sparsity of <span class="math inline">\(A_{jk}\)</span>, i.e., the ratio of 0’s in <span class="math inline">\(A_{jk}\)</span>. Define sparsity rate as the ratio of 0’s in each feature category.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="14%" />
+<col width="8%" />
+<col width="8%" />
+<col width="9%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Sparsity rate</th>
+<th>100%</th>
+<th>90%</th>
+<th>80%</th>
+<th>70%</th>
+<th>60%</th>
+<th>50%</th>
+<th>40%</th>
+<th>30%</th>
+<th>20%</th>
+<th>10%</th>
+<th>0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\hat{\beta}_{MLE}\)</span></td>
+<td>0.7490</td>
+<td>0.3802</td>
+<td>0.4499</td>
+<td>0.5845</td>
+<td>0.5420</td>
+<td>0.5829</td>
+<td>0.64444</td>
+<td>0.6817</td>
+<td>0.7608</td>
+<td>0.7941</td>
+<td>0.8896</td>
+</tr>
+</tbody>
+</table>
+<p>When All entries of <span class="math inline">\(A_{jk}\)</span> are zero, <span class="math inline">\(\tau_j=\frac{1}{2}\)</span>, regardless of whatever values of <span class="math inline">\(\beta\)</span> and the likelihood function is a constant of <span class="math inline">\(\beta\)</span>. Thus <span class="math inline">\(\widehat{\beta}\)</span> can be anywhere.</p>
+<p>Set <span class="math inline">\(\beta_{true}=0.2\)</span>.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="14%" />
+<col width="8%" />
+<col width="8%" />
+<col width="9%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Sparsity rate</th>
+<th>100%</th>
+<th>95%</th>
+<th>90%</th>
+<th>85%</th>
+<th>80%</th>
+<th>75%</th>
+<th>70%</th>
+<th>65%</th>
+<th>60%</th>
+<th>55%</th>
+<th>50%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\hat{\beta}_{MLE}\)</span></td>
+<td>0.5517</td>
+<td>0.3075</td>
+<td>0.2259</td>
+<td>0.3481</td>
+<td>0.3944</td>
+<td>0.3677</td>
+<td>0.4167</td>
+<td>0.3956</td>
+<td>0.4331</td>
+<td>0.4565</td>
+<td>0.4091</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="important-note" class="section level4">
+<h4>Important Note:</h4>
+<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2)</p>
+</div>
+<div id="introducing-ell_2-penalty." class="section level4">
+<h4>Introducing <span class="math inline">\(\ell_2\)</span> penalty.</h4>
+<p>The same parameter setting. Sparsity rate is 20%. <span class="math inline">\(\beta_{true}=0.5\)</span>. <img src="figure/PenaltyBeta.png" alt="betaandpenalty" /></p>
+</div>
 </div>
 </div>
 <div id="session-information" class="section level2">

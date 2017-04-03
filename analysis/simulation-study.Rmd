@@ -28,8 +28,6 @@ Defined R function gene.simu is  used to generate case control data. The data ge
 ![Data generation workflow.](figure/chart.png)
 
 
-N0, N1 are sample size in case and controls.  m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: anohter parameter in gamma distribution; pi: probability of a variant being causal.  
-
 ```{r data generation, echo=T}
 gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
 {
@@ -135,6 +133,10 @@ deriv.objec.func=function(beta.est)
 }
 ```
 
+N1, N0 are sample size in case and controls.  m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: another parameter in gamma distribution; pi: probability of a variant being causal. 
+
+
+Goal: estimate $\beta$ in logistic priors. 
 ```{r parameter settings, echo=T}
 num.gene=1000
 m=200
@@ -153,12 +155,42 @@ anno.num=1
 
 
 ### case 1: one annotation feature
-This is the simplest case in that every variant has one annotation feature if any. Set $\beta=0.5$,  $\bar{\gamma}=10$ to make signal strong with burden close to 10; 80\% elements of of Ajk are 1. If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of $\beta$ (true $\beta=0.5$)is as ![loglikelihood](figure/loglikelihood.png). 
+#### Paramster settings: 
+This is the simplest case in that every variant has one annotation feature if any. Set $\beta=0.5$,  $\bar{\gamma}=10$ to make signal strong with burden close to 10; 80\% elements of of Ajk are 1. 
 
-This plot tells us the likelihood only has one mode in one dimension case. It looks like $\beta$ is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of $\hat{\beta}=0.7631$ and SD=2.344796e-05. 
 
-Important Note: $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood.  
+#### likelihood function: 
+If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of $\beta$ (true $\beta=0.5$)is as ![loglikelihood](figure/loglikelihood.png). 
 
+This plot tells us the likelihood only has one mode in one dimension case. It looks like $\beta$ is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of $\hat{\beta}_{MLE}=0.7631$ and SD=2.344796e-05. 
+
+
+#### Effect of Sparsity of $A_{jk}$ ($k$ is the number of features, here $k=1$) on MLE of $\beta$
+
+Set $\beta_{true}=0.5$, vary the sparsity of $A_{jk}$, i.e., the ratio of 0's in $A_{jk}$. Define sparsity rate as the ratio of 0's in each feature category.  
+
+
+Sparsity rate | 100% | 90% | 80% |70%  |60% |50% |40%  | 30% |20% |10% | 0|
+-------------|-------|-------|--------|-------|-------|-------|-------|------|------|------|------|
+$\hat{\beta}_{MLE}$|0.7490 |0.3802 | 0.4499 |0.5845 |0.5420 |0.5829 |0.64444|0.6817|0.7608|0.7941|0.8896|
+
+When All entries of $A_{jk}$ are zero, $\tau_j=\frac{1}{2}$, regardless of whatever values of $\beta$ and the likelihood function is a constant of $\beta$. Thus $\widehat{\beta}$ can be anywhere.   
+
+
+Set $\beta_{true}=0.2$.  
+
+
+Sparsity rate | 100% | 95% | 90% |85%  |80% |75% |70%  | 65% |60% |55% | 50%|
+-------------|-------|-------|--------|-------|-------|-------|-------|------|------|------|------|
+$\hat{\beta}_{MLE}$|0.5517 |0.3075 | 0.2259 |0.3481 |0.3944 |0.3677 |0.4167|0.3956|0.4331|0.4565|0.4091|
+
+####Important Note: 
+There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and $\beta_{true}$. 
+(1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2)   
+
+####Introducing  $\ell_2$ penalty. 
+The same parameter setting. Sparsity rate is 20%. $\beta_{true}=0.5$. 
+![betaandpenalty](figure/PenaltyBeta.png)
 
 
 ```{r main algorithm, echo=F, results="hide", cache=T, eval=F}
@@ -199,12 +231,12 @@ Ui=rbinom(num.gene, 1, delta)
   beta.fin.est=numeric(length(lambda.range))
 ###################################
   lambda=0
-  beta.range=seq(0, 1, by=0.01)
+  beta.range=seq(0, 100, by=10)
   log.lkhd=numeric(length(beta.range))
   for (i in 1:length(beta.range))
   log.lkhd[i]=objec.func(beta.range[i])
   plot(beta.range, log.lkhd, type="o", xlab=expression(beta), ylab="log(likelihood)")
-  abline(v=0.5, col=2)
+  abline(v=beta.true, col=2)
 ###################################  
   
   
