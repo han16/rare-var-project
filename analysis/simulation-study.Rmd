@@ -264,7 +264,7 @@ $K=2$. Set $\beta_1=0.05, \beta_2=0.7$. Other parameters are the same as in Case
 
 #### MLE of $\beta$. 
 
-
+use BFGS method. 
 
 ## Session information
 
