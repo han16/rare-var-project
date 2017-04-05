@@ -154,7 +154,7 @@ anno.num=1
 ```
 
 
-### case 1: one annotation feature
+### case 1: One annotation feature
 #### Paramster settings: 
 This is the simplest case in that every variant has one annotation feature if any. Set $\beta=0.5$,  $\bar{\gamma}=10$ to make signal strong with burden close to 10; 80\% elements of of Ajk are 1. 
 
@@ -186,14 +186,17 @@ $\hat{\beta}_{MLE}$|0.5517 |0.3075 | 0.2259 |0.3481 |0.3944 |0.3677 |0.4167|0.39
 
 ####Important Note: 
 There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and $\beta_{true}$. 
-(1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2)   
+(1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2) Sparsity of $A_{jk}$ will certainly influences the estimate of $\beta$. The less sparsity, the more information will be used, the more accurate the estimate will be.    
 
 ####Introducing  $\ell_2$ penalty. 
 The same parameter setting. Sparsity rate is 20%. $\beta_{true}=0.5$. 
 ![betaandpenalty](figure/PenaltyBeta.png)
 
 
-```{r main algorithm, echo=F, results="hide", cache=T, eval=F}
+With this setting, very large tunning parameter $\lambda>1000$ should be used to get the good estimate of $\beta$.  
+
+
+```{r main algorithm, echo=T, results="hide", cache=T, eval=F}
 Ajk=rep(0, (num.gene*m))
 Ajk[sample(length(Ajk), (0.8*length(Ajk)))]=1
 ############## generate beta 
@@ -244,7 +247,6 @@ Ui=rbinom(num.gene, 1, delta)
   {
     cat(k, "is running", "\n")  
     lambda=lambda.range[k] 
-#    #lambda=10000000
     beta.est=runif(anno.num, -1,1)
     theta.est=optim(beta.est, objec.func, deriv.objec.func, method="BFGS", control=list(fnscale=-1))
     beta.fin.est[k]=theta.est$par
@@ -253,10 +255,14 @@ Ui=rbinom(num.gene, 1, delta)
     error[k]=sum((beta.fin.est[k]-beta.true)^2)
     
   }
-  plot(beta.true, ylim=c(-1,1), type="o")
-  lines(beta.fin.est[which.min(error)], ylim=c(-1,1), type="o", col=2)
 ```
 
+
+
+### Case 2: Two Annotation features 
+$K=2$. Set $\beta_1=0.05, \beta_2=0.7$. Other parameters are the same as in Case 1. 
+
+#### MLE of $\beta$. 
 
 ## Session information
 

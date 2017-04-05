@@ -311,8 +311,8 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-04-02 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> 763a3c8</p>
+<p><strong>Last updated:</strong> 2017-04-04 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> d26026f</p>
 <!-- Add your analysis here -->
 <div id="set-up" class="section level2">
 <h2>Set up</h2>
@@ -376,7 +376,7 @@ split.ratio=c(0,1)
 num.group=length(split.ratio)-1
 anno.num=1</code></pre>
 <div id="case-1-one-annotation-feature" class="section level3">
-<h3>case 1: one annotation feature</h3>
+<h3>case 1: One annotation feature</h3>
 <div id="paramster-settings" class="section level4">
 <h4>Paramster settings:</h4>
 <p>This is the simplest case in that every variant has one annotation feature if any. Set <span class="math inline">\(\beta=0.5\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span> to make signal strong with burden close to 10; 80% elements of of Ajk are 1.</p>
@@ -490,11 +490,77 @@ anno.num=1</code></pre>
 </div>
 <div id="important-note" class="section level4">
 <h4>Important Note:</h4>
-<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2)</p>
+<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be.</p>
 </div>
 <div id="introducing-ell_2-penalty." class="section level4">
 <h4>Introducing <span class="math inline">\(\ell_2\)</span> penalty.</h4>
 <p>The same parameter setting. Sparsity rate is 20%. <span class="math inline">\(\beta_{true}=0.5\)</span>. <img src="figure/PenaltyBeta.png" alt="betaandpenalty" /></p>
+<p>With this setting, very large tunning parameter <span class="math inline">\(\lambda&gt;1000\)</span> should be used to get the good estimate of <span class="math inline">\(\beta\)</span>.</p>
+<pre class="r"><code>Ajk=rep(0, (num.gene*m))
+Ajk[sample(length(Ajk), (0.8*length(Ajk)))]=1
+############## generate beta 
+beta.true=numeric(anno.num)
+beta.true[1]=0.5
+############# compute tau: risk of every variant being risk variant
+tau.true=exp(Ajk*beta.true)/(1+exp(Ajk*beta.true))
+Ui=rbinom(num.gene, 1, delta)
+  all.data=list(); var.orig.index=numeric(); var.orig.index[1]=NA
+  for (i in 1:num.gene)
+  {
+    data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=tau.true[((i-1)*m+1):(i*m)], Ui[i], num.group, split.ratio)
+    all.data[[i]]=data
+    var.orig.index=c(var.orig.index, (i-1)*m+data$var.index)
+  }
+  var.orig.index=var.orig.index[-1]
+  Ajk.effect=Ajk[var.orig.index]
+  ################### calculate bayes factor for every variant 
+  k=0; BF.var=numeric(); var.count=matrix(nrow=(m*num.gene), ncol=2)
+  for (i in 1:length(all.data))
+  {
+    for (j in 1:ncol(all.data[[i]]$geno))
+    {
+      k=k+1
+      BF.var[k]=BF.var.inte(sum(all.data[[i]]$geno[all.data[[i]]$pheno==1,j]), sum(all.data[[i]]$geno[all.data[[i]]$pheno==0,j]), bar.gamma=6, sig=sigma, N1, N0)
+      var.count[k,]=c(sum(all.data[[i]]$geno[all.data[[i]]$pheno==1,j]),sum(all.data[[i]]$geno[all.data[[i]]$pheno==0,j]) )
+    }
+  } # end of i
+ var.count=var.count[-((k+1):nrow(var.count)),]
+ ###############################
+ ################################
+  num.var=length(BF.var)
+  lambda.range=rep(0, 50)
+  error=numeric()
+  beta.fin.est=numeric(length(lambda.range))
+###################################
+  lambda=0
+  beta.range=seq(0, 100, by=10)
+  log.lkhd=numeric(length(beta.range))
+  for (i in 1:length(beta.range))
+  log.lkhd[i]=objec.func(beta.range[i])
+  plot(beta.range, log.lkhd, type=&quot;o&quot;, xlab=expression(beta), ylab=&quot;log(likelihood)&quot;)
+  abline(v=beta.true, col=2)
+###################################  
+  
+  
+  for (k in 1:length(lambda.range))
+  {
+    cat(k, &quot;is running&quot;, &quot;\n&quot;)  
+    lambda=lambda.range[k] 
+    beta.est=runif(anno.num, -1,1)
+    theta.est=optim(beta.est, objec.func, deriv.objec.func, method=&quot;BFGS&quot;, control=list(fnscale=-1))
+    beta.fin.est[k]=theta.est$par
+#    theta.est=DEoptim(fn=objec.func.min, lower=rep(-1, anno.num), upper=rep(200, anno.num), control=list(NP=100, itermax=100,trace=FALSE))
+#    beta.fin.est[k,]=theta.est$optim$bestmem
+    error[k]=sum((beta.fin.est[k]-beta.true)^2)
+    
+  }</code></pre>
+</div>
+</div>
+<div id="case-2-two-annotation-features" class="section level3">
+<h3>Case 2: Two Annotation features</h3>
+<p><span class="math inline">\(K=2\)</span>. Set <span class="math inline">\(\beta_1=0.05, \beta_2=0.7\)</span>. Other parameters are the same as in Case 1.</p>
+<div id="mle-of-beta." class="section level4">
+<h4>MLE of <span class="math inline">\(\beta\)</span>.</h4>
 </div>
 </div>
 </div>
