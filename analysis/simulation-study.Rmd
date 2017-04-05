@@ -154,7 +154,7 @@ anno.num=1
 ```
 
 
-### case 1: One annotation feature
+### Case 1: One annotation feature
 #### Paramster settings: 
 This is the simplest case in that every variant has one annotation feature if any. Set $\beta=0.5$,  $\bar{\gamma}=10$ to make signal strong with burden close to 10; 80\% elements of of Ajk are 1. 
 
