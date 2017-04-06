@@ -170,9 +170,9 @@ This plot tells us the likelihood only has one mode in one dimension case. It lo
 Set $\beta_{true}=0.5$, vary the sparsity of $A_{jk}$, i.e., the ratio of 0's in $A_{jk}$. Define sparsity rate as the ratio of 0's in each feature category.  
 
 
-Sparsity rate | 100% | 90% | 80% |70%  |60% |50% |40%  | 30% |20% |10% | 0|
--------------|-------|-------|--------|-------|-------|-------|-------|------|------|------|------|
-$\hat{\beta}_{MLE}$|0.7490 |0.3802 | 0.4499 |0.5845 |0.5420 |0.5829 |0.64444|0.6817|0.7608|0.7941|0.8896|
+Sparsity rate | 90% | 80% |70%  |60% |50% |40%  | 30% |20% |10% | 0|
+-------------|-------|--------|-------|-------|-------|-------|------|------|------|------|
+$\hat{\beta}_{MLE}$ |0.3802 | 0.4499 |0.5845 |0.5420 |0.5829 |0.64444|0.6817|0.7608|0.7941|0.8896|
 
 When All entries of $A_{jk}$ are zero, $\tau_j=\frac{1}{2}$, regardless of whatever values of $\beta$ and the likelihood function is a constant of $\beta$. Thus $\widehat{\beta}$ can be anywhere.   
 
@@ -180,9 +180,9 @@ When All entries of $A_{jk}$ are zero, $\tau_j=\frac{1}{2}$, regardless of whate
 Set $\beta_{true}=0.2$.  
 
 
-Sparsity rate | 100% | 95% | 90% |85%  |80% |75% |70%  | 65% |60% |55% | 50%|
+Sparsity rate | 95% | 90% |85%  |80% |75% |70%  | 65% |60% |55% | 50%|
 -------------|-------|-------|--------|-------|-------|-------|-------|------|------|------|------|
-$\hat{\beta}_{MLE}$|0.5517 |0.3075 | 0.2259 |0.3481 |0.3944 |0.3677 |0.4167|0.3956|0.4331|0.4565|0.4091|
+$\hat{\beta}_{MLE}$|0.3075 | 0.2259 |0.3481 |0.3944 |0.3677 |0.4167|0.3956|0.4331|0.4565|0.4091|
 
 ####Important Note: 
 There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and $\beta_{true}$. 
