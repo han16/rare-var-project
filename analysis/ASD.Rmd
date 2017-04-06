@@ -1,0 +1,118 @@
+---
+title: "ASD Exome Seq data"
+author: "Shengtong Han"
+date: YYYY-MM-DD
+output: html_document
+---
+
+<!-- The file analysis/chunks.R contains chunks that define default settings
+shared across the workflowr files. -->
+```{r read-chunk, include=FALSE, cache=FALSE}
+knitr::read_chunk("chunks.R")
+```
+
+<!-- Update knitr chunk options -->
+```{r knitr-opts-chunk, include=FALSE}
+```
+
+<!-- Insert the date the file was last updated -->
+```{r last-updated, echo=FALSE, results='asis'}
+```
+
+<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed -->
+```{r code-version, echo=FALSE, results='asis'}
+```
+
+```{r load packages, results='hide', include=FALSE}
+library(RSQLite)
+library(dplyr)
+library(knitr)
+```
+
+```{r defined function, echo=F, results='hide', cache=T}
+test.func=function(var.data, N1, N0) # given variant data and sample size, perform the burden analysis
+{
+  count=c(sum(var.data$No.case), sum(var.data$No.contr))
+  Time=c(N1, N0)
+  pois.test=poisson.test(count, Time, r=1, alternative="greater")
+  return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rate.case=count[1]/N1, rate.contr=count[2]/N0))
+}
+```
+
+
+<!-- Add your analysis here -->
+## Quality Control (QC)
+
+### Annotated data quality. 
+
+```{r check missing values for every annotation, echo=F, results='hide', cache=T}
+Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+N1=4315; N0=4315
+Anno.Data[Anno.Data =="."] <- NA
+nosyn.data=Anno.Data[Anno.Data$Annotation!="synonymous SNV",]
+nonsyn.data=Anno.Data[Anno.Data$Annotation=="nonsynonymous SNV",]
+Anno.fea=paste(rep("ratio_valid_value_", ncol(Anno.Data)), colnames(Anno.Data), sep=""); Anno.fea[1:4]=c("#{Variants}", "#{Gene}", "rate.ca", "rate.co")
+ratio.data=numeric(); ratio.nosyn=numeric(); ratio.nonsyn=numeric()
+for (i in 5:length(Anno.fea))
+{
+  ratio.data[i]=1-sum(is.na(Anno.Data[,i]))/nrow(Anno.Data)
+  ratio.nosyn[i]=1-sum(is.na(nosyn.data[,i]))/nrow(nosyn.data)
+  ratio.nonsyn[i]=1-sum(is.na(nonsyn.data[,i]))/nrow(nonsyn.data)
+}  
+ratio.data[1]=nrow(Anno.Data); ratio.data[2]=length(unique(Anno.Data$Gene))
+ratio.data[3]=sum(Anno.Data$No.case)/N1; ratio.data[4]=sum(Anno.Data$No.contr)/N0
+
+ratio.nosyn[1]=nrow(nosyn.data); ratio.nosyn[2]=length(unique(nosyn.data$Gene))
+ratio.nosyn[3]=sum(nosyn.data$No.case)/N1; ratio.nosyn[4]=sum(nosyn.data$No.contr)/N0
+
+ratio.nonsyn[1]=nrow(nonsyn.data); ratio.nonsyn[2]=length(unique(nonsyn.data$Gene))
+ratio.nonsyn[3]=sum(nonsyn.data$No.case)/N1; ratio.nonsyn[4]=sum(nonsyn.data$No.contr)/N0
+
+data.summ=data.frame(item=Anno.fea, value.AllVar=ratio.data, value.withoutsyn=ratio.nosyn, value.nonsyn=ratio.nonsyn)
+```
+```{r summary of the data, echo=F}
+kable(data.summ, caption="Quality of annotated data")
+```
+
+The table summaries the ratio of non-missing values in every annotation feature from different types of variants 
+
+
+* first column: all variants, i.e. everything; second column: all variants excluding synonymous variants; third column: non-synonymous variants only
+* "Annotation" row means nonsynonymous SNV, intronic, etc. 
+
+
+### variant rate at different AF cutoffs
+```{r, echo=F, results='hide'}
+ExacAF.cutoff=c(1e-2, 1e-3, 1e-4, 1e-5)
+AF.summary=matrix(nrow=length(ExacAF.cutoff)+2, ncol=5)
+rownames(AF.summary)=c("NULL", paste("MAF<", ExacAF.cutoff, sep=""), "private"); rownames(AF.summary)[1]=""
+colnames(AF.summary)=c("No.rows", "No.var.ca", "No.var.co",  "rate.ca", "rate.co")
+AF.summary[1,]=c(nrow(Anno.Data),sum(Anno.Data$No.case),sum(Anno.Data$No.contr), sum(Anno.Data$No.case)/N1, sum(Anno.Data$No.contr)/N0)
+
+for (i in 1:length(ExacAF.cutoff))
+{
+cat(i, "is running", "\n") 
+select.data=Anno.Data[which(Anno.Data$ExacAF<ExacAF.cutoff[i]),]  
+AF.summary[i+1,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
+}
+select.data=Anno.Data[c(which(is.na(Anno.Data$ExacAF)==T), which(Anno.Data$ExacAF==0)),]
+AF.summary[(length(ExacAF.cutoff)+2),]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
+```
+
+**Summary statistics of the data with and without AF cutoffs**
+```{r summary statistics, echo=F}
+kable(AF.summary, caption="Rate of variants in cases and controls at varying AF cutoffs")
+```
+
+## Variant level analysis
+## Exon level analysis
+## Gene level analysis
+## Combined feature analysis
+
+
+## Session information
+
+<!-- Insert the session information into the document -->
+```{r session-info}
+```
