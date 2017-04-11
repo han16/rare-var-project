@@ -23,12 +23,28 @@ knitr::read_chunk("chunks.R")
 ```
 
 <!-- Add your analysis here -->
-## Set up
-Defined R function gene.simu is  used to generate case control data. The data generation work flow is as 
-![Data generation workflow.](figure/chart.png)
+## Data Generation
+
+Basically, there are two sequential levels when generating the data
+
+* gene level: $U_i$ denote the risk status of gene $i$, $U_i \sim Ber(1, \delta)$. All genes share the same risk probability $\delta$. 
+* variant level:
+    +  $U_i=0$, all variants for gene $i$ are non-causal, which is under null hypothesis. AF $q_{ij} \sim Beta(\alpha_0, \beta_0)$, $X_{1ij}+X_{0ij} \sim Pois (N1+N0, q_{ij})$, (alternatively, $X_{1ij} \sim Binom(N1, q_{ij}); X_{0ij} \sim Binom(N0, q_{ij})$); then filter out  variants if $X_{1ij}+X_{0ij}=0$.  
+    + $U_i=1$,  gene $i$ is a causal gene, the variant $(i,j)$ whose risk status is denoted by $Z_{ij}$ is generated as $Z_{ij} \sim Ber(1, \pi(\beta))$, $\pi(\beta)$ is a function linking annotations to the probability of being causal. 
+          *  $Z_{ij}=0$ (which is under null),  given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$
+          *   $Z_{ij}=1$ (which is under alternative), AF $q_{ij} \sim Beta(\alpha, \beta)$, $\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)$, given generated  $X_{1ij}+X_{0ij}$, split into case and control by conditional binomial distribution with $p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}$. 
+          
+Filtering step: filter variants that have null variant counts in both cases and controls.  
+
+Notations: 
+
+* N1, N0 are sample sizes in cases and controls 
+* $q_{ij}$ is allele frequency for variant $(i,j)$
+* $\bar{\gamma}$ relative risk 
 
 
-```{r data generation, echo=T}
+$\pi(\beta)$ is the link function between annotations and prior probability and the interest is in estimating $\beta$.  
+```{r data generation, echo=F}
 gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
 {
   pheno=c(rep(0,N0), rep(1,N1))  # filtering step
@@ -133,11 +149,7 @@ deriv.objec.func=function(beta.est)
 }
 ```
 
-N1, N0 are sample size in case and controls.  m: number of variants per gene. alpha0, beta0, alpha, beta; two scale parameters in beta distriution to generate AF in control and cases. gamma.mean: the mean in gamma distribution to generate RR; sigma: another parameter in gamma distribution; pi: probability of a variant being causal. 
-
-
-Goal: estimate $\beta$ in logistic priors. 
-```{r parameter settings, echo=T}
+```{r parameter settings, echo=F}
 num.gene=1000
 m=200
 N0=5000; N1=5000
@@ -153,7 +165,7 @@ num.group=length(split.ratio)-1
 anno.num=1
 ```
 
-
+## Parameter estimation 
 ### Case 1: One annotation feature
 #### Paramster settings: 
 This is the simplest case in that every variant has one annotation feature if any. Set $\beta=0.5$,  $\bar{\gamma}=10$ to make signal strong with burden close to 10; 80\% elements of of Ajk are 1. 

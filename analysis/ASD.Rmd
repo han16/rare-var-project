@@ -100,7 +100,6 @@ select.data=Anno.Data[c(which(is.na(Anno.Data$ExacAF)==T), which(Anno.Data$ExacA
 AF.summary[(length(ExacAF.cutoff)+2),]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 ```
 
-**Summary statistics of the data with and without AF cutoffs**
 ```{r summary statistics, echo=F}
 kable(AF.summary, caption="Rate of variants in cases and controls at varying AF cutoffs")
 ```
