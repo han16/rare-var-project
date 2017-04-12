@@ -311,22 +311,22 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-04-11 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> ea8217c</p>
+<p><strong>Last updated:</strong> 2017-04-12 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> 9bebdfa</p>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
-<p>Basically, there are two sequential levels when generating the data</p>
+<p>Basically, there are two sequential levels when generating the data. First under null hypothesis, generate total number of variants in cases and controls, i.e., AF <span class="math inline">\(q_{ij}^{(0)} \sim Beta(\alpha_0, \beta_0)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois (N1+N0, q_{ij}^{(0)})\)</span>, filter out variants will null mutations, then re-distribute all mutations in effective variants into cases and controls depending on the risk status via conditional binomial distribution.</p>
 <ul>
 <li>gene level: <span class="math inline">\(U_i\)</span> denote the risk status of gene <span class="math inline">\(i\)</span>, <span class="math inline">\(U_i \sim Ber(1, \delta)\)</span>. All genes share the same risk probability <span class="math inline">\(\delta\)</span>.</li>
 <li>variant level:
 <ul>
-<li><span class="math inline">\(U_i=0\)</span>, all variants for gene <span class="math inline">\(i\)</span> are non-causal, which is under null hypothesis. AF <span class="math inline">\(q_{ij} \sim Beta(\alpha_0, \beta_0)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois (N1+N0, q_{ij})\)</span>, (alternatively, <span class="math inline">\(X_{1ij} \sim Binom(N1, q_{ij}); X_{0ij} \sim Binom(N0, q_{ij})\)</span>); then filter out variants if <span class="math inline">\(X_{1ij}+X_{0ij}=0\)</span>.<br />
+<li><span class="math inline">\(U_i=0\)</span>, all variants for gene <span class="math inline">\(i\)</span> are non-causal, which is under null hypothesis. Given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span><br />
 </li>
 <li><span class="math inline">\(U_i=1\)</span>, gene <span class="math inline">\(i\)</span> is a causal gene, the variant <span class="math inline">\((i,j)\)</span> whose risk status is denoted by <span class="math inline">\(Z_{ij}\)</span> is generated as <span class="math inline">\(Z_{ij} \sim Ber(1, \pi(\beta))\)</span>, <span class="math inline">\(\pi(\beta)\)</span> is a function linking annotations to the probability of being causal.
 <ul>
 <li><span class="math inline">\(Z_{ij}=0\)</span> (which is under null), given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span></li>
-<li><span class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF <span class="math inline">\(q_{ij} \sim Beta(\alpha, \beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, given generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and control by conditional binomial distribution with <span class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
+<li><span class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF <span class="math inline">\(q_{ij}^{(1)} \sim Beta(\alpha, \beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})\)</span>, split into case and control by conditional binomial distribution with <span class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
 </ul></li>
 </ul></li>
 </ul>
@@ -343,9 +343,16 @@ shared across the workflowr files. -->
 <h2>Parameter estimation</h2>
 <div id="case-1-one-annotation-feature" class="section level3">
 <h3>Case 1: One annotation feature</h3>
-<div id="paramster-settings" class="section level4">
-<h4>Paramster settings:</h4>
-<p>This is the simplest case in that every variant has one annotation feature if any. Set <span class="math inline">\(\beta=0.5\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span> to make signal strong with burden close to 10; 80% elements of of Ajk are 1.</p>
+<div id="paramster-settings-1" class="section level4">
+<h4>Paramster settings 1 :</h4>
+<ul>
+<li><span class="math inline">\(N1=N0=5000\)</span></li>
+<li>number of genes <span class="math inline">\(I=1000\)</span>, number of variants per gene <span class="math inline">\(m=200\)</span> before filtering.</li>
+<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta_0=1000, \beta=2000\)</span>.</li>
+<li><span class="math inline">\(\beta_{true}=0.5\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span></li>
+<li>80% elements of of Ajk are 1</li>
+</ul>
+<p>This is the simplest case in that every variant has one annotation feature if any.</p>
 </div>
 <div id="likelihood-function" class="section level4">
 <h4>likelihood function:</h4>
@@ -356,6 +363,7 @@ shared across the workflowr files. -->
 <h4>Effect of Sparsity of <span class="math inline">\(A_{jk}\)</span> (<span class="math inline">\(k\)</span> is the number of features, here <span class="math inline">\(k=1\)</span>) on MLE of <span class="math inline">\(\beta\)</span></h4>
 <p>Set <span class="math inline">\(\beta_{true}=0.5\)</span>, vary the sparsity of <span class="math inline">\(A_{jk}\)</span>, i.e., the ratio of 0’s in <span class="math inline">\(A_{jk}\)</span>. Define sparsity rate as the ratio of 0’s in each feature category.</p>
 <table style="width:100%;">
+<caption>MLE at different sparsity rate <span class="math inline">\(\beta_{true}=0.5\)</span></caption>
 <colgroup>
 <col width="15%" />
 <col width="8%" />
@@ -403,6 +411,7 @@ shared across the workflowr files. -->
 <p>When All entries of <span class="math inline">\(A_{jk}\)</span> are zero, <span class="math inline">\(\tau_j=\frac{1}{2}\)</span>, regardless of whatever values of <span class="math inline">\(\beta\)</span> and the likelihood function is a constant of <span class="math inline">\(\beta\)</span>. Thus <span class="math inline">\(\widehat{\beta}\)</span> can be anywhere.</p>
 <p>Set <span class="math inline">\(\beta_{true}=0.2\)</span>.</p>
 <table style="width:100%;">
+<caption>MLE at different sparsity rate with <span class="math inline">\(\beta_{true}=0.2\)</span>.</caption>
 <colgroup>
 <col width="14%" />
 <col width="8%" />
@@ -453,70 +462,34 @@ shared across the workflowr files. -->
 </div>
 <div id="important-note" class="section level4">
 <h4>Important Note:</h4>
-<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be.</p>
+<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large <span class="math inline">\(\bar{\gamma}\)</span>), Bayes factor will become Inf.</p>
 </div>
-<div id="introducing-ell_2-penalty." class="section level4">
-<h4>Introducing <span class="math inline">\(\ell_2\)</span> penalty.</h4>
-<p>The same parameter setting. Sparsity rate is 20%. <span class="math inline">\(\beta_{true}=0.5\)</span>. <img src="figure/PenaltyBeta.png" alt="betaandpenalty" /></p>
-<p>With this setting, very large tunning parameter <span class="math inline">\(\lambda&gt;1000\)</span> should be used to get the good estimate of <span class="math inline">\(\beta\)</span>.</p>
-<pre class="r"><code>Ajk=rep(0, (num.gene*m))
-Ajk[sample(length(Ajk), (0.8*length(Ajk)))]=1
-############## generate beta 
-beta.true=numeric(anno.num)
-beta.true[1]=0.5
-############# compute tau: risk of every variant being risk variant
-tau.true=exp(Ajk*beta.true)/(1+exp(Ajk*beta.true))
-Ui=rbinom(num.gene, 1, delta)
-  all.data=list(); var.orig.index=numeric(); var.orig.index[1]=NA
-  for (i in 1:num.gene)
-  {
-    data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=tau.true[((i-1)*m+1):(i*m)], Ui[i], num.group, split.ratio)
-    all.data[[i]]=data
-    var.orig.index=c(var.orig.index, (i-1)*m+data$var.index)
-  }
-  var.orig.index=var.orig.index[-1]
-  Ajk.effect=Ajk[var.orig.index]
-  ################### calculate bayes factor for every variant 
-  k=0; BF.var=numeric(); var.count=matrix(nrow=(m*num.gene), ncol=2)
-  for (i in 1:length(all.data))
-  {
-    for (j in 1:ncol(all.data[[i]]$geno))
-    {
-      k=k+1
-      BF.var[k]=BF.var.inte(sum(all.data[[i]]$geno[all.data[[i]]$pheno==1,j]), sum(all.data[[i]]$geno[all.data[[i]]$pheno==0,j]), bar.gamma=6, sig=sigma, N1, N0)
-      var.count[k,]=c(sum(all.data[[i]]$geno[all.data[[i]]$pheno==1,j]),sum(all.data[[i]]$geno[all.data[[i]]$pheno==0,j]) )
-    }
-  } # end of i
- var.count=var.count[-((k+1):nrow(var.count)),]
- ###############################
- ################################
-  num.var=length(BF.var)
-  lambda.range=rep(0, 50)
-  error=numeric()
-  beta.fin.est=numeric(length(lambda.range))
-###################################
-  lambda=0
-  beta.range=seq(0, 100, by=10)
-  log.lkhd=numeric(length(beta.range))
-  for (i in 1:length(beta.range))
-  log.lkhd[i]=objec.func(beta.range[i])
-  plot(beta.range, log.lkhd, type=&quot;o&quot;, xlab=expression(beta), ylab=&quot;log(likelihood)&quot;)
-  abline(v=beta.true, col=2)
-###################################  
-  
-  
-  for (k in 1:length(lambda.range))
-  {
-    cat(k, &quot;is running&quot;, &quot;\n&quot;)  
-    lambda=lambda.range[k] 
-    beta.est=runif(anno.num, -1,1)
-    theta.est=optim(beta.est, objec.func, deriv.objec.func, method=&quot;BFGS&quot;, control=list(fnscale=-1))
-    beta.fin.est[k]=theta.est$par
-#    theta.est=DEoptim(fn=objec.func.min, lower=rep(-1, anno.num), upper=rep(200, anno.num), control=list(NP=100, itermax=100,trace=FALSE))
-#    beta.fin.est[k,]=theta.est$optim$bestmem
-    error[k]=sum((beta.fin.est[k]-beta.true)^2)
-    
-  }</code></pre>
+<div id="parameter-setting-2-increasing-sample-size" class="section level4">
+<h4>Parameter setting 2-increasing sample size</h4>
+<ul>
+<li><span class="math inline">\(\beta_{true}=2\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span></li>
+<li>all entries of <span class="math inline">\(A_{jk}\)</span> are 1</li>
+<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=1000, \beta_0=2000\)</span></li>
+</ul>
+<table>
+<caption>MLE averaging across 10 replicates with different sample size</caption>
+<thead>
+<tr class="header">
+<th>N1=N0</th>
+<th>10,000</th>
+<th>50,000</th>
+<th>100,000</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span></td>
+<td>2.7810 (0.0362)</td>
+<td>2.4413 (0.0161)</td>
+<td>2.3420</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="case-2-two-annotation-features" class="section level3">

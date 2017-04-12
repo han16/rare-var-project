@@ -25,14 +25,14 @@ knitr::read_chunk("chunks.R")
 <!-- Add your analysis here -->
 ## Data Generation
 
-Basically, there are two sequential levels when generating the data
+Basically, there are two sequential levels when generating the data. First under null hypothesis, generate total number of variants in cases and controls, i.e., AF $q_{ij}^{(0)} \sim Beta(\alpha_0, \beta_0)$, $X_{1ij}+X_{0ij} \sim Pois (N1+N0, q_{ij}^{(0)})$,  filter out variants will null mutations, then re-distribute all mutations in effective variants into cases and controls depending on the risk status via conditional binomial distribution.     
 
 * gene level: $U_i$ denote the risk status of gene $i$, $U_i \sim Ber(1, \delta)$. All genes share the same risk probability $\delta$. 
 * variant level:
-    +  $U_i=0$, all variants for gene $i$ are non-causal, which is under null hypothesis. AF $q_{ij} \sim Beta(\alpha_0, \beta_0)$, $X_{1ij}+X_{0ij} \sim Pois (N1+N0, q_{ij})$, (alternatively, $X_{1ij} \sim Binom(N1, q_{ij}); X_{0ij} \sim Binom(N0, q_{ij})$); then filter out  variants if $X_{1ij}+X_{0ij}=0$.  
+    +  $U_i=0$, all variants for gene $i$ are non-causal, which is under null hypothesis. Given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$  
     + $U_i=1$,  gene $i$ is a causal gene, the variant $(i,j)$ whose risk status is denoted by $Z_{ij}$ is generated as $Z_{ij} \sim Ber(1, \pi(\beta))$, $\pi(\beta)$ is a function linking annotations to the probability of being causal. 
           *  $Z_{ij}=0$ (which is under null),  given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$
-          *   $Z_{ij}=1$ (which is under alternative), AF $q_{ij} \sim Beta(\alpha, \beta)$, $\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)$, given generated  $X_{1ij}+X_{0ij}$, split into case and control by conditional binomial distribution with $p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}$. 
+          *   $Z_{ij}=1$ (which is under alternative), AF $q_{ij}^{(1)} \sim Beta(\alpha, \beta)$, $\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)$,  $X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})$, split into case and control by conditional binomial distribution with $p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}$. 
           
 Filtering step: filter variants that have null variant counts in both cases and controls.  
 
@@ -167,8 +167,14 @@ anno.num=1
 
 ## Parameter estimation 
 ### Case 1: One annotation feature
-#### Paramster settings: 
-This is the simplest case in that every variant has one annotation feature if any. Set $\beta=0.5$,  $\bar{\gamma}=10$ to make signal strong with burden close to 10; 80\% elements of of Ajk are 1. 
+#### Paramster settings 1 : 
+* $N1=N0=5000$
+* number of genes $I=1000$, number of variants per gene $m=200$ before filtering. 
+* $\alpha=\alpha_0=0.1$, $\beta_0=1000, \beta=2000$. 
+* $\beta_{true}=0.5$,  $\bar{\gamma}=10$
+* 80\% elements of of Ajk are 1
+
+This is the simplest case in that every variant has one annotation feature if any. 
 
 
 #### likelihood function: 
@@ -185,6 +191,7 @@ Set $\beta_{true}=0.5$, vary the sparsity of $A_{jk}$, i.e., the ratio of 0's in
 Sparsity rate | 90% | 80% |70%  |60% |50% |40%  | 30% |20% |10% | 0|
 -------------|-------|--------|-------|-------|-------|-------|------|------|------|------|
 $\hat{\beta}_{MLE}$ |0.3802 | 0.4499 |0.5845 |0.5420 |0.5829 |0.64444|0.6817|0.7608|0.7941|0.8896|
+Table: MLE at different sparsity rate $\beta_{true}=0.5$
 
 When All entries of $A_{jk}$ are zero, $\tau_j=\frac{1}{2}$, regardless of whatever values of $\beta$ and the likelihood function is a constant of $\beta$. Thus $\widehat{\beta}$ can be anywhere.   
 
@@ -195,20 +202,26 @@ Set $\beta_{true}=0.2$.
 Sparsity rate | 95% | 90% |85%  |80% |75% |70%  | 65% |60% |55% | 50%|
 -------------|-------|-------|--------|-------|-------|-------|-------|------|------|------|------|
 $\hat{\beta}_{MLE}$|0.3075 | 0.2259 |0.3481 |0.3944 |0.3677 |0.4167|0.3956|0.4331|0.4565|0.4091|
+Table: MLE at different sparsity rate with  $\beta_{true}=0.2$. 
 
 ####Important Note: 
 There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and $\beta_{true}$. 
-(1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2) Sparsity of $A_{jk}$ will certainly influences the estimate of $\beta$. The less sparsity, the more information will be used, the more accurate the estimate will be.    
+(1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2) Sparsity of $A_{jk}$ will certainly influences the estimate of $\beta$. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large $\bar{\gamma}$), Bayes factor will become Inf.      
 
-####Introducing  $\ell_2$ penalty. 
-The same parameter setting. Sparsity rate is 20%. $\beta_{true}=0.5$. 
-![betaandpenalty](figure/PenaltyBeta.png)
-
-
-With this setting, very large tunning parameter $\lambda>1000$ should be used to get the good estimate of $\beta$.  
+####Parameter setting 2-increasing sample size
+* $\beta_{true}=2$, $\bar{\gamma}=10$
+* all entries of $A_{jk}$ are 1
+* $\alpha=\alpha_0=0.1$, $\beta=1000, \beta_0=2000$
 
 
-```{r main algorithm, echo=T, results="hide", cache=T, eval=F}
+
+N1=N0|10,000 | 50,000 | 100,000|
+--------|-------|--------|-----------------------------------------
+$\widehat{\beta}_{MLE}$ | 2.7810 (0.0362) | 2.4413 (0.0161)| 2.3420 
+Table: MLE averaging across 10 replicates with different sample size 
+
+
+```{r main algorithm, echo=F, results="hide", cache=T, eval=F}
 Ajk=rep(0, (num.gene*m))
 Ajk[sample(length(Ajk), (0.8*length(Ajk)))]=1
 ############## generate beta 
