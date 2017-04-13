@@ -98,7 +98,7 @@ objec.func=function(beta.est) # this is the log likelihood function to be maximi
   lkhd=0
   for (i in 1:num.var)
     #lkhd=lkhd+log(1+BF.var[i]*exp(Ajk.effect[i]*beta.est))-log(1+exp(Ajk.effect[i]*beta.est))
-     lkhd=lkhd+min(exp(709, log(1+BF.var[i]*exp(Ajk.effect[i]*beta.est))-log(1+exp(Ajk.effect[i]*beta.est)))) # avoid overflow
+     lkhd=lkhd+min(exp(709), log(1+BF.var[i]*exp(Ajk.effect[i]*beta.est))-log(1+exp(Ajk.effect[i]*beta.est))) # avoid overflow
   lkhd=lkhd-lambda/2*sum(beta.est^2)
   
   return(lkhd)  
@@ -134,7 +134,7 @@ deriv.objec.func=function(beta.est) # derivative function of parameters
 ################################################
 num.gene=1000
 m=200
-N0=5000000; N1=5000000
+N0=100000; N1=100000
 delta=1
 alpha0 <- 0.1
 beta0 <- 1000
