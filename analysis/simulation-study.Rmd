@@ -50,6 +50,7 @@ $\pi(\beta)$ is the link function between annotations and prior probability and 
 ## Logistic priors  
 ### Case 1: One annotation feature
 #### Paramster settings 1 : 
+* $\delta=1$
 * $N1=N0=5000$
 * number of genes $I=1000$, number of variants per gene $m=200$ before filtering. 
 * $\alpha=\alpha_0=0.1$, $\beta_0=1000, \beta=2000$. 
@@ -91,6 +92,7 @@ There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and 
 (1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2) Sparsity of $A_{jk}$ will certainly influences the estimate of $\beta$. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large $\bar{\gamma}$), Bayes factor will become Inf.      
 
 ####Parameter setting 2-increasing sample size
+* $\delta=1$
 * $\beta_{true}=2$, $\bar{\gamma}=10$
 * all entries of $A_{jk}$ are 1
 * $\alpha=\alpha_0=0.1$, $\beta=1000, \beta_0=2000$
@@ -110,20 +112,27 @@ Use function GLM to estimate $\beta$.
 
 
 ### Case 2: Two Annotation features 
-$K=2$. Set $\beta_1=0.05, \beta_2=2$. Other parameters are the same as in Case 1.  When there are more than 2 groups, $A_{ij}$ must be designed carefully such that all columns (all annotations) have as little overlap as possible. Otherwise, the method have difficulty in distinguishing between them, leading to poor estimate. In estimation below, these two factures have no overlap. 
+$K=2$. Set $\beta_1=0.05, \beta_2=2$. Other parameters are 
+
+* $\delta=1$
+* $\bar{\gamma}=10$
+* $\alpha=\alpha_0=0.1$, $\beta=1000, \beta_0=2000$
+
+When there are more than 2 groups, $A_{ij}$ must be designed carefully such that all columns (all annotations) have as little overlap as possible. Otherwise, the method have difficulty in distinguishing between them, leading to poor estimate. In simulations below, these two factures have no overlap. 
 
 
 
-N1=N0|10,000 | 50,000 | 100,000|
+N1=N0|10,000 | 50,000 | 80,000|
 --------|-------|--------|-----------------------------------------
- $\widehat{\beta_1}_{MLE}$ by Optim | 0.3472 (0.0239) | |  
- $\widehat{\beta_2}_{MLE}$ by Optim | 2.7807 (0.0919) | | 
-$\widehat{\beta_1}_{MLE}$ by GLM | 0.0517  (0.0159)|
-$\widehat{\beta_2}_{MLE}$ by GLM | 1.9952  (0.0177)|
+ $\widehat{\beta_1}_{MLE}$ by Optim | 0.3472 (0.0239) | 0.2287 (0.0252)|0.2371 (0.0193)  
+ $\widehat{\beta_2}_{MLE}$ by Optim | 2.7807 (0.0919) | 2.4239 (0.0211)| 2.3636 (0.0243)
+$\widehat{\beta_1}_{MLE}$ by GLM | 0.0517  (0.0159)| |
+$\widehat{\beta_2}_{MLE}$ by GLM | 1.9952  (0.0177)||
 Table: MLE averaging across 10 replicates with different sample size 
 
 
-use BFGS method. 
+### Case 3:  Many annotation features
+
 
 ## Session information
 
