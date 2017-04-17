@@ -134,13 +134,13 @@ deriv.objec.func=function(beta.est) # derivative function of parameters
 ################################################
 num.gene=1000
 m=200
-N0=100000; N1=100000
+N0=10000; N1=10000
 delta=1
 alpha0 <- 0.1
 beta0 <- 1000
 alpha <- 0.1
 beta <- 2000
-gamma.mean <- 5
+gamma.mean <- 10
 sigma <- 1
 split.ratio=c(0,1)
 num.group=length(split.ratio)-1
@@ -202,23 +202,30 @@ for (rep in 1:max.rep)
 #  for (i in 1:length(beta.range))
 #    log.lkhd[i]=objec.func(beta.range[i])
   
+################################### use GLM 
+  Y=c(NA)
+  for (i in 1:length(all.data))
+    Y=c(Y, all.data[[i]]$Zij)
+  Response=Y[-1]
+  fit <- glm(Response~0+Ajk.effect,family=binomial())
+ all.beta[rep]=fit$coefficients 
+  
 ###################################  
   
-  
-  for (k in 1:length(lambda.range))
-  {
-    cat(k, "is running", "\n")  
-    lambda=lambda.range[k] 
-    beta.est=runif(anno.num, 1,3)
-    theta.est=optim(beta.est, objec.func, deriv.objec.func, method="BFGS", control=list(fnscale=-1))
-    beta.fin.est[k]=theta.est$par
+#  for (k in 1:length(lambda.range))
+#  {
+#    cat(k, "is running", "\n")  
+#    lambda=lambda.range[k] 
+#    beta.est=runif(anno.num, 1,3)
+#    theta.est=optim(beta.est, objec.func, deriv.objec.func, method="BFGS", control=list(fnscale=-1))
+#    beta.fin.est[k]=theta.est$par
 #    theta.est=DEoptim(fn=objec.func.min, lower=rep(-1, anno.num), upper=rep(200, anno.num), control=list(NP=100, itermax=100,trace=FALSE))
 #    beta.fin.est[k,]=theta.est$optim$bestmem
-    error[k]=sum((beta.fin.est[k]-beta.true)^2)
+#    error[k]=sum((beta.fin.est[k]-beta.true)^2)
     
-  }
-  plot(beta.true, ylim=c(-1,1), type="o")
-  lines(beta.fin.est[which.min(error)], ylim=c(-1,1), type="o", col=2)
+#  }
+#  plot(beta.true, ylim=c(-1,1), type="o")
+#  lines(beta.fin.est[which.min(error)], ylim=c(-1,1), type="o", col=2)
   #beta.fin.est
-  all.beta[rep]=beta.fin.est[which.min(error)]
+#  all.beta[rep]=beta.fin.est[which.min(error)]
 } # end of rep 

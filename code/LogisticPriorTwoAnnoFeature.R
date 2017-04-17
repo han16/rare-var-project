@@ -132,8 +132,8 @@ num.group=length(split.ratio)-1
 anno.num=2
 ############  generate feature covariate 
 Ajk=matrix(0, nrow=(num.gene*m), ncol=anno.num) # Ajk are indicator matrix with elelements of being 0, or 1
-Ajk[sample(nrow(Ajk), (0.8*nrow(Ajk))),1]=1
-Ajk[sample(nrow(Ajk), (0.8*nrow(Ajk))),2]=1
+Ajk[sample(nrow(Ajk), (0.9*nrow(Ajk))),1]=1
+Ajk[sample(nrow(Ajk), (0.9*nrow(Ajk))),2]=1
 #Ajk[sample(nrow(Ajk), (0.3*nrow(Ajk))),3]=1
 #Ajk[sample(nrow(Ajk), (0.5*nrow(Ajk))),4]=1
 #for (i in 1:ncol(Ajk))
@@ -154,7 +154,7 @@ beta.true[2]=2
 ############# compute tau: risk of every variant being risk variant
 tau.true=exp(Ajk%*%beta.true)/(1+exp(Ajk%*%beta.true))
 ######################
-max.rep=5
+max.rep=10
 all.beta=matrix(nrow=max.rep, ncol=anno.num)
 for (rep in 1:max.rep)
 {  
@@ -187,21 +187,28 @@ theta.est=list()
 lambda.range=0
 error=numeric()
 beta.fin.est=matrix(nrow=length(lambda.range), ncol=anno.num)
-for (k in 1:length(lambda.range))
-{
-cat(k, "is running", "\n")  
-lambda=lambda.range[k] 
-#lambda=0
-beta.est=runif(anno.num, -1,1)
-theta.est=optim(beta.est, objec.func, deriv.objec.func, method="BFGS", control=list(fnscale=-1))
-beta.fin.est[k,]=theta.est$par
+Y=c(NA)
+for (i in 1:length(all.data))
+  Y=c(Y, all.data[[i]]$Zij)
+Response=Y[-1]
+fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2],family=binomial())
+all.beta[rep,]=fit$coefficients 
+
+
+#for (k in 1:length(lambda.range))
+#{
+#cat(k, "is running", "\n")  
+#lambda=lambda.range[k] 
+#beta.est=runif(anno.num, 0,3)
+#theta.est=optim(beta.est, objec.func, deriv.objec.func, method="BFGS", control=list(fnscale=-1))
+#beta.fin.est[k,]=theta.est$par
 #theta.est=DEoptim(fn=objec.func.min, lower=rep(-1, anno.num), upper=rep(5, anno.num), control=list(NP=100, itermax=100,trace=FALSE))
 #beta.fin.est[k,]=theta.est$optim$bestmem
-error[k]=sum((beta.fin.est[k,]-beta.true)^2)
+#error[k]=sum((beta.fin.est[k,]-beta.true)^2)
 
-}
-plot(beta.true, ylim=c(-1,1), type="o")
-lines(beta.fin.est[which.min(error),], ylim=c(-1,1), type="o", col=2)
+#}
+#plot(beta.true, ylim=c(-1,1), type="o")
+#lines(beta.fin.est[which.min(error),], ylim=c(-1,1), type="o", col=2)
 #beta.fin.est
-all.beta[rep,]=beta.fin.est[which.min(error),]
+#all.beta[rep,]=beta.fin.est[which.min(error),]
 } # end of rep 

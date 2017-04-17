@@ -44,128 +44,10 @@ Notations:
 
 
 $\pi(\beta)$ is the link function between annotations and prior probability and the interest is in estimating $\beta$.  
-```{r data generation, echo=F}
-gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, model, num.group, split.ratio)
-{
-  pheno=c(rep(0,N0), rep(1,N1))  # filtering step
-  q <- rbeta(m, alpha0, beta0)
-  x1x0=matrix(nrow=(N0+N1), ncol=m)
-  for (i in 1:m)  # generate the data with certain variants full of zeros
-    x1x0[,i]=rpois((N0+N1), q[i])
-  filter.x1x0=x1x0[,!apply(x1x0==0,2,all)]  # filter variants with 0 counts in both cases and controls since these variants are noninformative
-  mm=ncol(filter.x1x0)
-  var.index=which(colSums(x1x0!=0)>0) # get the variant index in the original data before filtering
-  
-  ##################
-  #mm=m
-  gamma <- rep(1,mm)
-  Zij=rep(0,mm)
-  qq=rbeta(mm, alpha0, beta0)
-  if (model==1)
-  {
-  #  for (k in 1:num.group)
-  #  {
-  #    from=split.ratio[k]*mm+1; to=split.ratio[k+1]*mm
-  #    Zij[from:to]=rbinom((to-from+1), 1, pi[k])
-  #  }
-    for (i in 1:mm)
-      Zij[i]=rbinom(1,1,pi[var.index[mm]])
-    
-    qq[Zij==1] <- rbeta(sum(Zij==1), alpha, beta)
-    gamma[Zij==1] <- rgamma(sum(Zij==1), gamma.mean*sigma, sigma)
-  }
-  
-  x <- array(0, dim=c(length(pheno), mm))
-  for (j in 1:mm)
-  {
-    x1=rbinom(1, sum(filter.x1x0[,j]), N1*gamma[j]/(gamma[j]*N1+N0))
-    #x1=sum(filter.x1x0[,j])-x0
-    x0=sum(filter.x1x0[,j])-x1
-    x[sample.int(N0,x0),j]=1
-    x[N0+sample.int(N1,x1),j]=1
-  }
-  x=as.matrix(x)
-  return (list(geno=x,pheno=pheno,q=q,gamma=gamma, Zij=Zij, var.index=var.index))
-  
-}
-```
 
-```{r calculate BF of single variant by integration, echo=F}
-intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
-{
-  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
-  return(ff)
-}
-# calculate the bayes factor of a single variant via integration
-BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
-{
-  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
-  
-  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma) 
-  BF.var <- marglik1.CC/marglik0.CC
-  
-  return(BF.var)
-}
-```
+## Disjoint group priors 
 
-```{r objective functions, echo=F}
-objec.func=function(beta.est) # this is the log likelihood function to be maximized
-{
-  lkhd=0
-  for (i in 1:num.var)
-    lkhd=lkhd+log(1+BF.var[i]*exp(Ajk.effect[i]*beta.est))-log(1+exp(Ajk.effect[i]*beta.est))
-  
-  lkhd=lkhd-lambda/2*sum(beta.est^2)
-  
-  return(lkhd)  
-}
-
-objec.func.min=function(beta.est) # this is the log likelihood function to be maximized
-{
-  lkhd=0
-  for (i in 1:num.var)
-    lkhd=lkhd-log(1+BF.var[i]*exp(Ajk.effect[i]*beta.est))+log(1+exp(Ajk.effect[i]*beta.est))
-  
-  lkhd=lkhd+lambda/2*sum(beta.est^2)
-  
-  return(lkhd)  
-}
-
-deriv.objec.func=function(beta.est)
-{
-  par.beta=numeric(anno.num)
-  for (k in 1:anno.num) # k: annotattion index
-  {
-    par.beta.k=0
-    for (j in 1:num.var) # j: variant index
-    {
-      delta.j=exp(Ajk.effect[j]*beta.est)
-      par.beta.k=par.beta.k+Ajk.effect[j]*delta.j*(BF.var[j]/(1+delta.j*BF.var[j])-1/(1+delta.j))
-    }  
-    par.beta[k]=par.beta.k-lambda*beta.est[k] # k th element of first derivative
-  }
-  
-  return(par.beta)
-}
-```
-
-```{r parameter settings, echo=F}
-num.gene=1000
-m=200
-N0=5000; N1=5000
-delta=1
-alpha0 <- 0.1
-beta0 <- 1000
-alpha <- 0.1
-beta <- 2000
-gamma.mean <- 10
-sigma <- 1
-split.ratio=c(0,1)
-num.group=length(split.ratio)-1
-anno.num=1
-```
-
-## Parameter estimation 
+## Logistic priors  
 ### Case 1: One annotation feature
 #### Paramster settings 1 : 
 * $N1=N0=5000$
@@ -217,77 +99,29 @@ There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and 
 
 N1=N0|10,000 | 50,000 | 100,000|
 --------|-------|--------|-----------------------------------------
-$\widehat{\beta}_{MLE}$ | 2.7810 (0.0362) | 2.4413 (0.0161)| 2.3420 
+ $\widehat{\beta}_{MLE}$ by Optim | 2.7810 (0.0362) | 2.4413 (0.0161)| 2.3420 
+$\widehat{\beta}_{MLE}$ by GLM | 2.0016  (0.0126)|
 Table: MLE averaging across 10 replicates with different sample size 
 
 
-```{r main algorithm, echo=F, results="hide", cache=T, eval=F}
-Ajk=rep(0, (num.gene*m))
-Ajk[sample(length(Ajk), (0.8*length(Ajk)))]=1
-############## generate beta 
-beta.true=numeric(anno.num)
-beta.true[1]=0.5
-############# compute tau: risk of every variant being risk variant
-tau.true=exp(Ajk*beta.true)/(1+exp(Ajk*beta.true))
-Ui=rbinom(num.gene, 1, delta)
-  all.data=list(); var.orig.index=numeric(); var.orig.index[1]=NA
-  for (i in 1:num.gene)
-  {
-    data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=tau.true[((i-1)*m+1):(i*m)], Ui[i], num.group, split.ratio)
-    all.data[[i]]=data
-    var.orig.index=c(var.orig.index, (i-1)*m+data$var.index)
-  }
-  var.orig.index=var.orig.index[-1]
-  Ajk.effect=Ajk[var.orig.index]
-  ################### calculate bayes factor for every variant 
-  k=0; BF.var=numeric(); var.count=matrix(nrow=(m*num.gene), ncol=2)
-  for (i in 1:length(all.data))
-  {
-    for (j in 1:ncol(all.data[[i]]$geno))
-    {
-      k=k+1
-      BF.var[k]=BF.var.inte(sum(all.data[[i]]$geno[all.data[[i]]$pheno==1,j]), sum(all.data[[i]]$geno[all.data[[i]]$pheno==0,j]), bar.gamma=6, sig=sigma, N1, N0)
-      var.count[k,]=c(sum(all.data[[i]]$geno[all.data[[i]]$pheno==1,j]),sum(all.data[[i]]$geno[all.data[[i]]$pheno==0,j]) )
-    }
-  } # end of i
- var.count=var.count[-((k+1):nrow(var.count)),]
- ###############################
- ################################
-  num.var=length(BF.var)
-  lambda.range=rep(0, 50)
-  error=numeric()
-  beta.fin.est=numeric(length(lambda.range))
-###################################
-  lambda=0
-  beta.range=seq(0, 100, by=10)
-  log.lkhd=numeric(length(beta.range))
-  for (i in 1:length(beta.range))
-  log.lkhd[i]=objec.func(beta.range[i])
-  plot(beta.range, log.lkhd, type="o", xlab=expression(beta), ylab="log(likelihood)")
-  abline(v=beta.true, col=2)
-###################################  
-  
-  
-  for (k in 1:length(lambda.range))
-  {
-    cat(k, "is running", "\n")  
-    lambda=lambda.range[k] 
-    beta.est=runif(anno.num, -1,1)
-    theta.est=optim(beta.est, objec.func, deriv.objec.func, method="BFGS", control=list(fnscale=-1))
-    beta.fin.est[k]=theta.est$par
-#    theta.est=DEoptim(fn=objec.func.min, lower=rep(-1, anno.num), upper=rep(200, anno.num), control=list(NP=100, itermax=100,trace=FALSE))
-#    beta.fin.est[k,]=theta.est$optim$bestmem
-    error[k]=sum((beta.fin.est[k]-beta.true)^2)
-    
-  }
-```
+To use GLM, $Z_{ij}$ is treated as response (but in practice, $Z_{ij}$ is unknown) and each column of $A_{jk}$ is a predictor, but without intercept.  
 
+Use function GLM to estimate $\beta$. 
 
 
 ### Case 2: Two Annotation features 
-$K=2$. Set $\beta_1=0.05, \beta_2=0.7$. Other parameters are the same as in Case 1. 
+$K=2$. Set $\beta_1=0.05, \beta_2=2$. Other parameters are the same as in Case 1.  When there are more than 2 groups, $A_{ij}$ must be designed carefully such that all columns (all annotations) have as little overlap as possible. Otherwise, the method have difficulty in distinguishing between them, leading to poor estimate. In estimation below, these two factures have no overlap. 
 
-#### MLE of $\beta$. 
+
+
+N1=N0|10,000 | 50,000 | 100,000|
+--------|-------|--------|-----------------------------------------
+ $\widehat{\beta_1}_{MLE}$ by Optim | 0.3472 (0.0239) | |  
+ $\widehat{\beta_2}_{MLE}$ by Optim | 2.7807 (0.0919) | | 
+$\widehat{\beta_1}_{MLE}$ by GLM | 0.0517  (0.0159)|
+$\widehat{\beta_2}_{MLE}$ by GLM | 1.9952  (0.0177)|
+Table: MLE averaging across 10 replicates with different sample size 
+
 
 use BFGS method. 
 

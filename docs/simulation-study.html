@@ -311,8 +311,8 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-04-12 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> 9bebdfa</p>
+<p><strong>Last updated:</strong> 2017-04-17 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> b90650d</p>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -339,8 +339,11 @@ shared across the workflowr files. -->
 </ul>
 <p><span class="math inline">\(\pi(\beta)\)</span> is the link function between annotations and prior probability and the interest is in estimating <span class="math inline">\(\beta\)</span>.</p>
 </div>
-<div id="parameter-estimation" class="section level2">
-<h2>Parameter estimation</h2>
+<div id="disjoint-group-priors" class="section level2">
+<h2>Disjoint group priors</h2>
+</div>
+<div id="logistic-priors" class="section level2">
+<h2>Logistic priors</h2>
 <div id="case-1-one-annotation-feature" class="section level3">
 <h3>Case 1: One annotation feature</h3>
 <div id="paramster-settings-1" class="section level4">
@@ -483,22 +486,61 @@ shared across the workflowr files. -->
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span></td>
+<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span> by Optim</td>
 <td>2.7810 (0.0362)</td>
 <td>2.4413 (0.0161)</td>
 <td>2.3420</td>
 </tr>
+<tr class="even">
+<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span> by GLM</td>
+<td>2.0016 (0.0126)</td>
+<td></td>
+</tr>
 </tbody>
 </table>
+<p>To use GLM, <span class="math inline">\(Z_{ij}\)</span> is treated as response (but in practice, <span class="math inline">\(Z_{ij}\)</span> is unknown) and each column of <span class="math inline">\(A_{jk}\)</span> is a predictor, but without intercept.</p>
+<p>Use function GLM to estimate <span class="math inline">\(\beta\)</span>.</p>
 </div>
 </div>
 <div id="case-2-two-annotation-features" class="section level3">
 <h3>Case 2: Two Annotation features</h3>
-<p><span class="math inline">\(K=2\)</span>. Set <span class="math inline">\(\beta_1=0.05, \beta_2=0.7\)</span>. Other parameters are the same as in Case 1.</p>
-<div id="mle-of-beta." class="section level4">
-<h4>MLE of <span class="math inline">\(\beta\)</span>.</h4>
+<p><span class="math inline">\(K=2\)</span>. Set <span class="math inline">\(\beta_1=0.05, \beta_2=2\)</span>. Other parameters are the same as in Case 1. When there are more than 2 groups, <span class="math inline">\(A_{ij}\)</span> must be designed carefully such that all columns (all annotations) have as little overlap as possible. Otherwise, the method have difficulty in distinguishing between them, leading to poor estimate. In estimation below, these two factures have no overlap.</p>
+<table>
+<caption>MLE averaging across 10 replicates with different sample size</caption>
+<thead>
+<tr class="header">
+<th>N1=N0</th>
+<th>10,000</th>
+<th>50,000</th>
+<th>100,000</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\widehat{\beta_1}_{MLE}\)</span> by Optim</td>
+<td>0.3472 (0.0239)</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\widehat{\beta_2}_{MLE}\)</span> by Optim</td>
+<td>2.7807 (0.0919)</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\widehat{\beta_1}_{MLE}\)</span> by GLM</td>
+<td>0.0517 (0.0159)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\widehat{\beta_2}_{MLE}\)</span> by GLM</td>
+<td>1.9952 (0.0177)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <p>use BFGS method.</p>
-</div>
 </div>
 </div>
 <div id="session-information" class="section level2">
