@@ -311,8 +311,8 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-04-17 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> f89b3a8</p>
+<p><strong>Last updated:</strong> 2017-05-09 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> 6191b15</p>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -466,7 +466,7 @@ shared across the workflowr files. -->
 </div>
 <div id="important-note" class="section level4">
 <h4>Important Note:</h4>
-<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large <span class="math inline">\(\bar{\gamma}\)</span>), Bayes factor will become Inf.</p>
+<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large <span class="math inline">\(\bar{\gamma}\)</span>), Bayes factor will become overflow of being Inf.</p>
 </div>
 <div id="parameter-setting-2-increasing-sample-size" class="section level4">
 <h4>Parameter setting 2-increasing sample size</h4>

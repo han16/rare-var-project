@@ -89,7 +89,7 @@ Table: MLE at different sparsity rate with  $\beta_{true}=0.2$.
 
 ####Important Note: 
 There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and $\beta_{true}$. 
-(1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2) Sparsity of $A_{jk}$ will certainly influences the estimate of $\beta$. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large $\bar{\gamma}$), Bayes factor will become Inf.      
+(1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2) Sparsity of $A_{jk}$ will certainly influences the estimate of $\beta$. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large $\bar{\gamma}$), Bayes factor will become overflow of being Inf.      
 
 ####Parameter setting 2-increasing sample size
 * $\delta=1$
