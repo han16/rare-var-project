@@ -119,7 +119,7 @@ deriv.objec.func=function(beta.est)
 ################################################
 num.gene=1000
 m=200
-N0=80000; N1=80000
+N0=50000; N1=50000
 delta=1
 alpha0 <- 0.1
 beta0 <- 1000
@@ -133,7 +133,7 @@ anno.num=10
 ############  generate feature covariate 
 Ajk=matrix(0, nrow=(num.gene*m), ncol=anno.num) # Ajk are indicator matrix with elelements of being 0, or 1
 for (i in 1:ncol(Ajk))
-  Ajk[sample(nrow(Ajk), (0.1*i*nrow(Ajk))),i]
+  Ajk[sample(nrow(Ajk), (0.5*nrow(Ajk))),i]=1
 ############## generate beta 
 beta.true=numeric(anno.num)
 beta.true[1]=0.05
@@ -143,7 +143,7 @@ beta.true[4:anno.num]=runif(anno.num-4+1)
 ############# compute tau: risk of every variant being risk variant
 tau.true=exp(Ajk%*%beta.true)/(1+exp(Ajk%*%beta.true))
 ######################
-max.rep=10
+max.rep=1
 all.beta=matrix(nrow=max.rep, ncol=anno.num)
 for (rep in 1:max.rep)
 {  
@@ -176,13 +176,15 @@ for (rep in 1:max.rep)
   lambda.range=0
   error=numeric()
   beta.fin.est=matrix(nrow=length(lambda.range), ncol=anno.num)
-  #Y=c(NA)
-  #for (i in 1:length(all.data))
-  #  Y=c(Y, all.data[[i]]$Zij)
-  #Response=Y[-1]
-  #fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2],family=binomial())
-  #all.beta[rep,]=fit$coefficients 
-  
+  ####################### use glm to estimate beta
+  Y=c(NA)
+  for (i in 1:length(all.data))
+    Y=c(Y, all.data[[i]]$Zij)
+  Response=Y[-1]
+  fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2]+Ajk.effect[,3]+Ajk.effect[,4]+Ajk.effect[,5]+Ajk.effect[,6]+Ajk.effect[,7]
+             +Ajk.effect[,8]+Ajk.effect[,9]+Ajk.effect[,10],family=binomial())
+  all.beta[rep,]=fit$coefficients 
+  #######################
   
   for (k in 1:length(lambda.range))
   {
@@ -202,12 +204,12 @@ for (rep in 1:max.rep)
   all.beta[rep,]=beta.fin.est[which.min(error),]
 } # end of rep 
 ################################
-max.num=100
-count=matrix(nrow=max.num, ncol=2)
-count[,1]=seq(1,max.num); count[,2]=15*count[,1]
-BF=numeric()
-for (i in 1:nrow(count))
-  BF[i]=BF.var.inte(count[i,2], count[i,1], 6, 1, 100000, 100000)
-par(mfrow=c(1,2))
-plot(BF[1:50])
-plot(BF[51:100])
+#max.num=100
+#count=matrix(nrow=max.num, ncol=2)
+#count[,1]=seq(1,max.num); count[,2]=15*count[,1]
+#BF=numeric()
+#for (i in 1:nrow(count))
+#  BF[i]=BF.var.inte(count[i,2], count[i,1], 6, 1, 100000, 100000)
+#par(mfrow=c(1,2))
+#plot(BF[1:50])
+#plot(BF[51:100])

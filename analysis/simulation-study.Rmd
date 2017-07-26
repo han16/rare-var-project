@@ -47,9 +47,13 @@ $\pi(\beta)$ is the link function between annotations and prior probability and 
 
 ## Disjoint group priors 
 
+### Case 1: All genes are risk genes
+
+
 ## Logistic priors  
 ### Case 1: One annotation feature
 #### Paramster settings 1 : 
+
 * $\delta=1$
 * $N1=N0=5000$
 * number of genes $I=1000$, number of variants per gene $m=200$ before filtering. 

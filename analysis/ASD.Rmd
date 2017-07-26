@@ -1,5 +1,5 @@
 ---
-title: "ASD Exome Seq data"
+title: "ASD WES data"
 author: "Shengtong Han"
 date: YYYY-MM-DD
 output: html_document
@@ -31,37 +31,51 @@ library(knitr)
 ```
 
 ```{r defined function, echo=F, results='hide', cache=T}
-test.func=function(var.data, N1, N0) # given variant data and sample size, perform the burden analysis
+test.func=function(evid, Data, N1, N0) # given evid, and sample size, perform the burden analysis
 {
-  count=c(sum(var.data$No.case), sum(var.data$No.contr))
-  Time=c(N1, N0)
-  pois.test=poisson.test(count, Time, r=1, alternative="greater")
-  return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rate.case=count[1]/N1, rate.contr=count[2]/N0))
+evid.data=Data[Data$ID %in% evid,]
+count=c(sum(evid.data$No.case), sum(evid.data$No.contr))
+Time=c(N1, N0)
+pois.test=poisson.test(count, Time, r=1, alternative="greater")
+return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rate.case=count[1]/N1, rate.contr=count[2]/N0))
 }
 ```
 
-
 <!-- Add your analysis here -->
 ## Quality Control (QC)
+N1=N0=4315 trios. 
 
 ### Annotated data quality. 
 
-```{r check missing values for every annotation, echo=F, results='hide', cache=T}
-Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+```{r read into data, echo=F, results='hide', cache=T}
+All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+```
+
+```{r set paramters and modifying the data, echo=T, results='hide'}
 N1=4315; N0=4315
-Anno.Data[Anno.Data =="."] <- NA
-nosyn.data=Anno.Data[Anno.Data$Annotation!="synonymous SNV",]
-nonsyn.data=Anno.Data[Anno.Data$Annotation=="nonsynonymous SNV",]
-Anno.fea=paste(rep("ratio_valid_value_", ncol(Anno.Data)), colnames(Anno.Data), sep=""); Anno.fea[1:4]=c("#{Variants}", "#{Gene}", "rate.ca", "rate.co")
+All.Anno.Data[All.Anno.Data =="."] <- NA
+All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<1e-2 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
+```
+
+* sample size is of 4315 
+* set ExacAF of NA to be 0
+* use $10^{-2}$ as AF cutoff and exclude synonymous SNV
+
+```{r check missing values for every annotation, echo=F, results='hide'}
+nosyn.data=All.Anno.Data[All.Anno.Data$Annotation!="synonymous SNV",]
+nonsyn.data=All.Anno.Data[All.Anno.Data$Annotation=="nonsynonymous SNV",]
+Anno.fea=paste(rep("ratio_valid_value_", ncol(All.Anno.Data)), colnames(All.Anno.Data), sep=""); Anno.fea[1:4]=c("#{Variants}", "#{Gene}", "rate.ca", "rate.co")
 ratio.data=numeric(); ratio.nosyn=numeric(); ratio.nonsyn=numeric()
 for (i in 5:length(Anno.fea))
 {
-  ratio.data[i]=1-sum(is.na(Anno.Data[,i]))/nrow(Anno.Data)
+  ratio.data[i]=1-sum(is.na(All.Anno.Data[,i]))/nrow(All.Anno.Data)
   ratio.nosyn[i]=1-sum(is.na(nosyn.data[,i]))/nrow(nosyn.data)
   ratio.nonsyn[i]=1-sum(is.na(nonsyn.data[,i]))/nrow(nonsyn.data)
 }  
-ratio.data[1]=nrow(Anno.Data); ratio.data[2]=length(unique(Anno.Data$Gene))
-ratio.data[3]=sum(Anno.Data$No.case)/N1; ratio.data[4]=sum(Anno.Data$No.contr)/N0
+ratio.data[1]=nrow(All.Anno.Data); ratio.data[2]=length(unique(All.Anno.Data$Gene))
+ratio.data[3]=sum(All.Anno.Data$No.case)/N1; ratio.data[4]=sum(All.Anno.Data$No.contr)/N0
 
 ratio.nosyn[1]=nrow(nosyn.data); ratio.nosyn[2]=length(unique(nosyn.data$Gene))
 ratio.nosyn[3]=sum(nosyn.data$No.case)/N1; ratio.nosyn[4]=sum(nosyn.data$No.contr)/N0
@@ -82,31 +96,215 @@ The table summaries the ratio of non-missing values in every annotation feature 
 * "Annotation" row means nonsynonymous SNV, intronic, etc. 
 
 
-### variant rate at different AF cutoffs
+### Variant rate at different AF cutoffs
 ```{r, echo=F, results='hide'}
 ExacAF.cutoff=c(1e-2, 1e-3, 1e-4, 1e-5)
 AF.summary=matrix(nrow=length(ExacAF.cutoff)+2, ncol=5)
 rownames(AF.summary)=c("NULL", paste("MAF<", ExacAF.cutoff, sep=""), "private"); rownames(AF.summary)[1]=""
 colnames(AF.summary)=c("No.rows", "No.var.ca", "No.var.co",  "rate.ca", "rate.co")
-AF.summary[1,]=c(nrow(Anno.Data),sum(Anno.Data$No.case),sum(Anno.Data$No.contr), sum(Anno.Data$No.case)/N1, sum(Anno.Data$No.contr)/N0)
+AF.summary[1,]=c(nrow(All.Anno.Data),sum(All.Anno.Data$No.case),sum(All.Anno.Data$No.contr), sum(All.Anno.Data$No.case)/N1, sum(All.Anno.Data$No.contr)/N0)
 
 for (i in 1:length(ExacAF.cutoff))
 {
 cat(i, "is running", "\n") 
-select.data=Anno.Data[which(Anno.Data$ExacAF<ExacAF.cutoff[i]),]  
+select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<ExacAF.cutoff[i]),]  
 AF.summary[i+1,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 }
-select.data=Anno.Data[c(which(is.na(Anno.Data$ExacAF)==T), which(Anno.Data$ExacAF==0)),]
+select.data=All.Anno.Data[c(which(is.na(All.Anno.Data$ExacAF)==T), which(All.Anno.Data$ExacAF==0)),]
 AF.summary[(length(ExacAF.cutoff)+2),]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 ```
+"private" variants is defined as the variants whose ExAC AF is NA or 0. 
 
 ```{r summary statistics, echo=F}
 kable(AF.summary, caption="Rate of variants in cases and controls at varying AF cutoffs")
 ```
 
+
+### Burden of synonymous mutations 
+Test: one side ("greater") poisson test to see if the rate in cases is signifcantly greater than that in controls. 
+
+```{r quality control, echo=FALSE, results='hide'}
+com.result=matrix(nrow=length(ExacAF.cutoff)+2, ncol=4)
+colnames(com.result)=c("OR","p.value", "rate.ca", "rate.co")
+rownames(com.result)=c("",paste("MAF<",ExacAF.cutoff, sep=""), "private")
+syn.data=All.Anno.Data[which(All.Anno.Data$Annotation=="synonymous SNV"), ]
+
+test=test.func(syn.data$ID, syn.data, N1, N0)
+com.result[1,]=c(test$odds.ratio,test$p.value,test$rate.case,test$rate.contr)
+for (i in 1:length(ExacAF.cutoff)) {
+  cat(i," is running", "\n")
+ cutoff.syn.data=syn.data[which(syn.data$ExacAF<ExacAF.cutoff[i]),]
+ test=test.func(cutoff.syn.data$ID, cutoff.syn.data, N1, N0)
+ com.result[i+1,]=c(test$odds.ratio,test$p.value,test$rate.case,test$rate.contr)
+}  # end of i 
+cutoff.syn.data=syn.data[c(which(is.na(syn.data$ExacAF)==T), which(syn.data$ExacAF==0)),]
+test=test.func(cutoff.syn.data$ID, cutoff.syn.data, N1, N0)
+com.result[length(ExacAF.cutoff)+2,]=c(test$odds.ratio,test$p.value,test$rate.case,test$rate.contr)
+```
+
+```{r print the table, echo=F}
+kable(com.result, caption = "Burden analysis of synonymous mutations at verying AF cutoffs")
+```
+
 ## Variant level analysis
+
+### single variant 
+
+
+```{r define annotations, results='hide', echo=FALSE, include=F, error=F}
+var.fea=c("MAF<1e-2", "MAF<1e-3","MAF<1e-4", "Prby Damaging", "Psbl Damaging", "SIFT<0.05", "CADD top10%", "BrainExp top10%", "Consensus", "LoF", "Private"); max.vart=length(var.fea)
+var.evid=list()
+var.evid[[1]]=as.character(Anno.Data$ID)
+var.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$ExacAF<1e-3)])
+var.evid[[3]]=as.character(Anno.Data$ID[which(Anno.Data$ExacAF<1e-4)])
+var.evid[[4]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))>=0.957 )]) # probably damaging >=0.957
+var.evid[[5]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))<=0.956 & as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))>=0.453)]) # possibly damaging
+var.evid[[6]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$SIFT.score))<0.05 )]) # deleterious SIFT<0.05
+CADD.cutoff=quantile(as.numeric(as.character(Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
+var.evid[[7]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$CADD.raw))>CADD.cutoff)]) # CADD top 10% 
+BEE.cutoff=quantile(as.numeric(Anno.Data$Exon.Brain.Exp), prob=0.9, na.rm=TRUE)
+var.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Exon.Brain.Exp>BEE.cutoff)]) # Brain expression exon top 10%
+var.evid[[9]]=union(var.evid[[4]], var.evid[[6]]) # consensus
+LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+var.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
+var.evid[[11]]=union(as.character(All.Anno.Data$ID[which(All.Anno.Data$ExacAF==0)]), as.character(All.Anno.Data$ID[which(is.na(All.Anno.Data$ExacAF)==T)]))  
+summy=matrix(nrow=max.vart, ncol=4)
+colnames(summy)=c("OR", "p.value", "rate.ca", "rate.co")
+rownames(summy)=var.fea
+for (vart in 1:max.vart)
+{
+  cat(vart, "is running", "\n")
+  pois.test=test.func(var.evid[[vart]], var.data, N1, N0)
+  summy[vart,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+}
+```
+
+```{r, echo=T}
+kable(summy, caption="Burden analysis of single variant features")
+```
+
+Test: use two sample one side poisson test ("greater")
+
+* probably damaging:Polyphen2.HDIV.score >=0.957
+* possibly damaging: <0.957 & >=0.453; 
+* consensus: "Prby Damaging", or  "SIFT<0.05", or   "CADD top10%" (take union)
+* LoF:stopgain+ frameshift substitution+splicing+stoploss (take union)
+
+### LoF in different gene set 
+
+
+
+
+
 ## Exon level analysis
+```{r burden analysis-exon level, echo=FALSE, include=F}
+exon.cutoff=c(0.9, 0.8, 0.7, 0.6, 0.5)
+exon.fea=c(paste("ExonTop%", exon.cutoff*100, sep=""), "CriticalExon")
+exon.summ=matrix(nrow=(1+length(exon.cutoff)), ncol=4)
+evid.exon=list()
+colnames(exon.summ)=c("OR", "p.value", "rate.ca", "rate.co")
+rownames(exon.summ)=c(paste("Top%", exon.cutoff*100, sep=""), "critical exon")
+for (i in 1:length(exon.cutoff))
+{
+  threshold=quantile(Anno.Data$Exon.Exac.Cons, prob=exon.cutoff[i], na.rm=T)
+  evid.exon[[i]]=Anno.Data$ID[which(Anno.Data$Exon.Exac.Cons>threshold)]
+  cat(i, "is running", "\n")
+  pois.test=test.func(evid.exon[[i]], var.data, N1, N0)
+  exon.summ[i,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+}
+threshold=quantile(Anno.Data$Exon.Exac.Cons, prob=0.75, na.rm=T)
+evid.exon[[1+length(exon.cutoff)]]=Anno.Data$ID[which( Anno.Data$Exon.Exac.Cons>threshold)]
+exon.thrshd=quantile(Anno.Data$Exon.Brain.Exp, prob=0.75, na.rm=T)
+expre.exon=Anno.Data$ID[which( Anno.Data$Exon.Brain.Exp>exon.thrshd)]
+critical.exon=union(evid.exon[[1+length(exon.cutoff)]],expre.exon)
+pois.test=test.func(critical.exon, var.data, N1, N0)
+exon.summ[(1+length(exon.cutoff)),]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+```
+Test:  use two sample one side poisson test
+
+* high values means more constraint
+* critical exon=brian expression exon top 25%+exon constraint score top 25%
+
+
+```{r }
+kable(exon.summ, caption="Burden analysis of exons")
+```
+
 ## Gene level analysis
+```{r burdern analysis-gene level, results='hide', echo=F, cache=T}
+GeneDB=src_sqlite(path="D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\gene.list.db", create=F)
+gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
+gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
+gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
+gene_cate4=data.frame(collect(tbl(GeneDB, "SFARI_cate4_gene")))
+gene_cate5=data.frame(collect(tbl(GeneDB, "SFARI_cate5_gene")))
+gene_cate6=data.frame(collect(tbl(GeneDB, "SFARI_cate6_gene")))
+gene_cateS=data.frame(collect(tbl(GeneDB, "SFARI_cateS_gene")))
+IDGene=data.frame(collect(tbl(GeneDB, "Pinto14AJHG_IDgene")))
+TADAGene=data.frame(collect(tbl(GeneDB, "TADAGenelist")))
+Qlessthan5percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.05]
+Qlessthan20percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.2]
+Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
+Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
+Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
+Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
+purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
+ASD.gene=data.frame(collect(tbl(GeneDB, "AutismKB_gene")))
+constraint.gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
+RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
+RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene 
+haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))
+gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
+gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
+gene.summy=matrix(nrow=max.gene+1, ncol=4)
+gene.evid=list(); var.index=1
+gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID )])
+gene.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate2$GeneID )])
+gene.evid[[3]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate3$GeneID )])
+gene.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate4$GeneID )])
+gene.evid[[5]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate5$GeneID )])
+gene.evid[[6]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate6$GeneID )])
+gene.evid[[7]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cateS$GeneID )])
+gene.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan5percentgene )])
+gene.evid[[9]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan20percentgene )])
+gene.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan30percentgene )])
+gene.evid[[11]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan40percentgene)])
+gene.evid[[12]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan50percentgene )])
+gene.evid[[13]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlargerthan90percentgene )])
+gene.evid[[14]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% IDGene$GeneID )])
+high.conf=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
+mod.conf=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
+gene.evid[[15]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% high.conf)])
+gene.evid[[16]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% mod.conf )])
+psd.gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
+FMRP.gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
+gene.evid[[17]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% psd.gene )])
+gene.evid[[18]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% FMRP.gene )])
+gene.evid[[19]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% ASD.gene$GeneID )])
+gene.evid[[20]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% constraint.gene )])
+gene.evid[[21]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% RVIS.gene )])
+gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.gene$GeneID )])
+gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol )])
+olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
+gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID )])
+sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
+gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene )])
+
+colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
+rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
+for (gene in 1:(max.gene+1))
+{
+  cat(gene, "is running", "\n")
+  pois.test=test.func(gene.evid[[gene]], var.data, N1, N0)
+  gene.summy[gene,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+}
+
+```
+**Gene level: two sample one side ("greater") test;  high confidence gene: q<0.1, SFARI cate1&2; Moder confi: 0.3>q>0.1 SFARI cat3 & S**
+```{r gene level, }
+kable(gene.summy, caption="Burden analysis of gene set")
+```
+
 ## Combined feature analysis
 
 
