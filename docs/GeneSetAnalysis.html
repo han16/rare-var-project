@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Shengtong Han" />
+
+
+<title>Gene Set Analysis</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">rare-var-project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://han16.github.io/rare-var-project/">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Gene Set Analysis</h1>
+<h4 class="author"><em>Shengtong Han</em></h4>
+<h4 class="date"><em>YYYY-MM-DD</em></h4>
+
+</div>
+
+
+<!-- The file analysis/chunks.R contains chunks that define default settings
+shared across the workflowr files. -->
+<!-- Update knitr chunk options -->
+<!-- Insert the date the file was last updated -->
+<p><strong>Last updated:</strong> 2017-08-08</p>
+<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed -->
+<p><strong>Code version:</strong> 3cd68de</p>
+<!-- Add your analysis here -->
+<pre class="r"><code>N1=4315; N0=4315
+All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
+All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF&lt;0.05 &amp; All.Anno.Data$Annotation!=&quot;synonymous SNV&quot;),] # use AF cutoff and exclude synonumous SNV
+var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)</code></pre>
+<div id="simple-burden-test" class="section level2">
+<h2>Simple burden test</h2>
+<ul>
+<li>Two sample one side (“greater”) test</li>
+<li>high confidence gene: q&lt;0.1, SFARI cate1&amp;2</li>
+<li>Moder confi: 0.3&gt;q&gt;0.1 SFARI cat3 &amp; S</li>
+</ul>
+<table>
+<caption>Burden analysis of gene set</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">OR</th>
+<th align="right">p.value</th>
+<th align="right">rate.ca</th>
+<th align="right">rate.co</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cate1</td>
+<td align="right">0.9976341</td>
+<td align="right">0.5316724</td>
+<td align="right">0.2931634</td>
+<td align="right">0.2938586</td>
+</tr>
+<tr class="even">
+<td>cate2</td>
+<td align="right">0.9934686</td>
+<td align="right">0.6231251</td>
+<td align="right">0.9870220</td>
+<td align="right">0.9935110</td>
+</tr>
+<tr class="odd">
+<td>cate3</td>
+<td align="right">0.9976905</td>
+<td align="right">0.5675548</td>
+<td align="right">2.3026651</td>
+<td align="right">2.3079954</td>
+</tr>
+<tr class="even">
+<td>cate4</td>
+<td align="right">1.0008482</td>
+<td align="right">0.4606364</td>
+<td align="right">6.8361530</td>
+<td align="right">6.8303592</td>
+</tr>
+<tr class="odd">
+<td>cate5</td>
+<td align="right">1.0023832</td>
+<td align="right">0.4450279</td>
+<td align="right">1.7545771</td>
+<td align="right">1.7504056</td>
+</tr>
+<tr class="even">
+<td>cate6</td>
+<td align="right">0.9479090</td>
+<td align="right">0.9188497</td>
+<td align="right">0.2994206</td>
+<td align="right">0.3158749</td>
+</tr>
+<tr class="odd">
+<td>cateS</td>
+<td align="right">0.9940770</td>
+<td align="right">0.6500498</td>
+<td align="right">1.8669757</td>
+<td align="right">1.8780997</td>
+</tr>
+<tr class="even">
+<td>TADAq&lt;5%</td>
+<td align="right">1.0420070</td>
+<td align="right">0.0698689</td>
+<td align="right">0.6208575</td>
+<td align="right">0.5958285</td>
+</tr>
+<tr class="odd">
+<td>TADAq&lt;20%</td>
+<td align="right">1.0066310</td>
+<td align="right">0.3421668</td>
+<td align="right">1.8294322</td>
+<td align="right">1.8173812</td>
+</tr>
+<tr class="even">
+<td>TADAq&lt;30%</td>
+<td align="right">1.0043203</td>
+<td align="right">0.3618086</td>
+<td align="right">3.2324450</td>
+<td align="right">3.2185400</td>
+</tr>
+<tr class="odd">
+<td>TADAq&lt;40%</td>
+<td align="right">0.9981514</td>
+<td align="right">0.5762986</td>
+<td align="right">4.7550406</td>
+<td align="right">4.7638470</td>
+</tr>
+<tr class="even">
+<td>TADAq&lt;50%</td>
+<td align="right">0.9861335</td>
+<td align="right">0.9668467</td>
+<td align="right">7.9274623</td>
+<td align="right">8.0389340</td>
+</tr>
+<tr class="odd">
+<td>TADAq&gt;90%</td>
+<td align="right">0.9910332</td>
+<td align="right">1.0000000</td>
+<td align="right">208.1110081</td>
+<td align="right">209.9939745</td>
+</tr>
+<tr class="even">
+<td>ID gene</td>
+<td align="right">0.9853493</td>
+<td align="right">0.9299548</td>
+<td align="right">4.5668598</td>
+<td align="right">4.6347625</td>
+</tr>
+<tr class="odd">
+<td>High</td>
+<td align="right">0.9981478</td>
+<td align="right">0.5438571</td>
+<td align="right">1.3738123</td>
+<td align="right">1.3763615</td>
+</tr>
+<tr class="even">
+<td>Mod</td>
+<td align="right">0.9963161</td>
+<td align="right">0.6622900</td>
+<td align="right">5.8289687</td>
+<td align="right">5.8505214</td>
+</tr>
+<tr class="odd">
+<td>PSD</td>
+<td align="right">0.9970598</td>
+<td align="right">0.6628794</td>
+<td align="right">9.2736964</td>
+<td align="right">9.3010429</td>
+</tr>
+<tr class="even">
+<td>FMRP</td>
+<td align="right">0.9958167</td>
+<td align="right">0.7849446</td>
+<td align="right">16.2743917</td>
+<td align="right">16.3427578</td>
+</tr>
+<tr class="odd">
+<td>AutismKB</td>
+<td align="right">0.9994632</td>
+<td align="right">0.5236361</td>
+<td align="right">4.7466976</td>
+<td align="right">4.7492468</td>
+</tr>
+<tr class="even">
+<td>constraint gene</td>
+<td align="right">0.9951003</td>
+<td align="right">0.7667974</td>
+<td align="right">10.0723059</td>
+<td align="right">10.1219003</td>
+</tr>
+<tr class="odd">
+<td>RVIS</td>
+<td align="right">1.0013601</td>
+<td align="right">0.3805547</td>
+<td align="right">23.5455388</td>
+<td align="right">23.5135574</td>
+</tr>
+<tr class="even">
+<td>Haploinsuff gene</td>
+<td align="right">0.9921820</td>
+<td align="right">0.9986197</td>
+<td align="right">67.0871379</td>
+<td align="right">67.6157590</td>
+</tr>
+<tr class="odd">
+<td>SCZ gene</td>
+<td align="right">0.9944114</td>
+<td align="right">0.9527662</td>
+<td align="right">41.0713789</td>
+<td align="right">41.3022016</td>
+</tr>
+<tr class="even">
+<td>Olfac.gene</td>
+<td align="right">0.9763183</td>
+<td align="right">0.9999808</td>
+<td align="right">13.4906141</td>
+<td align="right">13.8178447</td>
+</tr>
+<tr class="odd">
+<td>67SCZriskgene</td>
+<td align="right">0.9998208</td>
+<td align="right">0.5080097</td>
+<td align="right">2.5865585</td>
+<td align="right">2.5870220</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="variant-partitions" class="section level2">
+<h2>Variant partitions</h2>
+<p>A gene usually has many variants such as missense, LoF, etc which contribute to the disease at different degree of deleteriousness. So we partition variants from all genes into different variant categories based on their annotation priors.</p>
+<div id="eight-variant-groups" class="section level3">
+<h3>Eight variant groups</h3>
+<table>
+<caption>Fixed parameters for eight variant categories.</caption>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>AF</th>
+<th><span class="math inline">\(\beta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>C1:LoF</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td><span class="math inline">\(\beta_1= 0.5\)</span></td>
+</tr>
+<tr class="even">
+<td>C2:LoF</td>
+<td><span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td><span class="math inline">\(\beta_2=0.9\)</span></td>
+</tr>
+<tr class="odd">
+<td>C3:Damaging</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td><span class="math inline">\(\beta_3= 0.1\)</span></td>
+</tr>
+<tr class="even">
+<td>C4:Damaging</td>
+<td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td><span class="math inline">\(\beta_4= 0.2\)</span></td>
+</tr>
+<tr class="odd">
+<td>C5:Damaging</td>
+<td><span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td><span class="math inline">\(\beta_5= 0.4\)</span></td>
+</tr>
+<tr class="even">
+<td>C6:Non-Damaging</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td><span class="math inline">\(\beta_6= 0.05\)</span></td>
+</tr>
+<tr class="odd">
+<td>C7:Non-Damaging</td>
+<td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td><span class="math inline">\(\beta_7= 0.1\)</span></td>
+</tr>
+<tr class="even">
+<td>C8:Non-Damaging</td>
+<td><span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td><span class="math inline">\(\beta_8=0.2\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="constraint-top-5-1003-gene-set" class="section level2">
+<h2>Constraint (top 5%-1003) gene set</h2>
+<p>Constraint gene set is from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4222185/">this paper</a>.</p>
+<div id="estimate-beta-fixed-delta" class="section level3">
+<h3>estimate <span class="math inline">\(\beta\)</span>, fixed <span class="math inline">\(\delta\)</span></h3>
+<table>
+<caption>Parameter estimates of 1003 constraint genes by EM with eight partitions with fixed <span class="math inline">\(\delta\)</span>.</caption>
+<thead>
+<tr class="header">
+<th>Annotation category</th>
+<th><span class="math inline">\(\delta=0.1\)</span></th>
+<th><span class="math inline">\(\delta=0.2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td><span class="math inline">\(\beta_1=0\)</span></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>LoF, <span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td><span class="math inline">\(\beta_2=3.454859e-22\)</span></td>
+<td>9.232390e-24</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td><span class="math inline">\(\beta_3= 9.881313e-323\)</span></td>
+<td>2.964394e-323</td>
+</tr>
+<tr class="even">
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td><span class="math inline">\(\beta_4= 1.157201e-130\)</span></td>
+<td>6.449071e-128</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td><span class="math inline">\(\beta_5= 1.284370e-01\)</span></td>
+<td>6.916498e-02</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, $0.01 AF &lt; 0.05 $</td>
+<td><span class="math inline">\(\beta_6= 7.138461e-98\)</span></td>
+<td>4.295246e-88</td>
+</tr>
+<tr class="odd">
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td><span class="math inline">\(\beta_7= 1.519086e-175\)</span></td>
+<td>5.366141e-154</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td><span class="math inline">\(\beta_8= 1.641883e-01\)</span></td>
+<td>1.069184e-01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="fixed-beta" class="section level3">
+<h3>fixed <span class="math inline">\(\beta\)</span></h3>
+<p>With fixed parameter in every variant group, calculate the BF of every gene which is the product of BF of every variant in this gene. Below are top 20 genes with large BF.</p>
+<table>
+<caption>Bayes factor partition of top 20 genes from 1003 constraint genes. Rank: Rank by DNM; p-val: empirical p values by perturbating case control labels with null distribution of all constraint genes. ``-&quot; means no variants in the category.</caption>
+<thead>
+<tr class="header">
+<th>Gene</th>
+<th>BF</th>
+<th>C1</th>
+<th>C2</th>
+<th>C3</th>
+<th>C4</th>
+<th>C5</th>
+<th>C6</th>
+<th>C7</th>
+<th>C8</th>
+<th>Rank</th>
+<th>p-val</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CYFIP1</td>
+<td>12.44</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0.81</td>
+<td>13.53</td>
+<td>-</td>
+<td>0.90</td>
+<td>1.26</td>
+<td>18200</td>
+<td>0.0015</td>
+</tr>
+<tr class="even">
+<td>ABCA2</td>
+<td>11.96</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>1.18</td>
+<td>-</td>
+<td>-</td>
+<td>10.13</td>
+<td>18210</td>
+<td>0.0016</td>
+</tr>
+<tr class="odd">
+<td>CACNA1D</td>
+<td>11.26</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>9.46</td>
+<td>0.97</td>
+<td>0.91</td>
+<td>1.35</td>
+<td>186</td>
+<td>0.0018</td>
+</tr>
+<tr class="even">
+<td>FBN1</td>
+<td>6.94</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0.83</td>
+<td>5.83</td>
+<td>0.95</td>
+<td>0.89</td>
+<td>1.71</td>
+<td>1324</td>
+<td>0.0041</td>
+</tr>
+<tr class="odd">
+<td>CIT</td>
+<td>6.68</td>
+<td>-</td>
+<td>1.63</td>
+<td>-</td>
+<td>5.90</td>
+<td>0.45</td>
+<td>0.95</td>
+<td>0.70</td>
+<td>2.31</td>
+<td>13225</td>
+<td>0.0044</td>
+</tr>
+<tr class="even">
+<td>PLXNB1</td>
+<td>5.78</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>3.45</td>
+<td>-</td>
+<td>-</td>
+<td>1.68</td>
+<td>364</td>
+<td>0.0057</td>
+</tr>
+<tr class="odd">
+<td>CREBBP</td>
+<td>5.51</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>2.22</td>
+<td>-</td>
+<td>1.47</td>
+<td>1.70</td>
+<td>1232</td>
+<td>0.0062</td>
+</tr>
+<tr class="even">
+<td>GTF3C4</td>
+<td>5.50</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>4.85</td>
+<td>-</td>
+<td>0.92</td>
+<td>1.23</td>
+<td>15612</td>
+<td>0.0063</td>
+</tr>
+<tr class="odd">
+<td>MYH10</td>
+<td>5.25</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>4.45</td>
+<td>-</td>
+<td>0.79</td>
+<td>1.50</td>
+<td>48</td>
+<td>0.0068</td>
+</tr>
+<tr class="even">
+<td>DNM3</td>
+<td>4.91</td>
+<td>-</td>
+<td>1.63</td>
+<td>-</td>
+<td>-</td>
+<td>2.02</td>
+<td>-</td>
+<td>1.27</td>
+<td>1.18</td>
+<td>16092</td>
+<td>0.0076</td>
+</tr>
+<tr class="odd">
+<td>CHD8</td>
+<td>4.79</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0.77</td>
+<td>6.66</td>
+<td>0.97</td>
+<td>-</td>
+<td>0.96</td>
+<td>2</td>
+<td>0.008</td>
+</tr>
+<tr class="even">
+<td>TP63</td>
+<td>4.05</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0.81</td>
+<td>2.66</td>
+<td>-</td>
+<td>0.92</td>
+<td>2.05</td>
+<td>15512</td>
+<td>0.0108</td>
+</tr>
+<tr class="odd">
+<td>DOCK4</td>
+<td>3.91</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>4.47</td>
+<td>0.90</td>
+<td>0.90</td>
+<td>1.07</td>
+<td>18342</td>
+<td>0.0116</td>
+</tr>
+<tr class="even">
+<td>CNOT1</td>
+<td>3.73</td>
+<td>-</td>
+<td>-</td>
+<td>0.91</td>
+<td>-</td>
+<td>3.25</td>
+<td>1.06</td>
+<td>-</td>
+<td>1.19</td>
+<td>8577</td>
+<td>0.0128</td>
+</tr>
+<tr class="odd">
+<td>HIRA</td>
+<td>3.04</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>2.37</td>
+<td>1.06</td>
+<td>-</td>
+<td>1.21</td>
+<td>17444</td>
+<td>0.0192</td>
+</tr>
+<tr class="even">
+<td>ITSN1</td>
+<td>2.94</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0.91</td>
+<td>3.23</td>
+<td>-</td>
+<td>-</td>
+<td>1.00</td>
+<td>1479</td>
+<td>0.0205</td>
+</tr>
+<tr class="odd">
+<td>HDLBP</td>
+<td>2.91</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>1.08</td>
+<td>-</td>
+<td>4.11</td>
+<td>0.65</td>
+<td>480</td>
+<td>0.0210</td>
+</tr>
+<tr class="even">
+<td>BAZ1A</td>
+<td>2.89</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>2.79</td>
+<td>1.02</td>
+<td>0.85</td>
+<td>1.20</td>
+<td>1392</td>
+<td>0.0212</td>
+</tr>
+<tr class="odd">
+<td>SLC4A8</td>
+<td>2.81</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>1.90</td>
+<td>-</td>
+<td>-</td>
+<td>1.48</td>
+<td>16562</td>
+<td>0.0225</td>
+</tr>
+<tr class="even">
+<td>VPRBP</td>
+<td>2.79</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>3.80</td>
+<td>-</td>
+<td>-</td>
+<td>0.73</td>
+<td>1393</td>
+<td>0.0230</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="fixed-beta-gene-specific-delta" class="section level3">
+<h3>fixed <span class="math inline">\(\beta\)</span>, gene specific <span class="math inline">\(\delta\)</span></h3>
+<p>Apply the proposed method to these 1003 constraint genes.</p>
+<ul>
+<li>All variants are partitioned into 8 categories with fixed parameters.</li>
+<li>Each gene has its own prior probability (1-FDR in this <a href="https://drive.google.com/drive/folders/0Bw9noG3ywSYZelZzN25MYU5aQ0E">file</a> ) of being risk genes to compute Bayes factor.</li>
+</ul>
+<table>
+<caption>Top 20 genes with large BF</caption>
+<thead>
+<tr class="header">
+<th>Gene</th>
+<th>BF</th>
+<th>gene.fdr</th>
+<th>BF.with.prior</th>
+<th>denovo.rank</th>
+<th>ASD.prior.rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CACNA1D</td>
+<td>11.257598</td>
+<td>3.389168e-01</td>
+<td>7.781126</td>
+<td>361</td>
+<td>719</td>
+</tr>
+<tr class="even">
+<td>MYH10</td>
+<td>5.249105</td>
+<td>7.244864e-02</td>
+<td>4.941263</td>
+<td>71</td>
+<td>44</td>
+</tr>
+<tr class="odd">
+<td>CHD8</td>
+<td>4.785351</td>
+<td>1.528915e-09</td>
+<td>4.785351</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>PLXNB1</td>
+<td>5.781742</td>
+<td>4.468929e-01</td>
+<td>3.644815</td>
+<td>577</td>
+<td>330</td>
+</tr>
+<tr class="odd">
+<td>FBN1</td>
+<td>6.940825</td>
+<td>7.181404e-01</td>
+<td>2.674478</td>
+<td>711</td>
+<td>143</td>
+</tr>
+<tr class="even">
+<td>CREBBP</td>
+<td>5.514866</td>
+<td>7.048546e-01</td>
+<td>2.332542</td>
+<td>1299</td>
+<td>81</td>
+</tr>
+<tr class="odd">
+<td>HDLBP</td>
+<td>2.910440</td>
+<td>4.957534e-01</td>
+<td>1.963333</td>
+<td>247</td>
+<td>308</td>
+</tr>
+<tr class="even">
+<td>TRIP12</td>
+<td>1.837831</td>
+<td>5.167857e-02</td>
+<td>1.794533</td>
+<td>21</td>
+<td>41</td>
+</tr>
+<tr class="odd">
+<td>KDM6B</td>
+<td>1.704142</td>
+<td>5.004955e-03</td>
+<td>1.700618</td>
+<td>30</td>
+<td>18</td>
+</tr>
+<tr class="even">
+<td>CYFIP1</td>
+<td>12.439311</td>
+<td>9.400171e-01</td>
+<td>1.686164</td>
+<td>17118</td>
+<td>6451</td>
+</tr>
+<tr class="odd">
+<td>ABCA2</td>
+<td>11.956344</td>
+<td>9.400408e-01</td>
+<td>1.656933</td>
+<td>14209</td>
+<td>948</td>
+</tr>
+<tr class="even">
+<td>CUL3</td>
+<td>1.627135</td>
+<td>1.801230e-02</td>
+<td>1.615838</td>
+<td>25</td>
+<td>21</td>
+</tr>
+<tr class="odd">
+<td>SCN1A</td>
+<td>1.686942</td>
+<td>1.614497e-01</td>
+<td>1.576036</td>
+<td>76</td>
+<td>45</td>
+</tr>
+<tr class="even">
+<td>BAZ1A</td>
+<td>2.892282</td>
+<td>7.274546e-01</td>
+<td>1.515733</td>
+<td>4402</td>
+<td>2015</td>
+</tr>
+<tr class="odd">
+<td>ITSN1</td>
+<td>2.936278</td>
+<td>7.391926e-01</td>
+<td>1.504996</td>
+<td>1983</td>
+<td>646</td>
+</tr>
+<tr class="even">
+<td>VPRBP</td>
+<td>2.785169</td>
+<td>7.275905e-01</td>
+<td>1.486297</td>
+<td>1248</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>XKR6</td>
+<td>1.847328</td>
+<td>4.560447e-01</td>
+<td>1.460909</td>
+<td>496</td>
+<td>171</td>
+</tr>
+<tr class="even">
+<td>AGAP2</td>
+<td>1.857194</td>
+<td>4.726403e-01</td>
+<td>1.452049</td>
+<td>202</td>
+<td>72</td>
+</tr>
+<tr class="odd">
+<td>CIT</td>
+<td>6.680860</td>
+<td>9.289990e-01</td>
+<td>1.403347</td>
+<td>5831</td>
+<td>942</td>
+</tr>
+<tr class="even">
+<td>TLK1</td>
+<td>2.172895</td>
+<td>6.667465e-01</td>
+<td>1.390871</td>
+<td>1721</td>
+<td>495</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>denovo.rank: the rank in denovo data set.</li>
+<li>ASD.prior.rank: the rank in ASD prior list.</li>
+</ul>
+</div>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
+<!-- Insert the session information into the document -->
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.2.2 (2015-08-14)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 7 x64 (build 7601) Service Pack 1
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] knitr_1.15.1  dplyr_0.4.3   RSQLite_1.0.0 DBI_0.3.1    
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.1     digest_0.6.8    rprojroot_1.2   assertthat_0.1 
+ [5] R6_2.1.1        backports_1.0.5 git2r_0.18.0    magrittr_1.5   
+ [9] evaluate_0.10   highr_0.5.1     stringi_0.5-5   rmarkdown_1.3  
+[13] tools_3.2.2     stringr_1.2.0   parallel_3.2.2  yaml_2.1.14    
+[17] htmltools_0.3.5</code></pre>
+</div>
+
+<hr>
+<p>
+    This <a href="http://rmarkdown.rstudio.com">R Markdown</a> site was created with <a href="https://github.com/jdblischak/workflowr">workflowr</a>
+</p>
+<hr>
+
+<!-- To enable disqus, uncomment the section below and provide your disqus_shortname -->
+
+<!-- disqus
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'rmarkdown'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+-->
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

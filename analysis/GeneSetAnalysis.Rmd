@@ -1,0 +1,258 @@
+---
+title: "Gene Set Analysis"
+author: "Shengtong Han"
+date: YYYY-MM-DD
+output: html_document
+---
+
+<!-- The file analysis/chunks.R contains chunks that define default settings
+shared across the workflowr files. -->
+```{r read-chunk, include=FALSE, cache=FALSE}
+knitr::read_chunk("chunks.R")
+```
+
+<!-- Update knitr chunk options -->
+```{r knitr-opts-chunk, include=FALSE}
+```
+
+<!-- Insert the date the file was last updated -->
+```{r last-updated, echo=FALSE, results='asis'}
+```
+
+<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed -->
+```{r code-version, echo=FALSE, results='asis'}
+```
+
+```{r load packages, results='hide', include=FALSE}
+library(RSQLite)
+library(dplyr)
+library(knitr)
+```
+
+```{r defined function, echo=F, results='hide'}
+test.func=function(evid, Data, N1, N0) # given evid, and sample size, perform the burden analysis
+{
+evid.data=Data[Data$ID %in% evid,]
+count=c(sum(evid.data$No.case), sum(evid.data$No.contr))
+Time=c(N1, N0)
+pois.test=poisson.test(count, Time, r=1, alternative="greater")
+return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rate.case=count[1]/N1, rate.contr=count[2]/N0))
+}
+```
+
+<!-- Add your analysis here -->
+
+```{r read into data, echo=F, results='hide', cache=T}
+All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+```
+
+```{r set paramters and modifying the data, echo=T, results='hide'}
+N1=4315; N0=4315
+All.Anno.Data[All.Anno.Data =="."] <- NA
+All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
+```
+
+
+
+## Simple burden test 
+
+```{r burdern analysis-gene level, results='hide', echo=F}
+GeneDB=src_sqlite(path="D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\gene.list.db", create=F)
+gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
+gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
+gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
+gene_cate4=data.frame(collect(tbl(GeneDB, "SFARI_cate4_gene")))
+gene_cate5=data.frame(collect(tbl(GeneDB, "SFARI_cate5_gene")))
+gene_cate6=data.frame(collect(tbl(GeneDB, "SFARI_cate6_gene")))
+gene_cateS=data.frame(collect(tbl(GeneDB, "SFARI_cateS_gene")))
+IDGene=data.frame(collect(tbl(GeneDB, "Pinto14AJHG_IDgene")))
+TADAGene=data.frame(collect(tbl(GeneDB, "TADAGenelist")))
+Qlessthan5percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.05]
+Qlessthan20percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.2]
+Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
+Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
+Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
+Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
+purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
+ASD.gene=data.frame(collect(tbl(GeneDB, "AutismKB_gene")))
+constraint.gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
+RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
+RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene 
+haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))
+gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
+gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
+gene.summy=matrix(nrow=max.gene+1, ncol=4)
+gene.evid=list(); var.index=1
+gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID )])
+gene.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate2$GeneID )])
+gene.evid[[3]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate3$GeneID )])
+gene.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate4$GeneID )])
+gene.evid[[5]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate5$GeneID )])
+gene.evid[[6]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate6$GeneID )])
+gene.evid[[7]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cateS$GeneID )])
+gene.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan5percentgene )])
+gene.evid[[9]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan20percentgene )])
+gene.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan30percentgene )])
+gene.evid[[11]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan40percentgene)])
+gene.evid[[12]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan50percentgene )])
+gene.evid[[13]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlargerthan90percentgene )])
+gene.evid[[14]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% IDGene$GeneID )])
+high.conf=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
+mod.conf=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
+gene.evid[[15]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% high.conf)])
+gene.evid[[16]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% mod.conf )])
+psd.gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
+FMRP.gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
+gene.evid[[17]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% psd.gene )])
+gene.evid[[18]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% FMRP.gene )])
+gene.evid[[19]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% ASD.gene$GeneID )])
+gene.evid[[20]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% constraint.gene )])
+gene.evid[[21]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% RVIS.gene )])
+gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.gene$GeneID )])
+gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol )])
+olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
+gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID )])
+sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
+gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene )])
+
+colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
+rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
+for (gene in 1:(max.gene+1))
+{
+  cat(gene, "is running", "\n")
+  pois.test=test.func(gene.evid[[gene]], var.data, N1, N0)
+  gene.summy[gene,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+}
+
+```
+* Two sample one side ("greater") test
+* high confidence gene: q<0.1, SFARI cate1&2
+* Moder confi: 0.3>q>0.1 SFARI cat3 & S
+```{r gene level, echo=F}
+kable(gene.summy, caption="Burden analysis of gene set")
+```
+
+## Variant partitions
+A gene usually has many variants such as missense, LoF, etc which contribute to the disease at different degree of deleteriousness. So we partition variants from all genes into different variant categories based on their annotation priors. 
+
+### Eight variant groups 
+
+
+
+Category | AF |$\beta$
+---------|--------------------------|-------------------------------
+C1:LoF|   $0.01 \leq AF < 0.05$  |      $\beta_1= 0.5$  
+C2:LoF|  $AF < 0.01$       |   $\beta_2=0.9$  
+C3:Damaging| $0.01 \leq AF < 0.05$ |  $\beta_3= 0.1$ 
+C4:Damaging|  $0.001 \leq  AF < 0.01$ |    $\beta_4= 0.2$ 
+C5:Damaging|  $AF < 0.001$ |  $\beta_5=  0.4$ 
+C6:Non-Damaging| $0.01 \leq  AF < 0.05$ |    $\beta_6= 0.05$ 
+C7:Non-Damaging| $0.001 \leq AF < 0.01$ |  $\beta_7=  0.1$  
+C8:Non-Damaging|  $AF < 0.001$ | $\beta_8=0.2$ 
+Table: Fixed parameters for eight variant categories. 
+
+
+
+
+## Constraint (top 5%-1003) gene set 
+
+Constraint gene set is from [this paper].
+
+[this paper]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4222185/
+
+
+### estimate $\beta$, fixed $\delta$
+
+Annotation category  | $\delta=0.1$ | $\delta=0.2$
+---------------------|---------------|-------------------
+LoF,   $0.01 \leq AF < 0.05$  |      $\beta_1=0$ | 0
+LoF,  $AF < 0.01$ |         $\beta_2=3.454859e-22$ | 9.232390e-24 
+Damaging, $0.01 \leq AF < 0.05$ |   $\beta_3= 9.881313e-323$ | 2.964394e-323
+Damaging,  $0.001 \leq  AF < 0.01$ |    $\beta_4= 1.157201e-130$ | 6.449071e-128
+Damaging,  $AF < 0.001$ |  $\beta_5=  1.284370e-01$ | 6.916498e-02
+Non-Damaging, $0.01 \leq  AF < 0.05 $ |    $\beta_6= 7.138461e-98$ | 4.295246e-88
+Non-Damaging, $0.001 \leq AF < 0.01$ |  $\beta_7=  1.519086e-175$ | 5.366141e-154 
+Non-Damaging,  $AF < 0.001$ | $\beta_8=  1.641883e-01$ | 1.069184e-01
+Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with fixed $\delta$. 
+
+
+### fixed $\beta$
+
+With fixed parameter in every variant group, calculate the BF of every gene which is the product of BF of every variant in this gene. Below are top 20 genes with large BF.   
+
+
+Gene | BF | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | Rank | p-val
+-----|----|----|----|----|----|----|----|----|----|------|------------------
+CYFIP1 | 12.44 | - | - | - | 0.81 | 13.53 | - | 0.90 |  1.26 | 18200 | 0.0015
+ABCA2 | 11.96 | - | - | - | - |  1.18 | - | - | 10.13 | 18210 | 0.0016
+CACNA1D | 11.26 | - | - | - | - |  9.46 | 0.97 | 0.91 |  1.35 | 186 | 0.0018
+FBN1 |  6.94 | - | - | - | 0.83 |  5.83 | 0.95 | 0.89 |  1.71 | 1324 | 0.0041
+CIT |  6.68 | - | 1.63 | - | 5.90 |  0.45 | 0.95 | 0.70 |  2.31 | 13225 | 0.0044
+PLXNB1 |  5.78 | - | - | - | - |  3.45 | - | - |  1.68 | 364 | 0.0057
+CREBBP |  5.51 | - | - | - | - |  2.22 | - | 1.47 |  1.70 | 1232 | 0.0062
+GTF3C4 |  5.50 | - | - | - | - |  4.85 | - | 0.92 |  1.23 | 15612 | 0.0063
+MYH10 |  5.25 | - | - | - | - |  4.45 | - | 0.79 |  1.50 | 48 | 0.0068
+DNM3 |  4.91 | - | 1.63 | - | - |  2.02 | - | 1.27 |  1.18 | 16092 | 0.0076
+CHD8 |  4.79 | - | - | - | 0.77 |  6.66 | 0.97 | - |  0.96 | 2 | 0.008
+TP63 |  4.05 | - | - | - | 0.81 |  2.66 | - | 0.92 |  2.05 | 15512 | 0.0108
+DOCK4 |  3.91 | - | - | - | - |  4.47 | 0.90 | 0.90 |  1.07 | 18342 | 0.0116
+CNOT1 |  3.73 | - | - | 0.91 | - |  3.25 | 1.06 | - |  1.19 | 8577 | 0.0128
+HIRA |  3.04 | - | - | - | - |  2.37 | 1.06 | - |  1.21 | 17444 | 0.0192
+ITSN1 |  2.94 | - | - | - | 0.91 |  3.23 | - | - |  1.00 | 1479 | 0.0205
+HDLBP |  2.91 | - | - | - | - |  1.08 | - | 4.11 |  0.65 | 480 | 0.0210
+BAZ1A |  2.89 | - | - | - | - |  2.79 | 1.02 | 0.85 |  1.20 | 1392 | 0.0212
+SLC4A8 |  2.81 | - | - | - | - |  1.90 | - | - |  1.48 | 16562 | 0.0225
+VPRBP |  2.79 | - | - | - | - |  3.80 | - | - |  0.73 | 1393 | 0.0230
+Table: Bayes factor partition of top 20 genes from 1003 constraint genes. Rank: Rank by DNM; p-val: empirical p values by perturbating case control labels with null distribution of all constraint genes. ``-" means no variants in the category.
+
+
+
+### fixed $\beta$, gene specific $\delta$
+
+Apply the proposed method to these 1003 constraint genes. 
+
+* All variants are partitioned into 8 categories with fixed parameters. 
+* Each gene has its own prior probability (1-FDR in this [file] ) of being risk genes to compute Bayes factor.  
+
+[file]: https://drive.google.com/drive/folders/0Bw9noG3ywSYZelZzN25MYU5aQ0E
+
+
+
+Gene  |      BF   |  gene.fdr |BF.with.prior | denovo.rank | ASD.prior.rank
+-------|---------|-------------|-------------|------------|----------------
+ CACNA1D | 11.257598 | 3.389168e-01 |     7.781126 | 361 | 719
+MYH10 | 5.249105 | 7.244864e-02   |   4.941263 | 71 | 44 
+CHD8  | 4.785351 | 1.528915e-09 |     4.785351 | 1 | 1
+PLXNB1 | 5.781742 | 4.468929e-01  |    3.644815 | 577 | 330
+FBN1  | 6.940825 | 7.181404e-01 |     2.674478 | 711 | 143
+CREBBP | 5.514866 | 7.048546e-01  |    2.332542 | 1299 | 81
+  HDLBP | 2.910440 | 4.957534e-01 |     1.963333 | 247 | 308
+TRIP12 | 1.837831 | 5.167857e-02 |     1.794533 | 21 | 41
+KDM6B |  1.704142 | 5.004955e-03  |    1.700618 | 30 | 18
+CYFIP1 | 12.439311 | 9.400171e-01 |     1.686164 | 17118 | 6451
+ABCA2 | 11.956344 | 9.400408e-01  |    1.656933 | 14209 | 948
+CUL3 | 1.627135 | 1.801230e-02 |     1.615838 | 25 | 21
+SCN1A | 1.686942 | 1.614497e-01 |     1.576036 | 76 | 45
+BAZ1A | 2.892282 | 7.274546e-01  |    1.515733 | 4402 | 2015
+  ITSN1 | 2.936278 | 7.391926e-01 |     1.504996 | 1983 | 646
+VPRBP | 2.785169 | 7.275905e-01 |     1.486297 | 1248  | NA
+ XKR6 | 1.847328 | 4.560447e-01 |     1.460909 | 496  | 171
+AGAP2 | 1.857194 |4.726403e-01  |    1.452049 | 202 | 72
+ CIT  | 6.680860 | 9.289990e-01 |     1.403347 | 5831 | 942
+   TLK1 | 2.172895 | 6.667465e-01  |    1.390871 | 1721 | 495
+Table: Top 20 genes with large BF
+
+* denovo.rank: the rank in denovo data set. 
+* ASD.prior.rank: the rank in ASD prior list. 
+
+
+
+
+## Session information
+
+<!-- Insert the session information into the document -->
+```{r session-info}
+```
