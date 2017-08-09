@@ -311,8 +311,8 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-07-26 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> 4475309</p>
+<p><strong>Last updated:</strong> 2017-08-09 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> 3cd68de</p>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -343,6 +343,31 @@ shared across the workflowr files. -->
 <h2>Disjoint group priors</h2>
 <div id="case-1-all-genes-are-risk-genes" class="section level3">
 <h3>Case 1: All genes are risk genes</h3>
+<p>Parameter settings: N1=N0=3000, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. Perform 100 independent runs.</p>
+<p><span class="math inline">\(\beta_i=0.1\)</span>, but the actural <span class="math inline">\(\beta_i\)</span> is varying for each generated data set because of the filtering.</p>
+<div id="estimate-beta-fixed-delta1" class="section level4">
+<h4>(1) estimate <span class="math inline">\(\beta\)</span>, fixed <span class="math inline">\(\delta=1\)</span></h4>
+<p>The plot of <span class="math inline">\(\widehat{\beta}-\beta\)</span> is as below</p>
+<div class="figure">
+<img src="figure/estimatebetariskgene.png" />
+
+</div>
+<p>Clearly, there is a slight over etimate problem.</p>
+</div>
+<div id="estimate-both-beta-delta" class="section level4">
+<h4>(2) estimate both <span class="math inline">\(\beta, \delta\)</span></h4>
+<div class="figure">
+<img src="figure/estimatebetadeltariskgene1.png" />
+
+</div>
+<div class="figure">
+<img src="figure/estimatebetadeltariskgene2.png" />
+
+</div>
+</div>
+</div>
+<div id="case-2-mixture-model" class="section level3">
+<h3>Case 2: Mixture model</h3>
 </div>
 </div>
 <div id="logistic-priors" class="section level2">
@@ -363,7 +388,8 @@ shared across the workflowr files. -->
 </div>
 <div id="likelihood-function" class="section level4">
 <h4>likelihood function:</h4>
-<p>If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of <span class="math inline">\(\beta\)</span> (true <span class="math inline">\(\beta=0.5\)</span>)is as <img src="figure/loglikelihood.png" alt="loglikelihood" />.</p>
+<p>If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of <span class="math inline">\(\beta\)</span> (true <span class="math inline">\(\beta=0.5\)</span>)is as</p>
+<p><img src="figure/loglikelihood.png" alt="loglikelihood" />.</p>
 <p>This plot tells us the likelihood only has one mode in one dimension case. It looks like <span class="math inline">\(\beta\)</span> is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of <span class="math inline">\(\hat{\beta}_{MLE}=0.7631\)</span> and SD=2.344796e-05.</p>
 </div>
 <div id="effect-of-sparsity-of-a_jk-k-is-the-number-of-features-here-k1-on-mle-of-beta" class="section level4">

@@ -30,7 +30,7 @@ library(dplyr)
 library(knitr)
 ```
 
-```{r defined function, echo=F, results='hide', cache=T}
+```{r defined function, echo=F, results='hide'}
 test.func=function(evid, Data, N1, N0) # given evid, and sample size, perform the burden analysis
 {
 evid.data=Data[Data$ID %in% evid,]
@@ -55,13 +55,13 @@ All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-pr
 N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
-Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<1e-2 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
 ```
 
 * sample size is of 4315 
 * set ExacAF of NA to be 0
-* use $10^{-2}$ as AF cutoff and exclude synonymous SNV
+* use AF cutoff and exclude synonymous SNV
 
 ```{r check missing values for every annotation, echo=F, results='hide'}
 nosyn.data=All.Anno.Data[All.Anno.Data$Annotation!="synonymous SNV",]
@@ -197,6 +197,9 @@ Test: use two sample one side poisson test ("greater")
 
 
 ## Exon level analysis
+
+**All subsequence analsyis foucs on variant with AF < 5% and exluding synonymous mutautions. **
+
 ```{r burden analysis-exon level, echo=FALSE, include=F}
 exon.cutoff=c(0.9, 0.8, 0.7, 0.6, 0.5)
 exon.fea=c(paste("ExonTop%", exon.cutoff*100, sep=""), "CriticalExon")
@@ -231,79 +234,9 @@ kable(exon.summ, caption="Burden analysis of exons")
 ```
 
 ## Gene level analysis
-```{r burdern analysis-gene level, results='hide', echo=F, cache=T}
-GeneDB=src_sqlite(path="D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\gene.list.db", create=F)
-gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
-gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
-gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
-gene_cate4=data.frame(collect(tbl(GeneDB, "SFARI_cate4_gene")))
-gene_cate5=data.frame(collect(tbl(GeneDB, "SFARI_cate5_gene")))
-gene_cate6=data.frame(collect(tbl(GeneDB, "SFARI_cate6_gene")))
-gene_cateS=data.frame(collect(tbl(GeneDB, "SFARI_cateS_gene")))
-IDGene=data.frame(collect(tbl(GeneDB, "Pinto14AJHG_IDgene")))
-TADAGene=data.frame(collect(tbl(GeneDB, "TADAGenelist")))
-Qlessthan5percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.05]
-Qlessthan20percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.2]
-Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
-Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
-Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
-Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
-purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
-ASD.gene=data.frame(collect(tbl(GeneDB, "AutismKB_gene")))
-constraint.gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
-RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
-RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene 
-haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))
-gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
-gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
-gene.summy=matrix(nrow=max.gene+1, ncol=4)
-gene.evid=list(); var.index=1
-gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID )])
-gene.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate2$GeneID )])
-gene.evid[[3]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate3$GeneID )])
-gene.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate4$GeneID )])
-gene.evid[[5]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate5$GeneID )])
-gene.evid[[6]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate6$GeneID )])
-gene.evid[[7]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cateS$GeneID )])
-gene.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan5percentgene )])
-gene.evid[[9]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan20percentgene )])
-gene.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan30percentgene )])
-gene.evid[[11]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan40percentgene)])
-gene.evid[[12]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan50percentgene )])
-gene.evid[[13]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlargerthan90percentgene )])
-gene.evid[[14]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% IDGene$GeneID )])
-high.conf=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
-mod.conf=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
-gene.evid[[15]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% high.conf)])
-gene.evid[[16]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% mod.conf )])
-psd.gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
-FMRP.gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
-gene.evid[[17]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% psd.gene )])
-gene.evid[[18]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% FMRP.gene )])
-gene.evid[[19]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% ASD.gene$GeneID )])
-gene.evid[[20]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% constraint.gene )])
-gene.evid[[21]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% RVIS.gene )])
-gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.gene$GeneID )])
-gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol )])
-olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
-gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID )])
-sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
-gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene )])
 
-colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
-rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
-for (gene in 1:(max.gene+1))
-{
-  cat(gene, "is running", "\n")
-  pois.test=test.func(gene.evid[[gene]], var.data, N1, N0)
-  gene.summy[gene,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
-}
+See [here](GeneSetAnalysis.html)
 
-```
-**Gene level: two sample one side ("greater") test;  high confidence gene: q<0.1, SFARI cate1&2; Moder confi: 0.3>q>0.1 SFARI cat3 & S**
-```{r gene level, }
-kable(gene.summy, caption="Burden analysis of gene set")
-```
 
 ## Combined feature analysis
 

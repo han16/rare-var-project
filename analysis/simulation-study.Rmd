@@ -49,6 +49,34 @@ $\pi(\beta)$ is the link function between annotations and prior probability and 
 
 ### Case 1: All genes are risk genes
 
+Parameter settings: N1=N0=3000, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. Perform 100 independent runs. 
+
+$\beta_i=0.1$, but the actural $\beta_i$ is varying for each generated data set because of the filtering. 
+
+
+
+#### (1) estimate $\beta$, fixed $\delta=1$ 
+
+The plot of $\widehat{\beta}-\beta$ is as below 
+
+
+![](figure/estimatebetariskgene.png)
+
+Clearly, there is a slight over etimate problem. 
+
+
+
+#### (2) estimate both $\beta, \delta$
+
+![](figure/estimatebetadeltariskgene1.png)
+
+
+
+![](figure/estimatebetadeltariskgene2.png)
+
+### Case 2: Mixture model
+
+
 
 ## Logistic priors  
 ### Case 1: One annotation feature
@@ -65,7 +93,11 @@ This is the simplest case in that every variant has one annotation feature if an
 
 
 #### likelihood function: 
-If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of $\beta$ (true $\beta=0.5$)is as ![loglikelihood](figure/loglikelihood.png). 
+If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of $\beta$ (true $\beta=0.5$)is as 
+
+
+
+![loglikelihood](figure/loglikelihood.png). 
 
 This plot tells us the likelihood only has one mode in one dimension case. It looks like $\beta$ is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of $\hat{\beta}_{MLE}=0.7631$ and SD=2.344796e-05. 
 

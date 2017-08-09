@@ -312,10 +312,10 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-07-26</p>
+<p><strong>Last updated:</strong> 2017-08-08</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> 4475309</p>
+<p><strong>Code version:</strong> 3cd68de</p>
 <!-- Add your analysis here -->
 <div id="quality-control-qc" class="section level2">
 <h2>Quality Control (QC)</h2>
@@ -325,12 +325,12 @@ shared across the workflowr files. -->
 <pre class="r"><code>N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
-Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF&lt;1e-2 &amp; All.Anno.Data$Annotation!=&quot;synonymous SNV&quot;),] # use AF cutoff and exclude synonumous SNV
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF&lt;0.05 &amp; All.Anno.Data$Annotation!=&quot;synonymous SNV&quot;),] # use AF cutoff and exclude synonumous SNV
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)</code></pre>
 <ul>
 <li>sample size is of 4315</li>
 <li>set ExacAF of NA to be 0</li>
-<li>use <span class="math inline">\(10^{-2}\)</span> as AF cutoff and exclude synonymous SNV</li>
+<li>use AF cutoff and exclude synonymous SNV</li>
 </ul>
 <table>
 <caption>Quality of annotated data</caption>
@@ -564,80 +564,80 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 <tbody>
 <tr class="odd">
 <td>MAF&lt;1e-2</td>
-<td align="right">0.9944437</td>
-<td align="right">0.9999908</td>
-<td align="right">273.046118</td>
-<td align="right">274.571727</td>
+<td align="right">0.9922820</td>
+<td align="right">1.0000000</td>
+<td align="right">552.22503</td>
+<td align="right">556.52028</td>
 </tr>
 <tr class="even">
 <td>MAF&lt;1e-3</td>
 <td align="right">1.0005560</td>
 <td align="right">0.3924590</td>
-<td align="right">112.604867</td>
-<td align="right">112.542294</td>
+<td align="right">112.60487</td>
+<td align="right">112.54229</td>
 </tr>
 <tr class="odd">
 <td>MAF&lt;1e-4</td>
 <td align="right">1.0069099</td>
 <td align="right">0.0064589</td>
-<td align="right">60.685284</td>
-<td align="right">60.268830</td>
+<td align="right">60.68528</td>
+<td align="right">60.26883</td>
 </tr>
 <tr class="even">
 <td>Prby Damaging</td>
-<td align="right">0.9950484</td>
-<td align="right">0.9651177</td>
-<td align="right">61.614368</td>
-<td align="right">61.920973</td>
+<td align="right">0.9943054</td>
+<td align="right">0.9965438</td>
+<td align="right">103.30684</td>
+<td align="right">103.89849</td>
 </tr>
 <tr class="odd">
 <td>Psbl Damaging</td>
-<td align="right">0.9908945</td>
-<td align="right">0.9893700</td>
-<td align="right">29.204635</td>
-<td align="right">29.473001</td>
+<td align="right">0.9901730</td>
+<td align="right">0.9995908</td>
+<td align="right">52.91379</td>
+<td align="right">53.43893</td>
 </tr>
 <tr class="even">
 <td>SIFT&lt;0.05</td>
-<td align="right">0.9984344</td>
-<td align="right">0.7043431</td>
-<td align="right">54.092932</td>
-<td align="right">54.177752</td>
+<td align="right">0.9929145</td>
+<td align="right">0.9993781</td>
+<td align="right">95.15458</td>
+<td align="right">95.83360</td>
 </tr>
 <tr class="odd">
 <td>CADD top10%</td>
-<td align="right">1.0029500</td>
-<td align="right">0.3174970</td>
-<td align="right">12.212746</td>
-<td align="right">12.176825</td>
+<td align="right">1.0028879</td>
+<td align="right">0.2862089</td>
+<td align="right">17.94739</td>
+<td align="right">17.89571</td>
 </tr>
 <tr class="even">
 <td>BrainExp top10%</td>
-<td align="right">0.9865076</td>
-<td align="right">0.9653803</td>
-<td align="right">8.201159</td>
-<td align="right">8.313326</td>
+<td align="right">0.9851167</td>
+<td align="right">0.9943749</td>
+<td align="right">13.11518</td>
+<td align="right">13.31333</td>
 </tr>
 <tr class="odd">
 <td>Consensus</td>
-<td align="right">0.9975912</td>
-<td align="right">0.8447574</td>
-<td align="right">81.675782</td>
-<td align="right">81.873001</td>
+<td align="right">0.9937533</td>
+<td align="right">0.9997254</td>
+<td align="right">140.42943</td>
+<td align="right">141.31217</td>
 </tr>
 <tr class="even">
 <td>LoF</td>
-<td align="right">0.9860321</td>
-<td align="right">0.9596908</td>
-<td align="right">7.067439</td>
-<td align="right">7.167555</td>
+<td align="right">0.9847808</td>
+<td align="right">0.9889461</td>
+<td align="right">10.21205</td>
+<td align="right">10.36987</td>
 </tr>
 <tr class="odd">
 <td>Private</td>
 <td align="right">1.0119870</td>
 <td align="right">0.0079189</td>
-<td align="right">19.154345</td>
-<td align="right">18.927462</td>
+<td align="right">19.15435</td>
+<td align="right">18.92746</td>
 </tr>
 </tbody>
 </table>
@@ -655,6 +655,7 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 </div>
 <div id="exon-level-analysis" class="section level2">
 <h2>Exon level analysis</h2>
+<p><strong>All subsequence analsyis foucs on variant with AF &lt; 5% and exluding synonymous mutautions. </strong></p>
 <p>Test: use two sample one side poisson test</p>
 <ul>
 <li>high values means more constraint</li>
@@ -675,242 +676,52 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 <tbody>
 <tr class="odd">
 <td>Top%90</td>
-<td align="right">1.0013548</td>
-<td align="right">0.4181860</td>
-<td align="right">11.13395</td>
-<td align="right">11.11889</td>
+<td align="right">1.0017807</td>
+<td align="right">0.3649493</td>
+<td align="right">17.73163</td>
+<td align="right">17.70012</td>
 </tr>
 <tr class="even">
 <td>Top%80</td>
-<td align="right">0.9972590</td>
-<td align="right">0.7387544</td>
-<td align="right">24.95805</td>
-<td align="right">25.02665</td>
+<td align="right">0.9980022</td>
+<td align="right">0.7246220</td>
+<td align="right">40.98308</td>
+<td align="right">41.06512</td>
 </tr>
 <tr class="odd">
 <td>Top%70</td>
-<td align="right">0.9961925</td>
-<td align="right">0.8685243</td>
-<td align="right">39.71587</td>
-<td align="right">39.86767</td>
+<td align="right">0.9932274</td>
+<td align="right">0.9954915</td>
+<td align="right">68.14345</td>
+<td align="right">68.60811</td>
 </tr>
 <tr class="even">
 <td>Top%60</td>
-<td align="right">0.9969765</td>
-<td align="right">0.8539354</td>
-<td align="right">55.86188</td>
-<td align="right">56.03129</td>
+<td align="right">0.9929343</td>
+<td align="right">0.9994172</td>
+<td align="right">96.79003</td>
+<td align="right">97.47879</td>
 </tr>
 <tr class="odd">
 <td>Top%50</td>
-<td align="right">0.9978200</td>
-<td align="right">0.8065358</td>
-<td align="right">72.55411</td>
-<td align="right">72.71263</td>
+<td align="right">0.9936088</td>
+<td align="right">0.9996231</td>
+<td align="right">127.50684</td>
+<td align="right">128.32700</td>
 </tr>
 <tr class="even">
 <td>critical exon</td>
-<td align="right">0.9927310</td>
-<td align="right">0.9892038</td>
-<td align="right">45.73441</td>
-<td align="right">46.06929</td>
+<td align="right">0.9912822</td>
+<td align="right">0.9998206</td>
+<td align="right">76.60464</td>
+<td align="right">77.27833</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="gene-level-analysis" class="section level2">
 <h2>Gene level analysis</h2>
-<p><strong>Gene level: two sample one side (“greater”) test; high confidence gene: q&lt;0.1, SFARI cate1&amp;2; Moder confi: 0.3&gt;q&gt;0.1 SFARI cat3 &amp; S</strong></p>
-<pre class="r"><code>kable(gene.summy, caption=&quot;Burden analysis of gene set&quot;)</code></pre>
-<table>
-<caption>Burden analysis of gene set</caption>
-<thead>
-<tr class="header">
-<th></th>
-<th align="right">OR</th>
-<th align="right">p.value</th>
-<th align="right">rate.ca</th>
-<th align="right">rate.co</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>cate1</td>
-<td align="right">1.0433640</td>
-<td align="right">0.2085456</td>
-<td align="right">0.1840093</td>
-<td align="right">0.1763615</td>
-</tr>
-<tr class="even">
-<td>cate2</td>
-<td align="right">0.9930499</td>
-<td align="right">0.6017183</td>
-<td align="right">0.5629200</td>
-<td align="right">0.5668598</td>
-</tr>
-<tr class="odd">
-<td>cate3</td>
-<td align="right">1.0087867</td>
-<td align="right">0.3286067</td>
-<td align="right">1.2505214</td>
-<td align="right">1.2396292</td>
-</tr>
-<tr class="even">
-<td>cate4</td>
-<td align="right">1.0067047</td>
-<td align="right">0.2896337</td>
-<td align="right">3.2709154</td>
-<td align="right">3.2491309</td>
-</tr>
-<tr class="odd">
-<td>cate5</td>
-<td align="right">1.0174530</td>
-<td align="right">0.2319454</td>
-<td align="right">0.8646582</td>
-<td align="right">0.8498262</td>
-</tr>
-<tr class="even">
-<td>cate6</td>
-<td align="right">0.9539171</td>
-<td align="right">0.8402698</td>
-<td align="right">0.1918888</td>
-<td align="right">0.2011587</td>
-</tr>
-<tr class="odd">
-<td>cateS</td>
-<td align="right">0.9971525</td>
-<td align="right">0.5543337</td>
-<td align="right">0.8926999</td>
-<td align="right">0.8952491</td>
-</tr>
-<tr class="even">
-<td>TADAq&lt;5%</td>
-<td align="right">1.0482375</td>
-<td align="right">0.0904492</td>
-<td align="right">0.3928158</td>
-<td align="right">0.3747393</td>
-</tr>
-<tr class="odd">
-<td>TADAq&lt;20%</td>
-<td align="right">1.0183183</td>
-<td align="right">0.1955915</td>
-<td align="right">1.0692932</td>
-<td align="right">1.0500579</td>
-</tr>
-<tr class="even">
-<td>TADAq&lt;30%</td>
-<td align="right">1.0091811</td>
-<td align="right">0.2831035</td>
-<td align="right">1.8850521</td>
-<td align="right">1.8679027</td>
-</tr>
-<tr class="odd">
-<td>TADAq&lt;40%</td>
-<td align="right">1.0028665</td>
-<td align="right">0.4152328</td>
-<td align="right">2.7566628</td>
-<td align="right">2.7487833</td>
-</tr>
-<tr class="even">
-<td>TADAq&lt;50%</td>
-<td align="right">0.9818818</td>
-<td align="right">0.9629683</td>
-<td align="right">4.3580533</td>
-<td align="right">4.4384705</td>
-</tr>
-<tr class="odd">
-<td>TADAq&gt;90%</td>
-<td align="right">0.9928361</td>
-<td align="right">0.9996247</td>
-<td align="right">101.4289687</td>
-<td align="right">102.1608343</td>
-</tr>
-<tr class="even">
-<td>ID gene</td>
-<td align="right">1.0086483</td>
-<td align="right">0.2702458</td>
-<td align="right">2.4055620</td>
-<td align="right">2.3849363</td>
-</tr>
-<tr class="odd">
-<td>High</td>
-<td align="right">1.0056386</td>
-<td align="right">0.4108869</td>
-<td align="right">0.8266512</td>
-<td align="right">0.8220162</td>
-</tr>
-<tr class="even">
-<td>Mod</td>
-<td align="right">0.9950643</td>
-<td align="right">0.6591709</td>
-<td align="right">3.0836616</td>
-<td align="right">3.0989571</td>
-</tr>
-<tr class="odd">
-<td>PSD</td>
-<td align="right">0.9944588</td>
-<td align="right">0.7106721</td>
-<td align="right">4.5334878</td>
-<td align="right">4.5587486</td>
-</tr>
-<tr class="even">
-<td>FMRP</td>
-<td align="right">0.9955732</td>
-<td align="right">0.7322074</td>
-<td align="right">8.9123986</td>
-<td align="right">8.9520278</td>
-</tr>
-<tr class="odd">
-<td>AutismKB</td>
-<td align="right">1.0112301</td>
-<td align="right">0.2219197</td>
-<td align="right">2.2329085</td>
-<td align="right">2.2081112</td>
-</tr>
-<tr class="even">
-<td>constraint gene</td>
-<td align="right">0.9848970</td>
-<td align="right">0.9501030</td>
-<td align="right">5.3499421</td>
-<td align="right">5.4319815</td>
-</tr>
-<tr class="odd">
-<td>RVIS</td>
-<td align="right">1.0036775</td>
-<td align="right">0.2707991</td>
-<td align="right">12.9663963</td>
-<td align="right">12.9188876</td>
-</tr>
-<tr class="even">
-<td>Haploinsuff gene</td>
-<td align="right">0.9975098</td>
-<td align="right">0.7491371</td>
-<td align="right">33.4203940</td>
-<td align="right">33.5038239</td>
-</tr>
-<tr class="odd">
-<td>SCZ gene</td>
-<td align="right">0.9986123</td>
-<td align="right">0.6154038</td>
-<td align="right">20.3462341</td>
-<td align="right">20.3745075</td>
-</tr>
-<tr class="even">
-<td>Olfac.gene</td>
-<td align="right">0.9806059</td>
-<td align="right">0.9825049</td>
-<td align="right">5.2964079</td>
-<td align="right">5.4011587</td>
-</tr>
-<tr class="odd">
-<td>67SCZriskgene</td>
-<td align="right">0.9976476</td>
-<td align="right">0.5475076</td>
-<td align="right">0.9828505</td>
-<td align="right">0.9851680</td>
-</tr>
-</tbody>
-</table>
+<p>See <a href="GeneSetAnalysis.html">here</a></p>
 </div>
 <div id="combined-feature-analysis" class="section level2">
 <h2>Combined feature analysis</h2>

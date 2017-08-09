@@ -60,9 +60,9 @@ m=100
 N0=3000; N1=3000
 delta=1
 alpha0 <- 0.1
-beta0 <- 1000
+beta0 <- 100
 alpha <- 0.1
-beta <- 2000
+beta <- 200
 gamma.mean <- 6
 sigma <- 1
 num.group=1
@@ -79,7 +79,7 @@ tau.true=exp(Ajk*beta.true)/(1+exp(Ajk*beta.true))
 
 #pi=tau.true
 pi=0.1
-max.run=1
+max.run=100
 all.pi=matrix(nrow=max.run, ncol=(num.group+1))
 all.teststat=numeric()
 actu.pi=numeric()
@@ -162,7 +162,8 @@ for (run in 1:max.run) {
       EUi[i]=delta.est[iter-1]*bb/(delta.est[iter-1]*bb+1-delta.est[iter-1])
     }
     ############## EM algorithm: M step
-    delta.est[iter]=sum(EUi)/num.gene
+    #delta.est[iter]=sum(EUi)/num.gene
+    delta.est[iter]=1
     beta.k[iter]=sum(EUiZij)/sum(actu.no.var*EUi)
 
     ####################
