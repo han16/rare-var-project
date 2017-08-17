@@ -193,6 +193,79 @@ Test: use two sample one side poisson test ("greater")
 ### LoF in different gene set 
 
 
+```{r burdern analysis-gene level, results='hide', echo=F}
+GeneDB=src_sqlite(path="D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\gene.list.db", create=F)
+gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
+gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
+gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
+gene_cate4=data.frame(collect(tbl(GeneDB, "SFARI_cate4_gene")))
+gene_cate5=data.frame(collect(tbl(GeneDB, "SFARI_cate5_gene")))
+gene_cate6=data.frame(collect(tbl(GeneDB, "SFARI_cate6_gene")))
+gene_cateS=data.frame(collect(tbl(GeneDB, "SFARI_cateS_gene")))
+IDGene=data.frame(collect(tbl(GeneDB, "Pinto14AJHG_IDgene")))
+TADAGene=data.frame(collect(tbl(GeneDB, "TADAGenelist")))
+Qlessthan5percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.05]
+Qlessthan20percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.2]
+Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
+Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
+Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
+Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
+purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
+ASD.gene=data.frame(collect(tbl(GeneDB, "AutismKB_gene")))
+constraint.gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
+RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
+RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene 
+haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))
+gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
+gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
+LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+gene.summy=matrix(nrow=max.gene+1, ncol=4)
+gene.evid=list(); var.index=1
+gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate2$GeneID  & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[3]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate3$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate4$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[5]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate5$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[6]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate6$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[7]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cateS$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan5percentgene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[9]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan20percentgene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan30percentgene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[11]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan40percentgene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[12]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan50percentgene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[13]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlargerthan90percentgene & Anno.Data$Annotation %in% LoF.def==T )])
+gene.evid[[14]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% IDGene$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+high.conf=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
+mod.conf=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
+gene.evid[[15]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% high.conf & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[16]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% mod.conf & Anno.Data$Annotation %in% LoF.def==T )])
+psd.gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
+FMRP.gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
+gene.evid[[17]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% psd.gene & Anno.Data$Annotation %in% LoF.def==T )])
+gene.evid[[18]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% FMRP.gene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[19]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% ASD.gene$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[20]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% constraint.gene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[21]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% RVIS.gene & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.gene$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol & Anno.Data$Annotation %in% LoF.def==T)])
+olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
+gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID & Anno.Data$Annotation %in% LoF.def==T )])
+sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
+gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene & Anno.Data$Annotation %in% LoF.def==T)])
+
+colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
+rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
+for (gene in 1:(max.gene+1))
+  if (length(gene.evid[[gene]])>0)
+{
+  cat(gene, "is running", "\n")
+  pois.test=test.func(gene.evid[[gene]], var.data, N1, N0)
+  gene.summy[gene,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+}
+
+```
+
+
 
 
 

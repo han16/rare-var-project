@@ -64,8 +64,6 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 #gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 gene.set=as.character(read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\contraint.gene.txt", header=T)[[1]])
 gene.FDR=read.table("C:\\han\\ResearchWork\\StatGene\\170726_to_Shengtong_gene_FDR_based_on_Sanders_Neuron_denovo_coding_SNV", header=T)  # use 1-FDR as prior
-
-
 vart.set=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene.set)])
 cand.data=Anno.Data[which(Anno.Data$ID %in% vart.set),]
 par.evid=list()
@@ -98,7 +96,8 @@ gene.res.order=gene.res[order(gene.res$BF.with.prior, decreasing=T),]
 top20gene=as.character(gene.res.order$Gene)[1:20]
 ################ rank of top genes in other gene sets
 denovo=read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
-order.denovo=denovo[order(denovo$qvalue.combined, decreasing=F),]
+#order.denovo=denovo[order(denovo$qvalue.combined, decreasing=F),]
+order.denovo=denovo[order(denovo$BF.SNV.dn, decreasing=T),]
 denovo.rank=numeric()
 for (i in 1:length(top20gene))
  denovo.rank[i]=which(order.denovo$RefSeqName==top20gene[i])
