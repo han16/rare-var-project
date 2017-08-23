@@ -336,6 +336,10 @@ Non-Damaging,  $AF < 0.001$ | 0.09 | 0
 Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific  $\delta$.
 
 
+In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95, pvalue=0.0311.
+
+ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896. 
+
 ## TADA gene (q<5%)
 
 Only 46 genes with TADA q values less than 5%. 
