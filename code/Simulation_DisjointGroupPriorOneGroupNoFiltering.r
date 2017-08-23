@@ -49,9 +49,6 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
     x[pheno==1,j] <- sample(c(1,0), N1, replace=TRUE, prob=c(2*q[j]*gamma[j],1-2*q[j]*gamma[j]))
   }
 
-#  var.index=which(colSums(x!=0)>0) # get the variant index
-#  x=x[,!apply(x==0,2,all)]  # filter variants with 0 counts in both cases and controls since these kind of variants are noninformative
-#  x=as.matrix(x)
   return (list(geno=x,pheno=pheno,q=q,gamma=gamma, Zij=Zij))
 
 }
@@ -61,36 +58,26 @@ m=100
 N0=3000; N1=3000
 delta=1
 alpha0 <- 0.1
-beta0 <- 100
+beta0 <- 1000
 alpha <- 0.1
-beta <- 200
+beta <- 2000
 gamma.mean <- 6
 sigma <- 1
 num.group=1
 split.ratio=c(0, 1)
-anno.num=1
-############  generate feature covariate
-Ajk=rep(0, (num.gene*m))
-Ajk[sample(length(Ajk), (1*length(Ajk)))]=1
-############## generate beta
-beta.true=numeric(anno.num)
-beta.true[1]=2
-############# compute tau: risk of every variant being risk variant
-tau.true=exp(Ajk*beta.true)/(1+exp(Ajk*beta.true))
+############ 
 
 #pi=tau.true
 pi=0.1
 max.run=100
 all.pi=matrix(nrow=max.run, ncol=(num.group+1))
 all.teststat=numeric()
-actu.pi=numeric()
 pvalue.fish=numeric()
 all.conti.table=list()
 odds.ratio=numeric()
 log.lkhd=numeric() # used to check the concavity of likelihood function of beta
 ########################  generate data
 for (run in 1:max.run) {
-  actu.no.var=numeric()
   all.data=list()
   causal.var.index=matrix(nrow=num.gene, ncol=m)
   BF.var=matrix(0,nrow=num.gene, ncol=m);
@@ -101,7 +88,6 @@ for (run in 1:max.run) {
   beta.k=numeric(); beta.k[1]=0.7
   delta.est=numeric(); delta.est[1]=0.8
   BF.gene=matrix(nrow=max.iter, ncol=num.gene)
-  final.causal.var=numeric()
   conti.matx=list()
   ########################
   for (i in 1:num.gene)
@@ -109,12 +95,10 @@ for (run in 1:max.run) {
     cat(i, "th gene of ", "\t", num.gene, "\t", "is running", "\t", run, "th run of ", max.run, "\n")
     data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi, Ui[i], num.group, split.ratio)
     all.data[[i]]=data
- #   causal.var.index[i,]=data$Zij
 
       # construct  the contigency table for each gene
     #  xx=which(data$Zij==1)    # xx; causal variant  before filtering
     #  yy=data$var.index   # yy: final variant index after filtering
-    #  actu.no.var[i]=length(yy); zz=intersect(xx, yy) # zz; causal variant after filtering
     #  final.causal.var[i]=length(zz)
 
     #  conti.table=matrix(nrow=2,ncol=2)  # used for fisher exact test
@@ -195,7 +179,7 @@ for (run in 1:max.run) {
 
   par(mfrow=c(1,2))
   plot(beta.k, ylim=c(0, 1), main=expression(paste (beta)), xlab="Iteration index", ylab="")
-  abline(h=actu.pi[run], col="red")
+  abline(h=pi, col="red")
   plot(delta.est, ylim=c(0, 1), main=expression(delta), xlab="Iteration index", ylab="")
   abline(h=delta, col="red")
 

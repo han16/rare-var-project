@@ -198,6 +198,8 @@ Table: Fixed parameters for eight variant categories.
 
 
 
+* Damaging (probably damaging):Polyphen2.HDIV.score >=0.957
+
 
 ## Constraint (top 5%-1003) gene set 
 

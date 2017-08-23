@@ -65,6 +65,8 @@ The plot of $\widehat{\beta}-\beta$ is as below
 Clearly, there is a slight over etimate problem. 
 
 
+* Without filtering, across 100 replicates, $\widehat{\beta}=0.1406$, SD=0.0058.  
+
 
 #### (2) estimate both $\beta, \delta$
 
