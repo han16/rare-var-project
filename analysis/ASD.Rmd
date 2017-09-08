@@ -164,7 +164,7 @@ CADD.cutoff=quantile(as.numeric(as.character(Anno.Data$CADD.raw)), prob=0.9, na.
 var.evid[[7]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$CADD.raw))>CADD.cutoff)]) # CADD top 10% 
 BEE.cutoff=quantile(as.numeric(Anno.Data$Exon.Brain.Exp), prob=0.9, na.rm=TRUE)
 var.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Exon.Brain.Exp>BEE.cutoff)]) # Brain expression exon top 10%
-var.evid[[9]]=union(var.evid[[4]], var.evid[[6]]) # consensus
+var.evid[[9]]=union(union(var.evid[[4]], var.evid[[6]]), var.evid[[7]]) # consensus
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 var.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
 var.evid[[11]]=union(as.character(All.Anno.Data$ID[which(All.Anno.Data$ExacAF==0)]), as.character(All.Anno.Data$ID[which(is.na(All.Anno.Data$ExacAF)==T)]))  

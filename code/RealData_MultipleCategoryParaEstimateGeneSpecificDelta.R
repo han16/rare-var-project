@@ -241,13 +241,35 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
   par.evid[[1]]=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.05 & cand.data$ExacAF>=0.01 )
   par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==T &  cand.data$ExacAF<0.01)
 
-  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
-  par.evid[[4]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
-  par.evid[[5]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001)
+  ##############################     use consensus damaging 
+  par.evid[[3]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05), 
+  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)),
+  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05))
+  
+  par.evid[[4]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01), 
+  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)),
+  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01))
 
-  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
-  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
-  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF<0.001)
+  par.evid[[5]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF<0.001), 
+  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF<0.001)),
+  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff &  cand.data$ExacAF<0.001))
+
+
+  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
+  & as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
+  &  as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
+  & as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF<0.001)
+ 
+  #############################
+#  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+#  par.evid[[4]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+#  par.evid[[5]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001)
+
+#  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+#  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+#  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF<0.001)
 
   group.index=rep(NA, nrow(cand.data))
   for (i in 1:length(par.evid))
@@ -264,17 +286,26 @@ All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
-########################################
+CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
+############## 1003 constraint genes 
 #gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
-gene.set=as.character(unique(All.Anno.Data$Gene))
+################ whole genome 
+#gene.set=as.character(unique(All.Anno.Data$Gene))
+################ RVIS half more likely genes 
 #gene.set=as.character(read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\RVISGene\\RVIS.quantilelessthan50.gene.txt", header=T)[[1]])
+############ constraint genes 
+cons.gene.data=readRDS("C:\\han\\ResearchWork\\StatGene\\ConstraintMat.RDS", refhook = NULL)
+#cons.gene.data=readRDS("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\GeneSet\\ExacConstraintScore\\ConstraintMat.RDS", refhook = NULL)
+order.cons=cons.gene.data[order(cons.gene.data[,16], decreasing=T), ]
+gene.set=rownames(order.cons)[1:(nrow(order.cons)*0.5)]
+
+########### gene priors 
 gene.FDR=read.table("C:\\han\\ResearchWork\\StatGene\\170726_to_Shengtong_gene_FDR_based_on_Sanders_Neuron_denovo_coding_SNV.txt", header=T)  # use 1-FDR as prior
 #gene.FDR=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\170726_to_Shengtong_gene_FDR_based_on_Sanders_Neuron_denovo_coding_SNV.txt", header=T)  # use 1-FDR as prior
 vart.set=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene.set)])
 cand.data=Anno.Data[which(Anno.Data$ID %in% vart.set),]
 gene.data=eight.partition(cand.data)
-
 gene.prior=numeric()                           # add gene priors in the last column
 for (i in 1:nrow(gene.data))
  if (length(which(gene.FDR$genename==as.character(gene.data$Gene)[i])))
@@ -325,23 +356,23 @@ new.data=cbind(gene.data, gene.prior)
 }
 ##########################
 
-BF.gene=para.est$BF.gene
-order.BF.gene=BF.gene[order(BF.gene$BF, decreasing=T),]
-top20gene=as.character(order.BF.gene$Gene)[1:100]
+#BF.gene=para.est$BF.gene
+#order.BF.gene=BF.gene[order(BF.gene$BF, decreasing=T),]
+#top20gene=as.character(order.BF.gene$Gene)[1:20]
 
-denovo=read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
-order.denovo=denovo[order(denovo$qvalue.combined, decreasing=F),]
-order.denovo=denovo[order(denovo$BF.SNV.dn, decreasing=T),]
-top1000.denovo.gene=as.character(order.denovo$RefSeqName[1:1000])
-top20.overlap=length(intersect(top20gene, top1000.denovo.gene))
-all.overlap=length(intersect(gene.set, top1000.denovo.gene))
-top20.overlap
-all.overlap
+#denovo=read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+#order.denovo=denovo[order(denovo$qvalue.combined, decreasing=F),]
+#order.denovo=denovo[order(denovo$BF.SNV.dn, decreasing=T),]
+#top1000.denovo.gene=as.character(order.denovo$RefSeqName[1:1000])
+#top20.overlap=length(intersect(top20gene, top1000.denovo.gene))
+#all.overlap=length(intersect(gene.set, top1000.denovo.gene))
+#top20.overlap
+#all.overlap
 
-ASD.prior=read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\ASD_Priors.txt", header=T)
-order.ASD.prior=ASD.prior[order(ASD.prior$post, decreasing=T),]
-top1000.ASD.prior.gene=as.character(order.ASD.prior$Gene[1:1000])
-top20.overlap=length(intersect(top20gene, top1000.ASD.prior.gene))
-all.overlap=length(intersect(gene.set, top1000.ASD.prior.gene))
-top20.overlap
-all.overlap
+#ASD.prior=read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\ASD_Priors.txt", header=T)
+#order.ASD.prior=ASD.prior[order(ASD.prior$post, decreasing=T),]
+#top1000.ASD.prior.gene=as.character(order.ASD.prior$Gene[1:1000])
+#top20.overlap=length(intersect(top20gene, top1000.ASD.prior.gene))
+#all.overlap=length(intersect(gene.set, top1000.ASD.prior.gene))
+#top20.overlap
+#all.overlap
