@@ -425,6 +425,17 @@ legend(4, 1, c(paste("beta", seq(1,8), sep="")), col=seq(1,8), lty=rep(1,8))
 
 ```
 
+constraint level | C5: Consensus Damaging,  $AF < 0.001$| C8: Non-Consensus Damaging,  $AF < 0.001$
+---------------------|---------------|-------------------
+top 10%  |     34,028/33,508=1.0155 | 30,922/30,736=1.0061 
+top 20% | 51,230/50,454=1.0154 | 46,680/46,645=1.0008
+top 30% | 63,601/63,042=1.0089 | 58,715/58,861=0.9975
+top 40% | 75,578/75,082=1.0066 | 69,371/69,466=0.9986
+top 50% | 86,633/86,233=1.0046 | 78,920/79,371=0.9943
+Table: Number of variants in C5 and C8 at different constrait level. 
+
+
+
 
 
 ## TADA gene (q<5%)

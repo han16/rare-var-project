@@ -312,10 +312,10 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-09-08</p>
+<p><strong>Last updated:</strong> 2017-09-14</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> 768dd60</p>
+<p><strong>Code version:</strong> c71857f</p>
 <!-- Add your analysis here -->
 <pre class="r"><code>N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
@@ -1399,6 +1399,48 @@ for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
 <p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<table style="width:81%;">
+<caption>Number of variants in C5 and C8 at different constrait level.</caption>
+<colgroup>
+<col width="30%" />
+<col width="22%" />
+<col width="27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>constraint level</th>
+<th>C5: Consensus Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></th>
+<th>C8: Non-Consensus Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>top 10%</td>
+<td>34,028/33,508=1.0155</td>
+<td>30,922/30,736=1.0061</td>
+</tr>
+<tr class="even">
+<td>top 20%</td>
+<td>51,230/50,454=1.0154</td>
+<td>46,680/46,645=1.0008</td>
+</tr>
+<tr class="odd">
+<td>top 30%</td>
+<td>63,601/63,042=1.0089</td>
+<td>58,715/58,861=0.9975</td>
+</tr>
+<tr class="even">
+<td>top 40%</td>
+<td>75,578/75,082=1.0066</td>
+<td>69,371/69,466=0.9986</td>
+</tr>
+<tr class="odd">
+<td>top 50%</td>
+<td>86,633/86,233=1.0046</td>
+<td>78,920/79,371=0.9943</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
