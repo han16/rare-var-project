@@ -1,9 +1,10 @@
 ---
-title: "ASD WES data"
+title: "SCZ analysis"
 author: "Shengtong Han"
 date: YYYY-MM-DD
 output: html_document
 ---
+rm(list=ls())
 
 <!-- The file analysis/chunks.R contains chunks that define default settings
 shared across the workflowr files. -->
@@ -24,6 +25,9 @@ knitr::read_chunk("chunks.R")
 ```{r code-version, echo=FALSE, results='asis'}
 ```
 
+<!-- Add your analysis here -->
+
+
 ```{r load packages, results='hide', include=FALSE}
 library(RSQLite)
 library(dplyr)
@@ -42,28 +46,35 @@ return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rat
 ```
 
 <!-- Add your analysis here -->
+The data is from this [paper][paper].
+
+
+[paper]: http://www.nature.com/nature/journal/v506/n7487/full/nature12975.html?foxtrotcallback=true
+
+
 ## Quality Control (QC)
-N1=N0=4315 trios. 
 
 ### Annotated data quality. 
 
 ```{r read into data, echo=F, results='hide', cache=T}
-All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedSCZ.txt", header=T)
+colnames(All.Anno.Data)[10]="Exon.Exac.Cons"
 ```
 
 ```{r set paramters and modifying the data, echo=T, results='hide'}
-N1=4315; N0=4315
+N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
-#Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
-Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
-
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
 ```
 
-* sample size is of 4315 
+* sample size is N1=2536; N0=2543 
 * set ExacAF of NA to be 0
 * use AF cutoff and exclude synonymous SNV
+
+
+
 
 ```{r check missing values for every annotation, echo=F, results='hide'}
 nosyn.data=All.Anno.Data[All.Anno.Data$Annotation!="synonymous SNV",]
@@ -90,6 +101,7 @@ data.summ=data.frame(item=Anno.fea, value.AllVar=ratio.data, value.withoutsyn=ra
 ```{r summary of the data, echo=F}
 kable(data.summ, caption="Quality of annotated data")
 ```
+
 
 The table summaries the ratio of non-missing values in every annotation feature from different types of variants 
 
@@ -267,10 +279,6 @@ for (gene in 1:(max.gene+1))
 
 ```
 
-
-
-
-
 ## Exon level analysis
 
 **All subsequence analsyis foucs on variant with AF < 5% and exluding synonymous mutautions. **
@@ -310,27 +318,12 @@ kable(exon.summ, caption="Burden analysis of exons")
 
 ## Gene level analysis
 
-See [here](GeneSetAnalysis.html)
+See [here](Geneset-SCZ.html)
 
-### seizure-related genes in flies
-
-```{r seizure gene, echo=T}
-seizure.gene=c("PNPO", "cpo", "eas", "eag", "jbug", "kcc", "kdn", "Letm1", "para", "sei", "Sh", "shakB", "slo", "sesB", "tko")
-seizure.summ=matrix(nrow=length(seizure.gene), ncol=4)
-
-colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
-rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
-for (gene in 1:length(seizure.gene))
-{
-  seizure.evid=as.character(Anno.Data$ID[which(Anno.Data$Gene==seizure.gene[gene])])
-  cat(gene, "is running", "\n")
-  pois.test=test.func(seizure.evid, var.data, N1, N0)
-  seizure.summ[gene,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
-}
-  
-```
 
 ## Combined feature analysis
+
+
 
 
 ## Session information

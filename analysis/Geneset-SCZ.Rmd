@@ -1,5 +1,5 @@
 ---
-title: "Gene Set Analysis"
+title: "Gene set analysis for SCZ data"
 author: "Shengtong Han"
 date: YYYY-MM-DD
 output: html_document
@@ -41,14 +41,14 @@ return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rat
 }
 ```
 
-<!-- Add your analysis here -->
-
 ```{r read into data, echo=F, results='hide', cache=T}
-All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedSCZ.txt", header=T)
+colnames(All.Anno.Data)[10]="Exon.Exac.Cons"
 ```
 
+
 ```{r set paramters and modifying the data, echo=T, results='hide'}
-N1=4315; N0=4315
+N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
@@ -56,8 +56,6 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
 ```
-
-
 
 ## Simple burden test 
 
@@ -175,8 +173,6 @@ kable(LoF.summy, caption="Burden analysis of LoF in different gene sets")
 
 
 
-
-
 ## Variant partitions
 A gene usually has many variants such as missense, LoF, etc which contribute to the disease at different degree of deleteriousness. So we partition variants from all genes into different variant categories based on their annotation priors. 
 
@@ -212,7 +208,8 @@ Constraint gene set is from [this paper].
 ### Cons: Simple burden analysis
 
 ```{r, echo=F, results='hide'}
-gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+#gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\GeneSet\\Samocha_2014NG\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 cand.data=Anno.Data[which(Anno.Data$Gene %in% gene.set),]
 par.evid=list()
 par.evid[[1]]=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.05 & cand.data$ExacAF>=0.01)
@@ -233,6 +230,7 @@ for (i in 1:length(par.evid))
 
 ```
 
+
 The burden of 8 categories is 
 ```{r, echo=T}
 colnames(burden.summy)=c("OR", "p.value", "No.ca", "No.co")
@@ -240,286 +238,7 @@ kable(burden.summy, caption="The burden of eight categories")
 ```
 
 
-* The first catogry only has one common variant with 298/272. 
-
-
-### Cons: Estimate $\beta_i$, common fixed $\delta$
-
-
-Annotation category  | $\delta=0.1$ (test.stat) | $\delta=0.2$ (test.stat)
----------------------|---------------|-------------------
-LoF,   $0.01 \leq AF < 0.05$  |      $\beta_1=0$ (0) | 0 (0)
-LoF,  $AF < 0.01$ |         $\beta_2=0.54$ (0.63) | 0.39 (0.76)  
-Damaging, $0.01 \leq AF < 0.05$ |   $\beta_3=0$ (0)| 0 (0)
-Damaging,  $0.001 \leq  AF < 0.01$ |    $\beta_4=0$ (0) | 0 (0)
-Damaging,  $AF < 0.001$ |  $\beta_5=0.23$ (5.42)| 0.15 (5.71)
-Non-Damaging, $0.01 \leq  AF < 0.05$ |    $\beta_6=0$ (0) | 0 (0)
-Non-Damaging, $0.001 \leq AF < 0.01$ |  $\beta_7=0$ (0) | 0 (0)
-Non-Damaging,  $AF < 0.001$ | $\beta_8=0.24$ (3.11) | 0.16 (3.49)
-Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with fixed $\delta$. 
-
-
-
-#### LoF category 
-
-```{r, echo=T}
-beta.est=c(0.49419653, 0.31677155, 0.22161936, 0.16934539, 0.13697687, 0.11502861, 0.09918004, 0.08717663, 0.07778499, 0.07022805)
-delta=seq(0.1, 1, by=0.1)
-plot(beta.est, xaxt='n', ylab=expression(paste(hat(beta))), main="Parameter estimate for LoF category", type="o", xlab=expression(paste(delta)))
-axis.label=c("0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1")
-axis(1,at=1:10,labels=axis.label)
-test.stat=c(0.6105703, 0.7301446, 0.7621092, 0.7772918, 0.7866515, 0.7931309, 0.7979188, 0.8016140, 0.8045560, 0.8069559, cex.axis=0.8)
-
-```
-
-### Cons: Fixed $\beta_i$
-
-
-With fixed parameter in every variant group, calculate the BF of every gene which is the product of BF of every variant in this gene. Below are top 20 genes with large BF.   
-
-
-Gene | BF | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | Rank | p-val
------|----|----|----|----|----|----|----|----|----|------|------------------
-CYFIP1 | 12.44 | - | - | - | 0.81 | 13.53 | - | 0.90 |  1.26 | 18200 | 0.0015
-ABCA2 | 11.96 | - | - | - | - |  1.18 | - | - | 10.13 | 18210 | 0.0016
-CACNA1D | 11.26 | - | - | - | - |  9.46 | 0.97 | 0.91 |  1.35 | 186 | 0.0018
-FBN1 |  6.94 | - | - | - | 0.83 |  5.83 | 0.95 | 0.89 |  1.71 | 1324 | 0.0041
-CIT |  6.68 | - | 1.63 | - | 5.90 |  0.45 | 0.95 | 0.70 |  2.31 | 13225 | 0.0044
-PLXNB1 |  5.78 | - | - | - | - |  3.45 | - | - |  1.68 | 364 | 0.0057
-CREBBP |  5.51 | - | - | - | - |  2.22 | - | 1.47 |  1.70 | 1232 | 0.0062
-GTF3C4 |  5.50 | - | - | - | - |  4.85 | - | 0.92 |  1.23 | 15612 | 0.0063
-MYH10 |  5.25 | - | - | - | - |  4.45 | - | 0.79 |  1.50 | 48 | 0.0068
-DNM3 |  4.91 | - | 1.63 | - | - |  2.02 | - | 1.27 |  1.18 | 16092 | 0.0076
-CHD8 |  4.79 | - | - | - | 0.77 |  6.66 | 0.97 | - |  0.96 | 2 | 0.008
-TP63 |  4.05 | - | - | - | 0.81 |  2.66 | - | 0.92 |  2.05 | 15512 | 0.0108
-DOCK4 |  3.91 | - | - | - | - |  4.47 | 0.90 | 0.90 |  1.07 | 18342 | 0.0116
-CNOT1 |  3.73 | - | - | 0.91 | - |  3.25 | 1.06 | - |  1.19 | 8577 | 0.0128
-HIRA |  3.04 | - | - | - | - |  2.37 | 1.06 | - |  1.21 | 17444 | 0.0192
-ITSN1 |  2.94 | - | - | - | 0.91 |  3.23 | - | - |  1.00 | 1479 | 0.0205
-HDLBP |  2.91 | - | - | - | - |  1.08 | - | 4.11 |  0.65 | 480 | 0.0210
-BAZ1A |  2.89 | - | - | - | - |  2.79 | 1.02 | 0.85 |  1.20 | 1392 | 0.0212
-SLC4A8 |  2.81 | - | - | - | - |  1.90 | - | - |  1.48 | 16562 | 0.0225
-VPRBP |  2.79 | - | - | - | - |  3.80 | - | - |  0.73 | 1393 | 0.0230
-Table: Bayes factor partition of top 20 genes from 1003 constraint genes. Rank: Rank by DNM; p-val: empirical p values by perturbating case control labels with null distribution of all constraint genes. ``-" means no variants in the category.
-
-
-In top 1000 denovo genes, 5 are found in top 20 genes and 81 in all 1003 genes. Fisher exact test (5/20 vs 81/1003) gives OR=3.7857 and p value=0.0211.
-
-
-
-
-ASD gene priors  for 1003 constraint genes. (1) Enrichment with top 1000 genes: 11/20 vs 261/1003, OR=3.4696, pvalue=0.008017; (2) enrichment with top 2000 genes: 12/20 vs 419/1003, OR=2.0892, p value=0.1135.
-
-
-### Cons: Estimate $\beta_i$, gene specific $\delta_i$
-
-
-
-#### (1) LoF only 
-
-The burden is 622/583. $\widehat{\beta}=0.74$ and test statistic is 2.99. 
-
-
-#### (2) Eight categories 
-
-
-Annotation category  | $\widehat{\beta}$ | test.stat
----------------------|---------------|-------------------
-LoF,   $0.01 \leq AF < 0.05$  |     0 | 0 
-LoF,  $AF < 0.01$ |       0.81 | 2.98  
-Damaging, $0.01 \leq AF < 0.05$ |   0| 0 
-Damaging,  $0.001 \leq  AF < 0.01$ |  0 | 0 
-Damaging,  $AF < 0.001$ | 0.12| 6.88
-Non-Damaging, $0.01 \leq  AF < 0.05$ |  0 | 0 
-Non-Damaging, $0.001 \leq AF < 0.01$ |  0 | 0 
-Non-Damaging,  $AF < 0.001$ | 0.09 | 0
-Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific  $\delta$.
-
-
-In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95, pvalue=0.0311.
-
-ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896. 
-
-
-Replace "damaging" with "consensus damaging"
-
-
-Annotation category  | $\widehat{\beta}$ | test.stat
----------------------|---------------|-------------------
-LoF,   $0.01 \leq AF < 0.05$  |     0 | 0 
-LoF,  $AF < 0.01$ |       0.7318 | 2.99  
-Consensus Damaging, $0.01 \leq AF < 0.05$ |   0| 0 
-Consensus Damaging,  $0.001 \leq  AF < 0.01$ |  0 | 0 
-Consensus Damaging,  $AF < 0.001$ | 0.1310| 10.06
-Non-Consensus Damaging, $0.01 \leq  AF < 0.05$ |  0 | 0 
-Non-Consensus Damaging, $0.001 \leq AF < 0.01$ |  0 | 0 
-Non-Consensus Damaging,  $AF < 0.001$ | 0.0737 | 0
-Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific  $\delta$.
-
-
-## Constraint genes 
-
-There are 17,416 genes. 
-
-### Con: Estimate $\beta_i$, gene specific $\delta_i$
-
-#### Non-nested gene sets 
-
-With their constraint scores, focus on top 10% genes, top 10-20% genes, top 20-30% genes, top 30-40% genes, top 40-50% genes. 
-
-
-```{r, echo=T}
-beta=matrix(nrow=5, ncol=8)
-rownames(beta)=c("top10%", "10-20%", "20-30%", "30-40%", "40-50%")
-beta[1,]=c(0, 0.6195,  0, 0.0025,  0.0427, 0,  0,  0.0855)
-beta[2,]=c(0, 0.0073,  0, 0,   0.0316, 0, 0,  0.0588)
-beta[3,]=c(0,  0.0179, 0,   0,   0.0284,0,  0.0294,  0.0390)
-beta[4,]=c(0,  0.0883,  0, 0,   0.0245,0,  0,   0.0017)
-beta[5,]=c(0,  0.2706,  0, 0,   0.0038,0,   0.0187,  0.0006)
-plot(beta[,1], ylim=c(0,1), type="o", xaxt="n", xlab="", ylab=expression(paste(hat(beta))), main="Parameter estimate of five non-nested gene sets")
-axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
-for (i in 2:8)
- lines(beta[,i], type="o", col=i)
-legend(2, 0.8, c(paste("beta", seq(1,8), sep="")), col=seq(1,8), lty=rep(1,8))
-
-```
-
-
-
-Replace "Damaging" with "Consensus damaging"
-
-
-```{r, echo=T}
-beta=matrix(nrow=5, ncol=8)
-rownames(beta)=c("top10%", "top10-20%", "top20-30%", "top30-40%", "top40-50%")
-beta[1,]=c(0, 0.6275,  0, 0,  0.0454, 0,  0,  0.0848)
-beta[2,]=c(0, 0.0326,  0, 0,   0.0667, 0, 0,  0.0071)
-beta[3,]=c(0,  0.0379, 0,   0,   0.0365,0,  0.0509,  0.0034)
-beta[4,]=c(0,  0.1009,  0, 0,   0.0020,0,  0,   0.0008)
-beta[5,]=c(0,  0.2652,  0, 0,   0.0350,0,   0.0080,  0.0004)
-plot(beta[,1], ylim=c(0,1), type="o", xaxt="n", xlab="", ylab=expression(paste(hat(beta))), main="Parameter estimate of five non-nested gene sets")
-axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
-for (i in 2:8)
- lines(beta[,i], type="o", col=i)
-legend(4, 1, c(paste("beta", seq(1,8), sep="")), col=seq(1,8), lty=rep(1,8))
-
-```
-
-constraint level | C5: Consensus Damaging,  $AF < 0.001$| C8: Non-Consensus Damaging,  $AF < 0.001$
----------------------|---------------|-------------------
-top 10%  |     34,028/33,508=1.0155 | 30,922/30,736=1.0061 
-top 10-20% | 17,184/16,925=1.0153 | 15,738/15,894=0.9902
-top 20-30% | 12,371/12,588=0.9828 | 12,035/12,216=0.9852
-top 30-40% | 11,972/12,038=0.9945 | 10,652/10,605=1.0044
-top 40-50% | 11,055/11,147=0.9917 | 9,548/9,903=0.9642
-Table: Number of variants in C5 and C8 at different constrait level. 
-
-
-
-
-
-## TADA gene (q<5%)
-
-Only 46 genes with TADA q values less than 5%. 
-
-### TADA: Estimate $\beta$, fixed $\delta=1$
-
-#### Only LoF variants  
-
-In the simple burden analysis (see Table above), LoF variants is 55/27. With $\delta=1$, $\widehat{\beta}=0.5692$, and test statistic is 12.0211. 
-
-### TADA: Estimate $\beta_i$, gene specific $\delta_i$
-
-Use 1-FDR of every gene as priors to estimate $\beta_i$. 
-
-
-```{r, results="hide", echo=F, eval=F}
-Bayesian.FDR <- function(BF, pi0, alpha=0.05) {
-  # convert BFs to PPA (posterior probability of alternative model)
-  # [BF]: a sorted vector of BFs (in decreasing order)
-  # [pi0]: the prior probability that the null model is true
-  # [alpha]: the FDR target
-  # [Return]: the q-value of each BF, and the number of findings with q below alpha. 
-  pi <- 1-pi0
-  q <- pi*BF/(1-pi+pi*BF) # PPA
-  q0 <- 1 - q # posterior probability of null model
-  
-  # the FDR at each PPA cutoff
-  n <- length(BF)
-  FDR <- numeric(n)
-  for (i in 1:n) FDR[i] <- sum(q0[1:i]) / i 
-  
-  # the cutoff
-  t <- 1
-  while (t <= length(q0) & mean(q0[1:t]) <= alpha) { t <- t+1 }
-  return (list(FDR=FDR, ND=t))
-}
-```
-
-####  Only LoF category 
-
-$\widehat{\beta}=0.63$, test statistics is 10.07. 
-
-## RVIS gene 
-
-
-### RVIS:Estimate $\beta_i$, gene specific $\delta_i$ 
-
-#### Quantile score <50 (8437) genes
-
-Annotation category  | $\widehat{\beta}$ | test.stat
----------------------|---------------|-------------------
-LoF,   $0.01 \leq AF < 0.05$  |     0 | 0 
-LoF,  $AF < 0.01$ |       0.17 | 6.06  
-Damaging, $0.01 \leq AF < 0.05$ |   0| 0 
-Damaging,  $0.001 \leq  AF < 0.01$ |  0 | 0 
-Damaging,  $AF < 0.001$ | 0.06| 13.55
-Non-Damaging, $0.01 \leq  AF < 0.05$ |  0 | 0 
-Non-Damaging, $0.001 \leq AF < 0.01$ |  0 | 0 
-Non-Damaging,  $AF < 0.001$ | 0.08 | 11.34
-Table: Parameter estimates of 8437 ( quantile<50 ) RVIS genes by EM with eight partitions with gene specific  $\delta_i$.
-
-
-
-#### with different quantile score 
-
-Replace "Damaging" with "Consensus damaging"
-
-```{r, echo=T}
-beta=matrix(nrow=5, ncol=8)
-rownames(beta)=c("Quantile score<10", "10-20", "20-30", "30-40", "40-50")
-beta[1,]=c(0, 0.5309,  0, 0,  0.0414, 0,  0,  0.0794)
-beta[2,]=c(0, 0.1402,  0, 0,   0.1098, 0, 0,  0.0464)
-beta[3,]=c(0,  0.0026, 0,   0,   0.0222,0,  0.0197,  0.1779)
-beta[4,]=c(0,  0.0016,  0, 0,   0.0770,0,  0,   0.0558)
-beta[5,]=c(0,  0.1103,  0, 0,   0.1246,0,   0,  0.0369)
-plot(beta[,1], ylim=c(0,0.6), type="o", xaxt="n", xlab="", ylab=expression(paste(hat(beta))), main="Parameter estimate of five non-nested gene sets")
-axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
-for (i in 2:8)
- lines(beta[,i], type="o", col=i)
-legend(4, 0.5, c(paste("beta", seq(1,8), sep="")), col=seq(1,8), lty=rep(1,8))
-```
-
-## Whole genome 
-
-consider all 15624 genes in ASD data. 
-
-### Whole: Estimate $\beta_i$, gene specific $\delta_i$
-
-Annotation category  | $\widehat{\beta}$ | test.stat
----------------------|---------------|-------------------
-LoF,   $0.01 \leq AF < 0.05$  |     0 | 0 
-LoF,  $AF < 0.01$ |       0.08 | 3.94  
-Damaging, $0.01 \leq AF < 0.05$ |   0| 0 
-Damaging,  $0.001 \leq  AF < 0.01$ |  0 | 0 
-Damaging,  $AF < 0.001$ | 0.06| 23.85
-Non-Damaging, $0.01 \leq  AF < 0.05$ |  0 | 0 
-Non-Damaging, $0.001 \leq AF < 0.01$ |  0 | 0 
-Non-Damaging,  $AF < 0.001$ | 0.06 | 11.42
-Table: Parameter estimates of 15624 genes by EM with eight partitions with gene specific  $\delta_i$.
-
-
-
+<!-- Add your analysis here -->
 
 ## Session information
 

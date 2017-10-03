@@ -8,8 +8,9 @@ output:
 Below is the outline of the project. 
 
 * [This][project] is the project.
-* [This](ASD.html) is analysis for ASD exon sequence data.
 * click this [link](simulation-study.html) to see simulation studies. 
+* [This](ASD.html) is analysis for ASD exon sequence data.
+* [This](SCZ-analysis.html) is analysis for Schizophrenia data. 
 
 
 [project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf

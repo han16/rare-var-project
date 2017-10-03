@@ -291,16 +291,17 @@ CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9,
 #gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 ################ whole genome 
-#gene.set=as.character(unique(All.Anno.Data$Gene))
+gene.set=as.character(unique(All.Anno.Data$Gene))
 ################ RVIS genes 
-RVIS.gene=read.csv("C:\\han\\ResearchWork\\StatGene\\RVISData\\RVIS_16956CCDSGenes.csv", header=T)
-gene.set=as.character(RVIS.gene[RVIS.gene$Residual.Variation.Intolerance.Score.Percentile<50,]$HGNC.gene)
+#RVIS.gene=read.csv("C:\\han\\ResearchWork\\StatGene\\RVISData\\RVIS_16956CCDSGenes.csv", header=T)
+#gene.set=as.character(RVIS.gene[RVIS.gene$Residual.Variation.Intolerance.Score.Percentile<50 & 
+#RVIS.gene$Residual.Variation.Intolerance.Score.Percentile>=40,]$HGNC.gene)
 #gene.set=as.character(read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\RVISGene\\RVIS.quantilelessthan50.gene.txt", header=T)[[1]])
 ############ constraint genes 
 #cons.gene.data=readRDS("C:\\han\\ResearchWork\\StatGene\\ConstraintMat.RDS", refhook = NULL)
 #cons.gene.data=readRDS("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\GeneSet\\ExacConstraintScore\\ConstraintMat.RDS", refhook = NULL)
 #order.cons=cons.gene.data[order(cons.gene.data[,16], decreasing=T), ]
-#gene.set=rownames(order.cons)[1:(nrow(order.cons)*0.5)]
+#gene.set=rownames(order.cons)[(1+nrow(order.cons)*0.4):(nrow(order.cons)*0.5)]
 
 ########### gene priors 
 gene.FDR=read.table("C:\\han\\ResearchWork\\StatGene\\170726_to_Shengtong_gene_FDR_based_on_Sanders_Neuron_denovo_coding_SNV.txt", header=T)  # use 1-FDR as prior
