@@ -55,7 +55,7 @@ All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-pr
 N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
-#Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
@@ -314,12 +314,12 @@ See [here](GeneSetAnalysis.html)
 
 ### seizure-related genes in flies
 
-```{r seizure gene, echo=T}
-seizure.gene=c("PNPO", "cpo", "eas", "eag", "jbug", "kcc", "kdn", "Letm1", "para", "sei", "Sh", "shakB", "slo", "sesB", "tko")
+```{r seizure gene, echo=T, results="hide"}
+seizure.gene=c("PNPO", "CPO", "EAS", "EAG", "JUBG", "KCC", "KDN", "LETM1", "PARA", "SEI", "SH", "SHAKB", "SLO", "SESB", "TKO")
 seizure.summ=matrix(nrow=length(seizure.gene), ncol=4)
 
-colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
-rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
+colnames(seizure.summ)=c("OR", "p.value", "rate.ca", "rate.co")
+rownames(seizure.summ)=c(seizure.gene)
 for (gene in 1:length(seizure.gene))
 {
   seizure.evid=as.character(Anno.Data$ID[which(Anno.Data$Gene==seizure.gene[gene])])
@@ -329,6 +329,12 @@ for (gene in 1:length(seizure.gene))
 }
   
 ```
+
+
+```{r, echo=T}
+kable(seizure.summ)
+```
+
 
 ## Combined feature analysis
 

@@ -312,10 +312,10 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-10-03</p>
+<p><strong>Last updated:</strong> 2017-10-04</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> 538b92a</p>
+<p><strong>Code version:</strong> 3800d50</p>
 <pre class="r"><code>N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
@@ -732,49 +732,40 @@ LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
 <tr class="header">
 <th>Category</th>
 <th>AF</th>
-<th>fixed <span class="math inline">\(\beta\)</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>C1:LoF</td>
 <td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
-<td><span class="math inline">\(\beta_1= 0.5\)</span></td>
 </tr>
 <tr class="even">
 <td>C2:LoF</td>
 <td><span class="math inline">\(AF &lt; 0.01\)</span></td>
-<td><span class="math inline">\(\beta_2=0.9\)</span></td>
 </tr>
 <tr class="odd">
 <td>C3:Damaging</td>
 <td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
-<td><span class="math inline">\(\beta_3= 0.1\)</span></td>
 </tr>
 <tr class="even">
 <td>C4:Damaging</td>
 <td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
-<td><span class="math inline">\(\beta_4= 0.2\)</span></td>
 </tr>
 <tr class="odd">
 <td>C5:Damaging</td>
 <td><span class="math inline">\(AF &lt; 0.001\)</span></td>
-<td><span class="math inline">\(\beta_5= 0.4\)</span></td>
 </tr>
 <tr class="even">
 <td>C6:Non-Damaging</td>
 <td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
-<td><span class="math inline">\(\beta_6= 0.05\)</span></td>
 </tr>
 <tr class="odd">
 <td>C7:Non-Damaging</td>
 <td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
-<td><span class="math inline">\(\beta_7= 0.1\)</span></td>
 </tr>
 <tr class="even">
 <td>C8:Non-Damaging</td>
 <td><span class="math inline">\(AF &lt; 0.001\)</span></td>
-<td><span class="math inline">\(\beta_8=0.2\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -849,6 +840,142 @@ kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></
 <td align="right">0.5634710</td>
 <td align="right">9678</td>
 <td align="right">9726</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="cons-estimate-beta_i-gene-specific-delta_i" class="section level3">
+<h3>Cons: Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="eight-categories" class="section level4">
+<h4>(2) Eight categories</h4>
+<table>
+<caption>Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific <span class="math inline">\(\delta\)</span>. NA means no variants.</caption>
+<thead>
+<tr class="header">
+<th>Annotation category</th>
+<th><span class="math inline">\(\widehat{\beta}\)</span></th>
+<th>test.stat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>LoF, <span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0292</td>
+<td>2.3766</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0391</td>
+<td>1.1027</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0862</td>
+<td>1.6528</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="rvis-gene" class="section level2">
+<h2>RVIS gene</h2>
+<div id="rvisestimate-beta_i-gene-specific-delta_i" class="section level3">
+<h3>RVIS:Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<pre class="r"><code>beta=matrix(nrow=5, ncol=8)
+rownames(beta)=c(&quot;Quantile score&lt;10&quot;, &quot;10-20&quot;, &quot;20-30&quot;, &quot;30-40&quot;, &quot;40-50&quot;)
+beta[1,]=c(0, 0.0977,  0, 0.0179,  0.0132, 0,  0.0203,  0.0415)
+beta[2,]=c(0, 0.1240,  0, 0.0206,   0, 0, 0,  0.0004)
+beta[3,]=c(0,  0, 0,   0,   0.0940,0.0615,  0,  0.0639)
+beta[4,]=c(0,  0,  0, 0.0285,   0.0813,0,  0.0889,   0.0005)
+beta[5,]=c(0, 0.0500,   0, 0,  0,  0.0370, 0.0315,    0.0005)
+plot(beta[,1], ylim=c(0,0.5), type=&quot;o&quot;, xaxt=&quot;n&quot;, xlab=&quot;&quot;, ylab=expression(paste(hat(beta))), main=&quot;Parameter estimate of five non-nested gene sets&quot;)
+axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
+for (i in 2:8)
+ lines(beta[,i], type=&quot;o&quot;, col=i)
+legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
+<p><img src="figure/Geneset-SCZ.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="whole-genome" class="section level2">
+<h2>Whole genome</h2>
+<p>consider all 15624 genes in ASD data.</p>
+<div id="whole-estimate-beta_i-gene-specific-delta_i" class="section level3">
+<h3>Whole: Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<table>
+<caption>Parameter estimates of 15624 genes by EM with eight partitions with gene specific <span class="math inline">\(\delta_i\)</span>.</caption>
+<thead>
+<tr class="header">
+<th>Annotation category</th>
+<th><span class="math inline">\(\widehat{\beta}\)</span></th>
+<th>test.stat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>LoF, <span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0063</td>
+<td>2.2903</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0238</td>
+<td>10.8729</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0.0029</td>
+<td>0.6222</td>
+</tr>
+<tr class="odd">
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0166</td>
+<td>4.1023</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0043</td>
+<td>0</td>
 </tr>
 </tbody>
 </table>

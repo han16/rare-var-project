@@ -242,34 +242,34 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
   par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==T &  cand.data$ExacAF<0.01)
 
   ##############################     use consensus damaging 
-  par.evid[[3]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05), 
-  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)),
-  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05))
+#  par.evid[[3]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05), 
+#  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)),
+#  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05))
   
-  par.evid[[4]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01), 
-  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)),
-  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01))
+#  par.evid[[4]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01), 
+#  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)),
+#  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01))
 
-  par.evid[[5]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF<0.001), 
-  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF<0.001)),
-  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff &  cand.data$ExacAF<0.001))
+#  par.evid[[5]]=union(union(which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF<0.001), 
+#  which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$SIFT.score))<0.05 & cand.data$ExacAF<0.001)),
+#  which(cand.data$Annotation %in% LoF.def==F& as.numeric(as.character(cand.data$CADD.raw))>CADD.cutoff &  cand.data$ExacAF<0.001))
 
 
-  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
-  & as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
-  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
-  &  as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
-  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
-  & as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF<0.001)
+#  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
+#  & as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+#  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
+#  &  as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+#  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 
+#  & as.numeric(as.character(cand.data$SIFT.score))>=0.05 & (as.numeric(as.character(cand.data$CADD.raw))<=CADD.cutoff) & cand.data$ExacAF<0.001)
  
   #############################
-#  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
-#  par.evid[[4]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
-#  par.evid[[5]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001)
+  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid[[4]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[5]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001)
 
-#  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
-#  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
-#  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF<0.001)
+  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF<0.001)
 
   group.index=rep(NA, nrow(cand.data))
   for (i in 1:length(par.evid))
@@ -280,8 +280,10 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
 }
 #########################################
 #All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
-All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)
-N1=4315; N0=4315
+#All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)
+All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\SCZData\\AnnotatedSCZ.txt", header=T)
+#N1=4315; N0=4315
+N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
@@ -291,11 +293,11 @@ CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9,
 #gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 ################ whole genome 
-gene.set=as.character(unique(All.Anno.Data$Gene))
+#gene.set=as.character(unique(All.Anno.Data$Gene))
 ################ RVIS genes 
-#RVIS.gene=read.csv("C:\\han\\ResearchWork\\StatGene\\RVISData\\RVIS_16956CCDSGenes.csv", header=T)
-#gene.set=as.character(RVIS.gene[RVIS.gene$Residual.Variation.Intolerance.Score.Percentile<50 & 
-#RVIS.gene$Residual.Variation.Intolerance.Score.Percentile>=40,]$HGNC.gene)
+RVIS.gene=read.csv("C:\\han\\ResearchWork\\StatGene\\RVISData\\RVIS_16956CCDSGenes.csv", header=T)
+gene.set=as.character(RVIS.gene[RVIS.gene$Residual.Variation.Intolerance.Score.Percentile<50 & 
+RVIS.gene$Residual.Variation.Intolerance.Score.Percentile>=40,]$HGNC.gene)
 #gene.set=as.character(read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\RVISGene\\RVIS.quantilelessthan50.gene.txt", header=T)[[1]])
 ############ constraint genes 
 #cons.gene.data=readRDS("C:\\han\\ResearchWork\\StatGene\\ConstraintMat.RDS", refhook = NULL)
