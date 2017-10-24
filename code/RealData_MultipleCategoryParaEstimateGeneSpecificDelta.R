@@ -34,6 +34,8 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma,beta.init, num.gro
   num.gene=length(unique.gene)
   gene.prior=numeric()
   BF.gene=matrix(nrow=max.iter, ncol=num.gene)
+  LoF.BF.gene=matrix(nrow=max.iter, ncol=num.gene)
+  nonLoF.BF.gene=matrix(nrow=max.iter, ncol=num.gene)
   ########################
   # calculate the Bayes factor for variant (i,j) and gene i as initials.
   for (i in 1:num.gene)
@@ -42,6 +44,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma,beta.init, num.gro
     var.index.list=which(gene.list==unique.gene[i])
     indi.gene=new.data[var.index.list,]
     bb=1; var.BF=numeric()
+    bb.LoF=1; bb.nonLoF=1
     gene.prior[i]=0
     if (length(var.index.list)>0) # calculate Bayes factor for variant (i,j)
      {
@@ -53,12 +56,19 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma,beta.init, num.gro
         if (new.data$group.index[var.index.list[j]]>5)
           var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=gamma.mean, sig=sigma, N1, N0)
         bb=bb*((1-beta.k[1, new.data$group.index[var.index.list[j]]])+beta.k[1, new.data$group.index[var.index.list[j]]]*var.BF[j])
+        ################## split BF of LoF  and non LoF
+        if (new.data$group.index[var.index.list[j]]<=2)
+          bb.LoF=bb.LoF*((1-beta.k[1, new.data$group.index[var.index.list[j]]])+beta.k[1, new.data$group.index[var.index.list[j]]]*var.BF[j])
+        if (new.data$group.index[var.index.list[j]]>2)
+          bb.nonLoF=bb.nonLoF*((1-beta.k[1, new.data$group.index[var.index.list[j]]])+beta.k[1, new.data$group.index[var.index.list[j]]]*var.BF[j])
+            
       }
       gene.prior[i]=new.data$gene.prior[var.index.list[1]]
      }
     full.info.genevar[[i]]=cbind(indi.gene, var.BF)
     BF.gene[1, i]=bb
-    
+    LoF.BF.gene[1,i]=bb.LoF
+    nonLoF.BF.gene[1,i]=bb.nonLoF
   }
   ########################## EM algorithm
   ########################
@@ -74,7 +84,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma,beta.init, num.gro
     for (i in 1:num.gene)
     {
       info.single.gene=full.info.genevar[[i]] # this is a small matrix for that single gene. each row is one variant
-      bb=1
+      bb=1; bb.LoF=1; bb.nonLoF=1
       UiZij=numeric()
       if (nrow(info.single.gene)>0)
         for (j in 1:nrow(info.single.gene))
@@ -85,10 +95,17 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma,beta.init, num.gro
                                                                +(1-beta.k[(iter-1), info.single.gene$group.index[j]]))
           UiZij[j]=numer/denom
           bb=bb*((1-beta.k[(iter-1), info.single.gene$group.index[j]])+beta.k[(iter-1), info.single.gene$group.index[j]]*info.single.gene$var.BF[j])
-
+          ###########################
+          if (info.single.gene$group.index[j]<=2)
+            bb.LoF=bb.LoF*((1-beta.k[(iter-1), info.single.gene$group.index[j]])+beta.k[(iter-1), info.single.gene$group.index[j]]*info.single.gene$var.BF[j])
+          if (info.single.gene$group.index[j]>2)
+            bb.nonLoF=bb.nonLoF*((1-beta.k[(iter-1), info.single.gene$group.index[j]])+beta.k[(iter-1), info.single.gene$group.index[j]]*info.single.gene$var.BF[j])
+              
         }
       EUiZij[[i]]=UiZij
       BF.gene[iter,i]=bb
+      LoF.BF.gene[iter,i]=bb.LoF
+      nonLoF.BF.gene[iter,i]=bb.nonLoF
       EUi[i]=gene.prior[i]*bb/(gene.prior[i]*bb+1-gene.prior[i])
       ######################
       # Note here each gene may have multiple annotation groups
@@ -167,7 +184,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma,beta.init, num.gro
   } # end of g
   sum.lkhd=sum(cate.stat)
   ##############################################
-  return(result=list(gene.prior=gene.prior, beta.est=beta.k[(iter-1),], beta.stat=cate.stat, cate.pvalue=cate.pvalue, BF.gene=data.frame(Gene=unique.gene, BF=BF.gene[(iter-1),]), full.info=full.info.genevar, Eui=EUi))
+  return(result=list(gene.prior=gene.prior, beta.est=beta.k[(iter-1),], beta.stat=cate.stat, cate.pvalue=cate.pvalue, BF.gene=data.frame(Gene=unique.gene, BF=BF.gene[(iter-1),], LoF.BF=LoF.BF.gene[(iter-1),], nonLoF.BF=nonLoF.BF.gene[(iter-1),]), full.info=full.info.genevar, Eui=EUi))
 }
 #####################################
 fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
@@ -280,10 +297,10 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
 }
 #########################################
 #All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
-#All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)
-All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\SCZData\\AnnotatedSCZ.txt", header=T)
-#N1=4315; N0=4315
-N1=2536; N0=2543
+All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)
+#All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\SCZData\\AnnotatedSCZ.txt", header=T)
+N1=4315; N0=4315
+#N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
@@ -293,17 +310,17 @@ CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9,
 #gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 ################ whole genome 
-#gene.set=as.character(unique(All.Anno.Data$Gene))
+gene.set=as.character(unique(All.Anno.Data$Gene))
 ################ RVIS genes 
-RVIS.gene=read.csv("C:\\han\\ResearchWork\\StatGene\\RVISData\\RVIS_16956CCDSGenes.csv", header=T)
-gene.set=as.character(RVIS.gene[RVIS.gene$Residual.Variation.Intolerance.Score.Percentile<50 & 
-RVIS.gene$Residual.Variation.Intolerance.Score.Percentile>=40,]$HGNC.gene)
+#RVIS.gene=read.csv("C:\\han\\ResearchWork\\StatGene\\RVISData\\RVIS_16956CCDSGenes.csv", header=T)
+#gene.set=as.character(RVIS.gene[RVIS.gene$Residual.Variation.Intolerance.Score.Percentile<50 & 
+#RVIS.gene$Residual.Variation.Intolerance.Score.Percentile>=40,]$HGNC.gene)
 #gene.set=as.character(read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\RVISGene\\RVIS.quantilelessthan50.gene.txt", header=T)[[1]])
 ############ constraint genes 
 #cons.gene.data=readRDS("C:\\han\\ResearchWork\\StatGene\\ConstraintMat.RDS", refhook = NULL)
 #cons.gene.data=readRDS("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\GeneSet\\ExacConstraintScore\\ConstraintMat.RDS", refhook = NULL)
 #order.cons=cons.gene.data[order(cons.gene.data[,16], decreasing=T), ]
-#gene.set=rownames(order.cons)[(1+nrow(order.cons)*0.4):(nrow(order.cons)*0.5)]
+#gene.set=rownames(order.cons)[(nrow(order.cons)*0.5-2):(nrow(order.cons)*0.5)]
 
 ########### gene priors 
 gene.FDR=read.table("C:\\han\\ResearchWork\\StatGene\\170726_to_Shengtong_gene_FDR_based_on_Sanders_Neuron_denovo_coding_SNV.txt", header=T)  # use 1-FDR as prior
@@ -381,3 +398,9 @@ new.data=cbind(gene.data, gene.prior)
 #all.overlap=length(intersect(gene.set, top1000.ASD.prior.gene))
 #top20.overlap
 #all.overlap
+
+
+#var.BF=para.est$full.info[[1]]$var.BF
+#var.index=para.est$full.info[[1]]$group.index
+#var.para=para.est$beta.est
+

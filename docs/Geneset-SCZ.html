@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -312,10 +312,10 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-10-06</p>
+<p><strong>Last updated:</strong> 2017-10-24</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> 589376d</p>
+<p><strong>Code version:</strong> 5e9f686</p>
 <pre class="r"><code>N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
@@ -844,8 +844,8 @@ kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></
 </tbody>
 </table>
 </div>
-<div id="cons-estimate-beta_i-gene-specific-delta_i" class="section level3">
-<h3>Cons: Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="cons-estimate-beta_i-asd-gene-specific-delta_i" class="section level3">
+<h3>Cons: Estimate <span class="math inline">\(\beta_i\)</span>, ASD gene specific <span class="math inline">\(\delta_i\)</span></h3>
 <div id="eight-categories" class="section level4">
 <h4>(2) Eight categories</h4>
 <table>
@@ -905,8 +905,8 @@ kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></
 </div>
 <div id="rvis-gene" class="section level2">
 <h2>RVIS gene</h2>
-<div id="rvisestimate-beta_i-gene-specific-delta_i" class="section level3">
-<h3>RVIS:Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="rvisestimate-beta_i-asd-gene-specific-delta_i" class="section level3">
+<h3>RVIS:Estimate <span class="math inline">\(\beta_i\)</span>, ASD gene specific <span class="math inline">\(\delta_i\)</span></h3>
 <pre class="r"><code>beta=matrix(nrow=5, ncol=8)
 rownames(beta)=c(&quot;Quantile score&lt;10&quot;, &quot;10-20&quot;, &quot;20-30&quot;, &quot;30-40&quot;, &quot;40-50&quot;)
 beta[1,]=c(0, 0.0977,  0, 0.0179,  0.0132, 0,  0.0203,  0.0415)
@@ -922,11 +922,35 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <p><img src="figure/Geneset-SCZ.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
+<div id="constraint-genes" class="section level2">
+<h2>Constraint genes</h2>
+<p>There are 17,416 genes.</p>
+<div id="con-estimate-beta_i-asd-gene-specific-delta_i" class="section level3">
+<h3>Con: Estimate <span class="math inline">\(\beta_i\)</span>, ASD gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="non-nested-gene-sets" class="section level4">
+<h4>Non-nested gene sets</h4>
+<p>With their constraint scores, focus on top 10% genes, top 10-20% genes, top 20-30% genes, top 30-40% genes, top 40-50% genes.</p>
+<pre class="r"><code>beta=matrix(nrow=5, ncol=8)
+rownames(beta)=c(&quot;top10%&quot;, &quot;10-20%&quot;, &quot;20-30%&quot;, &quot;30-40%&quot;, &quot;40-50%&quot;)
+beta[1,]=c(0.9999, 0,  0, 0.0065,  0.0002, 0,  0.0250,  0.0029)
+beta[2,]=c(0, 0.1189,  0, 0.0087,   0, 0, 0,  0.00005)
+beta[3,]=c(0,  0, 0,   0.0097,   0,0,  0,  0.0046)
+beta[4,]=c(0,  0,  0, 0,   0.0046,0,  0.0003,   0.0601)
+beta[5,]=c(0, 0,  0,  0.0017, 0.0323,   0,0.0074,   0.0207)
+plot(beta[,1], ylim=c(0,1), type=&quot;o&quot;, xaxt=&quot;n&quot;, xlab=&quot;&quot;, ylab=expression(paste(hat(beta))), main=&quot;Parameter estimate of five non-nested gene sets&quot;)
+axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
+for (i in 2:8)
+ lines(beta[,i], type=&quot;o&quot;, col=i)
+legend(4, 0.8, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
+<p><img src="figure/Geneset-SCZ.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
 <div id="whole-genome" class="section level2">
 <h2>Whole genome</h2>
 <p>consider all 15624 genes in ASD data.</p>
-<div id="whole-estimate-beta_i-gene-specific-delta_i" class="section level3">
-<h3>Whole: Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="whole-estimate-beta_i-asd-gene-specific-delta_i" class="section level3">
+<h3>Whole: Estimate <span class="math inline">\(\beta_i\)</span>, ASD gene specific <span class="math inline">\(\delta_i\)</span></h3>
 <table>
 <caption>Parameter estimates of 15624 genes by EM with eight partitions with gene specific <span class="math inline">\(\delta_i\)</span>.</caption>
 <thead>
@@ -979,6 +1003,62 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 </tr>
 </tbody>
 </table>
+</div>
+<div id="whole-estimate-beta_i-common-delta" class="section level3">
+<h3>Whole: Estimate <span class="math inline">\(\beta_i\)</span>, common <span class="math inline">\(\delta\)</span></h3>
+<p><span class="math inline">\(\widehat{\delta}=0.2\)</span> with test statistics of 24.2446.</p>
+<table>
+<caption>Parameter estimates of all genes by EM with eight partitions with commom <span class="math inline">\(\delta\)</span>.</caption>
+<thead>
+<tr class="header">
+<th>Annotation category</th>
+<th><span class="math inline">\(\widehat{\beta}\)</span></th>
+<th>test.stat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>LoF, <span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0024</td>
+<td>0.5010</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0228</td>
+<td>17.4871</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0.0010</td>
+<td>0.3323</td>
+</tr>
+<tr class="odd">
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0134</td>
+<td>5.4018</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0103</td>
+<td>0.5224</td>
+</tr>
+</tbody>
+</table>
 <!-- Add your analysis here -->
 </div>
 </div>
@@ -1001,14 +1081,14 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] knitr_1.15.1  dplyr_0.4.3   RSQLite_1.0.0 DBI_0.3.1    
+[1] knitr_1.17    dplyr_0.5.0   RSQLite_1.1-2
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.10    digest_0.6.8    rprojroot_1.2   assertthat_0.1 
- [5] R6_2.1.1        backports_1.0.5 git2r_0.18.0    magrittr_1.5   
- [9] evaluate_0.10   highr_0.5.1     stringi_0.5-5   rmarkdown_1.3  
-[13] tools_3.2.2     stringr_1.2.0   parallel_3.2.2  yaml_2.1.14    
-[17] htmltools_0.3.5</code></pre>
+ [1] Rcpp_0.12.10     assertthat_0.2.0 digest_0.6.12    rprojroot_1.2   
+ [5] R6_2.2.2         DBI_0.7          backports_1.0.5  git2r_0.18.0    
+ [9] magrittr_1.5     evaluate_0.10    highr_0.6        stringi_1.1.5   
+[13] rmarkdown_1.6    tools_3.2.2      stringr_1.2.0    yaml_2.1.14     
+[17] memoise_1.1.0    htmltools_0.3.5  tibble_1.3.0    </code></pre>
 </div>
 
 <hr>
@@ -1060,7 +1140,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
