@@ -313,8 +313,8 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-12-08 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> c0a7f90</p>
+<p><strong>Last updated:</strong> 2017-12-11 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> 89427d6</p>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -369,6 +369,10 @@ shared across the workflowr files. -->
 <img src="figure/estimatebetadeltariskgene2.png" />
 
 </div>
+</div>
+</div>
+<div id="comparison-with-fisher-exact-test" class="section level3">
+<h3>Comparison with Fisher exact test</h3>
 <pre class="r"><code>fisher.one=c(0.02, 0.04, 0.1, 0.28, 0.58, 0.97, 1)
 tmm.one=c(0.03, 0.19, 0.31, 0.7, 0.94, 1,1)
 beta.one=c(0.001, 0.005, 0.01, 0.02, 0.03, 0.05, 0.1)
@@ -393,7 +397,6 @@ lines(tmm.two, col=2, type=&quot;o&quot;)
 axis.labels &lt;-beta.two
 axis(1, at=seq(1,length(beta.two)), labels=axis.labels, cex.axis=0.8)</code></pre>
 <p><img src="figure/simulation-study.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
 </div>
 <div id="case-2-mixture-model" class="section level3">
 <h3>Case 2: Mixture model</h3>
