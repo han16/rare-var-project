@@ -346,6 +346,47 @@ Table: Parameter estimates of all  genes by EM with eight partitions with commom
 
 
 
+### Whole: Estimate $\beta_i$, SCZ de novo  prior $\delta_i$
+
+Use posterior probability PP as priors 
+
+* prior by  2 categoris 
+
+
+
+Annotation category  | $\widehat{\beta}$ | test.stat
+---------------------|---------------|-------------------
+LoF,   $0.01 \leq AF < 0.05$  |     0 | 0 
+LoF,  $AF < 0.01$ |       0 | 0  
+Damaging, $0.01 \leq AF < 0.05$ |   0| 0 
+Damaging,  $0.001 \leq  AF < 0.01$ |  0.0012 | 0.03
+Damaging,  $AF < 0.001$ | 0.0707| 11.67
+Non-Damaging, $0.01 \leq  AF < 0.05$ |  0.0090 | 0.57 
+Non-Damaging, $0.001 \leq AF < 0.01$ |  0.0689 | 5.27 
+Non-Damaging,  $AF < 0.001$ | 0.0029 | 0.05
+Table: Parameter estimates  by EM with eight partitions with gene specific  $\delta_i$.
+
+
+
+
+* prior by  3 categoris 
+
+
+
+Annotation category  | $\widehat{\beta}$ | test.stat
+---------------------|---------------|-------------------
+LoF,   $0.01 \leq AF < 0.05$  |     0 | 0 
+LoF,  $AF < 0.01$ |       0 | 0  
+Damaging, $0.01 \leq AF < 0.05$ |   0| 0 
+Damaging,  $0.001 \leq  AF < 0.01$ |  0 | 0
+Damaging,  $AF < 0.001$ | 0.0774| 9.95
+Non-Damaging, $0.01 \leq  AF < 0.05$ |  0.0132 | 0.65 
+Non-Damaging, $0.001 \leq AF < 0.01$ |  0.0871 | 5.11 
+Non-Damaging,  $AF < 0.001$ | 0.0016 | 0.02
+Table: Parameter estimates  by EM with eight partitions with gene specific  $\delta_i$.
+
+
+
 <!-- Add your analysis here -->
 
 ## Session information

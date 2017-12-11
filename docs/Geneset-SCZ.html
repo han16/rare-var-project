@@ -312,10 +312,10 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-10-24</p>
+<p><strong>Last updated:</strong> 2017-11-17</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> 5e9f686</p>
+<p><strong>Code version:</strong> c0a7f90</p>
 <pre class="r"><code>N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
@@ -1056,6 +1056,120 @@ legend(4, 0.8, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
 <td>0.0103</td>
 <td>0.5224</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="whole-estimate-beta_i-scz-de-novo-prior-delta_i" class="section level3">
+<h3>Whole: Estimate <span class="math inline">\(\beta_i\)</span>, SCZ de novo prior <span class="math inline">\(\delta_i\)</span></h3>
+<p>Use posterior probability PP as priors</p>
+<ul>
+<li>prior by 2 categoris</li>
+</ul>
+<table>
+<caption>Parameter estimates by EM with eight partitions with gene specific <span class="math inline">\(\delta_i\)</span>.</caption>
+<thead>
+<tr class="header">
+<th>Annotation category</th>
+<th><span class="math inline">\(\widehat{\beta}\)</span></th>
+<th>test.stat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>LoF, <span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0012</td>
+<td>0.03</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0707</td>
+<td>11.67</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0.0090</td>
+<td>0.57</td>
+</tr>
+<tr class="odd">
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0689</td>
+<td>5.27</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0029</td>
+<td>0.05</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>prior by 3 categoris</li>
+</ul>
+<table>
+<caption>Parameter estimates by EM with eight partitions with gene specific <span class="math inline">\(\delta_i\)</span>.</caption>
+<thead>
+<tr class="header">
+<th>Annotation category</th>
+<th><span class="math inline">\(\widehat{\beta}\)</span></th>
+<th>test.stat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>LoF, <span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0774</td>
+<td>9.95</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0.0132</td>
+<td>0.65</td>
+</tr>
+<tr class="odd">
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.0871</td>
+<td>5.11</td>
+</tr>
+<tr class="even">
+<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.0016</td>
+<td>0.02</td>
 </tr>
 </tbody>
 </table>

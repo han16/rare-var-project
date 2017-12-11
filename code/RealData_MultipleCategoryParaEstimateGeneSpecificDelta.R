@@ -378,8 +378,8 @@ new.data=cbind(gene.data, gene.prior)
 }
 ##########################
 
-#BF.gene=para.est$BF.gene
-#order.BF.gene=BF.gene[order(BF.gene$BF, decreasing=T),]
+BF.gene=para.est$BF.gene
+order.BF.gene=BF.gene[order(BF.gene$BF, decreasing=T),]
 #top20gene=as.character(order.BF.gene$Gene)[1:20]
 
 #denovo=read.table("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\TADA_SNV_CNV_combined_Feb7.txt", header=T)

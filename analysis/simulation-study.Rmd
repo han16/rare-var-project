@@ -76,6 +76,36 @@ Clearly, there is a slight over etimate problem.
 
 ![](figure/estimatebetadeltariskgene2.png)
 
+
+```{r, echo=T}
+fisher.one=c(0.02, 0.04, 0.1, 0.28, 0.58, 0.97, 1)
+tmm.one=c(0.03, 0.19, 0.31, 0.7, 0.94, 1,1)
+beta.one=c(0.001, 0.005, 0.01, 0.02, 0.03, 0.05, 0.1)
+delta.one=1
+
+fisher.two=c(0.12, 0.32, 0.55, 0.82, 0.89)
+tmm.two=c(0.26, 0.65, 0.93, 0.98, 1)
+beta.two=c(0.1, 0.2, 0.3, 0.4, 0.5)
+delta.two=0.1
+
+par(mfrow=c(1,2))
+plot(fisher.one, col=3, ylim=c(0,1), type="o", xaxt='n', xlab=expression(paste(beta)),ylab="Sensitivity", main=bquote(delta == .(delta.one)))
+lines(tmm.one, col=2, type="o")
+legend(1, 0.8, c("FET", "TMM"), col=c(3,2), lty=c(1,1))
+axis.labels <-beta.one
+axis(1, at=seq(1,7), labels=axis.labels, cex.axis=0.8)
+
+
+plot(fisher.two, col=3, ylim=c(0,1), type="o", xaxt='n', xlab=expression(paste(beta)),ylab="Sensitivity", main=bquote(delta == .(delta.two)))
+lines(tmm.two, col=2, type="o")
+#legend(1, 0.8, c("FET", "TMM"), col=c(1,2), lty=c(1,1))
+axis.labels <-beta.two
+axis(1, at=seq(1,length(beta.two)), labels=axis.labels, cex.axis=0.8)
+
+```
+
+
+
 ### Case 2: Mixture model
 
 

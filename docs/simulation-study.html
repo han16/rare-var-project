@@ -24,8 +24,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -35,10 +35,12 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -311,8 +313,8 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-10-23 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> 5e9f686</p>
+<p><strong>Last updated:</strong> 2017-12-08 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed --> <strong>Code version:</strong> c0a7f90</p>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -367,6 +369,30 @@ shared across the workflowr files. -->
 <img src="figure/estimatebetadeltariskgene2.png" />
 
 </div>
+<pre class="r"><code>fisher.one=c(0.02, 0.04, 0.1, 0.28, 0.58, 0.97, 1)
+tmm.one=c(0.03, 0.19, 0.31, 0.7, 0.94, 1,1)
+beta.one=c(0.001, 0.005, 0.01, 0.02, 0.03, 0.05, 0.1)
+delta.one=1
+
+fisher.two=c(0.12, 0.32, 0.55, 0.82, 0.89)
+tmm.two=c(0.26, 0.65, 0.93, 0.98, 1)
+beta.two=c(0.1, 0.2, 0.3, 0.4, 0.5)
+delta.two=0.1
+
+par(mfrow=c(1,2))
+plot(fisher.one, col=3, ylim=c(0,1), type=&quot;o&quot;, xaxt=&#39;n&#39;, xlab=expression(paste(beta)),ylab=&quot;Sensitivity&quot;, main=bquote(delta == .(delta.one)))
+lines(tmm.one, col=2, type=&quot;o&quot;)
+legend(1, 0.8, c(&quot;FET&quot;, &quot;TMM&quot;), col=c(3,2), lty=c(1,1))
+axis.labels &lt;-beta.one
+axis(1, at=seq(1,7), labels=axis.labels, cex.axis=0.8)
+
+
+plot(fisher.two, col=3, ylim=c(0,1), type=&quot;o&quot;, xaxt=&#39;n&#39;, xlab=expression(paste(beta)),ylab=&quot;Sensitivity&quot;, main=bquote(delta == .(delta.two)))
+lines(tmm.two, col=2, type=&quot;o&quot;)
+#legend(1, 0.8, c(&quot;FET&quot;, &quot;TMM&quot;), col=c(1,2), lty=c(1,1))
+axis.labels &lt;-beta.two
+axis(1, at=seq(1,length(beta.two)), labels=axis.labels, cex.axis=0.8)</code></pre>
+<p><img src="figure/simulation-study.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="case-2-mixture-model" class="section level3">
@@ -597,9 +623,11 @@ shared across the workflowr files. -->
 <h2>Session information</h2>
 <!-- Insert the session information into the document -->
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.2.2 (2015-08-14)
+<pre><code>R version 3.4.3 (2017-11-30)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 7 x64 (build 7601) Service Pack 1
+
+Matrix products: default
 
 locale:
 [1] LC_COLLATE=English_United States.1252 
@@ -612,10 +640,10 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 loaded via a namespace (and not attached):
- [1] backports_1.0.5 magrittr_1.5    rprojroot_1.2   tools_3.2.2    
- [5] htmltools_0.3.5 yaml_2.1.14     Rcpp_0.12.10    stringi_1.1.5  
- [9] rmarkdown_1.6   knitr_1.17      git2r_0.18.0    stringr_1.2.0  
-[13] digest_0.6.12   evaluate_0.10  </code></pre>
+ [1] compiler_3.4.3  backports_1.0.5 magrittr_1.5    rprojroot_1.2  
+ [5] tools_3.4.3     htmltools_0.3.5 yaml_2.1.15     Rcpp_0.12.10   
+ [9] stringi_1.1.5   rmarkdown_1.8   knitr_1.17      git2r_0.19.0   
+[13] stringr_1.2.0   digest_0.6.12   evaluate_0.10  </code></pre>
 </div>
 
 <hr>

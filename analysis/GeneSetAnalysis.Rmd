@@ -340,6 +340,22 @@ In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes.
 
 ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896. 
 
+```{r, echo=F}
+library(plotrix)
+para.est=read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\para.est.1003.constraint.gene.csv", header=T)
+para.summ=matrix(nrow=8, ncol=3)
+for (i in 1:8)
+  { 
+   para.summ[i,1]=mean(para.est[,(i+1)])
+   para.summ[i,2]=quantile(para.est[,(i+1)], prob=0.025)
+   para.summ[i,3]=quantile(para.est[,(i+1)], prob=0.975)
+}
+x=1:8
+plot(para.summ[,1], type="p", ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab="Variant Category", main="Parameter estimate of constraint genes")
+#plotCI(x, para.summ[,1], ui=para.summ[,3], li=para.summ[,2], sfrac=0.005, ylim=c(0,1), pch=16, cex=0.5, ylab=expression(paste(hat(beta))),xlab="Variant Category", main="Parameter estimate of constraint genes")
+```
+
+
 
 Replace "damaging" with "consensus damaging"
 
@@ -370,17 +386,24 @@ With their constraint scores, focus on top 10% genes, top 10-20% genes, top 20-3
 
 ```{r, echo=T}
 beta=matrix(nrow=5, ncol=8)
-rownames(beta)=c("top10%", "10-20%", "20-30%", "30-40%", "40-50%")
+rownames(beta)=c("<10%", "10-20%", "20-30%", "30-40%", "40-50%")
 beta[1,]=c(0, 0.6195,  0, 0.0025,  0.0427, 0,  0,  0.0855)
 beta[2,]=c(0, 0.0073,  0, 0,   0.0316, 0, 0,  0.0588)
 beta[3,]=c(0,  0.0179, 0,   0,   0.0284,0,  0.0294,  0.0390)
 beta[4,]=c(0,  0.0883,  0, 0,   0.0245,0,  0,   0.0017)
 beta[5,]=c(0,  0.2706,  0, 0,   0.0038,0,   0.0187,  0.0006)
-plot(beta[,1], ylim=c(0,1), type="o", xaxt="n", xlab="", ylab=expression(paste(hat(beta))), main="Parameter estimate of five non-nested gene sets")
-axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
+plot(beta[,1], ylim=c(0,1),cex=0.1, type="o", xaxt="n", xlab="Score quantile ", pch=16, ylab=expression(paste(hat(beta))), cex.lab=0.75, main="Parameter estimates of top five non-nested constraint gene sets",)
+axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.8)
 for (i in 2:8)
- lines(beta[,i], type="o", col=i)
-legend(2, 0.8, c(paste("beta", seq(1,8), sep="")), col=seq(1,8), lty=rep(1,8))
+ lines(beta[,i], type="o", col=i, pch=16)
+betas=c(expression(paste(hat(beta)[1])),expression(paste(hat(beta)[2])), expression(paste(hat(beta)[3])),expression(paste(hat(beta)[4])), 
+expression(paste(hat(beta)[5])),expression(paste(hat(beta)[6])), expression(paste(hat(beta)[7])),expression(paste(hat(beta)[8])))
+#legend(2, 1, c(paste("beta", seq(1,8), sep="")), col=seq(1,8), lty=rep(1,8))
+legend(4, 1, betas, col=seq(1,8), lty=rep(1,8), ncol=2)
+
+
+
+
 
 ```
 
@@ -483,6 +506,10 @@ Table: Parameter estimates of 8437 ( quantile<50 ) RVIS genes by EM with eight p
 
 #### with different quantile score 
 
+
+
+
+
 Replace "Damaging" with "Consensus damaging"
 
 ```{r, echo=T}
@@ -519,7 +546,11 @@ Non-Damaging,  $AF < 0.001$ | 0.06 | 11.42
 Table: Parameter estimates of 15624 genes by EM with eight partitions with gene specific  $\delta_i$.
 
 
-
+```{r, echo=T}
+para.est=c(0, 0.08, 0, 0, 0.06, 0, 0, 0.06)
+x=1:8
+plot(para.est, type="p", ylim=c(0,0.5), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab="Variant Category", main="Parameter estimate of all genes in the whole genome")
+```
 
 ## Session information
 
