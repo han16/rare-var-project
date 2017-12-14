@@ -1,4 +1,6 @@
-                                    #################################################################
+rm(list=ls())
+set.seed(123)
+#################################################################
 # Simulation Functions
 #################################################################
 
@@ -31,20 +33,94 @@ simul.gene <- function(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, 
   }
 
   # TO DO: filter variants with (0,0) counts
+  
+  x=x[,!apply(x==0,2,all)]  # filter variants with 0 counts in both cases and controls since these kind of variants are noninformative
+  x=as.matrix(x)
 
   return (list(x=x,y=y,q=q,gamma=gamma))
 }
 
+intergrand=function(aa, indi.var, pheno, bar.gamma, sig)
+{
+  ff=dbinom(sum(indi.var[pheno==1]), sum(indi.var), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.gene.inte=function(geno.var, pheno, bar.gamma, sig)
+{
+  marglik0.CC <- dbinom(sum(geno.var[pheno==1]), sum(geno.var), N1/(N1+N0))    # Under H0: gamma=1
+
+  marglik1.CC <- integrate(intergrand, geno.var, pheno, bar.gamma, sig, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+  BF.var <- marglik1.CC/marglik0.CC
+
+  return(BF.var)
+}
+###################################
+# the test statistic
+burden.test.stat <- function(x, y, MAF.thr) {
+  # weights of the variants based on MAF
+  n <- length(y)
+  MAF <- colSums(x, na.rm=T) / n
+  weights <- (MAF < MAF.thr)
+
+  # test statistic: genetic burden in cases
+  x.case <- as.matrix(x[y==1,])
+  x.var <- colSums(x.case, na.rm=T)
+  T <- sum(x.var*weights)
+
+  return (list(weights=weights, stat=T))
+}
+
+# Burden test with fixed threshold
+# x: genotype matrix (n by m)
+# y: phenotype
+# MAF.thr: MAF threshold, default 1% (MAF from both cases and controls)
+# nperm: number of permutations
+burden.test <- function(x, y, MAF.thr=0.01, nperm=1000) {
+  # observe test statistic
+  T.obs <- burden.test.stat(x,y,MAF.thr)$stat
+
+  # computing the p-value by permutation
+  T.perm <- length(nperm)
+  for (i in 1:nperm) {
+    y.perm <- sample(y, length(y))
+    T.perm[i] <- burden.test.stat(x,y.perm,MAF.thr)$stat
+  }
+  pval <- sum(T.perm >= T.obs) / nperm
+
+  return (list(stat=T.obs, p.value=pval))
+}
+
+# SKAT
+SKAT.run <- function(x, y, SKATO=FALSE) {
+  obj<-SKAT_Null_Model(y ~ 1, out_type="D")
+  if (SKATO==FALSE)  pval <- SKAT(x, obj)$p.value
+  else pval <- SKAT(x, obj, method="optimal")$p.value
+
+  return (list(p.value=pval))
+}
+###################################
 # simulation of data and evaluate the performance of the Bayesian method
-simulation.BF <- function(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=500, pi=1, alpha.model=0.5, beta.model=200, gamma.mean.model=1, sigma.model=1, pi.model=1) {
+simulation.BF <- function(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=500, pi=1,
+alpha.model=0.5, beta.model=200, gamma.mean.model, sigma.model=1, pi.model=1) {
   BF.pos <- length(ngenes)
   BF.neg <- length(ngenes)
   for (i in 1:ngenes) {
     data <- simul.gene(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=pi, model=0)
-    BF.neg[i] <- BF.gene(data$x,data$y,alpha.model,beta.model,gamma.mean.model,sigma.model,pi=pi.model,S=1000)$BF
+
+    BF.neg.prod=1
+    for (j in 1:ncol(data$x))
+      BF.neg.prod=BF.neg.prod*BF.gene.inte(data$x[,j],data$y,gamma.mean.model,sigma.model)
+    BF.neg[i]=BF.neg.prod
+      
+   # BF.neg[i] <- BF.gene.inte(data$x,data$y,alpha.model,beta.model,gamma.mean.model,sigma.model,pi=pi.model)
 
     data <- simul.gene(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=pi, model=1)
-    BF.pos[i] <- BF.gene(data$x,data$y,alpha.model,beta.model,gamma.mean.model,sigma.model,pi=pi.model,S=1000)$BF
+    BF.pos.prod=1
+    for (j in 1:ncol(data$x))
+      BF.pos.prod=BF.pos.prod*BF.gene.inte(data$x[,j],data$y,gamma.mean.model,sigma.model)
+    BF.pos[i]=BF.pos.prod
+    #BF.pos[i] <- BF.gene.inte(data$x,data$y,alpha.model,beta.model,gamma.mean.model,sigma.model,pi=pi.model)
   }
 
   return (list(neg=BF.neg, pos=BF.pos))
@@ -65,6 +141,25 @@ simulation.FT <- function(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigm
   return (list(neg=-log(FT.neg), pos=-log(FT.pos)))
 }
 
+#BF.gene=function(x, y, gamma.mean, beta, S, pi.model){
+# BF.var=numeric()
+# for (i in 1:ncol(x))
+#   {
+#    marglik0.CC <- dbinom(sum(x[y==1,i]), sum(x[,i]), N/(N+N0))    # Under H0: gamma=1
+#
+#    gamma <- rgamma(S, (gamma.mean*beta), beta)                 # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+#    marglik1.CC <- numeric(S)
+#    for (j in 1:S)
+#       marglik1.CC[j] <- dbinom(sum(x[y==1,i]), sum(x[,i]), gamma[j] * N/(gamma[j] * N+N0))
+#    BF.var[i] <- mean(marglik1.CC) / marglik0.CC
+#   }
+#
+# return(prod((1-pi.model)+pi.model*BF.var))
+#
+#}
+
+
+#############################
 # simulation of data and evaluate the performance of SKAT
 library(SKAT)
 simulation.SKAT <- function(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=500, pi=1) {
@@ -85,26 +180,28 @@ simulation.SKAT <- function(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, si
 # Simulation: Basic Model
 #################################################################
 
-# simulation parameters
-N0 <- 1000
-N <- 1000
+# simulation/true parameters
+N0 <- 3000
+N <- 3000
+N1=N
 alpha0 <- 1
 beta0 <- 1000
 alpha <- 1
 beta <- 2000
-gamma.mean <- 2
-sigma <- 4
-ngenes <- 200
-pi <- 0.2
-m <- 5
+gamma.mean <- 3
+sigma <- 1
+ngenes <- 500
+pi <- 0.1
+m <- 100
 
-# Bayesian method
-alpha.model <- 0.2  # used in the model
+# Bayesian method        # parameters in the model 
+alpha.model <- 0.2 
 beta.model <- 200
-gamma.mean.model <- 2
-sigma.model <- 5
+gamma.mean.model <- 3
+sigma.model <- 1
 pi.model <- pi
-BF.distr <- simulation.BF(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=ngenes, pi=pi, alpha.model=alpha.model, beta.model=beta.model, gamma.mean.model=gamma.mean.model, sigma.model=sigma.model, pi.model=pi.model)
+BF.distr <- simulation.BF(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=ngenes, pi=pi, 
+alpha.model=alpha.model, beta.model=beta.model, gamma.mean.model=gamma.mean.model, sigma.model=sigma.model, pi.model=pi.model)
 BF.pos <- BF.distr$pos
 BF.neg <- BF.distr$neg
 AUC.BF <- mean(sample(log(BF.pos), 1000, replace=TRUE) > sample(log(BF.neg),1000,replace=TRUE))
@@ -127,15 +224,35 @@ SKAT.pos <- SKAT.distr$pos
 SKAT.neg <- SKAT.distr$neg
 
 # Bayesian results
-postscript(file="simulation/BF_distr.eps",height=6,width=6)
+#postscript(file="simulation/BF_distr.eps",height=6,width=6)
 BF.distr <- data.frame(model=c(rep('Non-risk gene',ngenes), rep('Risk gene',ngenes)), BF=c(log(BF.neg), log(BF.pos)))
 boxplot(BF~model, data=BF.distr, ylab="log(BF)")
 dev.off()
 summary(log(BF.neg))
 summary(log(BF.pos))
 
+
+library(ROCR)
+plotROC <- function(scores.pos, scores.neg) {
+  npos <- length(scores.pos)
+  nneg <- length(scores.neg)
+  pred <- prediction(c(scores.pos,scores.neg), c(rep(1,npos),rep(0,nneg)))
+  perf <- performance(pred,"tpr", "fpr")
+  return (perf)
+}
+
+# TPR at a certain alpha (FPR)
+TPR <- function(scores.pos, scores.neg, alpha) {
+  scores.neg <- sort(scores.neg, decreasing=TRUE)
+  cutoff <- scores.neg[as.integer(length(scores.neg)*alpha)]
+  TPR <- sum(scores.pos > cutoff)/length(scores.pos)
+  return (TPR)
+}
+
+
+
 # Comparison of methods
-postscript(file="simulation/AUC_risk_only.eps",height=6,width=6)
+#postscript(file="simulation/AUC_risk_only.eps",height=6,width=6)
 plot(plotROC(BF.pos,BF.neg))
 plot(plotROC(FT.pos,FT.neg),add=TRUE,col='red')
 plot(plotROC(SKAT.pos,SKAT.neg),add=TRUE,col='blue')
@@ -150,14 +267,14 @@ FPR <- 0.01
 TPR(BF.pos, BF.neg, FPR)
 TPR(FT.pos, FT.neg, FPR)
 TPR(SKAT.pos, SKAT.neg, FPR)
-
+save(list=ls(), file="Comparewithothers.RData")
 # for (i in 1:ngenes) {
 #   # negative genes
 #   data <- simul.gene(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=pi,model=0)
 #   BF.neg[i] <- BF.gene(data$x,data$y,alpha.model,beta.model,gamma.mean,sigma,pi=pi.model,S=1000)$BF
 #   FT.neg[i] <- burden.test(data$x, data$y, MAF.thr=0.01,nperm=nperm)$p.value
 #   SKAT.neg[i] <- SKAT.run(data$x, data$y)$p.value
-#
+
 #   # positive genes
 #   data <- simul.gene(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=pi,model=1)
 #   BF.pos[i] <- BF.gene(data$x,data$y,alpha.model,beta.model,gamma.mean,sigma,pi=pi.model,S=1000)$BF
@@ -167,206 +284,4 @@ TPR(SKAT.pos, SKAT.neg, FPR)
 #################################################################
 # Simulation: Power Analysis as a Function of m and pi
 #################################################################
-
-# simulation parameters
-N <- 1000
-N0 <- 5000
-alpha0 <- 1
-beta0 <- 1000
-alpha <- 1
-beta <- 2000
-gamma.mean <- 2
-sigma <- 4
-ngenes <- 500
-pi <- 0.5 #seq(from=0.1,to=0.5,by=0.1)
-m <- 5 #c(5,10,20)
-
-# Bayesian method
-alpha.model <- 0.2  # used in the model
-beta.model <- 200
-gamma.mean.model <- 2
-sigma.model <- 4
-AUC.BF <- array(0,dim=c(length(pi),length(m)))
-for (i in 1:length(pi)) {
-  for (j in 1:length(m)) {
-    pi.model <- pi[i]
-    BF.distr <- simulation.BF(N0, N, m[j], alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=ngenes, pi=pi[i], alpha.model=alpha.model, beta.model=beta.model, gamma.mean.model=gamma.mean.model, sigma.model=sigma.model, pi.model=pi.model)
-    BF.pos <- BF.distr$pos
-    BF.neg <- BF.distr$neg
-    AUC.BF[i,j] <- mean(sample(log(BF.pos), 1000, replace=TRUE) > sample(log(BF.neg),1000,replace=TRUE))
-  }
-}
-AUC.BF
-
-postscript(file="simulation/AUC_mis3_simulation.eps",width=6, height=6)
-colors <- 2:4
-pchs <- c(0:3)
-ltys <- c(1:4)
-lwd <- 1.5
-plot(pi, AUC.BF[,1], type='b', col=colors[1], pch=pchs[1], lty=ltys[1], lwd=lwd,  xlab="Fraction of causal variants (pi)", ylab="AUC", ylim=c(0.5,0.7))
-lines(pi, AUC.BF[,2], type='b', col=colors[2], pch=pchs[2], lty=ltys[2], lwd=lwd)
-lines(pi, AUC.BF[,3], type='b', col=colors[3], pch=pchs[3], lty=ltys[3], lwd=lwd)
-legend("topleft", c("m=5", "m=10", "m=20"), col=colors, lty=ltys, pch=pchs, lwd=lwd)
-dev.off()
-
-#################################################################
-# Simulation: Power Analysis as a Function of Sample Size
-#################################################################
-
-# simulation parameters
-N <- 1000
-N0 <- 1000 * 1:10
-alpha0 <- 1
-beta0 <- 1000
-alpha <- 1
-beta <- 2000
-gamma.mean <- 2
-sigma <- 4
-ngenes <- 500
-pi <- 0.5 #seq(from=0.1,to=0.5,by=0.1)
-m <- c(5,10,20)
-
-# Bayesian method
-alpha.model <- 0.2  # used in the model
-beta.model <- 200
-gamma.mean.model <- gamma.mean
-sigma.model <- sigma
-pi.model <- pi
-AUC.BF <- array(0,dim=c(length(N0),length(m)))
-for (i in 1:length(N0)) {
-  for (j in 1:length(m)) {
-    BF.distr <- simulation.BF(N0[i], N, m[j], alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=ngenes, pi=pi, alpha.model=alpha.model, beta.model=beta.model, gamma.mean.model=gamma.mean.model, sigma.model=sigma.model, pi.model=pi.model)
-    BF.pos <- BF.distr$pos
-    BF.neg <- BF.distr$neg
-    AUC.BF[i,j] <- mean(sample(log(BF.pos), 1000, replace=TRUE) > sample(log(BF.neg),1000,replace=TRUE))
-  }
-}
-AUC.BF
-
-postscript(file="simulation/AUC_mis3_simulation_controls.eps",width=6, height=6)
-colors <- 2:4
-pchs <- c(0:3)
-ltys <- c(1:4)
-lwd <- 1.5
-plot(N0, AUC.BF[,1], type='b', col=colors[1], pch=pchs[1], lty=ltys[1], lwd=lwd,  xlab="Sample size of controls", ylab="AUC", ylim=c(0.6, 1.0))
-lines(N0, AUC.BF[,2], type='b', col=colors[2], pch=pchs[2], lty=ltys[2], lwd=lwd)
-lines(N0, AUC.BF[,3], type='b', col=colors[3], pch=pchs[3], lty=ltys[3], lwd=lwd)
-legend("topleft", c("m=5", "m=10", "m=20"), col=colors, lty=ltys, pch=pchs, lwd=lwd)
-dev.off()
-#################################################################
-# Systematic Simulation: Sensitivity Analysis
-#################################################################
-
-# Dominated by risk variants, or significant fraction of protective variants
-N0 <- 2000
-N <- 2000
-m <- 10
-alpha0 <- 1
-beta0 <- 1000
-alpha <- 1
-beta <- 1000
-ngenes <- 1000
-gamma.mean <- 1.5
-sigma <- 1
-pi <- 1
-alpha.model <- 0.5  # used in the model
-beta.model <- 200
-gamma.mean.model <- 1.5 #c(1.2,1.4,1.6,1.8,2.0)
-sigma.model <- c(0.6,0.8,1.0,1.2,1.4)
-pi.model <- 1
-# npar <- length(gamma.mean.model)
-npar <- length(sigma.model)
-AUC.BF <- length(npar)
-TPR.BF <- length(npar)
-FPR <- 0.01
-for (i in 1:npar) {
-  BF.distr <- simulation.BF(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=ngenes, pi=pi, alpha.model=alpha.model, beta.model=beta.model, gamma.mean.model=gamma.mean.model, sigma.model=sigma.model[i], pi.model=pi.model)
-  BF.pos <- BF.distr$pos
-  BF.neg <- BF.distr$neg
-  AUC.BF[i] <- mean(sample(log(BF.pos), 1000, replace=TRUE) > sample(log(BF.neg),1000,replace=TRUE))
-  TPR.BF[i] <- TPR(BF.pos, BF.neg, FPR)
-}
-# report <- data.frame(gamma.mean=gamma.mean.model, AUC=AUC.BF, TPR=TPR.BF)
-report <- data.frame(sigma=sigma.model, AUC=AUC.BF, TPR=TPR.BF)
-write.csv(report, file="simulation/sensitivity_risk_only.csv")
-
-# Mixture of risk and non-functional variants
-N0 <- 2000
-N <- 2000
-m <- 20
-alpha0 <- 1
-beta0 <- 1000
-alpha <- 1
-beta <- 5000
-ngenes <- 1500
-gamma.mean <- 5
-sigma <- 1
-pi <- 0.2
-alpha.model <- 0.5  # used in the model
-beta.model <- 200
-gamma.mean.model <- 4 #c(1.2,1.4,1.6,1.8,2.0)
-sigma.model <- 1.3 #c(0.6,0.8,1.0,1.2,1.4)
-pi.model <- 0.4 #c(0.1,0.2,0.3,0.4,0.5)
-npar <- length(gamma.mean.model)
-# npar <- length(sigma.model)
-# npar <- length(pi.model)
-AUC.BF <- length(npar)
-TPR.BF <- length(npar)
-FPR <- 0.01
-for (i in 1:npar) {
-  BF.distr <- simulation.BF(N0, N, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, ngenes=ngenes, pi=pi, alpha.model=alpha.model, beta.model=beta.model, gamma.mean.model=gamma.mean.model[i], sigma.model=sigma.model, pi.model=pi.model)
-  BF.pos <- BF.distr$pos
-  BF.neg <- BF.distr$neg
-  AUC.BF[i] <- mean(sample(log(BF.pos), 1000, replace=TRUE) > sample(log(BF.neg),1000,replace=TRUE))
-  TPR.BF[i] <- TPR(BF.pos, BF.neg, FPR)
-}
-# report <- data.frame(gamma.mean=gamma.mean.model, AUC=AUC.BF, TPR=TPR.BF)
-# report <- data.frame(sigma=sigma.model, AUC=AUC.BF, TPR=TPR.BF)
-# report <- data.frame(pi=pi.model, AUC=AUC.BF, TPR=TPR.BF)
-report <- data.frame(gamma.mean=gamma.mean.model, sigma=sigma.model, pi=pi.model, AUC=AUC.BF, TPR=TPR.BF)
-
-# plot the results: low-risk
-report <- read.table("simulation/report.txt",header=TRUE)
-postscript("simulation/sensitivity_risk_protective.eps", width=10, height=6)
-par(mfrow=c(1,2))
-plot(report$gamma.mean, report$AUC, type='b',ylim=c(0.70,0.9),xlab='Relative risk', ylab='AUC')
-abline(h=0.741,col='red',lty=2)
-text(1.9,0.75,"Burden")
-abline(h=0.844,col='blue',lty=2)
-text(1.9,0.85,"SKAT")
-plot(report$gamma.mean, report$TPR, type='b',ylim=c(0.20,0.45),xlab='Relative risk', ylab='True positive rate')
-abline(h=0.23,col='red',lty=2)
-text(1.9,0.24,"Burden")
-abline(h=0.298,col='blue',lty=2)
-text(1.9,0.31,"SKAT")
-par(mfrow=c(1,1))
-dev.off()
-
-# plot the results: mixture
-report <- read.table("simulation/report.txt",header=TRUE)
-report.pi <- read.table("simulation/report_pi.txt",header=TRUE)
-postscript("simulation/sensitivity_risk_mixture.eps", width=10, height=14)
-par(mfrow=c(2,2))
-plot(report$gamma.mean, report$AUC, type='b',ylim=c(0.65,0.8),xlab='Relative risk', ylab='AUC')
-abline(h=0.671,col='red',lty=2)
-text(6,0.665,"Burden")
-abline(h=0.674,col='blue',lty=2)
-text(6, 0.685,"SKAT")
-plot(report$gamma.mean, report$TPR, type='b',ylim=c(0.05,0.2),xlab='Relative risk', ylab='True positive rate')
-abline(h=0.093,col='red',lty=2)
-text(6,0.10,"Burden")
-abline(h=0.085,col='blue',lty=2)
-text(6,0.08,"SKAT")
-plot(report.pi$pi, report$AUC, type='b',ylim=c(0.65,0.8),xlab=expression(pi), ylab='AUC')
-abline(h=0.671,col='red',lty=2)
-text(0.4,0.665,"Burden")
-abline(h=0.674,col='blue',lty=2)
-text(0.4, 0.685,"SKAT")
-plot(report.pi$pi, report$TPR, type='b',ylim=c(0.05,0.2),xlab=expression(pi), ylab='True positive rate')
-abline(h=0.093,col='red',lty=2)
-text(0.4,0.1,"Burden")
-abline(h=0.085,col='blue',lty=2)
-text(0.4,0.08,"SKAT")
-par(mfrow=c(1,1))
-dev.off()
 

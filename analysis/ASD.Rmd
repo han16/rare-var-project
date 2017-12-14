@@ -28,6 +28,9 @@ knitr::read_chunk("chunks.R")
 library(RSQLite)
 library(dplyr)
 library(knitr)
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
 ```
 
 ```{r defined function, echo=F, results='hide'}
@@ -185,6 +188,11 @@ for (vart in 1:max.vart)
 kable(summy, caption="Burden analysis of single variant features")
 ```
 
+```{r, echo=T}
+barplot(summy[,1], ylim=c(0, 1.3), las=2, cex.names=0.6, main="Burden analysis of variants")
+abline(h=1, col="red", lty=4)
+```
+
 Test: use two sample one side poisson test ("greater")
 
 * probably damaging:Polyphen2.HDIV.score >=0.957
@@ -221,6 +229,7 @@ haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_g
 gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
 gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
 gene.summy=matrix(nrow=max.gene+1, ncol=4)
 gene.evid=list(); var.index=1
 gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
@@ -336,7 +345,135 @@ kable(seizure.summ)
 ```
 
 
+
+
 ## Combined feature analysis
+
+
+consider the combination of gene set+AF+exon
+
+
+```{r burdern analysis for combined set of variants and genes, results='hide', echo=F}
+comb.exon.cutoff=exon.cutoff[1:3];
+sub.com=c(exon.fea[1:3], "LoF", "Prby Damaging", "CriticalExon", "Consensus")
+comb.fea=paste(rep(sub.com, each=length(gene.set)), gene.set)
+AF.cutoff=c("MAF<1e-2", "MAF<1e-3", "MAF<1e-4", "Private"); colname=c("OR", "p.value", "rate.ca", "rate.co")
+comb.summ=matrix(nrow=length(comb.fea), ncol=4*length(AF.cutoff))
+rownames(comb.summ)=comb.fea; colnames(comb.summ)=paste(rep(AF.cutoff, each=length(colname)), colname, sep="~")
+all.evid=list(); ii=0; all.evid.fea=paste(rep(comb.fea, each=length(AF.cutoff)), AF.cutoff)
+for (i in 1:length(sub.com))
+{ 
+  cat(i, "th subcom is running", "\n")
+  
+  if (i<=length(comb.exon.cutoff))    # this is for exon 
+  for (j in 1:length(gene.set))
+  {  
+   for (k in 1:(length(AF.cutoff)-1)) 
+  {
+    comb.evid=intersect(intersect(evid.exon[[i]], gene.evid[[13+j]]), var.evid[[k]]) 
+    pois.test=test.func(comb.evid, var.data, N1, N0)
+    comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+    ii=ii+1
+    all.evid[[ii]]=comb.evid
+   }  
+    k=length(AF.cutoff)
+    comb.evid=intersect(intersect(evid.exon[[i]], gene.evid[[13+j]]), var.evid[[11]]) 
+    pois.test=test.func(comb.evid, var.data, N1, N0)
+    comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+    ii=ii+1
+    all.evid[[ii]]=comb.evid 
+  }
+  
+  if (sub.com[i] %in% var.fea==T)   # this is for variant feature 
+    for (j in 1:length(gene.set))
+    {    
+     for (k in 1:(length(AF.cutoff)-1))  
+    {
+    comb.evid=intersect(intersect(var.evid[[which(sub.com[i]==var.fea)]], gene.evid[[13+j]]), var.evid[[k]]) 
+    pois.test=test.func(comb.evid, var.data, N1, N0)
+    comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+    ii=ii+1
+    all.evid[[ii]]=comb.evid
+     } 
+     k=length(AF.cutoff)
+    comb.evid=intersect(intersect(var.evid[[which(sub.com[i]==var.fea)]], gene.evid[[13+j]]), var.evid[[11]]) 
+    pois.test=test.func(comb.evid, var.data, N1, N0)
+    comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+    ii=ii+1
+    all.evid[[ii]]=comb.evid  
+    }
+  
+  if (sub.com[i]=="CriticalExon")  # this is for critical exon
+    for (j in 1:length(gene.set))
+    {    
+     for (k in 1:(length(AF.cutoff)-1))  
+    {
+    comb.evid=intersect(intersect(critical.exon, gene.evid[[13+j]]), var.evid[[k]]) 
+    pois.test=test.func(comb.evid, var.data, N1, N0)
+    comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+    ii=ii+1
+    all.evid[[ii]]=comb.evid
+    
+     } 
+    k=length(AF.cutoff)
+    comb.evid=intersect(intersect(critical.exon, gene.evid[[13+j]]), var.evid[[11]]) 
+    pois.test=test.func(comb.evid, var.data, N1, N0)
+    comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
+    ii=ii+1
+    all.evid[[ii]]=comb.evid   
+    }
+   
+}  
+```
+
+**Feature combinations: exon/LoF/missense+gene+MAF cutoff**
+
+
+```{r feature combinations}
+kable(comb.summ[,1:4], caption="Combined Annotations", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+kable(comb.summ[,5:8], caption="Combined Annotations (Cont)", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+kable(comb.summ[,9:12], caption="Combined Annotations (Cont)", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px") 
+
+kable(comb.summ[,13:16], caption="Combined Annotations (Cont)", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+```
+
+
+**Signals with p value<0.05**
+
+
+```{r extract signal, echo=F}
+signal.row=unique(c(which(comb.summ[,2]<0.05), which(comb.summ[,6]<0.05), which(comb.summ[,10]<0.05), which(comb.summ[,14]<0.05)))
+poten.signal=comb.summ[signal.row,]
+kable(poten.signal[,1:4], caption="Signals with small p values", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+kable(poten.signal[,5:8], caption="Signals with small p values (Cont)", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+kable(poten.signal[,9:12], caption="Signals with small p values (Cont)", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+
+kable(poten.signal[,13:16], caption="Signals with small p values (Cont)", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+```
+
 
 
 ## Session information
