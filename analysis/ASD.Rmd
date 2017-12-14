@@ -189,7 +189,7 @@ kable(summy, caption="Burden analysis of single variant features")
 ```
 
 ```{r, echo=T}
-barplot(summy[,1], ylim=c(0, 1.3), las=2, cex.names=0.6, main="Burden analysis of variants")
+barplot(summy[,1], ylim=c(0, 1.3), ylab="OR", las=2, cex.names=0.6, main="")
 abline(h=1, col="red", lty=4)
 ```
 
@@ -472,6 +472,33 @@ kable(poten.signal[,13:16], caption="Signals with small p values (Cont)", "html"
 kable_styling() %>%
 scroll_box(height = "200px")
 
+```
+
+
+```{r, echo=F}
+par(mfrow=c(2,2))
+plot(poten.signal[which(poten.signal[,2]<0.05),1], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,1])+1), xlab="", xaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})))
+abline(h=1, col="red", lty=4)
+axis.labels <-row.names(poten.signal[which(poten.signal[,2]<0.05),])
+axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
+
+
+plot(poten.signal[which(poten.signal[,6]<0.05),5], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,5])+1), xlab="", xaxt='n', main=expression(paste("Combined features with AF<", 10^{-3})))
+abline(h=1, col="red", lty=4)
+axis.labels <-row.names(poten.signal[which(poten.signal[,6]<0.05),])
+axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
+
+
+plot(poten.signal[which(poten.signal[,10]<0.05),9], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,9])+1), xlab="", xaxt='n', main=expression(paste("Combined features with AF<", 10^{-4})))
+abline(h=1, col="red", lty=4)
+axis.labels <-row.names(poten.signal[which(poten.signal[,10]<0.05),])
+axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
+
+
+plot(poten.signal[which(poten.signal[,14]<0.05),13], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,13])+1), xlab="", xaxt='n', main=expression(paste("Combined features with private variants")))
+abline(h=1, col="red", lty=4)
+axis.labels <-row.names(poten.signal[which(poten.signal[,14]<0.05),])
+axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
 ```
 
 
