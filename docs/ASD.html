@@ -317,7 +317,7 @@ shared across the workflowr files. -->
 <p><strong>Last updated:</strong> 2017-12-14</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> 4d16f47</p>
+<p><strong>Code version:</strong> cc1913f</p>
 <!-- Add your analysis here -->
 <div id="quality-control-qc" class="section level2">
 <h2>Quality Control (QC)</h2>
@@ -866,7 +866,8 @@ for (gene in 1:length(seizure.gene))
 </div>
 <div id="combined-feature-analysis" class="section level2">
 <h2>Combined feature analysis</h2>
-<p>consider the combination of gene set+AF+exon</p>
+<div id="consider-the-combination-of-gene-setafexon" class="section level3">
+<h3>consider the combination of gene set+AF+exon</h3>
 <p><strong>Feature combinations: exon/LoF/missense+gene+MAF cutoff</strong></p>
 <pre class="r"><code>kable(comb.summ[,1:4], caption=&quot;Combined Annotations&quot;, &quot;html&quot;)%&gt;%
 kable_styling() %&gt;%
@@ -6224,6 +6225,9 @@ Consensus Olfac.gene
 </tbody>
 </table>
 </div>
+</div>
+<div id="significant-features-with-p-value-less-than-0.05." class="section level3">
+<h3>significant features with p value less than 0.05.</h3>
 <p><strong>Signals with p value&lt;0.05</strong></p>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -8850,6 +8854,7 @@ Consensus constraint gene
 </table>
 </div>
 <p><img src="figure/ASD.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>

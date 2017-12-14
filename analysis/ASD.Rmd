@@ -350,7 +350,7 @@ kable(seizure.summ)
 ## Combined feature analysis
 
 
-consider the combination of gene set+AF+exon
+### consider the combination of gene set+AF+exon
 
 
 ```{r burdern analysis for combined set of variants and genes, results='hide', echo=F}
@@ -426,6 +426,8 @@ for (i in 1:length(sub.com))
 }  
 ```
 
+
+
 **Feature combinations: exon/LoF/missense+gene+MAF cutoff**
 
 
@@ -448,6 +450,8 @@ scroll_box(height = "200px")
 
 ```
 
+
+### significant features with p value less than 0.05. 
 
 **Signals with p value<0.05**
 
@@ -473,6 +477,8 @@ kable_styling() %>%
 scroll_box(height = "200px")
 
 ```
+
+
 
 
 ```{r, echo=F}
