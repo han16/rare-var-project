@@ -28,6 +28,7 @@ knitr::read_chunk("chunks.R")
 library(RSQLite)
 library(dplyr)
 library(knitr)
+library(kableExtra)
 ```
 
 ```{r defined function, echo=F, results='hide'}
@@ -169,10 +170,26 @@ for (gene in 1:(max.gene+1))
 
 
 ```{r gene level, echo=F}
-kable(gene.summy, caption="Burden analysis of gene set")
-kable(LoF.summy, caption="Burden analysis of LoF in different gene sets")
+kable(gene.summy, caption="Burden analysis of gene set", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+kable(LoF.summy, caption="Burden analysis of LoF in different gene sets", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
 ```
 
+```{r, echo=T}
+#pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\burden_geneset.pdf")
+barcenters=barplot(gene.summy[1:22,1], xlab="OR", pch=19, xlim=c(0, max(gene.summy[1:22,1])+0.5), ylab="", yaxt='n', main="", col="blue", horiz=T, width=0.85)
+lines(-log(gene.summy[1:22,2], base=10), barcenters, pch=16, col=2, type="p")
+abline(v=1, col="blue", lty=4)
+abline(v=-log(0.05, base=10), col=2, lty=4)
+axis.labels <-row.names(gene.summy[1:22,])
+axis(2, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.5)
+legend(1.32, 21, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16), cex=0.8)
+#dev.off()
+```
 
 
 
@@ -234,9 +251,23 @@ for (i in 1:length(par.evid))
 ```
 
 The burden of 8 categories is 
-```{r, echo=T}
+```{r, echo=F}
 colnames(burden.summy)=c("OR", "p.value", "No.ca", "No.co")
-kable(burden.summy, caption="The burden of eight categories")
+kable(burden.summy, caption="The burden of eight categories", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+```
+
+```{r, echo=F}
+#pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\burden_constgene.pdf")
+barcenters=barplot(burden.summy[,1], xlab="OR", pch=19, xlim=c(0, 1.7), ylab="", yaxt='n', main="", col="blue", horiz=T, width=0.9)
+lines(-log(burden.summy[,2], base=10), barcenters, pch=16, col=2, type="p")
+abline(v=1, col="blue", lty=4)
+abline(v=-log(0.05, base=10), col=2, lty=4)
+axis.labels <-seq(1,8)
+axis(2, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=1)
+legend(1.32, 8, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16), cex=1)
+#dev.off()
 ```
 
 
@@ -257,6 +288,39 @@ Non-Damaging, $0.01 \leq  AF < 0.05$ |    $\beta_6=0$ (0) | 0 (0)
 Non-Damaging, $0.001 \leq AF < 0.01$ |  $\beta_7=0$ (0) | 0 (0)
 Non-Damaging,  $AF < 0.001$ | $\beta_8=0.24$ (3.11) | 0.16 (3.49)
 Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with fixed $\delta$. 
+
+
+
+```{r, echo=T}
+para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
+x=1:8
+plot(x, para.est, type="p", ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab="Variant Category", main="Parameter estimate of constraint genes with fixed delta=0.1")
+```
+
+
+```{r, echo=F}
+BF.const.gene.common.delta=read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\output\\BF.constraint.gene.ASD.commmondelta0.1.csv", header=T)
+rank.BF.const.gene.common.delta=BF.const.gene.common.delta[order(BF.const.gene.common.delta$BF, decreasing=T),]
+row.names(BF.const.gene.common.delta)=NULL
+```
+
+```{r, echo=F}
+kable(rank.BF.const.gene.common.delta[1:20,1:2], row.names=NA, caption =("Top 20 genes of constraint genes with fixed delta"), "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+```
+
+
+#### enrichment with de novo genes 
+
+```{r, echo=F}
+denovo.gene=read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
+top1000.denovo.gene=as.character(rank.denovo.gene$RefSeqName[1:1000])
+top20.const.gene=as.character(rank.BF.const.gene.common.delta$Gene[1:20])
+all.const.gene=as.character(rank.BF.const.gene.common.delta$Gene)
+```
+In top 1000 denovo genes, there are 9 in top 20 constarint genes and 87 in 1003 constraint genes. By Fisher exact test (9/20 vs 87/1003), OR=5.17 and p value of $4.10 \times 10^{-4}$.  
 
 
 
@@ -336,6 +400,17 @@ Non-Damaging,  $AF < 0.001$ | 0.09 | 0
 Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific  $\delta$.
 
 
+```{r, echo=F}
+BF.const.gene.specific.delta=read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\output\\BF.constraint.gene.ASD.specificdelta.csv", header=T)
+rank.BF.const.gene.specific.delta=BF.const.gene.specific.delta[order(BF.const.gene.specific.delta$BF, decreasing=T),]
+```
+
+```{r, echo=T}
+kable(rank.BF.const.gene.specific.delta[1:20,1:2], row.names=NA, caption =("Top 20 genes of constraint genes with gene specific delta"), "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+```
+
 In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95, pvalue=0.0311.
 
 ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896. 
@@ -356,6 +431,26 @@ plot(para.summ[,1], type="p", ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(ha
 ```
 
 
+```{r, echo=T}
+para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
+x=1:8
+plot(x, para.est, type="p", ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=15, col="black", xlab="Variant Category", main="Parameter estimates of constraint genes")
+points(x, para.summ[,1], type="p", ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16,col="red")
+legend(6, 0.8, c(expression(paste("common ", delta, "=0.1")), expression(paste("gene specific ", delta[i]))), col=c("black", "red"), pch=c(15,16))
+abline(h=0, lty=2)
+```
+
+
+
+```{r, echo=F}
+pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\paraestconsgene.pdf")
+para.est.sum=matrix(nrow=2, ncol=8)
+para.est.sum[1,]=para.est
+para.est.sum[2,]=para.summ[,1]
+colnames(para.est.sum)=seq(1,8)
+barplot(para.est.sum, beside=T, col=c("darkblue", "red"), legend=c(expression(paste("common ", delta, "=0.1")), expression(paste("gene specific ", delta[i]))), ylim=c(0,1), ylab=expression(paste(hat(beta))), cex.lab=0.7) 
+dev.off()
+```
 
 Replace "damaging" with "consensus damaging"
 

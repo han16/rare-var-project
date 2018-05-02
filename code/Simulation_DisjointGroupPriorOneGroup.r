@@ -8,6 +8,8 @@ rm(list=ls())
 start.time=date()
 cat("program starts at", date(),"\n\n")
 ptm <- proc.time()
+set.seed(123)
+library(SKAT)
 intergrand=function(aa, indi.var, pheno, bar.gamma, sig)
 {
   ff=dbinom(sum(indi.var[pheno==1]), sum(indi.var), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
@@ -55,14 +57,14 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
 
 }
 ##################################
-num.gene=500
+num.gene=100
 m=100
 N0=3000; N1=3000
 delta=1
 alpha0 <- 0.1
-beta0 <- 100
+beta0 <- 1000
 alpha <- 0.1
-beta <- 200
+beta <- 2000
 gamma.mean <- 6
 sigma <- 1
 num.group=1
@@ -78,15 +80,19 @@ beta.true[1]=2
 tau.true=exp(Ajk*beta.true)/(1+exp(Ajk*beta.true))
 
 #pi=tau.true
-pi=0.1
-max.run=100
+pi=0.001
+max.run=2
 all.pi=matrix(nrow=max.run, ncol=(num.group+1))
 all.teststat=numeric()
+LRT.pval=numeric()
+
 actu.pi=numeric()
 pvalue.fish=numeric()
 all.conti.table=list()
 odds.ratio=numeric()
 log.lkhd=numeric() # used to check the concavity of likelihood function of beta
+
+skat.pval=numeric()
 ########################  generate data
 for (run in 1:max.run) {
   actu.no.var=numeric()
@@ -102,6 +108,7 @@ for (run in 1:max.run) {
   BF.gene=matrix(nrow=max.iter, ncol=num.gene)
   final.causal.var=numeric()
   conti.matx=list()
+  comb.geno=matrix(nrow=(N1+N0), ncol=1)
   ########################
   for (i in 1:num.gene)
   {
@@ -116,13 +123,17 @@ for (run in 1:max.run) {
       actu.no.var[i]=length(yy); zz=intersect(xx, yy) # zz; causal variant after filtering
       final.causal.var[i]=length(zz)
 
+      ################################
       conti.table=matrix(nrow=2,ncol=2)  # used for fisher exact test
       conti.table[1,1]=sum(data$geno[(data$pheno==1),which(yy%in%data$var.index)])
       conti.table[1,2]=sum(data$pheno==1)*length(yy)-conti.table[1,1]
       conti.table[2,1]=sum(data$geno[(data$pheno==0),which(yy%in%data$var.index)])
       conti.table[2,2]=sum(data$pheno==0)*length(yy)-conti.table[2,1]
-
-       conti.matx[[i]]=conti.table
+      conti.matx[[i]]=conti.table
+      ################################
+      comb.geno=cbind(comb.geno, data$geno) # used for SKAT
+      ################################
+      
 
     bb=1
     if (ncol(data$geno)>0) # calculate Bayes factor for variant (i,j)
@@ -189,6 +200,8 @@ for (run in 1:max.run) {
   } # end of i
   2*total.lkhd
   all.teststat[run]=2*total.lkhd
+  LRT.pval[run]=pchisq(all.teststat[run],1, lower.tail=F)
+
   ##################
   # calculate pvalues by fisher exact test
     contigen=matrix(0, nrow=2, ncol=2)
@@ -199,16 +212,22 @@ for (run in 1:max.run) {
     odds.ratio[run]=fisher.test(contigen)$estimate
     all.conti.table[[run]]=contigen
   ##################
+  # calculate p values by SKAT
+   obj<-SKAT_Null_Model(data$pheno ~ 1, out_type="D")
+   skat.pval[run]=SKAT(comb.geno[,-1], obj)$p.value
+  
+  
 
-  par(mfrow=c(1,2))
-  plot(beta.k, ylim=c(0, 1), main=expression(paste (beta)), xlab="Iteration index", ylab="")
-  abline(h=actu.pi[run], col="red")
-  plot(delta.est, ylim=c(0, 1), main=expression(delta), xlab="Iteration index", ylab="")
-  abline(h=delta, col="red")
+ # par(mfrow=c(1,2))
+ # plot(beta.k, ylim=c(0, 1), main=expression(paste (beta)), xlab="Iteration index", ylab="")
+ # abline(h=actu.pi[run], col="red")
+ # plot(delta.est, ylim=c(0, 1), main=expression(delta), xlab="Iteration index", ylab="")
+ # abline(h=delta, col="red")
 
   all.pi[run,]=c(beta.k[iter-1], delta.est[iter-1])
 } # end of run
 ######################
+
 end.time=date()
 cat("program ends at", date(),"\n\n")
 time.spent<-proc.time()-ptm

@@ -1,7 +1,7 @@
 #############################
 # this code estimates delta and beta for one category only for real data
 #############################
-rm(list=ls())
+#rm(list=ls())
 library(RSQLite)
 library(dplyr)
 library(knitr)
@@ -99,8 +99,8 @@ single.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init
       
     }  # end of i
     ############## EM algorithm: M step
-    #delta.est[iter]=sum(EUi)/num.gene
-    delta.est[iter]=delta
+    delta.est[iter]=sum(EUi)/num.gene
+    #delta.est[iter]=delta
     
     if (sum(total.Ui)!=0)
       beta.k[iter]=sum(total.Zij)/sum(total.Ui)
@@ -168,14 +168,17 @@ Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotati
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
 ########################################
 #gene.set=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\TADAq.lessthan5per.gene.txt", header=T)[[1]])
-gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
-LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
-cand.data=Anno.Data[which(Anno.Data$Gene %in% gene.set),]
-LoF.evid=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.01)
-group.index=rep(0, nrow(cand.data))
-group.index[LoF.evid]=1
-gene.data=data.frame(ID=cand.data$ID, Gene=cand.data$Gene, No.case=cand.data$No.case, No.contr=cand.data$No.contr, group.index=group.index)
-new.new.data=gene.data[gene.data$group.index==1, ]
+#gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+#LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+#cand.data=Anno.Data[which(Anno.Data$Gene %in% gene.set),]
+#LoF.evid=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.01)
+#group.index=rep(0, nrow(cand.data))
+#group.index[LoF.evid]=1
+#gene.data=data.frame(ID=cand.data$ID, Gene=cand.data$Gene, No.case=cand.data$No.case, No.contr=cand.data$No.contr, group.index=group.index)
+#new.new.data=gene.data[gene.data$group.index==1, ]
+ID=signal1.evid[[1]]
+gene.data=All.Anno.Data[All.Anno.Data$ID %in% ID, ]  
+new.new.data=data.frame(ID=ID, Gene=gene.data$Gene, No.case=gene.data$No.case, No.contr=gene.data$No.contr, group.index=rep(1, length(ID)))
 delta.range=seq(0.1, 1, by=0.1)
 para.summary=matrix(nrow=length(delta.range), ncol=2)
 #for (i in 1:length(delta.range))

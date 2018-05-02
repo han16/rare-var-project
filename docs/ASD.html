@@ -314,10 +314,10 @@ div.tocify {
 shared across the workflowr files. -->
 <!-- Update knitr chunk options -->
 <!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-12-14</p>
+<p><strong>Last updated:</strong> 2018-04-16</p>
 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
  package git2r is installed -->
-<p><strong>Code version:</strong> cc1913f</p>
+<p><strong>Code version:</strong> 3f5885f</p>
 <!-- Add your analysis here -->
 <div id="quality-control-qc" class="section level2">
 <h2>Quality Control (QC)</h2>
@@ -645,9 +645,17 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>barplot(summy[,1], ylim=c(0, 1.3), ylab=&quot;OR&quot;, las=2, cex.names=0.6, main=&quot;&quot;)
-abline(h=1, col=&quot;red&quot;, lty=4)</code></pre>
+<pre class="r"><code>#pdf(&quot;D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\burdenanalysis.pdf&quot;)
+#plot(summy[,1], ylim=c(0, 2.3), ylab=&quot;&quot;, main=&quot;Burden analysis for single features&quot;, pch=15, col=1, type=&quot;p&quot;, xaxt=&#39;n&#39;, xlab=&quot;&quot;)
+barcenters=barplot(summy[,1], xlim=c(0, 2.3), ylab=&quot;&quot;, main=&quot;Burden analysis for single features&quot;, pch=15, col=&quot;blue&quot;, yaxt=&#39;n&#39;, xlab=&quot;&quot;, horiz=T, width=0.9)
+lines(-log(summy[,2],base=10), barcenters, col=2, pch=16, type=&quot;p&quot;)
+abline(v=1, col=&quot;blue&quot;, lty=4)
+abline(v=-log(0.05, base=10), col=&quot;red&quot;, lty=4)
+legend(1.5, 10, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15, 16))
+axis.labels &lt;-rownames(summy)
+axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)</code></pre>
 <p><img src="figure/ASD.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
 <p>Test: use two sample one side poisson test (“greater”)</p>
 <ul>
 <li>probably damaging:Polyphen2.HDIV.score &gt;=0.957</li>
@@ -682,35 +690,35 @@ abline(h=1, col=&quot;red&quot;, lty=4)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Top%90</td>
+<td>Top90%</td>
 <td align="right">1.0007030</td>
 <td align="right">0.4062855</td>
 <td align="right">53.44311</td>
 <td align="right">53.40556</td>
 </tr>
 <tr class="even">
-<td>Top%80</td>
+<td>Top80%</td>
 <td align="right">0.9996517</td>
 <td align="right">0.5767287</td>
 <td align="right">141.65655</td>
 <td align="right">141.70591</td>
 </tr>
 <tr class="odd">
-<td>Top%70</td>
+<td>Top70%</td>
 <td align="right">0.9978825</td>
 <td align="right">0.9430469</td>
 <td align="right">257.30707</td>
 <td align="right">257.85307</td>
 </tr>
 <tr class="even">
-<td>Top%60</td>
+<td>Top60%</td>
 <td align="right">0.9970855</td>
 <td align="right">0.9964440</td>
 <td align="right">393.40371</td>
 <td align="right">394.55365</td>
 </tr>
 <tr class="odd">
-<td>Top%50</td>
+<td>Top50%</td>
 <td align="right">0.9974208</td>
 <td align="right">0.9973660</td>
 <td align="right">540.14554</td>
@@ -898,7 +906,7 @@ MAF&lt;1e-2~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 ID gene
+ExonTop90% ID gene
 </td>
 <td style="text-align:right;">
 1.4444444
@@ -915,7 +923,7 @@ ExonTop%90 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 High
+ExonTop90% High
 </td>
 <td style="text-align:right;">
 1.7777778
@@ -932,7 +940,7 @@ ExonTop%90 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Mod
+ExonTop90% Mod
 </td>
 <td style="text-align:right;">
 0.8461538
@@ -949,7 +957,7 @@ ExonTop%90 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 PSD
+ExonTop90% PSD
 </td>
 <td style="text-align:right;">
 1.4583333
@@ -966,7 +974,7 @@ ExonTop%90 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.7000000
@@ -983,7 +991,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 AutismKB
+ExonTop90% AutismKB
 </td>
 <td style="text-align:right;">
 1.8000000
@@ -1000,7 +1008,7 @@ ExonTop%90 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 constraint gene
+ExonTop90% constraint gene
 </td>
 <td style="text-align:right;">
 1.1369863
@@ -1017,7 +1025,7 @@ ExonTop%90 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.3951613
@@ -1034,7 +1042,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.4316547
@@ -1051,7 +1059,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.1842105
@@ -1068,7 +1076,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Olfac.gene
+ExonTop90% Olfac.gene
 </td>
 <td style="text-align:right;">
 1.0952381
@@ -1085,7 +1093,7 @@ ExonTop%90 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 ID gene
+ExonTop80% ID gene
 </td>
 <td style="text-align:right;">
 0.8250000
@@ -1102,7 +1110,7 @@ ExonTop%80 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 1.9230769
@@ -1119,7 +1127,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Mod
+ExonTop80% Mod
 </td>
 <td style="text-align:right;">
 1.2272727
@@ -1136,7 +1144,7 @@ ExonTop%80 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.4074074
@@ -1153,7 +1161,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.6666667
@@ -1170,7 +1178,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 AutismKB
+ExonTop80% AutismKB
 </td>
 <td style="text-align:right;">
 1.0909091
@@ -1187,7 +1195,7 @@ ExonTop%80 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.2244898
@@ -1204,7 +1212,7 @@ ExonTop%80 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.3282828
@@ -1221,7 +1229,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2996390
@@ -1238,7 +1246,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.2196262
@@ -1255,7 +1263,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Olfac.gene
+ExonTop80% Olfac.gene
 </td>
 <td style="text-align:right;">
 1.0930233
@@ -1272,7 +1280,7 @@ ExonTop%80 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 ID gene
+ExonTop70% ID gene
 </td>
 <td style="text-align:right;">
 0.7808219
@@ -1289,7 +1297,7 @@ ExonTop%70 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.3076923
@@ -1306,7 +1314,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Mod
+ExonTop70% Mod
 </td>
 <td style="text-align:right;">
 1.2105263
@@ -1323,7 +1331,7 @@ ExonTop%70 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.3066667
@@ -1340,7 +1348,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.5408163
@@ -1357,7 +1365,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 AutismKB
+ExonTop70% AutismKB
 </td>
 <td style="text-align:right;">
 0.9210526
@@ -1374,7 +1382,7 @@ ExonTop%70 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 constraint gene
+ExonTop70% constraint gene
 </td>
 <td style="text-align:right;">
 1.1592920
@@ -1391,7 +1399,7 @@ ExonTop%70 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.2627451
@@ -1408,7 +1416,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2597403
@@ -1425,7 +1433,7 @@ ExonTop%70 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.0784314
@@ -1442,7 +1450,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Olfac.gene
+ExonTop70% Olfac.gene
 </td>
 <td style="text-align:right;">
 1.1627907
@@ -1595,7 +1603,7 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0188679
@@ -1782,7 +1790,7 @@ NaN
 </tr>
 <tr>
 <td style="text-align:left;">
-Prby Damaging Haploinsuff gene
+Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
 0.0000000
@@ -1969,7 +1977,7 @@ CriticalExon RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0221182
@@ -2156,7 +2164,7 @@ Consensus RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0052290
@@ -2237,7 +2245,7 @@ MAF&lt;1e-3~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 ID gene
+ExonTop90% ID gene
 </td>
 <td style="text-align:right;">
 1.4444444
@@ -2254,7 +2262,7 @@ ExonTop%90 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 High
+ExonTop90% High
 </td>
 <td style="text-align:right;">
 1.7777778
@@ -2271,7 +2279,7 @@ ExonTop%90 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Mod
+ExonTop90% Mod
 </td>
 <td style="text-align:right;">
 0.8461538
@@ -2288,7 +2296,7 @@ ExonTop%90 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 PSD
+ExonTop90% PSD
 </td>
 <td style="text-align:right;">
 1.4583333
@@ -2305,7 +2313,7 @@ ExonTop%90 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.7000000
@@ -2322,7 +2330,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 AutismKB
+ExonTop90% AutismKB
 </td>
 <td style="text-align:right;">
 1.8000000
@@ -2339,7 +2347,7 @@ ExonTop%90 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 constraint gene
+ExonTop90% constraint gene
 </td>
 <td style="text-align:right;">
 1.1369863
@@ -2356,7 +2364,7 @@ ExonTop%90 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.3731343
@@ -2373,7 +2381,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.4390244
@@ -2390,7 +2398,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.1842105
@@ -2407,7 +2415,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Olfac.gene
+ExonTop90% Olfac.gene
 </td>
 <td style="text-align:right;">
 0.4000000
@@ -2424,7 +2432,7 @@ ExonTop%90 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 ID gene
+ExonTop80% ID gene
 </td>
 <td style="text-align:right;">
 0.8250000
@@ -2441,7 +2449,7 @@ ExonTop%80 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 1.9230769
@@ -2458,7 +2466,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Mod
+ExonTop80% Mod
 </td>
 <td style="text-align:right;">
 1.2272727
@@ -2475,7 +2483,7 @@ ExonTop%80 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.4074074
@@ -2492,7 +2500,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.6666667
@@ -2509,7 +2517,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 AutismKB
+ExonTop80% AutismKB
 </td>
 <td style="text-align:right;">
 1.0909091
@@ -2526,7 +2534,7 @@ ExonTop%80 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.2244898
@@ -2543,7 +2551,7 @@ ExonTop%80 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.2907801
@@ -2560,7 +2568,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2611111
@@ -2577,7 +2585,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.2196262
@@ -2594,7 +2602,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Olfac.gene
+ExonTop80% Olfac.gene
 </td>
 <td style="text-align:right;">
 0.5000000
@@ -2611,7 +2619,7 @@ ExonTop%80 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 ID gene
+ExonTop70% ID gene
 </td>
 <td style="text-align:right;">
 0.8196721
@@ -2628,7 +2636,7 @@ ExonTop%70 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.3076923
@@ -2645,7 +2653,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Mod
+ExonTop70% Mod
 </td>
 <td style="text-align:right;">
 1.2105263
@@ -2662,7 +2670,7 @@ ExonTop%70 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.3066667
@@ -2679,7 +2687,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.5567010
@@ -2696,7 +2704,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 AutismKB
+ExonTop70% AutismKB
 </td>
 <td style="text-align:right;">
 0.9210526
@@ -2713,7 +2721,7 @@ ExonTop%70 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 constraint gene
+ExonTop70% constraint gene
 </td>
 <td style="text-align:right;">
 1.1696429
@@ -2730,7 +2738,7 @@ ExonTop%70 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.2233503
@@ -2747,7 +2755,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2222222
@@ -2764,7 +2772,7 @@ ExonTop%70 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.1226994
@@ -2781,7 +2789,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Olfac.gene
+ExonTop70% Olfac.gene
 </td>
 <td style="text-align:right;">
 1.0000000
@@ -2934,7 +2942,7 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0709291
@@ -3121,7 +3129,7 @@ NaN
 </tr>
 <tr>
 <td style="text-align:left;">
-Prby Damaging Haploinsuff gene
+Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
 0.0000000
@@ -3308,7 +3316,7 @@ CriticalExon RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2286689
@@ -3495,7 +3503,7 @@ Consensus RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0825472
@@ -3576,7 +3584,7 @@ MAF&lt;1e-4~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 ID gene
+ExonTop90% ID gene
 </td>
 <td style="text-align:right;">
 1.3333333
@@ -3593,7 +3601,7 @@ ExonTop%90 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 High
+ExonTop90% High
 </td>
 <td style="text-align:right;">
 1.7777778
@@ -3610,7 +3618,7 @@ ExonTop%90 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Mod
+ExonTop90% Mod
 </td>
 <td style="text-align:right;">
 0.9090909
@@ -3627,7 +3635,7 @@ ExonTop%90 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 PSD
+ExonTop90% PSD
 </td>
 <td style="text-align:right;">
 1.5217391
@@ -3644,7 +3652,7 @@ ExonTop%90 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.6800000
@@ -3661,7 +3669,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 AutismKB
+ExonTop90% AutismKB
 </td>
 <td style="text-align:right;">
 1.6000000
@@ -3678,7 +3686,7 @@ ExonTop%90 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 constraint gene
+ExonTop90% constraint gene
 </td>
 <td style="text-align:right;">
 1.1527778
@@ -3695,7 +3703,7 @@ ExonTop%90 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.4918033
@@ -3712,7 +3720,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.6000000
@@ -3729,7 +3737,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.2476190
@@ -3746,7 +3754,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Olfac.gene
+ExonTop90% Olfac.gene
 </td>
 <td style="text-align:right;">
 0.6666667
@@ -3763,7 +3771,7 @@ ExonTop%90 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 ID gene
+ExonTop80% ID gene
 </td>
 <td style="text-align:right;">
 0.9230769
@@ -3780,7 +3788,7 @@ ExonTop%80 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 1.9230769
@@ -3797,7 +3805,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Mod
+ExonTop80% Mod
 </td>
 <td style="text-align:right;">
 1.3888889
@@ -3814,7 +3822,7 @@ ExonTop%80 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.5217391
@@ -3831,7 +3839,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.6621622
@@ -3848,7 +3856,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 AutismKB
+ExonTop80% AutismKB
 </td>
 <td style="text-align:right;">
 1.2000000
@@ -3865,7 +3873,7 @@ ExonTop%80 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.2500000
@@ -3882,7 +3890,7 @@ ExonTop%80 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.3333333
@@ -3899,7 +3907,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.3128834
@@ -3916,7 +3924,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.2812500
@@ -3933,7 +3941,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Olfac.gene
+ExonTop80% Olfac.gene
 </td>
 <td style="text-align:right;">
 0.5000000
@@ -3950,7 +3958,7 @@ ExonTop%80 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 ID gene
+ExonTop70% ID gene
 </td>
 <td style="text-align:right;">
 0.8372093
@@ -3967,7 +3975,7 @@ ExonTop%70 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.3076923
@@ -3984,7 +3992,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Mod
+ExonTop70% Mod
 </td>
 <td style="text-align:right;">
 1.2258065
@@ -4001,7 +4009,7 @@ ExonTop%70 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.4062500
@@ -4018,7 +4026,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.6086957
@@ -4035,7 +4043,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 AutismKB
+ExonTop70% AutismKB
 </td>
 <td style="text-align:right;">
 0.9354839
@@ -4052,7 +4060,7 @@ ExonTop%70 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 constraint gene
+ExonTop70% constraint gene
 </td>
 <td style="text-align:right;">
 1.1862745
@@ -4069,7 +4077,7 @@ ExonTop%70 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.2459016
@@ -4086,7 +4094,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.3019608
@@ -4103,7 +4111,7 @@ ExonTop%70 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.2142857
@@ -4120,7 +4128,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Olfac.gene
+ExonTop70% Olfac.gene
 </td>
 <td style="text-align:right;">
 1.2500000
@@ -4273,7 +4281,7 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.1092150
@@ -4460,7 +4468,7 @@ NaN
 </tr>
 <tr>
 <td style="text-align:left;">
-Prby Damaging Haploinsuff gene
+Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
 0.0000000
@@ -4647,7 +4655,7 @@ CriticalExon RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2819549
@@ -4834,7 +4842,7 @@ Consensus RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.1273210
@@ -4915,7 +4923,7 @@ Private~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 ID gene
+ExonTop90% ID gene
 </td>
 <td style="text-align:right;">
 1.5000000
@@ -4932,7 +4940,7 @@ ExonTop%90 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 High
+ExonTop90% High
 </td>
 <td style="text-align:right;">
 2.0000000
@@ -4949,7 +4957,7 @@ ExonTop%90 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Mod
+ExonTop90% Mod
 </td>
 <td style="text-align:right;">
 1.2500000
@@ -4966,7 +4974,7 @@ ExonTop%90 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 PSD
+ExonTop90% PSD
 </td>
 <td style="text-align:right;">
 1.4117647
@@ -4983,7 +4991,7 @@ ExonTop%90 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.9285714
@@ -5000,7 +5008,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 AutismKB
+ExonTop90% AutismKB
 </td>
 <td style="text-align:right;">
 2.5000000
@@ -5017,7 +5025,7 @@ ExonTop%90 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 constraint gene
+ExonTop90% constraint gene
 </td>
 <td style="text-align:right;">
 1.2765957
@@ -5034,7 +5042,7 @@ ExonTop%90 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.6153846
@@ -5051,7 +5059,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 2.0238095
@@ -5068,7 +5076,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.3968254
@@ -5085,7 +5093,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Olfac.gene
+ExonTop90% Olfac.gene
 </td>
 <td style="text-align:right;">
 0.5000000
@@ -5102,7 +5110,7 @@ ExonTop%90 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 ID gene
+ExonTop80% ID gene
 </td>
 <td style="text-align:right;">
 1.0000000
@@ -5119,7 +5127,7 @@ ExonTop%80 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 2.1428571
@@ -5136,7 +5144,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Mod
+ExonTop80% Mod
 </td>
 <td style="text-align:right;">
 1.3076923
@@ -5153,7 +5161,7 @@ ExonTop%80 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.3750000
@@ -5170,7 +5178,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.8695652
@@ -5187,7 +5195,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 AutismKB
+ExonTop80% AutismKB
 </td>
 <td style="text-align:right;">
 0.9000000
@@ -5204,7 +5212,7 @@ ExonTop%80 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.3559322
@@ -5221,7 +5229,7 @@ ExonTop%80 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.4634146
@@ -5238,7 +5246,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.5196078
@@ -5255,7 +5263,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.3660714
@@ -5272,7 +5280,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Olfac.gene
+ExonTop80% Olfac.gene
 </td>
 <td style="text-align:right;">
 0.5000000
@@ -5289,7 +5297,7 @@ ExonTop%80 Olfac.gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 ID gene
+ExonTop70% ID gene
 </td>
 <td style="text-align:right;">
 0.8333333
@@ -5306,7 +5314,7 @@ ExonTop%70 ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.5714286
@@ -5323,7 +5331,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Mod
+ExonTop70% Mod
 </td>
 <td style="text-align:right;">
 1.3750000
@@ -5340,7 +5348,7 @@ ExonTop%70 Mod
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.4047619
@@ -5357,7 +5365,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.8750000
@@ -5374,7 +5382,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 AutismKB
+ExonTop70% AutismKB
 </td>
 <td style="text-align:right;">
 1.0666667
@@ -5391,7 +5399,7 @@ ExonTop%70 AutismKB
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 constraint gene
+ExonTop70% constraint gene
 </td>
 <td style="text-align:right;">
 1.2985075
@@ -5408,7 +5416,7 @@ ExonTop%70 constraint gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.3925234
@@ -5425,7 +5433,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.4967742
@@ -5442,7 +5450,7 @@ ExonTop%70 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.3586207
@@ -5459,7 +5467,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Olfac.gene
+ExonTop70% Olfac.gene
 </td>
 <td style="text-align:right;">
 1.0000000
@@ -5612,7 +5620,7 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.1887967
@@ -5799,7 +5807,7 @@ NaN
 </tr>
 <tr>
 <td style="text-align:left;">
-Prby Damaging Haploinsuff gene
+Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
 NaN
@@ -5986,7 +5994,7 @@ CriticalExon RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.4687500
@@ -6173,7 +6181,7 @@ Consensus RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.3485714
@@ -6255,7 +6263,7 @@ MAF&lt;1e-2~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.7000000
@@ -6272,7 +6280,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.3951613
@@ -6289,7 +6297,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.4316547
@@ -6306,7 +6314,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 1.9230769
@@ -6323,7 +6331,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.4074074
@@ -6340,7 +6348,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.6666667
@@ -6357,7 +6365,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.3282828
@@ -6374,7 +6382,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2996390
@@ -6391,7 +6399,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.2196262
@@ -6408,7 +6416,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.3076923
@@ -6425,7 +6433,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.3066667
@@ -6442,7 +6450,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.5408163
@@ -6459,7 +6467,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.2627451
@@ -6476,7 +6484,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.2597403
@@ -6646,7 +6654,7 @@ CriticalExon FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0221182
@@ -6697,7 +6705,7 @@ Consensus FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.0784314
@@ -6714,7 +6722,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0188679
@@ -6765,7 +6773,7 @@ CriticalExon SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.0052290
@@ -6799,7 +6807,7 @@ Consensus SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.1842105
@@ -6816,7 +6824,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.2244898
@@ -6911,7 +6919,7 @@ MAF&lt;1e-3~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.700000
@@ -6928,7 +6936,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.373134
@@ -6945,7 +6953,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.439024
@@ -6962,7 +6970,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 1.923077
@@ -6979,7 +6987,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.407407
@@ -6996,7 +7004,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.666667
@@ -7013,7 +7021,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.290780
@@ -7030,7 +7038,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.261111
@@ -7047,7 +7055,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.219626
@@ -7064,7 +7072,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.307692
@@ -7081,7 +7089,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.306667
@@ -7098,7 +7106,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.556701
@@ -7115,7 +7123,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.223350
@@ -7132,7 +7140,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.222222
@@ -7302,7 +7310,7 @@ CriticalExon FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.228669
@@ -7353,7 +7361,7 @@ Consensus FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.122699
@@ -7370,7 +7378,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.070929
@@ -7421,7 +7429,7 @@ CriticalExon SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.082547
@@ -7455,7 +7463,7 @@ Consensus SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.184211
@@ -7472,7 +7480,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.224490
@@ -7567,7 +7575,7 @@ MAF&lt;1e-4~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.680000
@@ -7584,7 +7592,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.491803
@@ -7601,7 +7609,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.600000
@@ -7618,7 +7626,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 1.923077
@@ -7635,7 +7643,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.521739
@@ -7652,7 +7660,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.662162
@@ -7669,7 +7677,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.333333
@@ -7686,7 +7694,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.312883
@@ -7703,7 +7711,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.281250
@@ -7720,7 +7728,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.307692
@@ -7737,7 +7745,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.406250
@@ -7754,7 +7762,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.608696
@@ -7771,7 +7779,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.245902
@@ -7788,7 +7796,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.301961
@@ -7958,7 +7966,7 @@ CriticalExon FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.281955
@@ -8009,7 +8017,7 @@ Consensus FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.214286
@@ -8026,7 +8034,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.109215
@@ -8077,7 +8085,7 @@ CriticalExon SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.127321
@@ -8111,7 +8119,7 @@ Consensus SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.247619
@@ -8128,7 +8136,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.250000
@@ -8223,7 +8231,7 @@ Private~rate.co
 <tbody>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 FMRP
+ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
 1.928571
@@ -8240,7 +8248,7 @@ ExonTop%90 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 RVIS
+ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
 1.615385
@@ -8257,7 +8265,7 @@ ExonTop%90 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 Haploinsuff gene
+ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
 2.023810
@@ -8274,7 +8282,7 @@ ExonTop%90 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 High
+ExonTop80% High
 </td>
 <td style="text-align:right;">
 2.142857
@@ -8291,7 +8299,7 @@ ExonTop%80 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 PSD
+ExonTop80% PSD
 </td>
 <td style="text-align:right;">
 1.375000
@@ -8308,7 +8316,7 @@ ExonTop%80 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 FMRP
+ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
 1.869565
@@ -8325,7 +8333,7 @@ ExonTop%80 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 RVIS
+ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
 1.463415
@@ -8342,7 +8350,7 @@ ExonTop%80 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 Haploinsuff gene
+ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.519608
@@ -8359,7 +8367,7 @@ ExonTop%80 Haploinsuff gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 SCZ gene
+ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
 1.366071
@@ -8376,7 +8384,7 @@ ExonTop%80 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 High
+ExonTop70% High
 </td>
 <td style="text-align:right;">
 2.571429
@@ -8393,7 +8401,7 @@ ExonTop%70 High
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 PSD
+ExonTop70% PSD
 </td>
 <td style="text-align:right;">
 1.404762
@@ -8410,7 +8418,7 @@ ExonTop%70 PSD
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 FMRP
+ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
 1.875000
@@ -8427,7 +8435,7 @@ ExonTop%70 FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 RVIS
+ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
 1.392523
@@ -8444,7 +8452,7 @@ ExonTop%70 RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 Haploinsuff gene
+ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
 1.496774
@@ -8614,7 +8622,7 @@ CriticalExon FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon Haploinsuff gene
+CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
 1.468750
@@ -8665,7 +8673,7 @@ Consensus FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%70 SCZ gene
+ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
 1.358621
@@ -8682,7 +8690,7 @@ ExonTop%70 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-LoF Haploinsuff gene
+LoF Haploinsuff
 </td>
 <td style="text-align:right;">
 1.188797
@@ -8733,7 +8741,7 @@ CriticalExon SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-Consensus Haploinsuff gene
+Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
 1.348571
@@ -8767,7 +8775,7 @@ Consensus SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%90 SCZ gene
+ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
 1.396825
@@ -8784,7 +8792,7 @@ ExonTop%90 SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-ExonTop%80 constraint gene
+ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
 1.355932
@@ -8853,7 +8861,21 @@ Consensus constraint gene
 </tbody>
 </table>
 </div>
+<pre class="r"><code>#pdf(&quot;D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\CombinedFeatureAFMinus2.pdf&quot;)
+#plot(poten.signal[which(poten.signal[,2]&lt;0.05),1],seq(1, nrow(poten.signal[which(poten.signal[,2]&lt;0.05),])),  pch=15, col=1, xlim=c(0, max(poten.signal[,1])+1), ylab=&quot;&quot;, xlab=&quot;OR&quot;, yaxt=&#39;n&#39;, main=expression(paste(&quot;Combined features with AF&lt;&quot;, 10^{-2})))
+barcenters=barplot(poten.signal[which(poten.signal[,2]&lt;0.05),1],  pch=15, col=&quot;blue&quot;, xlim=c(0, max(poten.signal[,1])+2), ylab=&quot;&quot;, xlab=&quot;OR&quot;, yaxt=&#39;n&#39;, main=expression(paste(&quot;Combined features with AF&lt;&quot;, 10^{-2})), horiz=T, width=0.85)
+#lines(-log(poten.signal[which(poten.signal[,2]&lt;0.05),2], base=10), seq(1,nrow(poten.signal[which(poten.signal[,2]&lt;0.05),])), pch=16, col=2, type=&quot;p&quot;)
+points(-log(poten.signal[which(poten.signal[,2]&lt;0.05),2], base=10), barcenters, pch=16, col=2, type=&quot;p&quot;)
+#segments(barcenters,poten.signal[which(poten.signal[,2]&lt;0.05),1] , poten.signal[which(poten.signal[,2]&lt;0.05),1],  barcenters, -log(poten.signal[which(poten.signal[,2]&lt;0.05),2],base=10),lwd = 1.5 )
+abline(v=1, col=&quot;blue&quot;, lty=4)
+abline(v=-log(0.05, base=10), col=2, lty=4)
+axis.labels &lt;-row.names(poten.signal[which(poten.signal[,2]&lt;0.05),])
+axis(side=2, las=2, at=seq(1,length(axis.labels)), labels=wrap.it(axis.labels, 15), cex.axis=0.4)
+legend(3.5, 21, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15,16))</code></pre>
 <p><img src="figure/ASD.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
+<p><img src="figure/ASD.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/ASD.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">
@@ -8886,9 +8908,9 @@ loaded via a namespace (and not attached):
  [7] viridisLite_0.2.0  colorspace_1.3-2   R6_2.2.2          
 [10] highr_0.6          plyr_1.8.4         stringr_1.2.0     
 [13] httr_1.3.1         caTools_1.17.1     tools_3.4.3       
-[16] KernSmooth_2.23-15 DBI_0.7            git2r_0.19.0      
-[19] gtools_3.5.0       htmltools_0.3.5    yaml_2.1.15       
-[22] rprojroot_1.2      digest_0.6.12      assertthat_0.2.0  
+[16] KernSmooth_2.23-15 DBI_0.7            git2r_0.21.0      
+[19] gtools_3.5.0       htmltools_0.3.5    yaml_2.1.16       
+[22] rprojroot_1.3-1    digest_0.6.12      assertthat_0.2.0  
 [25] tibble_1.3.0       readr_1.1.0        bitops_1.0-6      
 [28] memoise_1.1.0      evaluate_0.10      rmarkdown_1.8     
 [31] gdata_2.18.0       stringi_1.1.5      compiler_3.4.3    

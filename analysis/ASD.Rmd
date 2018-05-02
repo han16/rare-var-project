@@ -34,6 +34,26 @@ library(gplots)
 ```
 
 ```{r defined function, echo=F, results='hide'}
+
+wrap.it <- function(x, len)
+{
+  sapply(x, function(y) paste(strwrap(y, len),
+                              collapse = "\n"),
+         USE.NAMES = FALSE)
+}
+
+
+# Call this function with a list or vector
+wrap.labels <- function(x, len)
+{
+  if (is.list(x))
+  {
+    lapply(x, wrap.it, len)
+  } else {
+    wrap.it(x, len)
+    }
+}
+
 test.func=function(evid, Data, N1, N0) # given evid, and sample size, perform the burden analysis
 {
 evid.data=Data[Data$ID %in% evid,]
@@ -111,7 +131,7 @@ AF.summary[1,]=c(nrow(All.Anno.Data),sum(All.Anno.Data$No.case),sum(All.Anno.Dat
 
 for (i in 1:length(ExacAF.cutoff))
 {
-cat(i, "is running", "\n") 
+#cat(i, "is running", "\n") 
 select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<ExacAF.cutoff[i]),]  
 AF.summary[i+1,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 }
@@ -137,7 +157,7 @@ syn.data=All.Anno.Data[which(All.Anno.Data$Annotation=="synonymous SNV"), ]
 test=test.func(syn.data$ID, syn.data, N1, N0)
 com.result[1,]=c(test$odds.ratio,test$p.value,test$rate.case,test$rate.contr)
 for (i in 1:length(ExacAF.cutoff)) {
-  cat(i," is running", "\n")
+#  cat(i," is running", "\n")
  cutoff.syn.data=syn.data[which(syn.data$ExacAF<ExacAF.cutoff[i]),]
  test=test.func(cutoff.syn.data$ID, cutoff.syn.data, N1, N0)
  com.result[i+1,]=c(test$odds.ratio,test$p.value,test$rate.case,test$rate.contr)
@@ -178,7 +198,7 @@ colnames(summy)=c("OR", "p.value", "rate.ca", "rate.co")
 rownames(summy)=var.fea
 for (vart in 1:max.vart)
 {
-  cat(vart, "is running", "\n")
+ # cat(vart, "is running", "\n")
   pois.test=test.func(var.evid[[vart]], var.data, N1, N0)
   summy[vart,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
 }
@@ -189,8 +209,16 @@ kable(summy, caption="Burden analysis of single variant features")
 ```
 
 ```{r, echo=T}
-barplot(summy[,1], ylim=c(0, 1.3), ylab="OR", las=2, cex.names=0.6, main="")
-abline(h=1, col="red", lty=4)
+#pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\burdenanalysis.pdf")
+#plot(summy[,1], ylim=c(0, 2.3), ylab="", main="Burden analysis for single features", pch=15, col=1, type="p", xaxt='n', xlab="")
+barcenters=barplot(summy[,1], xlim=c(0, 2.3), ylab="", main="Burden analysis for single features", pch=15, col="blue", yaxt='n', xlab="", horiz=T, width=0.9)
+lines(-log(summy[,2],base=10), barcenters, col=2, pch=16, type="p")
+abline(v=1, col="blue", lty=4)
+abline(v=-log(0.05, base=10), col="red", lty=4)
+legend(1.5, 10, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15, 16))
+axis.labels <-rownames(summy)
+axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)
+#dev.off()
 ```
 
 Test: use two sample one side poisson test ("greater")
@@ -226,7 +254,7 @@ constraint.gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene"))
 RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
 RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene 
 haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))
-gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
+gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff", "SCZ gene", "Olfac.gene")
 gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
@@ -269,7 +297,7 @@ rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
 for (gene in 1:(max.gene+1))
   if (length(gene.evid[[gene]])>0)
 {
-  cat(gene, "is running", "\n")
+ # cat(gene, "is running", "\n")
   pois.test=test.func(gene.evid[[gene]], var.data, N1, N0)
   gene.summy[gene,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
 }
@@ -286,16 +314,16 @@ for (gene in 1:(max.gene+1))
 
 ```{r burden analysis-exon level, echo=FALSE, include=F}
 exon.cutoff=c(0.9, 0.8, 0.7, 0.6, 0.5)
-exon.fea=c(paste("ExonTop%", exon.cutoff*100, sep=""), "CriticalExon")
+exon.fea=c(paste("ExonTop", exon.cutoff*100, "%",sep=""), "CriticalExon")
 exon.summ=matrix(nrow=(1+length(exon.cutoff)), ncol=4)
 evid.exon=list()
 colnames(exon.summ)=c("OR", "p.value", "rate.ca", "rate.co")
-rownames(exon.summ)=c(paste("Top%", exon.cutoff*100, sep=""), "critical exon")
+rownames(exon.summ)=c(paste("Top", exon.cutoff*100, "%", sep=""), "critical exon")
 for (i in 1:length(exon.cutoff))
 {
   threshold=quantile(Anno.Data$Exon.Exac.Cons, prob=exon.cutoff[i], na.rm=T)
   evid.exon[[i]]=Anno.Data$ID[which(Anno.Data$Exon.Exac.Cons>threshold)]
-  cat(i, "is running", "\n")
+ # cat(i, "is running", "\n")
   pois.test=test.func(evid.exon[[i]], var.data, N1, N0)
   exon.summ[i,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
 }
@@ -361,9 +389,13 @@ AF.cutoff=c("MAF<1e-2", "MAF<1e-3", "MAF<1e-4", "Private"); colname=c("OR", "p.v
 comb.summ=matrix(nrow=length(comb.fea), ncol=4*length(AF.cutoff))
 rownames(comb.summ)=comb.fea; colnames(comb.summ)=paste(rep(AF.cutoff, each=length(colname)), colname, sep="~")
 all.evid=list(); ii=0; all.evid.fea=paste(rep(comb.fea, each=length(AF.cutoff)), AF.cutoff)
+signal1.evid=list(); jj1=0
+signal2.evid=list(); jj2=0
+signal3.evid=list(); jj3=0
+signal4.evid=list(); jj4=0
 for (i in 1:length(sub.com))
 { 
-  cat(i, "th subcom is running", "\n")
+#  cat(i, "th subcom is running", "\n")
   
   if (i<=length(comb.exon.cutoff))    # this is for exon 
   for (j in 1:length(gene.set))
@@ -375,6 +407,24 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid
+    if (pois.test$p.value<0.05)
+     {
+      if (k==1)
+         {
+          jj1=jj1+1
+          signal1.evid[[jj1]]=comb.evid
+         }
+         if (k==2)
+         {
+          jj2=jj2+1
+          signal2.evid[[jj2]]=comb.evid
+         }
+         if (k==3)
+         {
+          jj3=jj3+1
+          signal3.evid[[jj3]]=comb.evid
+         }
+      }
    }  
     k=length(AF.cutoff)
     comb.evid=intersect(intersect(evid.exon[[i]], gene.evid[[13+j]]), var.evid[[11]]) 
@@ -382,6 +432,11 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid 
+    if (pois.test$p.value<0.05)
+    {
+      jj4=jj4+1
+      signal4.evid[[jj4]]=comb.evid
+      }
   }
   
   if (sub.com[i] %in% var.fea==T)   # this is for variant feature 
@@ -394,6 +449,24 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid
+    if (pois.test$p.value<0.05)
+     {
+      if (k==1)
+         {
+          jj1=jj1+1
+          signal1.evid[[jj1]]=comb.evid
+         }
+         if (k==2)
+         {
+          jj2=jj2+1
+          signal2.evid[[jj2]]=comb.evid
+         }
+         if (k==3)
+         {
+          jj3=jj3+1
+          signal3.evid[[jj3]]=comb.evid
+         }
+      }
      } 
      k=length(AF.cutoff)
     comb.evid=intersect(intersect(var.evid[[which(sub.com[i]==var.fea)]], gene.evid[[13+j]]), var.evid[[11]]) 
@@ -401,6 +474,11 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid  
+    if (pois.test$p.value<0.05)
+    {
+      jj4=jj4+1
+      signal4.evid[[jj4]]=comb.evid
+      }
     }
   
   if (sub.com[i]=="CriticalExon")  # this is for critical exon
@@ -413,7 +491,24 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid
-    
+    if (pois.test$p.value<0.05)
+     {
+      if (k==1)
+         {
+          jj1=jj1+1
+          signal1.evid[[jj1]]=comb.evid
+         }
+         if (k==2)
+         {
+          jj2=jj2+1
+          signal2.evid[[jj2]]=comb.evid
+         }
+         if (k==3)
+         {
+          jj3=jj3+1
+          signal3.evid[[jj3]]=comb.evid
+         }
+      }
      } 
     k=length(AF.cutoff)
     comb.evid=intersect(intersect(critical.exon, gene.evid[[13+j]]), var.evid[[11]]) 
@@ -421,10 +516,17 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid   
+    if (pois.test$p.value<0.05)
+    {
+      jj4=jj4+1
+      signal4.evid[[jj4]]=comb.evid
+      }
     }
    
 }  
 ```
+
+
 
 
 
@@ -479,6 +581,21 @@ scroll_box(height = "200px")
 ```
 
 
+```{r, eco=F}
+#pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\CombinedFeatureAFMinus2.pdf")
+#plot(poten.signal[which(poten.signal[,2]<0.05),1],seq(1, nrow(poten.signal[which(poten.signal[,2]<0.05),])),  pch=15, col=1, xlim=c(0, max(poten.signal[,1])+1), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})))
+barcenters=barplot(poten.signal[which(poten.signal[,2]<0.05),1],  pch=15, col="blue", xlim=c(0, max(poten.signal[,1])+2), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})), horiz=T, width=0.85)
+#lines(-log(poten.signal[which(poten.signal[,2]<0.05),2], base=10), seq(1,nrow(poten.signal[which(poten.signal[,2]<0.05),])), pch=16, col=2, type="p")
+points(-log(poten.signal[which(poten.signal[,2]<0.05),2], base=10), barcenters, pch=16, col=2, type="p")
+#segments(barcenters,poten.signal[which(poten.signal[,2]<0.05),1] , poten.signal[which(poten.signal[,2]<0.05),1],  barcenters, -log(poten.signal[which(poten.signal[,2]<0.05),2],base=10),lwd = 1.5 )
+abline(v=1, col="blue", lty=4)
+abline(v=-log(0.05, base=10), col=2, lty=4)
+axis.labels <-row.names(poten.signal[which(poten.signal[,2]<0.05),])
+axis(side=2, las=2, at=seq(1,length(axis.labels)), labels=wrap.it(axis.labels, 15), cex.axis=0.4)
+legend(3.5, 21, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16))
+#dev.off()
+```
+
 
 
 ```{r, echo=F}
@@ -506,6 +623,17 @@ abline(h=1, col="red", lty=4)
 axis.labels <-row.names(poten.signal[which(poten.signal[,14]<0.05),])
 axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
 ```
+
+
+```{r, echo=F}
+#barplot(-log(poten.signal[which(poten.signal[,2]<0.05),2]), horiz=T)
+pval=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\output\\signal1.para.deltaof1.txt", header=T)
+plot(-log(poten.signal[which(poten.signal[,2]<0.05),2], base=10), seq(1,20), pch=16, xlim=c(0, 6), col=1, ylab="", xlab="-log(p.value)", yaxt='n')
+lines(-log(pval[,3], base=10), seq(1,20), pch=16, col=2, type="p")
+axis.labels <-row.names(poten.signal[which(poten.signal[,6]<0.05),])
+axis(2, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
+```
+
 
 
 
