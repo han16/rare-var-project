@@ -71,7 +71,9 @@ N1=N0=4315 trios.
 ### Annotated data quality. 
 
 ```{r read into data, echo=F, results='hide', cache=T}
-All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+#All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+All.Anno.Data=read.table("../../AnnotatedTrans.txt", header=T)
+
 ```
 
 ```{r set paramters and modifying the data, echo=T, results='hide'}
