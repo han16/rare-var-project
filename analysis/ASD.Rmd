@@ -2,27 +2,10 @@
 title: "ASD WES data"
 author: "Shengtong Han"
 date: YYYY-MM-DD
-output: html_document
+#output: html_document
+output: workflowr::wflow_html
 ---
 
-<!-- The file analysis/chunks.R contains chunks that define default settings
-shared across the workflowr files. -->
-```{r read-chunk, include=FALSE, cache=FALSE}
-knitr::read_chunk("chunks.R")
-```
-
-<!-- Update knitr chunk options -->
-```{r knitr-opts-chunk, include=FALSE}
-```
-
-<!-- Insert the date the file was last updated -->
-```{r last-updated, echo=FALSE, results='asis'}
-```
-
-<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed -->
-```{r code-version, echo=FALSE, results='asis'}
-```
 
 ```{r load packages, results='hide', include=FALSE}
 library(RSQLite)
@@ -31,6 +14,12 @@ library(knitr)
 library(kableExtra)
 library(RColorBrewer)
 library(gplots)
+```
+
+
+```{r setpath, echo=F}
+#opts_knit$set(root.dir="C:\\Shengtong\\Research\\rare-var\\rare-var-project\\analysis\\")
+opts_knit$set(root.dir="..")
 ```
 
 ```{r defined function, echo=F, results='hide'}
@@ -71,8 +60,8 @@ N1=N0=4315 trios.
 ### Annotated data quality. 
 
 ```{r read into data, echo=F, results='hide', cache=T}
-#All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
 All.Anno.Data=read.table("../../AnnotatedTrans.txt", header=T)
+#All.Anno.Data=read.table("C:\\Shengtong\\Research\\rare-var\\AnnotatedTrans.txt", header=T)
 
 ```
 
@@ -234,7 +223,8 @@ Test: use two sample one side poisson test ("greater")
 
 
 ```{r burdern analysis-gene level, results='hide', echo=F}
-GeneDB=src_sqlite(path="D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\gene.list.db", create=F)
+GeneDB=src_sqlite(path="C:\\Shengtong\\Research\\rare-var\\gene.list.db", create=F)
+#GeneDB=src_sqlite(path="../../gene.list.db", create=F)
 gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
 gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
 gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
@@ -260,7 +250,7 @@ gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene"
 gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
-gene.summy=matrix(nrow=max.gene+1, ncol=4)
+gene.summy=matrix(nrow=max.gene, ncol=4)
 gene.evid=list(); var.index=1
 gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
 gene.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate2$GeneID  & Anno.Data$Annotation %in% LoF.def==T)])
@@ -291,12 +281,13 @@ gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.
 gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol & Anno.Data$Annotation %in% LoF.def==T)])
 olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
 gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID & Anno.Data$Annotation %in% LoF.def==T )])
-sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
-gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene & Anno.Data$Annotation %in% LoF.def==T)])
+#sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
+#gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene & Anno.Data$Annotation %in% LoF.def==T)])
 
 colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
-rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
-for (gene in 1:(max.gene+1))
+#rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
+rownames(gene.summy)=gene.fea
+for (gene in 1:(max.gene))
   if (length(gene.evid[[gene]])>0)
 {
  # cat(gene, "is running", "\n")
@@ -627,7 +618,7 @@ axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
 ```
 
 
-```{r, echo=F}
+```{r, echo=F, eval=F}
 #barplot(-log(poten.signal[which(poten.signal[,2]<0.05),2]), horiz=T)
 pval=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\output\\signal1.para.deltaof1.txt", header=T)
 plot(-log(poten.signal[which(poten.signal[,2]<0.05),2], base=10), seq(1,20), pch=16, xlim=c(0, 6), col=1, ylab="", xlab="-log(p.value)", yaxt='n')
