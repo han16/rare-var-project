@@ -26,7 +26,10 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -94,6 +97,9 @@ img {
 }
 .tabbed-pane {
   padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
 }
 button.code-folding-btn:focus {
   outline: none;
@@ -310,14 +316,6 @@ div.tocify {
 </div>
 
 
-<!-- The file analysis/chunks.R contains chunks that define default settings
-shared across the workflowr files. -->
-<!-- Update knitr chunk options -->
-<!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2018-04-11</p>
-<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed -->
-<p><strong>Code version:</strong> 3f5885f</p>
 <!-- Add your analysis here -->
 <pre class="r"><code>N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
@@ -609,7 +607,7 @@ ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-High
+High conf
 </td>
 <td style="text-align:right;">
 0.9981478
@@ -626,7 +624,7 @@ High
 </tr>
 <tr>
 <td style="text-align:left;">
-Mod
+Mod conf
 </td>
 <td style="text-align:right;">
 0.9963161
@@ -782,16 +780,16 @@ Olfac.gene
 67SCZriskgene
 </td>
 <td style="text-align:right;">
-0.9998208
+NA
 </td>
 <td style="text-align:right;">
-0.5080097
+NA
 </td>
 <td style="text-align:right;">
-2.5865585
+NA
 </td>
 <td style="text-align:right;">
-2.5870220
+NA
 </td>
 </tr>
 </tbody>
@@ -1061,7 +1059,7 @@ ID gene
 </tr>
 <tr>
 <td style="text-align:left;">
-High
+High conf
 </td>
 <td style="text-align:right;">
 1.7222222
@@ -1078,7 +1076,7 @@ High
 </tr>
 <tr>
 <td style="text-align:left;">
-Mod
+Mod conf
 </td>
 <td style="text-align:right;">
 1.0386643
@@ -1234,16 +1232,16 @@ Olfac.gene
 67SCZriskgene
 </td>
 <td style="text-align:right;">
-1.1666667
+NA
 </td>
 <td style="text-align:right;">
-0.1408879
+NA
 </td>
 <td style="text-align:right;">
-119
+NA
 </td>
 <td style="text-align:right;">
-102
+NA
 </td>
 </tr>
 </tbody>
@@ -1257,7 +1255,21 @@ abline(v=-log(0.05, base=10), col=2, lty=4)
 axis.labels &lt;-row.names(gene.summy[1:22,])
 axis(2, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.5)
 legend(1.32, 21, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15,16), cex=0.8)</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
+<pre class="r"><code>library(ggplot2)
+Gene=row.names(gene.summy)[1:22]
+OR=gene.summy[1:22,1]; pval=gene.summy[1:22,2]
+result.summary=data.frame(Gene=Gene, OR=OR, pval=pval)
+# pdf(&quot;../../Figure/burden_geneset.pdf&quot;)
+  ggplot(result.summary, aes(x=Gene, y=OR, fill=Gene))+
+  geom_bar(stat=&quot;identity&quot;)+
+  ylab(&quot;&quot;)+xlab(&quot;Gene&quot;)+ ggtitle(&quot;Burden analysis for gene sets&quot;)+
+   geom_point(aes(x=Gene, y=-log(pval, base=10), size=-log(pval, base=10), color=Gene))+ 
+    coord_flip()+
+    geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
+  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)</code></pre>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>#dev.off()</code></pre>
 </div>
 <div id="variant-partitions" class="section level2">
@@ -1465,7 +1477,22 @@ No.co
 </tbody>
 </table>
 </div>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>library(ggplot2)
+Cate=1:8
+OR=burden.summy[,1]; pval=burden.summy[,2]
+result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
+# pdf(&quot;../../Figure/burden_constgene.pdf&quot;)
+  ggplot(result.summary, aes(x=Cate, y=OR, fill=Cate))+
+  geom_bar(stat=&quot;identity&quot;)+
+  ylab(&quot;&quot;)+xlab(&quot;Cate&quot;)+ ggtitle(&quot;Burden analysis for eight categories&quot;)+
+   geom_point(aes(x=Cate, y=-log(pval, base=10), size=-log(pval, base=10), color=Cate))+ 
+    scale_x_continuous(&quot;variant category&quot;, labels = as.character(Cate), breaks = Cate)+
+    coord_flip()+
+    geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
+  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)</code></pre>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
 <ul>
 <li>The first catogry only has one common variant with 298/272.</li>
 </ul>
@@ -1527,7 +1554,7 @@ No.co
 <pre class="r"><code>para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
 x=1:8
 plot(x, para.est, type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of constraint genes with fixed delta=0.1&quot;)</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -1780,7 +1807,7 @@ delta=seq(0.1, 1, by=0.1)
 plot(beta.est, xaxt=&#39;n&#39;, ylab=expression(paste(hat(beta))), main=&quot;Parameter estimate for LoF category&quot;, type=&quot;o&quot;, xlab=expression(paste(delta)))
 axis.label=c(&quot;0.1&quot;, &quot;0.2&quot;, &quot;0.3&quot;, &quot;0.4&quot;, &quot;0.5&quot;, &quot;0.6&quot;, &quot;0.7&quot;, &quot;0.8&quot;, &quot;0.9&quot;, &quot;1&quot;)
 axis(1,at=1:10,labels=axis.label)</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>test.stat=c(0.6105703, 0.7301446, 0.7621092, 0.7772918, 0.7866515, 0.7931309, 0.7979188, 0.8016140, 0.8045560, 0.8069559, cex.axis=0.8)</code></pre>
 </div>
 </div>
@@ -2397,15 +2424,29 @@ ITSN1
 </div>
 <p>In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95, pvalue=0.0311.</p>
 <p>ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896.</p>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
 x=1:8
 plot(x, para.est, type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=15, col=&quot;black&quot;, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimates of constraint genes&quot;)
 points(x, para.summ[,1], type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16,col=&quot;red&quot;)
 legend(6, 0.8, c(expression(paste(&quot;common &quot;, delta, &quot;=0.1&quot;)), expression(paste(&quot;gene specific &quot;, delta[i]))), col=c(&quot;black&quot;, &quot;red&quot;), pch=c(15,16))
 abline(h=0, lty=2)</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>library(ggplot2)
+all.est=c(para.est.sum[1,], para.est.sum[2,])
+cate=1:8
+para=rep(c(&quot;common delta&quot;, &quot;specific delta&quot;), each=8)
+para.est.combine=data.frame(cate=cate, para=para, est=all.est)
+
+pdf(&quot;../../Figure/paraestconsgene.pdf&quot;)
+ggplot(data=para.est.combine, aes(x=cate, y=all.est, fill=para)) +
+geom_bar(stat=&quot;identity&quot;, position=position_dodge())+
+  xlab(&quot;variant category&quot;)+ylab(expression(paste(hat(beta))))+
+  scale_x_continuous(&quot;variant category&quot;, labels = as.character(cate), breaks = cate)
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
 <p>Replace “damaging” with “consensus damaging”</p>
 <table>
 <caption>Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific <span class="math inline">\(\delta\)</span>.</caption>
@@ -2485,7 +2526,7 @@ betas=c(expression(paste(hat(beta)[1])),expression(paste(hat(beta)[2])), express
 expression(paste(hat(beta)[5])),expression(paste(hat(beta)[6])), expression(paste(hat(beta)[7])),expression(paste(hat(beta)[8])))
 #legend(2, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))
 legend(4, 1, betas, col=seq(1,8), lty=rep(1,8), ncol=2)</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>Replace “Damaging” with “Consensus damaging”</p>
 <pre class="r"><code>beta=matrix(nrow=5, ncol=8)
 rownames(beta)=c(&quot;top10%&quot;, &quot;top10-20%&quot;, &quot;top20-30%&quot;, &quot;top30-40%&quot;, &quot;top40-50%&quot;)
@@ -2499,7 +2540,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <table style="width:81%;">
 <caption>Number of variants in C5 and C8 at different constrait level.</caption>
 <colgroup>
@@ -2638,7 +2679,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -2702,44 +2743,12 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <pre class="r"><code>para.est=c(0, 0.08, 0, 0, 0.06, 0, 0, 0.06)
 x=1:8
 plot(para.est, type=&quot;p&quot;, ylim=c(0,0.5), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of all genes in the whole genome&quot;)</code></pre>
-<p><img src="figure/GeneSetAnalysis.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
 <!-- Insert the session information into the document -->
-<pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.4.3 (2017-11-30)
-Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 7 x64 (build 7601) Service Pack 1
-
-Matrix products: default
-
-locale:
-[1] LC_COLLATE=English_United States.1252 
-[2] LC_CTYPE=English_United States.1252   
-[3] LC_MONETARY=English_United States.1252
-[4] LC_NUMERIC=C                          
-[5] LC_TIME=English_United States.1252    
-
-attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
-
-other attached packages:
-[1] plotrix_3.6-6    kableExtra_0.6.1 knitr_1.17       dplyr_0.5.0     
-[5] RSQLite_1.1-2   
-
-loaded via a namespace (and not attached):
- [1] Rcpp_0.12.10      xml2_1.1.1        magrittr_1.5     
- [4] hms_0.3           rvest_0.3.2       munsell_0.4.3    
- [7] viridisLite_0.2.0 colorspace_1.3-2  R6_2.2.2         
-[10] highr_0.6         plyr_1.8.4        stringr_1.2.0    
-[13] httr_1.3.1        tools_3.4.3       DBI_0.7          
-[16] git2r_0.21.0      htmltools_0.3.5   yaml_2.1.16      
-[19] rprojroot_1.3-1   digest_0.6.12     assertthat_0.2.0 
-[22] tibble_1.3.0      readr_1.1.0       memoise_1.1.0    
-[25] evaluate_0.10     rmarkdown_1.8     stringi_1.1.5    
-[28] compiler_3.4.3    scales_0.4.1      backports_1.0.5  </code></pre>
 </div>
 
 <hr>

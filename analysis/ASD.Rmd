@@ -199,7 +199,7 @@ for (vart in 1:max.vart)
 kable(summy, caption="Burden analysis of single variant features")
 ```
 
-```{r, echo=T}
+```{r, echo=T,eval=F}
 #pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\burdenanalysis.pdf")
 #plot(summy[,1], ylim=c(0, 2.3), ylab="", main="Burden analysis for single features", pch=15, col=1, type="p", xaxt='n', xlab="")
 barcenters=barplot(summy[,1], xlim=c(0, 2.3), ylab="", main="Burden analysis for single features", pch=15, col="blue", yaxt='n', xlab="", horiz=T, width=0.9)
@@ -218,6 +218,24 @@ Test: use two sample one side poisson test ("greater")
 * possibly damaging: <0.957 & >=0.453; 
 * consensus: "Prby Damaging", or  "SIFT<0.05", or   "CADD top10%" (take union)
 * LoF:stopgain+ frameshift substitution+splicing+stoploss (take union)
+
+
+```{r, echo=T}
+library(ggplot2)
+Features=rownames(summy)
+OR=summy[,1]; pval=summy[,2]
+result.summary=data.frame(Features=Features, OR=OR, pval=pval)
+
+pdf("../../Figure/burden_single_feature.pdf")
+ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
+  geom_bar(stat="identity")+
+  ylab("")+xlab("Features")+ ggtitle("Burden analysis of single features")+
+  geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
+           stat="identity")+coord_flip()+geom_hline(yintercept=1,linetype="dashed")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red") 
+dev.off()
+```
+
 
 ### LoF in different gene set 
 
@@ -574,7 +592,7 @@ scroll_box(height = "200px")
 ```
 
 
-```{r, eco=F}
+```{r, eco=F, eval=F}
 #pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\CombinedFeatureAFMinus2.pdf")
 #plot(poten.signal[which(poten.signal[,2]<0.05),1],seq(1, nrow(poten.signal[which(poten.signal[,2]<0.05),])),  pch=15, col=1, xlim=c(0, max(poten.signal[,1])+1), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})))
 barcenters=barplot(poten.signal[which(poten.signal[,2]<0.05),1],  pch=15, col="blue", xlim=c(0, max(poten.signal[,1])+2), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})), horiz=T, width=0.85)
@@ -588,6 +606,26 @@ axis(side=2, las=2, at=seq(1,length(axis.labels)), labels=wrap.it(axis.labels, 1
 legend(3.5, 21, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16))
 #dev.off()
 ```
+
+
+
+
+```{r, echo=T}
+library(ggplot2)
+Features=row.names(poten.signal[which(poten.signal[,2]<0.05),])
+OR=poten.signal[which(poten.signal[,2]<0.05),1]; pval=poten.signal[which(poten.signal[,2]<0.05),2]
+result.summary=data.frame(Features=Features, OR=OR, pval=pval)
+ pdf("../../Figure/combined_feature_AFlessthan2per.pdf")
+  ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
+  geom_bar(stat="identity")+
+  ylab("")+xlab("Features")+ ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
+  geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
+           stat="identity")+coord_flip()+geom_hline(yintercept=1,linetype="dashed")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")#+
+    #theme(legend.key.size = unit(0.65,"line"))  # this is to control legend size 
+ dev.off()
+```
+
 
 
 

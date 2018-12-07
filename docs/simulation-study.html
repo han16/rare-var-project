@@ -26,7 +26,9 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -94,6 +96,9 @@ img {
 }
 .tabbed-pane {
   padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
 }
 button.code-folding-btn:focus {
   outline: none;
@@ -309,12 +314,6 @@ div.tocify {
 </div>
 
 
-<!-- The file analysis/chunks.R contains chunks that define default settings
-shared across the workflowr files. -->
-<!-- Update knitr chunk options -->
-<!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-12-18 <!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed --> <strong>Code version:</strong> 3f5885f</p>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -396,7 +395,7 @@ lines(tmm.two, col=2, type=&quot;o&quot;)
 #legend(1, 0.8, c(&quot;FET&quot;, &quot;TMM&quot;), col=c(1,2), lty=c(1,1))
 axis.labels &lt;-beta.two
 axis(1, at=seq(1,length(beta.two)), labels=axis.labels, cex.axis=0.8)</code></pre>
-<p><img src="figure/simulation-study.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <p>Parameter settings: <span class="math inline">\(N_1=N_0=3000\)</span>, all 100 genes are risk genes and each gene has 100 variants in total in one category. The proportion of risk variants <span class="math inline">\(\beta_i\)</span> is varying at different values. <span class="math inline">\(\alpha_0=0.1, \beta_0=1000\)</span>, <span class="math inline">\(\alpha=0.1, \beta=2000\)</span>, <span class="math inline">\(\bar{\gamma}=6, \sigma=1\)</span>.</p>
 <p>To compare with different methods, significance level of 0.05 is used. At each <span class="math inline">\(\beta\)</span>, 100 data sets are generated with the above parameters. For every data set, we essentially tested if <span class="math inline">\(\beta=0\)</span>. The sensitivity in the Figure is actually the proportion of data sets with parameters testing not equal to 0, i.e., <span class="math inline">\(\hat{\beta}!=0\)</span></p>
 <pre class="r"><code>rate.lrt=c(0.36,0.6, 0.79, 0.92, 0.95)
@@ -411,7 +410,20 @@ lines(rate.skat, col=4, type=&quot;o&quot;, pch=17)
 legend(1, 1, c(&quot;FET&quot;, &quot;LRT&quot;, &quot;SKAT&quot;), col=c(3,2, 4), lty=c(1,1, 1), pch=c(15, 16, 17))
 axis.labels &lt;-beta
 axis(1, at=seq(1,5), labels=axis.labels, cex.axis=0.8)</code></pre>
-<p><img src="figure/simulation-study.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>library(ggplot2)
+method=c(&quot;FET&quot;, &quot;LRT&quot;, &quot;SKAT&quot;)
+beta.comp=rep(beta, 3)
+method.comp=rep(method, each=length(beta))
+rate.comp=c(rate.burden, rate.lrt, rate.skat)
+rate.comb=data.frame(method=method.comp, beta.comp=beta.comp, rate.comp=rate.comp)
+#pdf(&quot;../../Figure/powercomparison.pdf&quot;)
+ggplot(rate.comb, aes(x=beta.comp, y=rate.comp, group=method))+
+  geom_line(aes(color=method, linetype=method), size=1)+
+  geom_point(aes(color=method, shape=method), size=2)+
+  xlab(expression(paste(beta)))+ylab(&quot;Sensitivity&quot;)</code></pre>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
 </div>
 <div id="case-2-mixture-model" class="section level3">
 <h3>Case 2: Mixture model</h3>
@@ -640,28 +652,6 @@ axis(1, at=seq(1,5), labels=axis.labels, cex.axis=0.8)</code></pre>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
 <!-- Insert the session information into the document -->
-<pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.4.3 (2017-11-30)
-Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 7 x64 (build 7601) Service Pack 1
-
-Matrix products: default
-
-locale:
-[1] LC_COLLATE=English_United States.1252 
-[2] LC_CTYPE=English_United States.1252   
-[3] LC_MONETARY=English_United States.1252
-[4] LC_NUMERIC=C                          
-[5] LC_TIME=English_United States.1252    
-
-attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
-
-loaded via a namespace (and not attached):
- [1] compiler_3.4.3  backports_1.0.5 magrittr_1.5    rprojroot_1.2  
- [5] tools_3.4.3     htmltools_0.3.5 yaml_2.1.15     Rcpp_0.12.10   
- [9] stringi_1.1.5   rmarkdown_1.8   knitr_1.17      git2r_0.19.0   
-[13] stringr_1.2.0   digest_0.6.12   evaluate_0.10  </code></pre>
 </div>
 
 <hr>

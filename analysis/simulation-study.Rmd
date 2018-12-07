@@ -4,23 +4,6 @@ author: "Shengtong Han"
 output: html_document
 ---
 
-<!-- The file analysis/chunks.R contains chunks that define default settings
-shared across the workflowr files. -->
-```{r read-chunk, include=FALSE, cache=FALSE}
-knitr::read_chunk("chunks.R")
-```
-
-<!-- Update knitr chunk options -->
-```{r knitr-opts-chunk, include=FALSE}
-```
-
-<!-- Insert the date the file was last updated -->
-```{r last-updated, echo=FALSE, results='asis'}
-```
-<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed -->
-```{r code-version, echo=FALSE, results='asis'}
-```
 
 <!-- Add your analysis here -->
 ## Data Generation
@@ -130,6 +113,21 @@ legend(1, 1, c("FET", "LRT", "SKAT"), col=c(3,2, 4), lty=c(1,1, 1), pch=c(15, 16
 axis.labels <-beta
 axis(1, at=seq(1,5), labels=axis.labels, cex.axis=0.8)
 
+```
+
+```{r, echo=T}
+library(ggplot2)
+method=c("FET", "LRT", "SKAT")
+beta.comp=rep(beta, 3)
+method.comp=rep(method, each=length(beta))
+rate.comp=c(rate.burden, rate.lrt, rate.skat)
+rate.comb=data.frame(method=method.comp, beta.comp=beta.comp, rate.comp=rate.comp)
+#pdf("../../Figure/powercomparison.pdf")
+ggplot(rate.comb, aes(x=beta.comp, y=rate.comp, group=method))+
+  geom_line(aes(color=method, linetype=method), size=1)+
+  geom_point(aes(color=method, shape=method), size=2)+
+  xlab(expression(paste(beta)))+ylab("Sensitivity")
+#dev.off()
 ```
 
 

@@ -1024,9 +1024,8 @@ abline(v=1, col=&quot;blue&quot;, lty=4)
 abline(v=-log(0.05, base=10), col=&quot;red&quot;, lty=4)
 legend(1.5, 10, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15, 16))
 axis.labels &lt;-rownames(summy)
-axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)</code></pre>
-<p><img src="ASD_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<pre class="r"><code>#dev.off()</code></pre>
+axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)
+#dev.off()</code></pre>
 <p>Test: use two sample one side poisson test (“greater”)</p>
 <ul>
 <li>probably damaging:Polyphen2.HDIV.score &gt;=0.957</li>
@@ -1034,6 +1033,19 @@ axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)</code></pre>
 <li>consensus: “Prby Damaging”, or “SIFT&lt;0.05”, or “CADD top10%” (take union)</li>
 <li>LoF:stopgain+ frameshift substitution+splicing+stoploss (take union)</li>
 </ul>
+<pre class="r"><code>library(ggplot2)
+Features=rownames(summy)
+OR=summy[,1]; pval=summy[,2]
+result.summary=data.frame(Features=Features, OR=OR, pval=pval)
+#ggplot(data = result.summary) +
+#  geom_bar(mapping = aes(x = Features, fill = Features))+
+ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
+  geom_bar(stat=&quot;identity&quot;)+
+  ylab(&quot;&quot;)+xlab(&quot;Features&quot;)+ ggtitle(&quot;Burden analysis of single features&quot;)+
+  geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
+           stat=&quot;identity&quot;)+coord_flip()+geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
+  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;) </code></pre>
+<p><img src="ASD_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="lof-in-different-gene-set" class="section level3">
 <h3>LoF in different gene set</h3>
@@ -9472,10 +9484,22 @@ abline(v=1, col=&quot;blue&quot;, lty=4)
 abline(v=-log(0.05, base=10), col=2, lty=4)
 axis.labels &lt;-row.names(poten.signal[which(poten.signal[,2]&lt;0.05),])
 axis(side=2, las=2, at=seq(1,length(axis.labels)), labels=wrap.it(axis.labels, 15), cex.axis=0.4)
-legend(3.5, 21, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15,16))</code></pre>
-<p><img src="ASD_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<pre class="r"><code>#dev.off()</code></pre>
-<p><img src="ASD_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+legend(3.5, 21, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15,16))
+#dev.off()</code></pre>
+<pre class="r"><code>library(ggplot2)
+Features=row.names(poten.signal[which(poten.signal[,2]&lt;0.05),])
+OR=poten.signal[which(poten.signal[,2]&lt;0.05),1]; pval=poten.signal[which(poten.signal[,2]&lt;0.05),2]
+result.summary=data.frame(Features=Features, OR=OR, pval=pval)
+
+  ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
+  geom_bar(stat=&quot;identity&quot;)+
+  ylab(&quot;&quot;)+xlab(&quot;Features&quot;)+ ggtitle(expression(paste(&quot;Combined features with AF&lt;&quot;, 10^{-2})))+
+  geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
+           stat=&quot;identity&quot;)+coord_flip()+geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
+  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)+
+    theme(legend.key.size = unit(0.65,&quot;line&quot;))</code></pre>
+<p><img src="ASD_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="ASD_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">

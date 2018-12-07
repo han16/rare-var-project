@@ -5,24 +5,7 @@ date: YYYY-MM-DD
 output: html_document
 ---
 
-<!-- The file analysis/chunks.R contains chunks that define default settings
-shared across the workflowr files. -->
-```{r read-chunk, include=FALSE, cache=FALSE}
-knitr::read_chunk("chunks.R")
-```
 
-<!-- Update knitr chunk options -->
-```{r knitr-opts-chunk, include=FALSE}
-```
-
-<!-- Insert the date the file was last updated -->
-```{r last-updated, echo=FALSE, results='asis'}
-```
-
-<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed -->
-```{r code-version, echo=FALSE, results='asis'}
-```
 
 ```{r load packages, results='hide', include=FALSE}
 library(RSQLite)
@@ -45,7 +28,7 @@ return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rat
 <!-- Add your analysis here -->
 
 ```{r read into data, echo=F, results='hide', cache=T}
-All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
+All.Anno.Data=read.table("../../AnnotatedTrans.txt", header=T)
 ```
 
 ```{r set paramters and modifying the data, echo=T, results='hide'}
@@ -63,7 +46,7 @@ LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
 ## Simple burden test 
 
 ```{r burdern analysis-gene level, results='hide', echo=F}
-GeneDB=src_sqlite(path="D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\gene.list.db", create=F)
+GeneDB=src_sqlite(path="..\\..\\gene.list.db", create=F)
 gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
 gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
 gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
@@ -85,7 +68,7 @@ constraint.gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene"))
 RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
 RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene 
 haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))
-gene.set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
+gene.set=c("ID gene","High conf", "Mod conf", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff gene", "SCZ gene", "Olfac.gene")
 gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); max.gene=length(gene.fea)
 gene.summy=matrix(nrow=max.gene+1, ncol=4)
 gene.evid=list(); var.index=1
@@ -118,14 +101,14 @@ gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.
 gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol )])
 olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
 gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID )])
-sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
-gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene )])
+#sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
+#gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene )])
 
 colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
 rownames(gene.summy)=c(gene.fea, "67SCZriskgene")
 LoF.summy=gene.summy
 colnames(LoF.summy)=c("OR", "p.value", "No.ca", "No.co")
-for (gene in 1:(max.gene+1))
+for (gene in 1:(max.gene))
 {
   cat(gene, "is running", "\n")
   pois.test=test.func(gene.evid[[gene]], var.data, N1, N0)
@@ -193,6 +176,24 @@ legend(1.32, 21, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16), cex=0.8)
 
 
 
+```{r, echo=T}
+library(ggplot2)
+Gene=row.names(gene.summy)[1:22]
+OR=gene.summy[1:22,1]; pval=gene.summy[1:22,2]
+result.summary=data.frame(Gene=Gene, OR=OR, pval=pval)
+# pdf("../../Figure/burden_geneset.pdf")
+  ggplot(result.summary, aes(x=Gene, y=OR, fill=Gene))+
+  geom_bar(stat="identity")+
+  ylab("")+xlab("Gene")+ ggtitle("Burden analysis for gene sets")+
+   geom_point(aes(x=Gene, y=-log(pval, base=10), size=-log(pval, base=10), color=Gene))+ 
+    coord_flip()+
+    geom_hline(yintercept=1,linetype="dashed")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")
+#dev.off()
+```
+  
+
+
 
 ## Variant partitions
 A gene usually has many variants such as missense, LoF, etc which contribute to the disease at different degree of deleteriousness. So we partition variants from all genes into different variant categories based on their annotation priors. 
@@ -229,7 +230,7 @@ Constraint gene set is from [this paper].
 ### Cons: Simple burden analysis
 
 ```{r, echo=F, results='hide'}
-gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+gene.set=as.character(read.csv("../data/GeneSet/Samocha_2014NG_contraintgene.csv", header=T)$gene)
 cand.data=Anno.Data[which(Anno.Data$Gene %in% gene.set),]
 par.evid=list()
 par.evid[[1]]=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.05 & cand.data$ExacAF>=0.01)
@@ -270,6 +271,23 @@ legend(1.32, 8, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16), cex=1)
 #dev.off()
 ```
 
+```{r, echo=T}
+library(ggplot2)
+Cate=1:8
+OR=burden.summy[,1]; pval=burden.summy[,2]
+result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
+# pdf("../../Figure/burden_constgene.pdf")
+  ggplot(result.summary, aes(x=Cate, y=OR, fill=Cate))+
+  geom_bar(stat="identity")+
+  ylab("")+xlab("Cate")+ ggtitle("Burden analysis for eight categories")+
+   geom_point(aes(x=Cate, y=-log(pval, base=10), size=-log(pval, base=10), color=Cate))+ 
+    scale_x_continuous("variant category", labels = as.character(Cate), breaks = Cate)+
+    coord_flip()+
+    geom_hline(yintercept=1,linetype="dashed")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")
+#dev.off()
+```
+
 
 * The first catogry only has one common variant with 298/272. 
 
@@ -299,7 +317,7 @@ plot(x, para.est, type="p", ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(
 
 
 ```{r, echo=F}
-BF.const.gene.common.delta=read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\output\\BF.constraint.gene.ASD.commmondelta0.1.csv", header=T)
+BF.const.gene.common.delta=read.csv("..\\output\\BF.constraint.gene.ASD.commmondelta0.1.csv", header=T)
 rank.BF.const.gene.common.delta=BF.const.gene.common.delta[order(BF.const.gene.common.delta$BF, decreasing=T),]
 row.names(BF.const.gene.common.delta)=NULL
 ```
@@ -313,7 +331,7 @@ scroll_box(height = "200px")
 
 #### enrichment with de novo genes 
 
-```{r, echo=F}
+```{r, echo=F, eval=F}
 denovo.gene=read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
 rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
 top1000.denovo.gene=as.character(rank.denovo.gene$RefSeqName[1:1000])
@@ -401,7 +419,7 @@ Table: Parameter estimates of 1003 constraint genes by EM with eight partitions 
 
 
 ```{r, echo=F}
-BF.const.gene.specific.delta=read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\output\\BF.constraint.gene.ASD.specificdelta.csv", header=T)
+BF.const.gene.specific.delta=read.csv("..\\output\\BF.constraint.gene.ASD.specificdelta.csv", header=T)
 rank.BF.const.gene.specific.delta=BF.const.gene.specific.delta[order(BF.const.gene.specific.delta$BF, decreasing=T),]
 ```
 
@@ -417,7 +435,7 @@ ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 1
 
 ```{r, echo=F}
 library(plotrix)
-para.est=read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\para.est.1003.constraint.gene.csv", header=T)
+para.est=read.csv("../../para.est.1003.constraint.gene.csv", header=T)
 para.summ=matrix(nrow=8, ncol=3)
 for (i in 1:8)
   { 
@@ -443,12 +461,28 @@ abline(h=0, lty=2)
 
 
 ```{r, echo=F}
-pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\paraestconsgene.pdf")
+#pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\paraestconsgene.pdf")
 para.est.sum=matrix(nrow=2, ncol=8)
 para.est.sum[1,]=para.est
 para.est.sum[2,]=para.summ[,1]
 colnames(para.est.sum)=seq(1,8)
 barplot(para.est.sum, beside=T, col=c("darkblue", "red"), legend=c(expression(paste("common ", delta, "=0.1")), expression(paste("gene specific ", delta[i]))), ylim=c(0,1), ylab=expression(paste(hat(beta))), cex.lab=0.7) 
+#dev.off()
+```
+
+
+```{r, echo=T}
+library(ggplot2)
+all.est=c(para.est.sum[1,], para.est.sum[2,])
+cate=1:8
+para=rep(c("common delta", "specific delta"), each=8)
+para.est.combine=data.frame(cate=cate, para=para, est=all.est)
+
+pdf("../../Figure/paraestconsgene.pdf")
+ggplot(data=para.est.combine, aes(x=cate, y=all.est, fill=para)) +
+geom_bar(stat="identity", position=position_dodge())+
+  xlab("variant category")+ylab(expression(paste(hat(beta))))+
+  scale_x_continuous("variant category", labels = as.character(cate), breaks = cate)
 dev.off()
 ```
 
