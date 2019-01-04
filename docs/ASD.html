@@ -1037,8 +1037,8 @@ axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)
 Features=rownames(summy)
 OR=summy[,1]; pval=summy[,2]
 result.summary=data.frame(Features=Features, OR=OR, pval=pval)
-#ggplot(data = result.summary) +
-#  geom_bar(mapping = aes(x = Features, fill = Features))+
+
+#pdf(&quot;../../Figure/burden_single_feature.pdf&quot;)
 ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
   geom_bar(stat=&quot;identity&quot;)+
   ylab(&quot;&quot;)+xlab(&quot;Features&quot;)+ ggtitle(&quot;Burden analysis of single features&quot;)+
@@ -1046,6 +1046,7 @@ ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
            stat=&quot;identity&quot;)+coord_flip()+geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
   geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;) </code></pre>
 <p><img src="ASD_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
 </div>
 <div id="lof-in-different-gene-set" class="section level3">
 <h3>LoF in different gene set</h3>
@@ -9490,15 +9491,16 @@ legend(3.5, 21, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quo
 Features=row.names(poten.signal[which(poten.signal[,2]&lt;0.05),])
 OR=poten.signal[which(poten.signal[,2]&lt;0.05),1]; pval=poten.signal[which(poten.signal[,2]&lt;0.05),2]
 result.summary=data.frame(Features=Features, OR=OR, pval=pval)
-
+ #pdf(&quot;../../Figure/combined_feature_AFlessthan2per.pdf&quot;)
   ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
   geom_bar(stat=&quot;identity&quot;)+
   ylab(&quot;&quot;)+xlab(&quot;Features&quot;)+ ggtitle(expression(paste(&quot;Combined features with AF&lt;&quot;, 10^{-2})))+
   geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
            stat=&quot;identity&quot;)+coord_flip()+geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
-  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)+
-    theme(legend.key.size = unit(0.65,&quot;line&quot;))</code></pre>
+  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)#+</code></pre>
 <p><img src="ASD_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>    #theme(legend.key.size = unit(0.65,&quot;line&quot;))  # this is to control legend size 
+ #dev.off()</code></pre>
 <p><img src="ASD_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 </div>

@@ -4,6 +4,21 @@ author: "Shengtong Han"
 output: html_document
 ---
 
+```{r, echo=F}
+library(ggplot2)
+library(gridExtra)
+```
+
+
+```{r, echo=F}
+loadRData <- function(fileName){
+#loads an RData file, and returns it
+    load(fileName)
+    get(ls()[ls() != "fileName"])
+}
+```
+
+
 
 <!-- Add your analysis here -->
 ## Data Generation
@@ -13,7 +28,7 @@ Basically, there are two sequential levels when generating the data. First under
 * gene level: $U_i$ denote the risk status of gene $i$, $U_i \sim Ber(1, \delta)$. All genes share the same risk probability $\delta$. 
 * variant level:
     +  $U_i=0$, all variants for gene $i$ are non-causal, which is under null hypothesis. Given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$  
-    + $U_i=1$,  gene $i$ is a causal gene, the variant $(i,j)$ whose risk status is denoted by $Z_{ij}$ is generated as $Z_{ij} \sim Ber(1, \pi(\beta))$, $\pi(\beta)$ is a function linking annotations to the probability of being causal. 
+    + $U_i=1$,  gene $i$ is a causal gene, the variant $(i,j)$ whose risk status is denoted by $Z_{ij}$ is generated as $Z_{ij} \sim Ber(1, \pi(\eta))$, $\pi(\eta)$ is a function linking annotations to the probability of being causal. 
           *  $Z_{ij}=0$ (which is under null),  given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$
           *   $Z_{ij}=1$ (which is under alternative), AF $q_{ij}^{(1)} \sim Beta(\alpha, \beta)$, $\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)$,  $X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})$, split into case and control by conditional binomial distribution with $p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}$. 
           
@@ -26,29 +41,146 @@ Notations:
 * $\bar{\gamma}$ relative risk 
 
 
-$\pi(\beta)$ is the link function between annotations and prior probability and the interest is in estimating $\beta$.  
+$\pi(\eta)$ is the link function between annotations and prior probability and the interest is in estimating $\eta$.  
 
 ## Disjoint group priors 
 
 ### Case 1: All genes are risk genes
 
-Parameter settings: N1=N0=3000, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. Perform 100 independent runs. 
-
-$\beta_i=0.1$, but the actural $\beta_i$ is varying for each generated data set because of the filtering. 
 
 
-
-#### (1) estimate $\beta$, fixed $\delta=1$ 
-
-The plot of $\widehat{\beta}-\beta$ is as below 
+#### (1) only estimate $\eta$, fix $\delta=1$ 
 
 
-![](figure/estimatebetariskgene.png)
+* relative risk effect, $\bar{\gamma}$ on estimating $\eta$ 
 
-Clearly, there is a slight over etimate problem. 
+Parameter settings: N1=N0=3000, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta_i=0.1$ risk variants, but the actural $\eta_i$ is varying for each generated data set because of the filtering. $\bar{\gamma}=2,3,4,5$ and with each $\bar{\gamma}$, perform 100 independent runs. 
 
 
-* Without filtering, across 100 replicates, $\widehat{\beta}=0.1406$, SD=0.0058.  
+
+```{r, echo=F}
+num.gamma=4
+all.eta=matrix(nrow=100, ncol=num.gamma)
+bargamma_2=load("../output/Varybargamma/gammabar_2.RData")
+all.eta[,1]=all.pi[,1]
+bargamma_3=load("../output/Varybargamma/gammabar_3.RData")
+all.eta[,2]=all.pi[,1]
+bargamma_4=load("../output/Varybargamma/gammabar_4.RData")
+all.eta[,3]=all.pi[,1]
+bargamma_5=load("../output/Varybargamma/gammabar_5.RData")
+all.eta[,4]=all.pi[,1]
+#bargamma_6=load("../output/Varybargamma/bargamma_6.RData")
+#all.eta[,5]=all.pi[,1]
+colnames(all.eta)=2:(2+num.gamma-1)
+
+eta.mean=c(mean(all.eta[which(all.eta[,1]>0),1]), mean(all.eta[which(all.eta[,2]>0),2]), mean(all.eta[which(all.eta[,3]>0),3]), mean(all.eta[which(all.eta[,4]>0),4]))
+eta.sd=c(sd(all.eta[which(all.eta[,1]>0),1]), sd(all.eta[which(all.eta[,2]>0),2]), sd(all.eta[which(all.eta[,3]>0),3]), sd(all.eta[which(all.eta[,4]>0),4]))
+```
+
+
+
+```{r, echo=F}
+bar.gamma=2:5
+eta.summary=data.frame(mean=eta.mean, sd=eta.sd, bar.gamma=bar.gamma)
+p1=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  ggtitle("N1=N0=3000")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  xlab(expression(paste(bar(gamma))))+
+  ylab(expression(paste(hat(eta))))+ 
+  guides(fill=guide_legend(title=NULL))+
+  ylim(0.05,0.15)+
+   geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```  
+  
+
+
+* sample size effect on estimating $\eta$
+
+Parameter settings: N1=N0=1000, 3000, 5000, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta_i=0.1$ risk variants, but the actural $\eta_i$ is varying for each generated data set because of the filtering. $\bar{\gamma}=5$.   For each fixed sample size,  perform 100 independent runs. 
+
+
+
+```{r, echo=F}
+num.sample.size=3
+all.eta=matrix(nrow=100, ncol=num.sample.size)
+load("../output/Varysamplesize/sample.size.1000.RData")
+all.eta[,1]=all.pi[,1]
+load("../output/Varysamplesize/sample.size.3000.RData")
+all.eta[,2]=all.pi[,1]
+load("../output/Varysamplesize/sample.size.5000.RData")
+all.eta[,3]=all.pi[,1]
+#bargamma_6=load("../output/Varybargamma/bargamma_6.RData")
+#all.eta[,5]=all.pi[,1]
+colnames(all.eta)=c(1000, 3000, 5000)
+
+eta.mean=c(mean(all.eta[which(all.eta[,1]>0),1]), mean(all.eta[which(all.eta[,2]>0),2]), mean(all.eta[which(all.eta[,3]>0),3]))
+eta.sd=c(sd(all.eta[which(all.eta[,1]>0),1]), sd(all.eta[which(all.eta[,2]>0),2]), sd(all.eta[which(all.eta[,3]>0),3]))
+```
+
+
+
+```{r, echo=F}
+library(grid)
+sample.size=c(1000, 3000, 5000)
+eta.summary=data.frame(mean=eta.mean, sd=eta.sd, sample.size=sample.size)
+p2=ggplot(eta.summary, aes(x=sample.size, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  ggtitle(expression(paste(bar(gamma), "=5")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
+  xlab(expression(paste("N1=N0 ")))+
+  ylab(expression(paste(hat(eta))))+ 
+  guides(fill=guide_legend(title=NULL))+
+  ylim(0.05,0.15)+
+   geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+grid.arrange(p1, p2, top=grid.text(expression(paste("Estimate of ", eta," across 100 replicates"))), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000,", eta[i], "=0.1"))), nrow=1)
+```  
+
+
+
+* power comparison with other methods 
+
+
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta_i=0.1, 0.2, 0.3$ risk variants, but the actural $\eta_i$ is varying for each generated data set because of the filtering. $\bar{\gamma}=5$.  For every $\eta_i$, perform 100 independent runs. 
+
+
+For every simulated risk gene, three different methods are used to test if it is a risk gene or not. Significance level of 0.05 is used as cutoff. The proportion of risk genes correctly detected is plotted.   Burnden test looks at the variant in cases and controls and performs the enrichment analysis. SKATO tests the significance of effect size and generate p value. MIRAGE first estimates the parameter $\eta$, then does a likelihood ratio test and returns p value. 
+
+
+```{r, echo=F, warning=F}
+library(matrixStats)
+load("../output/Varyeta/eta_0.1.RData")
+TP_eta_0.1=TP
+TP_eta_0.1_effect=TP_eta_0.1[apply(TP_eta_0.1!=0, 1, all),] 
+load("../output/Varyeta/eta_0.2.RData")
+TP_eta_0.2=TP
+TP_eta_0.2_effect=TP_eta_0.2[apply(TP_eta_0.2!=0, 1, all),] 
+load("../output/Varyeta/eta_0.3.RData")
+TP_eta_0.3=TP
+TP_eta_0.3_effect=TP_eta_0.3[apply(TP_eta_0.3!=0, 1, all),] 
+eta.mean=c(colMeans(TP_eta_0.1_effect), colMeans(TP_eta_0.2_effect), colMeans(TP_eta_0.3_effect))
+eta.sd=c(colSds(TP_eta_0.1_effect), colSds(TP_eta_0.2_effect), colSds(TP_eta_0.3_effect))
+method=rep(c("SIRAGE", "Burden", "SKATO"),each=3)
+```
+
+
+```{r, echo=F}
+eta=rep(c(0.1, 0.2, 0.3),3)
+eta.summary=data.frame(eta=eta, mean=c(eta.mean[c(1,4,7)], eta.mean[c(2,5,8)], eta.mean[c(3,6,9)]), sd=c(eta.sd[c(1,4,7)], eta.sd[c(2,5,8)], eta.sd[c(3,6,9)]), method=method)
+ggplot(eta.summary, aes(x=eta, y=mean, color=method, group=method)) + 
+   geom_line() +
+   geom_point()+
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  xlab(expression(paste(eta[i])))+
+  ylab("Estimated proportion of risk genes")
+  #xlab(expression(paste(bar(gamma), "=5;", "N1=N0 ")))+
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
 
 
 #### (2) estimate both $\beta, \delta$
@@ -132,6 +264,8 @@ ggplot(rate.comb, aes(x=beta.comp, y=rate.comp, group=method))+
 
 
 ### Case 2: Mixture model
+
+
 
 
 

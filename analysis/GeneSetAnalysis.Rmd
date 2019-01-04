@@ -323,10 +323,44 @@ row.names(BF.const.gene.common.delta)=NULL
 ```
 
 ```{r, echo=F}
-kable(rank.BF.const.gene.common.delta[1:20,1:2], row.names=NA, caption =("Top 20 genes of constraint genes with fixed delta"), "html")%>%
+library(ggplot2)
+library(gridExtra)
+pdf("..\\..\\Figure\\top20gene.pdf")
+top20gene=as.character(rank.BF.const.gene.common.delta$Gene)[1:20]
+top20gene.BF=as.numeric(rank.BF.const.gene.common.delta$BF)[1:20]
+BF.data=data.frame(Gene=top20gene, BF=top20gene.BF)
+p1=ggplot(data=BF.data, aes(x=Gene, y=BF)) +
+  geom_bar(stat="identity", fill="steelblue")+coord_flip()
+
+no.case=numeric(); no.contr=numeric()
+for (i in 1:length(top20gene))
+{
+  no.case[i]=sum(Anno.Data[which(Anno.Data$Gene==top20gene[i]),]$No.case)
+  no.contr[i]=sum(Anno.Data[which(Anno.Data$Gene==top20gene[i]),]$No.contr)
+  
+}
+Gene=top20gene
+rate.case=no.case/N1
+rate.contr=no.contr/N0
+group=c(rep("case", length(Gene)), rep("control", length(Gene)))
+rate.data=data.frame(group=group, Gene=rep(Gene,2), rate=c(rate.case, rate.contr))
+p2=ggplot(data=rate.data, aes(x=Gene, y=rate, fill=group)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  xlab("")+coord_flip()
+
+grid.arrange(p1, p2, nrow = 1)
+dev.off()
+```
+
+```{r, echo=T}
+kable(cbind(rank.BF.const.gene.common.delta[1:20,1:2], no.case, no.contr), row.names=NA, caption =("Top 20 genes of constraint genes with fixed delta"), "html")%>%
 kable_styling() %>%
 scroll_box(height = "200px")
+
+
 ```
+
+
 
 
 #### enrichment with de novo genes 

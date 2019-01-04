@@ -324,7 +324,7 @@ div.tocify {
 <ul>
 <li><span class="math inline">\(U_i=0\)</span>, all variants for gene <span class="math inline">\(i\)</span> are non-causal, which is under null hypothesis. Given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span><br />
 </li>
-<li><span class="math inline">\(U_i=1\)</span>, gene <span class="math inline">\(i\)</span> is a causal gene, the variant <span class="math inline">\((i,j)\)</span> whose risk status is denoted by <span class="math inline">\(Z_{ij}\)</span> is generated as <span class="math inline">\(Z_{ij} \sim Ber(1, \pi(\beta))\)</span>, <span class="math inline">\(\pi(\beta)\)</span> is a function linking annotations to the probability of being causal.
+<li><span class="math inline">\(U_i=1\)</span>, gene <span class="math inline">\(i\)</span> is a causal gene, the variant <span class="math inline">\((i,j)\)</span> whose risk status is denoted by <span class="math inline">\(Z_{ij}\)</span> is generated as <span class="math inline">\(Z_{ij} \sim Ber(1, \pi(\eta))\)</span>, <span class="math inline">\(\pi(\eta)\)</span> is a function linking annotations to the probability of being causal.
 <ul>
 <li><span class="math inline">\(Z_{ij}=0\)</span> (which is under null), given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span></li>
 <li><span class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF <span class="math inline">\(q_{ij}^{(1)} \sim Beta(\alpha, \beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})\)</span>, split into case and control by conditional binomial distribution with <span class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
@@ -338,25 +338,29 @@ div.tocify {
 <li><span class="math inline">\(q_{ij}\)</span> is allele frequency for variant <span class="math inline">\((i,j)\)</span></li>
 <li><span class="math inline">\(\bar{\gamma}\)</span> relative risk</li>
 </ul>
-<p><span class="math inline">\(\pi(\beta)\)</span> is the link function between annotations and prior probability and the interest is in estimating <span class="math inline">\(\beta\)</span>.</p>
+<p><span class="math inline">\(\pi(\eta)\)</span> is the link function between annotations and prior probability and the interest is in estimating <span class="math inline">\(\eta\)</span>.</p>
 </div>
 <div id="disjoint-group-priors" class="section level2">
 <h2>Disjoint group priors</h2>
 <div id="case-1-all-genes-are-risk-genes" class="section level3">
 <h3>Case 1: All genes are risk genes</h3>
-<p>Parameter settings: N1=N0=3000, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. Perform 100 independent runs.</p>
-<p><span class="math inline">\(\beta_i=0.1\)</span>, but the actural <span class="math inline">\(\beta_i\)</span> is varying for each generated data set because of the filtering.</p>
-<div id="estimate-beta-fixed-delta1" class="section level4">
-<h4>(1) estimate <span class="math inline">\(\beta\)</span>, fixed <span class="math inline">\(\delta=1\)</span></h4>
-<p>The plot of <span class="math inline">\(\widehat{\beta}-\beta\)</span> is as below</p>
-<div class="figure">
-<img src="figure/estimatebetariskgene.png" />
-
-</div>
-<p>Clearly, there is a slight over etimate problem.</p>
+<div id="only-estimate-eta-fix-delta1" class="section level4">
+<h4>(1) only estimate <span class="math inline">\(\eta\)</span>, fix <span class="math inline">\(\delta=1\)</span></h4>
 <ul>
-<li>Without filtering, across 100 replicates, <span class="math inline">\(\widehat{\beta}=0.1406\)</span>, SD=0.0058.</li>
+<li>relative risk effect, <span class="math inline">\(\bar{\gamma}\)</span> on estimating <span class="math inline">\(\eta\)</span></li>
 </ul>
+<p>Parameter settings: N1=N0=3000, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta_i=0.1\)</span> risk variants, but the actural <span class="math inline">\(\eta_i\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\bar{\gamma}=2,3,4,5\)</span> and with each <span class="math inline">\(\bar{\gamma}\)</span>, perform 100 independent runs.</p>
+<ul>
+<li>sample size effect on estimating <span class="math inline">\(\eta\)</span></li>
+</ul>
+<p>Parameter settings: N1=N0=1000, 3000, 5000, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta_i=0.1\)</span> risk variants, but the actural <span class="math inline">\(\eta_i\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\bar{\gamma}=5\)</span>. For each fixed sample size, perform 100 independent runs.</p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<ul>
+<li>power comparison with other methods</li>
+</ul>
+<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta_i=0.1, 0.2, 0.3\)</span> risk variants, but the actural <span class="math inline">\(\eta_i\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\bar{\gamma}=5\)</span>. For every <span class="math inline">\(\eta_i\)</span>, perform 100 independent runs.</p>
+<p>For every simulated risk gene, three different methods are used to test if it is a risk gene or not. Significance level of 0.05 is used as cutoff. The proportion of risk genes correctly detected is plotted. Burnden test looks at the variant in cases and controls and performs the enrichment analysis. SKATO tests the significance of effect size and generate p value. MIRAGE first estimates the parameter <span class="math inline">\(\eta\)</span>, then does a likelihood ratio test and returns p value.</p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="estimate-both-beta-delta" class="section level4">
 <h4>(2) estimate both <span class="math inline">\(\beta, \delta\)</span></h4>
@@ -395,7 +399,7 @@ lines(tmm.two, col=2, type=&quot;o&quot;)
 #legend(1, 0.8, c(&quot;FET&quot;, &quot;TMM&quot;), col=c(1,2), lty=c(1,1))
 axis.labels &lt;-beta.two
 axis(1, at=seq(1,length(beta.two)), labels=axis.labels, cex.axis=0.8)</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Parameter settings: <span class="math inline">\(N_1=N_0=3000\)</span>, all 100 genes are risk genes and each gene has 100 variants in total in one category. The proportion of risk variants <span class="math inline">\(\beta_i\)</span> is varying at different values. <span class="math inline">\(\alpha_0=0.1, \beta_0=1000\)</span>, <span class="math inline">\(\alpha=0.1, \beta=2000\)</span>, <span class="math inline">\(\bar{\gamma}=6, \sigma=1\)</span>.</p>
 <p>To compare with different methods, significance level of 0.05 is used. At each <span class="math inline">\(\beta\)</span>, 100 data sets are generated with the above parameters. For every data set, we essentially tested if <span class="math inline">\(\beta=0\)</span>. The sensitivity in the Figure is actually the proportion of data sets with parameters testing not equal to 0, i.e., <span class="math inline">\(\hat{\beta}!=0\)</span></p>
 <pre class="r"><code>rate.lrt=c(0.36,0.6, 0.79, 0.92, 0.95)
@@ -410,7 +414,7 @@ lines(rate.skat, col=4, type=&quot;o&quot;, pch=17)
 legend(1, 1, c(&quot;FET&quot;, &quot;LRT&quot;, &quot;SKAT&quot;), col=c(3,2, 4), lty=c(1,1, 1), pch=c(15, 16, 17))
 axis.labels &lt;-beta
 axis(1, at=seq(1,5), labels=axis.labels, cex.axis=0.8)</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>library(ggplot2)
 method=c(&quot;FET&quot;, &quot;LRT&quot;, &quot;SKAT&quot;)
 beta.comp=rep(beta, 3)
@@ -422,7 +426,7 @@ ggplot(rate.comb, aes(x=beta.comp, y=rate.comp, group=method))+
   geom_line(aes(color=method, linetype=method), size=1)+
   geom_point(aes(color=method, shape=method), size=2)+
   xlab(expression(paste(beta)))+ylab(&quot;Sensitivity&quot;)</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>#dev.off()</code></pre>
 </div>
 <div id="case-2-mixture-model" class="section level3">
