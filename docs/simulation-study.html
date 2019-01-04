@@ -364,70 +364,7 @@ div.tocify {
 </div>
 <div id="estimate-both-beta-delta" class="section level4">
 <h4>(2) estimate both <span class="math inline">\(\beta, \delta\)</span></h4>
-<div class="figure">
-<img src="figure/estimatebetadeltariskgene1.png" />
-
 </div>
-<div class="figure">
-<img src="figure/estimatebetadeltariskgene2.png" />
-
-</div>
-</div>
-</div>
-<div id="comparison-with-other-methods" class="section level3">
-<h3>Comparison with other methods</h3>
-<pre class="r"><code>fisher.one=c(0.02, 0.04, 0.1, 0.28, 0.58, 0.97, 1)
-tmm.one=c(0.03, 0.19, 0.31, 0.7, 0.94, 1,1)
-beta.one=c(0.001, 0.005, 0.01, 0.02, 0.03, 0.05, 0.1)
-delta.one=1
-
-fisher.two=c(0.12, 0.32, 0.55, 0.82, 0.89)
-tmm.two=c(0.26, 0.65, 0.93, 0.98, 1)
-beta.two=c(0.1, 0.2, 0.3, 0.4, 0.5)
-delta.two=0.1
-
-par(mfrow=c(1,2))
-plot(fisher.one, col=3, ylim=c(0,1), type=&quot;o&quot;, xaxt=&#39;n&#39;, xlab=expression(paste(beta)),ylab=&quot;Sensitivity&quot;, main=bquote(delta == .(delta.one)))
-lines(tmm.one, col=2, type=&quot;o&quot;)
-legend(1, 0.8, c(&quot;FET&quot;, &quot;TMM&quot;), col=c(3,2), lty=c(1,1))
-axis.labels &lt;-beta.one
-axis(1, at=seq(1,7), labels=axis.labels, cex.axis=0.8)
-
-
-plot(fisher.two, col=3, ylim=c(0,1), type=&quot;o&quot;, xaxt=&#39;n&#39;, xlab=expression(paste(beta)),ylab=&quot;Sensitivity&quot;, main=bquote(delta == .(delta.two)))
-lines(tmm.two, col=2, type=&quot;o&quot;)
-#legend(1, 0.8, c(&quot;FET&quot;, &quot;TMM&quot;), col=c(1,2), lty=c(1,1))
-axis.labels &lt;-beta.two
-axis(1, at=seq(1,length(beta.two)), labels=axis.labels, cex.axis=0.8)</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>Parameter settings: <span class="math inline">\(N_1=N_0=3000\)</span>, all 100 genes are risk genes and each gene has 100 variants in total in one category. The proportion of risk variants <span class="math inline">\(\beta_i\)</span> is varying at different values. <span class="math inline">\(\alpha_0=0.1, \beta_0=1000\)</span>, <span class="math inline">\(\alpha=0.1, \beta=2000\)</span>, <span class="math inline">\(\bar{\gamma}=6, \sigma=1\)</span>.</p>
-<p>To compare with different methods, significance level of 0.05 is used. At each <span class="math inline">\(\beta\)</span>, 100 data sets are generated with the above parameters. For every data set, we essentially tested if <span class="math inline">\(\beta=0\)</span>. The sensitivity in the Figure is actually the proportion of data sets with parameters testing not equal to 0, i.e., <span class="math inline">\(\hat{\beta}!=0\)</span></p>
-<pre class="r"><code>rate.lrt=c(0.36,0.6, 0.79, 0.92, 0.95)
-rate.skat=c(0.23, 0.37, 0.51, 0.64, 0.74)
-rate.burden=c(0.06, 0.07, 0.18, 0.14, 0.24)
-beta=c(0.002,0.004, 0.006, 0.008, 0.01)
-
-
-plot(rate.burden, col=3, ylim=c(0,1), type=&quot;o&quot;, xaxt=&#39;n&#39;, xlab=expression(paste(beta)),ylab=&quot;Sensitivity&quot;, main=&quot;&quot;, pch=15)
-lines(rate.lrt, col=2, type=&quot;o&quot;, pch=16)
-lines(rate.skat, col=4, type=&quot;o&quot;, pch=17)
-legend(1, 1, c(&quot;FET&quot;, &quot;LRT&quot;, &quot;SKAT&quot;), col=c(3,2, 4), lty=c(1,1, 1), pch=c(15, 16, 17))
-axis.labels &lt;-beta
-axis(1, at=seq(1,5), labels=axis.labels, cex.axis=0.8)</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<pre class="r"><code>library(ggplot2)
-method=c(&quot;FET&quot;, &quot;LRT&quot;, &quot;SKAT&quot;)
-beta.comp=rep(beta, 3)
-method.comp=rep(method, each=length(beta))
-rate.comp=c(rate.burden, rate.lrt, rate.skat)
-rate.comb=data.frame(method=method.comp, beta.comp=beta.comp, rate.comp=rate.comp)
-#pdf(&quot;../../Figure/powercomparison.pdf&quot;)
-ggplot(rate.comb, aes(x=beta.comp, y=rate.comp, group=method))+
-  geom_line(aes(color=method, linetype=method), size=1)+
-  geom_point(aes(color=method, shape=method), size=2)+
-  xlab(expression(paste(beta)))+ylab(&quot;Sensitivity&quot;)</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<pre class="r"><code>#dev.off()</code></pre>
 </div>
 <div id="case-2-mixture-model" class="section level3">
 <h3>Case 2: Mixture model</h3>
