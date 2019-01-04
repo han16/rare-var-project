@@ -162,7 +162,7 @@ TP_eta_0.3=TP
 TP_eta_0.3_effect=TP_eta_0.3[apply(TP_eta_0.3!=0, 1, all),] 
 eta.mean=c(colMeans(TP_eta_0.1_effect), colMeans(TP_eta_0.2_effect), colMeans(TP_eta_0.3_effect))
 eta.sd=c(colSds(TP_eta_0.1_effect), colSds(TP_eta_0.2_effect), colSds(TP_eta_0.3_effect))
-method=rep(c("SIRAGE", "Burden", "SKATO"),each=3)
+method=rep(c("MIRAGE", "Burden", "SKATO"),each=3)
 ```
 
 
