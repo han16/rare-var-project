@@ -7,6 +7,7 @@ output: html_document
 ```{r, echo=F}
 library(ggplot2)
 library(gridExtra)
+library(matrixStats)
 ```
 
 
@@ -52,7 +53,11 @@ $\pi(\eta)$ is the link function between annotations and prior probability and t
 #### (1) only estimate $\eta$, fix $\delta=1$ 
 
 
-* relative risk effect, $\bar{\gamma}$ on estimating $\eta$ 
+* parameter estimate: (I) relative risk effect, $\bar{\gamma}$ on estimating $\eta$ 
+
+Since variant groups are assumed to be independent, it suffices to demonstrate the parameter estimate only for one risk variant group.  
+
+
 
 Parameter settings: N1=N0=3000, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta_i=0.1$ risk variants, but the actural $\eta_i$ is varying for each generated data set because of the filtering. $\bar{\gamma}=2,3,4,5$ and with each $\bar{\gamma}$, perform 100 independent runs. 
 
@@ -96,7 +101,7 @@ p1=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) +
   
 
 
-* sample size effect on estimating $\eta$
+* Parameter estimate (II): sample size effect on estimating $\eta$
 
 Parameter settings: N1=N0=1000, 3000, 5000, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta_i=0.1$ risk variants, but the actural $\eta_i$ is varying for each generated data set because of the filtering. $\bar{\gamma}=5$.   For each fixed sample size,  perform 100 independent runs. 
 
@@ -143,10 +148,13 @@ grid.arrange(p1, p2, top=grid.text(expression(paste("Estimate of ", eta," across
 * power comparison with other methods 
 
 
-Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta_i=0.1, 0.2, 0.3$ risk variants, but the actural $\eta_i$ is varying for each generated data set because of the filtering. $\bar{\gamma}=5$.  For every $\eta_i$, perform 100 independent runs. 
+For every simulated risk gene, three different methods are used to test the power of detecting risk genes. Significance level of 0.05 is used as cutoff.  Burnden test looks at the variants in cases and controls and performs the enrichment analysis for every gene. SKATO tests the significance of effect size and generate p value without covariates. MIRAGE-LRT first estimates the parameter $\eta$, then does a likelihood ratio test and returns p value by $\chi^2_k$ ($k$ is the number of unknown parameters $\eta$). 
+
+**Case 1: every risk gene only has one risk variant group with the proportion of $\eta$ and fixed $\bar{\gamma}$** 
+
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta=0.1, 0.2, 0.3$ risk variants, but the actural $\eta$ is varying for each generated data set because of the filtering. $\bar{\gamma}=5$.  For every $\eta$, perform 100 independent runs. 
 
 
-For every simulated risk gene, three different methods are used to test if it is a risk gene or not. Significance level of 0.05 is used as cutoff. The proportion of risk genes correctly detected is plotted.   Burnden test looks at the variant in cases and controls and performs the enrichment analysis. SKATO tests the significance of effect size and generate p value. MIRAGE first estimates the parameter $\eta$, then does a likelihood ratio test and returns p value. 
 
 
 ```{r, echo=F, warning=F}
@@ -162,7 +170,7 @@ TP_eta_0.3=TP
 TP_eta_0.3_effect=TP_eta_0.3[apply(TP_eta_0.3!=0, 1, all),] 
 eta.mean=c(colMeans(TP_eta_0.1_effect), colMeans(TP_eta_0.2_effect), colMeans(TP_eta_0.3_effect))
 eta.sd=c(colSds(TP_eta_0.1_effect), colSds(TP_eta_0.2_effect), colSds(TP_eta_0.3_effect))
-method=rep(c("MIRAGE", "Burden", "SKATO"),each=3)
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO"),each=3)
 ```
 
 
@@ -173,7 +181,84 @@ ggplot(eta.summary, aes(x=eta, y=mean, color=method, group=method)) +
    geom_line() +
    geom_point()+
   geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
-  xlab(expression(paste(eta[i])))+
+  xlab(expression(paste(eta)))+
+  ylab("Estimated proportion of risk genes")
+  #xlab(expression(paste(bar(gamma), "=5;", "N1=N0 ")))+
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+
+
+**Case 2: every risk gene has multiple risk variant groups with varying proportion of $\eta$ and fixed $\bar{\gamma}$** 
+
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants in three different groups, the first group has 30% variant, the second has 40% and the rest 30% are in the third group. In each group of every gene, the proportion  of risk genes  $\eta$ is varying at 0.01, 0.05, 0.1 respectively.  $\bar{\gamma}=2, 3,4, 5$.  For every $\bar{\gamma}$, perform 100 independent runs. 
+
+
+
+```{r, echo=F, warning=F}
+library(matrixStats)
+load("../output/Varybargamma_RiskGene_MixtureVariant/bargamma_2.RData")
+TP_bargamma_2=TP
+TP_bargamma_2_effect=TP_bargamma_2[apply(TP_bargamma_2!=0, 1, all),] 
+load("../output/Varybargamma_RiskGene_MixtureVariant/bargamma_3.RData")
+TP_bargamma_3=TP
+TP_bargamma_3_effect=TP_bargamma_3[apply(TP_bargamma_3!=0, 1, all),] 
+load("../output/Varybargamma_RiskGene_MixtureVariant/bargamma_4.RData")
+TP_bargamma_4=TP
+TP_bargamma_4_effect=TP_bargamma_4[apply(TP_bargamma_4!=0, 1, all),] 
+load("../output/Varybargamma_RiskGene_MixtureVariant/bargamma_5.RData")
+TP_bargamma_5=TP
+TP_bargamma_5_effect=TP_bargamma_5[apply(TP_bargamma_5!=0, 1, all),] 
+
+tp.mean=c(colMeans(TP_bargamma_2_effect), colMeans(TP_bargamma_3_effect), colMeans(TP_bargamma_4_effect), colMeans(TP_bargamma_5_effect))
+tp.sd=c(colSds(TP_bargamma_2_effect), colSds(TP_bargamma_3_effect), colSds(TP_bargamma_4_effect), colSds(TP_bargamma_5_effect))
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO"),each=4)
+```
+
+
+```{r, echo=F}
+bargamma=rep(2:5,3)
+tp.summary=data.frame(bargamma=bargamma, mean=c(tp.mean[c(1,4,7,10)], tp.mean[c(2,5,8,11)], tp.mean[c(3,6,9, 12)]), sd=c(tp.sd[c(1,4,7,10)], tp.sd[c(2,5,8,11)], tp.sd[c(3,6,9,12)]), method=method)
+ggplot(tp.summary, aes(x=bargamma, y=mean, color=method, group=method)) + 
+   geom_line() +
+   geom_point()+
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  xlab(expression(paste(bar(gamma))))+
+  ylab("Estimated proportion of risk genes")
+  #xlab(expression(paste(bar(gamma), "=5;", "N1=N0 ")))+
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+
+
+
+**Case 3: every risk gene has multiple risk variant groups with varying proportion of $\eta$ and varying $\bar{\gamma}$** 
+
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion  of risk variants  $\eta$ is varying at 0.01, 0.05, 0.1 and every risk category has its own    $\bar{\gamma}=5, 3,1$ respectively. The bsaic idea is that the rarer the varinat is, the more effect size it tends to have.    Perform 100 independent runs. 
+
+```{r, echo=F, warning=F}
+load("../output/Var_specific_bargamma_RiskGene_MixtureVariant/cate_specific_bargamma.RData")
+TP_var_specific_bargamma=TP
+TP_var_specific_bargamma_effect=TP_var_specific_bargamma[apply(TP_var_specific_bargamma!=0, 1, all),] 
+
+tp.mean=colMeans(TP_var_specific_bargamma_effect)
+tp.sd=colSds(TP_var_specific_bargamma_effect)
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO"))
+```
+
+```{r, echo=F}
+tp.summary=data.frame(mean=tp.mean, sd=tp.sd, method=method)
+ggplot(tp.summary, aes(x=method, y=mean, fill=method)) + 
+   geom_bar(stat="identity", 
+           position=position_dodge()) +
+   geom_errorbar(aes(ymin=mean-tp.sd, ymax=mean+tp.sd), width=.2,
+                 position=position_dodge(.9))+
   ylab("Estimated proportion of risk genes")
   #xlab(expression(paste(bar(gamma), "=5;", "N1=N0 ")))+
   #ylab(expression(paste(hat(eta))))+ 
