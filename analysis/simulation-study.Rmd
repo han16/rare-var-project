@@ -4,10 +4,12 @@ author: "Shengtong Han"
 output: html_document
 ---
 
-```{r, echo=F}
+```{r, echo=F, warning=F}
 library(ggplot2)
 library(gridExtra)
 library(matrixStats)
+library(plotROC)
+library(grid)
 ```
 
 
@@ -46,7 +48,7 @@ $\pi(\eta)$ is the link function between annotations and prior probability and t
 
 ## Disjoint group priors 
 
-### Case 1: All genes are risk genes
+###  All genes are risk genes
 
 
 
@@ -127,7 +129,6 @@ eta.sd=c(sd(all.eta[which(all.eta[,1]>0),1]), sd(all.eta[which(all.eta[,2]>0),2]
 
 
 ```{r, echo=F}
-library(grid)
 sample.size=c(1000, 3000, 5000)
 eta.summary=data.frame(mean=eta.mean, sd=eta.sd, sample.size=sample.size)
 p2=ggplot(eta.summary, aes(x=sample.size, y=mean, group=1)) + 
@@ -199,7 +200,6 @@ Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$
 
 
 ```{r, echo=F, warning=F}
-library(matrixStats)
 load("../output/Varybargamma_RiskGene_MixtureVariant/bargamma_2.RData")
 TP_bargamma_2=TP
 TP_bargamma_2_effect=TP_bargamma_2[apply(TP_bargamma_2!=0, 1, all),] 
@@ -240,7 +240,7 @@ ggplot(tp.summary, aes(x=bargamma, y=mean, color=method, group=method)) +
 
 **Case 3: every risk gene has multiple risk variant groups with varying proportion of $\eta$ and varying $\bar{\gamma}$** 
 
-Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion  of risk variants  $\eta$ is varying at 0.01, 0.05, 0.1 and every risk category has its own    $\bar{\gamma}=5, 3,1$ respectively. The bsaic idea is that the rarer the varinat is, the more effect size it tends to have.    Perform 100 independent runs. 
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion  of risk variants  $\eta$ is varying at 0.01, 0.05, 0.1 and every risk category has its own    $\bar{\gamma}=5, 3,1$ respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.    Perform 100 independent runs. 
 
 ```{r, echo=F, warning=F}
 load("../output/Var_specific_bargamma_RiskGene_MixtureVariant/cate_specific_bargamma.RData")
@@ -249,7 +249,7 @@ TP_var_specific_bargamma_effect=TP_var_specific_bargamma[apply(TP_var_specific_b
 
 tp.mean=colMeans(TP_var_specific_bargamma_effect)
 tp.sd=colSds(TP_var_specific_bargamma_effect)
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO"))
+method=rep(c("MIRAGE", "Burden", "SKATO"))
 ```
 
 ```{r, echo=F}
@@ -268,14 +268,197 @@ ggplot(tp.summary, aes(x=method, y=mean, fill=method)) +
 ```
 
 
-#### (2) estimate both $\beta, \delta$
 
 
 
 
-### Case 2: Mixture model
+###  Mixture of risk genes and non-risk genes $0<\delta<1$
+
+Since the simulated data is a mixture of risk genes and non-risk genes, drawing ROC curve is one way to test power of discriminating risk genes of  different methods. For MIRAGE, Bayes factor of every gene were calculated and used to plot ROC, called MIRAGE-BF. 
 
 
+#### Power comparison 
+
+
+**case 1: one risk gene has only one risk variant category with fixed $\bar{\gamma}$**
+
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta=0.1, 0.2, 0.3$ risk variants, but the actural $\eta$ is varying for each generated data set because of the filtering. $\delta=0.5$, i.e. half genes are risk genes and the rest half are nonrisk genes. $\bar{\gamma}=5$. 
+
+
+```{r, echo=F, warning=F}
+load("../output/Varyeta_MixedGene_OneRiskVarGroup/eta_0.01.RData")
+eta_0.01_Ui=Gene.Risk.Status
+eta_0.01_all_pi=all.pi
+eta_0.01_mirage_pvalue=MIRAGE.pvalue
+eta_0.01_mirage_BF=MIRAGE.BF
+eta_0.01_fisher_pvalue=Fisher.pvalue
+eta_0.01_skato_pvalue=SKATO.pvalue
+
+load("../output/Varyeta_MixedGene_OneRiskVarGroup/eta_0.05.RData")
+eta_0.05_Ui=Gene.Risk.Status
+eta_0.05_all_pi=all.pi
+eta_0.05_mirage_pvalue=MIRAGE.pvalue
+eta_0.05_mirage_BF=MIRAGE.BF
+eta_0.05_fisher_pvalue=Fisher.pvalue
+eta_0.05_skato_pvalue=SKATO.pvalue
+
+load("../output/Varyeta_MixedGene_OneRiskVarGroup/eta_0.1.RData")
+eta_0.1_Ui=Gene.Risk.Status
+eta_0.1_all_pi=all.pi
+eta_0.1_mirage_pvalue=MIRAGE.pvalue
+eta_0.1_mirage_BF=MIRAGE.BF
+eta_0.1_fisher_pvalue=Fisher.pvalue
+eta_0.1_skato_pvalue=SKATO.pvalue
+
+load("../output/Varyeta_MixedGene_OneRiskVarGroup/eta_0.2.RData")
+eta_0.2_Ui=Gene.Risk.Status
+eta_0.2_all_pi=all.pi
+eta_0.2_mirage_pvalue=MIRAGE.pvalue
+eta_0.2_mirage_BF=MIRAGE.BF
+eta_0.2_fisher_pvalue=Fisher.pvalue
+eta_0.2_skato_pvalue=SKATO.pvalue
+
+############### calclate true positive, false positive across 100 runs 
+num_run=length(eta_0.1_mirage_pvalue)
+#tp=matrix(nrow=num_run, ncol=3); fp=matrix(nrow=num_run, ncol=3)
+#for ( i in 1:num_run)
+#{
+#  risk_gene_index=which(eta_0.1_Ui[[i]]==1); nonrisk_gene_index=which(eta_0.1_Ui[[i]]==0)
+  
+#  tp[i,1]=sum(eta_0.1_mirage_pvalue[[i]][risk_gene_index]<0.05)/length(risk_gene_index)
+#  fp[i,1]=sum(eta_0.1_mirage_pvalue[[i]][nonrisk_gene_index]<0.05)/length(nonrisk_gene_index)
+#  tp[i,2]=sum(eta_0.1_fisher_pvalue[[i]][risk_gene_index]<0.05)/length(risk_gene_index)
+#  fp[i,2]=sum(eta_0.1_fisher_pvalue[[i]][nonrisk_gene_index]<0.05)/length(nonrisk_gene_index)
+#  tp[i,3]=sum(eta_0.1_skato_pvalue[[i]][risk_gene_index]<0.05)/length(risk_gene_index)
+#  fp[i,3]=sum(eta_0.1_skato_pvalue[[i]][nonrisk_gene_index]<0.05)/length(nonrisk_gene_index)
+#}
+##############
+
+# for a single run, draw ROC curve 
+i=1
+Ui=eta_0.01_Ui[[i]]
+mirage_pvalue=eta_0.01_mirage_pvalue[[i]]
+mirage_BF=eta_0.01_mirage_BF[[i]]
+fisher_pvalue=eta_0.01_fisher_pvalue[[i]]
+skato_pvalue=eta_0.01_skato_pvalue[[i]]
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF"), each=num_run)
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p1=p1.basic+
+  annotate("text", x =rep(0.7, 4), y = c(0.02,0.1, 0.2, 0.3), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(eta, "=0.01")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=4))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=4))+
+  theme(axis.text = element_text(size = 1))
+#+ggtitle("Plot of length \n by dose")
+  #+scale_x_continuous(breaks = seq(0, 1, by = .1))
+  #+scale_y_continuous(breaks = seq(0, 1, by = .1))
+
+
+Ui=eta_0.05_Ui[[i]]
+mirage_pvalue=eta_0.05_mirage_pvalue[[i]]
+mirage_BF=eta_0.05_mirage_BF[[i]]
+fisher_pvalue=eta_0.05_fisher_pvalue[[i]]
+skato_pvalue=eta_0.05_skato_pvalue[[i]]
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF"), each=num_run)
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method)) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p2=p2.basic+
+  annotate("text", x =rep(0.7, 4), y = c(0.02,0.1, 0.2, 0.3), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)),size=2)+
+  ggtitle(expression(paste(eta, "=0.05")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x= element_text(size=4))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=4))
+
+Ui=eta_0.1_Ui[[i]]
+mirage_pvalue=eta_0.1_mirage_pvalue[[i]]
+mirage_BF=eta_0.1_mirage_BF[[i]]
+fisher_pvalue=eta_0.1_fisher_pvalue[[i]]
+skato_pvalue=eta_0.1_skato_pvalue[[i]]
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF"), each=num_run)
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p3.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method)) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p3=p3.basic+
+  annotate("text", x =rep(0.7, 4), y = c(0.02,0.1, 0.2, 0.3), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p3.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(eta, "=0.1")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title
+  theme(axis.text.x= element_text(size=4))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=4))
+
+Ui=eta_0.2_Ui[[i]]
+mirage_pvalue=eta_0.2_mirage_pvalue[[i]]
+mirage_BF=eta_0.2_mirage_BF[[i]]
+fisher_pvalue=eta_0.2_fisher_pvalue[[i]]
+skato_pvalue=eta_0.2_skato_pvalue[[i]]
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF"), each=num_run)
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p4.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method)) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p4=p4.basic+
+  annotate("text", x =rep(0.7, 4), y = c(0.02,0.1, 0.2, 0.3), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p4.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(eta, "=0.2")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x= element_text(size=4))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=4))
+
+grid.arrange(p1, p2, p3, p4, top=grid.text("ROC curves"), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000,", delta, "=0.5,", bar(gamma), "=5"))), nrow=2)
+```
+
+
+
+
+**case2: one risk gene has multiple risk variant categories with group specific $\bar{\gamma}$**
+
+
+
+
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$, $\delta=0.5$. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion  of risk variants  $\eta$ is varying at 0.01, 0.05, 0.1 and every risk category has its own    $\bar{\gamma}=5, 3,1$ respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have. 
+
+```{r, echo=F, warning=F}
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/roc.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF"), each=num_run)
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p1=p1.basic+
+  annotate("text", x =rep(0.85, 4), y = c(0.02,0.08, 0.14, 0.2), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=3)+
+  ggtitle("ROC")+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+p1
+
+```
 
 
 
