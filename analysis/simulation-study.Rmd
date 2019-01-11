@@ -282,7 +282,7 @@ Since the simulated data is a mixture of risk genes and non-risk genes, drawing 
 
 **case 1: one risk gene has only one risk variant category with fixed $\bar{\gamma}$**
 
-Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta=0.1, 0.2, 0.3$ risk variants, but the actural $\eta$ is varying for each generated data set because of the filtering. $\delta=0.5$, i.e. half genes are risk genes and the rest half are nonrisk genes. $\bar{\gamma}=5$. 
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. 100 genes, each having 1000 variants with $\eta=0.03, 0.07, 0.1, 0.2$ risk variants, but the actural $\eta$ is varying for each generated data set because of the filtering. $\delta=0.5$, i.e. half genes are risk genes and the rest half are nonrisk genes. $\bar{\gamma}=5$. 
 
 
 ```{r, echo=F, warning=F}
