@@ -360,11 +360,11 @@ theme(axis.text.y= element_text(size=4))+
   #+scale_y_continuous(breaks = seq(0, 1, by = .1))
 
 
-Ui=eta_0.07_Ui[[i]]
-mirage_pvalue=eta_0.07_mirage_pvalue[[i]]
-mirage_BF=eta_0.07_mirage_BF[[i]]
-fisher_pvalue=eta_0.07_fisher_pvalue[[i]]
-skato_pvalue=eta_0.07_skato_pvalue[[i]]
+Ui=eta_0.07_Ui[[2]]
+mirage_pvalue=eta_0.07_mirage_pvalue[[2]]
+mirage_BF=eta_0.07_mirage_BF[[2]]
+fisher_pvalue=eta_0.07_fisher_pvalue[[2]]
+skato_pvalue=eta_0.07_skato_pvalue[[2]]
 method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF"), each=num_run)
 #roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
 roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
