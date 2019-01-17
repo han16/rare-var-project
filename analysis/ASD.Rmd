@@ -7,7 +7,7 @@ output: workflowr::wflow_html
 ---
 
 
-```{r load packages, results='hide', include=FALSE}
+```{r load packages, results='hide', include=FALSE, warning=F}
 library(RSQLite)
 library(dplyr)
 library(knitr)
@@ -101,6 +101,7 @@ ratio.nonsyn[3]=sum(nonsyn.data$No.case)/N1; ratio.nonsyn[4]=sum(nonsyn.data$No.
 
 data.summ=data.frame(item=Anno.fea, value.AllVar=ratio.data, value.withoutsyn=ratio.nosyn, value.nonsyn=ratio.nonsyn)
 ```
+
 ```{r summary of the data, echo=F}
 kable(data.summ, caption="Quality of annotated data")
 ```
@@ -159,7 +160,7 @@ com.result[length(ExacAF.cutoff)+2,]=c(test$odds.ratio,test$p.value,test$rate.ca
 ```
 
 ```{r print the table, echo=F}
-kable(com.result, caption = "Burden analysis of synonymous mutations at verying AF cutoffs")
+kable(com.result, caption = "Burden analysis of synonymous mutations at varying AF cutoffs")
 ```
 
 ## Variant level analysis
@@ -389,7 +390,7 @@ kable(seizure.summ)
 ## Combined feature analysis
 
 
-### consider the combination of gene set+AF+exon
+###  combination of gene set+AF+exon
 
 
 ```{r burdern analysis for combined set of variants and genes, results='hide', echo=F}

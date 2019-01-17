@@ -342,10 +342,8 @@ div.tocify {
 </div>
 <div id="disjoint-group-priors" class="section level2">
 <h2>Disjoint group priors</h2>
-<div id="all-genes-are-risk-genes" class="section level3">
-<h3>All genes are risk genes</h3>
-<div id="only-estimate-eta-fix-delta1" class="section level4">
-<h4>(1) only estimate <span class="math inline">\(\eta\)</span>, fix <span class="math inline">\(\delta=1\)</span></h4>
+<div id="all-genes-are-risk-genes-fix-delta1-only-estimate-eta" class="section level3">
+<h3>All genes are risk genes, fix <span class="math inline">\(\delta=1\)</span>, only estimate <span class="math inline">\(\eta\)</span></h3>
 <ul>
 <li>parameter estimate: (I) relative risk effect, <span class="math inline">\(\bar{\gamma}\)</span> on estimating <span class="math inline">\(\eta\)</span></li>
 </ul>
@@ -370,9 +368,8 @@ div.tocify {
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and every risk category has its own <span class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have. Perform 100 independent runs.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
-</div>
-<div id="mixture-of-risk-genes-and-non-risk-genes-0delta1" class="section level3">
-<h3>Mixture of risk genes and non-risk genes <span class="math inline">\(0&lt;\delta&lt;1\)</span></h3>
+<div id="mixture-of-risk-genes-and-non-risk-genes-0delta1-estimate-both-eta-delta" class="section level3">
+<h3>Mixture of risk genes and non-risk genes <span class="math inline">\(0&lt;\delta&lt;1\)</span>, estimate both <span class="math inline">\(\eta, \delta\)</span></h3>
 <p>Since the simulated data is a mixture of risk genes and non-risk genes, drawing ROC curve is one way to test the power of discriminating risk genes of different methods. For MIRAGE, Bayes factor of every gene was calculated and used to plot ROC, called MIRAGE-BF.</p>
 <div id="power-comparison" class="section level4">
 <h4>Power comparison</h4>
@@ -382,6 +379,12 @@ div.tocify {
 <p><strong>case2: one risk gene has multiple risk variant categories with group specific <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.5\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and every risk category has its own <span class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.1, 0.2, 0.3, 0.4\)</span>. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.05, 0.2, 0.5 and every risk category has its own <span class="math inline">\(\bar{\gamma}=1, 3,5\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
+<p><strong>burden test: for every gene, use all variants in cases and control</strong></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><strong>burden-adj: for every gene, compute p values for 3 categories and take the minimum</strong></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 </div>
 </div>

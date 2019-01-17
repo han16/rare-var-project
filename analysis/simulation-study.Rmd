@@ -48,11 +48,8 @@ $\pi(\eta)$ is the link function between annotations and prior probability and t
 
 ## Disjoint group priors 
 
-###  All genes are risk genes
+###  All genes are risk genes, fix $\delta=1$, only estimate $\eta$
 
-
-
-#### (1) only estimate $\eta$, fix $\delta=1$ 
 
 
 * parameter estimate: (I) relative risk effect, $\bar{\gamma}$ on estimating $\eta$ 
@@ -171,24 +168,58 @@ TP_eta_0.3=TP
 TP_eta_0.3_effect=TP_eta_0.3[apply(TP_eta_0.3!=0, 1, all),] 
 eta.mean=c(colMeans(TP_eta_0.1_effect), colMeans(TP_eta_0.2_effect), colMeans(TP_eta_0.3_effect))
 eta.sd=c(colSds(TP_eta_0.1_effect), colSds(TP_eta_0.2_effect), colSds(TP_eta_0.3_effect))
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO"),each=3)
+method1=rep(c("MIRAGE-LRT", "Burden", "SKATO"),each=3)
+
+load("../output/Varybargamma_RiskGene_OneRiskVarGroup/bargamma_1.RData")
+TP_bargamma_1=TP
+TP_bargamma_1_effect=TP_bargamma_1[apply(TP_bargamma_1!=0, 1, all),] 
+load("../output/Varybargamma_RiskGene_OneRiskVarGroup/bargamma_2.RData")
+TP_bargamma_2=TP
+TP_bargamma_2_effect=TP_bargamma_2[apply(TP_bargamma_2!=0, 1, all),] 
+load("../output/Varybargamma_RiskGene_OneRiskVarGroup/bargamma_3.RData")
+TP_bargamma_3=TP
+TP_bargamma_3_effect=TP_bargamma_3[apply(TP_bargamma_3!=0, 1, all),] 
+load("../output/Varybargamma_RiskGene_OneRiskVarGroup/bargamma_4.RData")
+TP_bargamma_4=TP
+TP_bargamma_4_effect=TP_bargamma_4[apply(TP_bargamma_4!=0, 1, all),] 
+load("../output/Varyeta/eta_0.1.RData")
+TP_bargamma_5=TP
+TP_bargamma_5_effect=TP_bargamma_5[apply(TP_bargamma_5!=0, 1, all),] 
+
+bargamma.mean=c( colMeans(TP_bargamma_2_effect), colMeans(TP_bargamma_3_effect), colMeans(TP_bargamma_4_effect), colMeans(TP_bargamma_5_effect))
+bargamma.sd=c(colSds(TP_bargamma_2_effect), colSds(TP_bargamma_3_effect), colSds(TP_bargamma_4_effect), colSds(TP_bargamma_5_effect))
+method2=rep(c("MIRAGE-LRT", "Burden", "SKATO"),each=4)
 ```
 
 
 ```{r, echo=F}
 eta=rep(c(0.1, 0.2, 0.3),3)
-eta.summary=data.frame(eta=eta, mean=c(eta.mean[c(1,4,7)], eta.mean[c(2,5,8)], eta.mean[c(3,6,9)]), sd=c(eta.sd[c(1,4,7)], eta.sd[c(2,5,8)], eta.sd[c(3,6,9)]), method=method)
-ggplot(eta.summary, aes(x=eta, y=mean, color=method, group=method)) + 
+eta.summary=data.frame(eta=eta, mean=c(eta.mean[c(1,4,7)], eta.mean[c(2,5,8)], eta.mean[c(3,6,9)]), sd=c(eta.sd[c(1,4,7)], eta.sd[c(2,5,8)], eta.sd[c(3,6,9)]), method=method1)
+p1=ggplot(eta.summary, aes(x=eta, y=mean, color=method, group=method)) + 
    geom_line() +
    geom_point()+
   geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
   xlab(expression(paste(eta)))+
-  ylab("Estimated proportion of risk genes")
+  ylab("Estimated proportion of risk genes")+
+  ggtitle(expression(paste(bar(gamma), "=5")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title
   #xlab(expression(paste(bar(gamma), "=5;", "N1=N0 ")))+
   #ylab(expression(paste(hat(eta))))+ 
   #guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+bargamma=rep(2:5,3)
+bargamma.summary=data.frame(bargamma=bargamma, mean=c(bargamma.mean[c(1,4,7,10)], bargamma.mean[c(2,5,8,11)], bargamma.mean[c(3,6,9,12)]), sd=c(bargamma.sd[c(1,4,7,10)], bargamma.sd[c(2,5,8,11)], bargamma.sd[c(3,6,9,12)]), method=method2)
+p2=ggplot(bargamma.summary, aes(x=bargamma, y=mean, color=method, group=method)) + 
+   geom_line() +
+   geom_point()+
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  xlab(expression(paste(bar(gamma))))+
+  ylab("Estimated proportion of risk genes")+
+ggtitle(expression(paste(eta, "=0.1")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title
+
+grid.arrange(p1, p2, bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000"))), nrow=1)
 ```
 
 
@@ -249,7 +280,7 @@ TP_var_specific_bargamma_effect=TP_var_specific_bargamma[apply(TP_var_specific_b
 
 tp.mean=colMeans(TP_var_specific_bargamma_effect)
 tp.sd=colSds(TP_var_specific_bargamma_effect)
-method=rep(c("MIRAGE", "Burden", "SKATO"))
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO"))
 ```
 
 ```{r, echo=F}
@@ -272,7 +303,7 @@ ggplot(tp.summary, aes(x=method, y=mean, fill=method)) +
 
 
 
-###  Mixture of risk genes and non-risk genes $0<\delta<1$
+###  Mixture of risk genes and non-risk genes $0<\delta<1$, estimate both $\eta, \delta$
 
 Since the simulated data is a mixture of risk genes and non-risk genes, drawing ROC curve is one way to test the power of discriminating risk genes of  different methods. For MIRAGE, Bayes factor of every gene was calculated and used to plot ROC, called MIRAGE-BF. 
 
@@ -432,7 +463,7 @@ Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$
 
 ```{r, echo=F, warning=F}
 load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/roc.RData")
-i=1
+i=2
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
 mirage_BF=MIRAGE.BF[[i]]
@@ -461,6 +492,224 @@ p1
 ```
 
 
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$, $\delta=0.1, 0.2, 0.3, 0.4$. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion  of risk variants  $\eta$ is varying at 0.05, 0.2, 0.5 and every risk category has its own    $\bar{\gamma}=1, 3,5$ respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have. 
+
+
+```{r, echo=F, eval=F}
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/delta0.1.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF"), each=num_run)
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p1=p1.basic+
+  annotate("text", x =rep(0.8, 4), y = c(0.02,0.08, 0.14, 0.2), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=1.5)+
+  ggtitle(expression(paste(delta, "=0.1")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+
+
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/delta0.2.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+
+num_run=length(mirage_pvalue)
+
+
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p2=p2.basic+
+  annotate("text", x =rep(0.8, 4), y = c(0.02,0.08, 0.14, 0.2), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=1.5)+
+  ggtitle(expression(paste(delta, "=0.2")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/delta0.3.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+
+num_run=length(mirage_pvalue)
+
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p3.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p3=p3.basic+
+  annotate("text", x =rep(0.8, 4), y = c(0.02,0.08, 0.14, 0.2), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p3.basic)$AUC, 2)), size=1.5)+
+  ggtitle(expression(paste(delta, "=0.3")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/delta0.4.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+
+num_run=length(mirage_pvalue)
+#roc_single_run=data.frame(D=Ui, m=c(-log(mirage_pvalue, base=10),-log(fisher_pvalue, base=10), -log(skato_pvalue, base=10)), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF), method=method)
+p4.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p4=p4.basic+
+  annotate("text", x =rep(0.8, 4), y = c(0.02,0.08, 0.14, 0.2), 
+           label = paste(c("Burden:AUC=", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p4.basic)$AUC, 2)), size=1.5)+
+  ggtitle(expression(paste(delta, "=0.4")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+
+grid.arrange(p1, p2, p3, p4, top=grid.text("ROC curves"), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000"))), nrow=2)
+```
+
+
+**burden test: for every gene, use all variants in cases and control**
+
+```{r, echo=F}
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/5methods_delta0.1.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+cmc_pvalue=CMC.pvalue[[i]]
+asum_pvalue=ASUM.pvalue[[i]]
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM"), each=num_run)
+
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
+p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p=p.basic+
+  annotate("text", x =rep(0.85, 6), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3), 
+           label = paste(c("ASUM:AUC", "Burden:AUC=", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=3)+
+  ggtitle(expression(paste(delta, "=0.1")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+p
+```
+
+
+```{r, echo=F}
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/5methods_delta0.05.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+cmc_pvalue=CMC.pvalue[[i]]
+asum_pvalue=ASUM.pvalue[[i]]
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM"), each=num_run)
+
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
+p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p=p.basic+
+  annotate("text", x =rep(0.85, 6), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3), 
+           label = paste(c("ASUM:AUC", "Burden:AUC=", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=3)+
+  ggtitle(expression(paste(delta, "=0.05")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+p
+```
+
+
+
+**burden-adj: for every gene, compute p values for 3 categories and take the minimum**
+
+```{r,echo=F}
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/6method_delta0.1.RData")
+i=2
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+cmc_pvalue=CMC.pvalue[[i]]
+asum_pvalue=ASUM.pvalue[[i]]
+fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
+fisher.adj.pvalue=numeric()
+for (i in 1:nrow(fisher.separate.pvalue))
+  #fisher.adj.pvalue[i]=p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,]))
+   fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj"), each=num_run)
+
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue), method=method)
+p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p=p.basic+
+  annotate("text", x =rep(0.85, 7), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35), 
+           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=3)+
+  ggtitle(expression(paste(delta, "=0.1")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+p
+```
 
 ## Logistic priors  
 ### Case 1: One annotation feature
