@@ -672,7 +672,7 @@ p
 
 
 
-**burden-adj: for every gene, compute p values for 3 categories and take the minimum**
+**burden-adj: for every gene, compute p values for 3 variant categories, adjust p values by bonferroni correction  and take the minimum**
 
 ```{r,echo=F}
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
@@ -688,8 +688,8 @@ asum_pvalue=ASUM.pvalue[[i]]
 fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 fisher.adj.pvalue=numeric()
 for (i in 1:nrow(fisher.separate.pvalue))
-  #fisher.adj.pvalue[i]=p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,]))
-   fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
+  fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
+  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
 
 num_run=length(mirage_pvalue)
 
