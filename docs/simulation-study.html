@@ -379,12 +379,18 @@ div.tocify {
 <p><strong>case2: one risk gene has multiple risk variant categories with group specific <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.5\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and every risk category has its own <span class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.1, 0.2, 0.3, 0.4\)</span>. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.05, 0.2, 0.5 and every risk category has its own <span class="math inline">\(\bar{\gamma}=1, 3,5\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
+<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.1, 0.2, 0.3, 0.4\)</span>. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.05, 0.2, 0.5 and every risk category has its own <span class="math inline">\(\bar{\gamma}\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
 <p><strong>burden test: for every gene, use all variants in cases and control</strong></p>
+<p><span class="math inline">\(\bar{\gamma}=1, 3,5\)</span></p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <p><strong>burden-adj: for every gene, compute p values for 3 variant categories, adjust p values by bonferroni correction and take the minimum</strong></p>
+<p><span class="math inline">\(\bar{\gamma}=3,3,5\)</span>.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><strong>Parameter estimate</strong></p>
+<p><span class="math inline">\(\beta_1=0.05,\beta_2=0.2, \beta_3=0.5, \delta=0.1\)</span></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 </div>
 </div>
