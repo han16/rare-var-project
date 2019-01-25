@@ -678,7 +678,8 @@ p
 
 **burden-adj: for every gene, compute p values for 3 variant categories, adjust p values by bonferroni correction  and take the minimum**
 
-$\bar{\gamma}=3,3,5$. 
+$\bar{\gamma}=3,3,5$. burden-comb: use Fisher method to comine p values from 3 independent tests. 
+
 
 ```{r,echo=F}
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
@@ -693,22 +694,26 @@ cmc_pvalue=CMC.pvalue[[i]]
 asum_pvalue=ASUM.pvalue[[i]]
 fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 fisher.adj.pvalue=numeric()
+fisher.combine.pvalue=numeric()
 for (i in 1:nrow(fisher.separate.pvalue))
+{
   fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
   # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
-
+   fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+}
+  
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj"), each=num_run)
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
 
-roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
 p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
 p=p.basic+
-  annotate("text", x =rep(0.85, 7), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=3)+
+  annotate("text", x =rep(0.85, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=3)+
   ggtitle(expression(paste(delta, "=0.1")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
@@ -765,22 +770,26 @@ cmc_pvalue=CMC.pvalue[[i]]
 asum_pvalue=ASUM.pvalue[[i]]
 fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 fisher.adj.pvalue=numeric()
+fisher.combine.pvalue=numeric()
 for (i in 1:nrow(fisher.separate.pvalue))
+{
   fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
+  fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+}  
   # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
 
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj"), each=num_run)
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
 
-roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
 p2=p2.basic+
-  annotate("text", x =rep(0.85, 7), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=3)+
+  annotate("text", x =rep(0.85, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=3)+
   ggtitle(expression(paste(delta, "=0.05")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 

@@ -1339,6 +1339,8 @@ result.summary=data.frame(Gene=Gene, OR=OR, pval=pval)
 <p>Constraint gene set is from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4222185/">this paper</a>.</p>
 <div id="cons-simple-burden-analysis" class="section level3">
 <h3>Cons: Simple burden analysis</h3>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 The burden of 8 categories is
 <div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -1477,7 +1479,7 @@ No.co
 </tbody>
 </table>
 </div>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>library(ggplot2)
 Cate=1:8
 OR=burden.summy[,1]; pval=burden.summy[,2]
@@ -1491,7 +1493,7 @@ result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
     coord_flip()+
     geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
   geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>#dev.off()</code></pre>
 <ul>
 <li>The first catogry only has one common variant with 298/272.</li>
@@ -1554,7 +1556,17 @@ result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
 <pre class="r"><code>para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
 x=1:8
 plot(x, para.est, type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of constraint genes with fixed delta=0.1&quot;)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre><code>## 
+## Attaching package: &#39;gridExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre class="r"><code>kable(cbind(rank.BF.const.gene.common.delta[1:20,1:2], no.case, no.contr), row.names=NA, caption =(&quot;Top 20 genes of constraint genes with fixed delta&quot;), &quot;html&quot;)%&gt;%
+kable_styling() %&gt;%
+scroll_box(height = &quot;200px&quot;)</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -1570,6 +1582,12 @@ Gene
 <th style="text-align:right;">
 BF
 </th>
+<th style="text-align:right;">
+no.case
+</th>
+<th style="text-align:right;">
+no.contr
+</th>
 </tr>
 </thead>
 <tbody>
@@ -1583,6 +1601,12 @@ CYFIP1
 <td style="text-align:right;">
 47.172299
 </td>
+<td style="text-align:right;">
+151
+</td>
+<td style="text-align:right;">
+156
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1593,6 +1617,12 @@ EP400
 </td>
 <td style="text-align:right;">
 27.197227
+</td>
+<td style="text-align:right;">
+76
+</td>
+<td style="text-align:right;">
+58
 </td>
 </tr>
 <tr>
@@ -1605,6 +1635,12 @@ FBN1
 <td style="text-align:right;">
 19.281002
 </td>
+<td style="text-align:right;">
+304
+</td>
+<td style="text-align:right;">
+247
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1615,6 +1651,12 @@ DYNC1H1
 </td>
 <td style="text-align:right;">
 16.723128
+</td>
+<td style="text-align:right;">
+85
+</td>
+<td style="text-align:right;">
+69
 </td>
 </tr>
 <tr>
@@ -1627,6 +1669,12 @@ DOCK4
 <td style="text-align:right;">
 15.512253
 </td>
+<td style="text-align:right;">
+334
+</td>
+<td style="text-align:right;">
+343
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1637,6 +1685,12 @@ SRCAP
 </td>
 <td style="text-align:right;">
 13.958606
+</td>
+<td style="text-align:right;">
+207
+</td>
+<td style="text-align:right;">
+159
 </td>
 </tr>
 <tr>
@@ -1649,6 +1703,12 @@ ABCA2
 <td style="text-align:right;">
 12.227103
 </td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:right;">
+4
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1659,6 +1719,12 @@ TRIP12
 </td>
 <td style="text-align:right;">
 7.989234
+</td>
+<td style="text-align:right;">
+39
+</td>
+<td style="text-align:right;">
+24
 </td>
 </tr>
 <tr>
@@ -1671,6 +1737,12 @@ CHD8
 <td style="text-align:right;">
 7.779481
 </td>
+<td style="text-align:right;">
+78
+</td>
+<td style="text-align:right;">
+66
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1681,6 +1753,12 @@ PLXNB1
 </td>
 <td style="text-align:right;">
 7.507818
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:right;">
+6
 </td>
 </tr>
 <tr>
@@ -1693,6 +1771,12 @@ HIRA
 <td style="text-align:right;">
 6.707113
 </td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+18
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1703,6 +1787,12 @@ CACNA1D
 </td>
 <td style="text-align:right;">
 6.523912
+</td>
+<td style="text-align:right;">
+147
+</td>
+<td style="text-align:right;">
+123
 </td>
 </tr>
 <tr>
@@ -1715,6 +1805,12 @@ KALRN
 <td style="text-align:right;">
 5.577831
 </td>
+<td style="text-align:right;">
+200
+</td>
+<td style="text-align:right;">
+193
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1725,6 +1821,12 @@ INO80
 </td>
 <td style="text-align:right;">
 4.981064
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+131
 </td>
 </tr>
 <tr>
@@ -1737,6 +1839,12 @@ TP63
 <td style="text-align:right;">
 4.972342
 </td>
+<td style="text-align:right;">
+79
+</td>
+<td style="text-align:right;">
+71
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1747,6 +1855,12 @@ ANAPC1
 </td>
 <td style="text-align:right;">
 4.615794
+</td>
+<td style="text-align:right;">
+47
+</td>
+<td style="text-align:right;">
+35
 </td>
 </tr>
 <tr>
@@ -1759,6 +1873,12 @@ ADAR
 <td style="text-align:right;">
 4.613623
 </td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+28
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1769,6 +1889,12 @@ MYH10
 </td>
 <td style="text-align:right;">
 4.481565
+</td>
+<td style="text-align:right;">
+161
+</td>
+<td style="text-align:right;">
+135
 </td>
 </tr>
 <tr>
@@ -1781,6 +1907,12 @@ METTL3
 <td style="text-align:right;">
 4.426548
 </td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:right;">
+20
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1791,6 +1923,12 @@ BAZ1A
 </td>
 <td style="text-align:right;">
 4.424587
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:right;">
+52
 </td>
 </tr>
 </tbody>
@@ -1807,7 +1945,7 @@ delta=seq(0.1, 1, by=0.1)
 plot(beta.est, xaxt=&#39;n&#39;, ylab=expression(paste(hat(beta))), main=&quot;Parameter estimate for LoF category&quot;, type=&quot;o&quot;, xlab=expression(paste(delta)))
 axis.label=c(&quot;0.1&quot;, &quot;0.2&quot;, &quot;0.3&quot;, &quot;0.4&quot;, &quot;0.5&quot;, &quot;0.6&quot;, &quot;0.7&quot;, &quot;0.8&quot;, &quot;0.9&quot;, &quot;1&quot;)
 axis(1,at=1:10,labels=axis.label)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>test.stat=c(0.6105703, 0.7301446, 0.7621092, 0.7772918, 0.7866515, 0.7931309, 0.7979188, 0.8016140, 0.8045560, 0.8069559, cex.axis=0.8)</code></pre>
 </div>
 </div>
@@ -2424,15 +2562,15 @@ ITSN1
 </div>
 <p>In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95, pvalue=0.0311.</p>
 <p>ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896.</p>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <pre class="r"><code>para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
 x=1:8
 plot(x, para.est, type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=15, col=&quot;black&quot;, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimates of constraint genes&quot;)
 points(x, para.summ[,1], type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16,col=&quot;red&quot;)
 legend(6, 0.8, c(expression(paste(&quot;common &quot;, delta, &quot;=0.1&quot;)), expression(paste(&quot;gene specific &quot;, delta[i]))), col=c(&quot;black&quot;, &quot;red&quot;), pch=c(15,16))
 abline(h=0, lty=2)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <pre class="r"><code>library(ggplot2)
 all.est=c(para.est.sum[1,], para.est.sum[2,])
 cate=1:8
@@ -2526,7 +2664,7 @@ betas=c(expression(paste(hat(beta)[1])),expression(paste(hat(beta)[2])), express
 expression(paste(hat(beta)[5])),expression(paste(hat(beta)[6])), expression(paste(hat(beta)[7])),expression(paste(hat(beta)[8])))
 #legend(2, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))
 legend(4, 1, betas, col=seq(1,8), lty=rep(1,8), ncol=2)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>Replace “Damaging” with “Consensus damaging”</p>
 <pre class="r"><code>beta=matrix(nrow=5, ncol=8)
 rownames(beta)=c(&quot;top10%&quot;, &quot;top10-20%&quot;, &quot;top20-30%&quot;, &quot;top30-40%&quot;, &quot;top40-50%&quot;)
@@ -2540,7 +2678,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <table style="width:81%;">
 <caption>Number of variants in C5 and C8 at different constrait level.</caption>
 <colgroup>
@@ -2679,7 +2817,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -2743,7 +2881,7 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <pre class="r"><code>para.est=c(0, 0.08, 0, 0, 0.06, 0, 0, 0.06)
 x=1:8
 plot(para.est, type=&quot;p&quot;, ylim=c(0,0.5), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of all genes in the whole genome&quot;)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">

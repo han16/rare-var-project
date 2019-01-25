@@ -12,6 +12,7 @@ library(RSQLite)
 library(dplyr)
 library(knitr)
 library(kableExtra)
+library(ggplot2)
 ```
 
 ```{r defined function, echo=F, results='hide'}
@@ -250,6 +251,31 @@ for (i in 1:length(par.evid))
   }
 
 ```
+
+```{r, echo=F}
+unique.gene=unique(cand.data$Gene)
+var.count=numeric()
+for (i in 1:length(unique.gene))
+{
+  single.gene=cand.data[which(cand.data$Gene==unique.gene[i]),]
+  var.count[i]=sum(single.gene$No.case)+sum(single.gene$No.contr)
+}
+```
+
+```{r, echo=F}
+gene.var.count=data.frame(Gene=unique.gene, var.count=var.count)
+ggplot(gene.var.count, aes(x=var.count))+ 
+  geom_histogram()+
+  geom_vline(aes(xintercept=mean(var.count)),
+            color="blue", linetype="dashed", size=1)+
+  xlab("#.variant")+
+  ylab("#.gene")+
+  ggtitle("Histogram of variants in top constraint genes")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
+
+```
+
+
 
 The burden of 8 categories is 
 ```{r, echo=F}
