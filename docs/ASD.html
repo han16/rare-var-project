@@ -325,7 +325,7 @@ div.tocify {
 <pre class="r"><code>N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
-Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF&lt;0.05 &amp; All.Anno.Data$Annotation!=&quot;synonymous SNV&quot;),] # use AF cutoff and exclude synonumous SNV
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF&lt;0.05 &amp; All.Anno.Data$Annotation!=&quot;synonymous SNV&quot;),] # use AF cutoff and exclude synonymous SNV
 Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!=&quot;synonymous SNV&quot;),] # use AF cutoff and exclude synonumous SNV
 
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)</code></pre>
@@ -1033,8 +1033,7 @@ axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)
 <li>consensus: “Prby Damaging”, or “SIFT&lt;0.05”, or “CADD top10%” (take union)</li>
 <li>LoF:stopgain+ frameshift substitution+splicing+stoploss (take union)</li>
 </ul>
-<pre class="r"><code>library(ggplot2)
-Features=rownames(summy)
+<pre class="r"><code>Features=rownames(summy)
 OR=summy[,1]; pval=summy[,2]
 result.summary=data.frame(Features=Features, OR=OR, pval=pval)
 
@@ -9487,20 +9486,6 @@ axis.labels &lt;-row.names(poten.signal[which(poten.signal[,2]&lt;0.05),])
 axis(side=2, las=2, at=seq(1,length(axis.labels)), labels=wrap.it(axis.labels, 15), cex.axis=0.4)
 legend(3.5, 21, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15,16))
 #dev.off()</code></pre>
-<pre class="r"><code>library(ggplot2)
-Features=row.names(poten.signal[which(poten.signal[,2]&lt;0.05),])
-OR=poten.signal[which(poten.signal[,2]&lt;0.05),1]; pval=poten.signal[which(poten.signal[,2]&lt;0.05),2]
-result.summary=data.frame(Features=Features, OR=OR, pval=pval)
- #pdf(&quot;../../Figure/combined_feature_AFlessthan2per.pdf&quot;)
-  ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
-  geom_bar(stat=&quot;identity&quot;)+
-  ylab(&quot;&quot;)+xlab(&quot;Features&quot;)+ ggtitle(expression(paste(&quot;Combined features with AF&lt;&quot;, 10^{-2})))+
-  geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
-           stat=&quot;identity&quot;)+coord_flip()+geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
-  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)#+</code></pre>
-<p><img src="ASD_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<pre class="r"><code>    #theme(legend.key.size = unit(0.65,&quot;line&quot;))  # this is to control legend size 
- #dev.off()</code></pre>
 <p><img src="ASD_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 </div>

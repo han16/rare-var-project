@@ -59,7 +59,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
           bb.LoF=bb.LoF*((1-beta.k[1, new.data$group.index[var.index.list[j]]])+beta.k[1, new.data$group.index[var.index.list[j]]]*var.BF[j])
         if (new.data$group.index[var.index.list[j]]>2)
           bb.nonLoF=bb.nonLoF*((1-beta.k[1, new.data$group.index[var.index.list[j]]])+beta.k[1, new.data$group.index[var.index.list[j]]]*var.BF[j])
-          
+
       }
     full.info.genevar[[i]]=cbind(indi.gene, var.BF)
     BF.gene[1, i]=bb
@@ -96,7 +96,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
             bb.LoF=bb.LoF*((1-beta.k[(iter-1), info.single.gene$group.index[j]])+beta.k[(iter-1), info.single.gene$group.index[j]]*info.single.gene$var.BF[j])
           if (info.single.gene$group.index[j]>2)
             bb.nonLoF=bb.nonLoF*((1-beta.k[(iter-1), info.single.gene$group.index[j]])+beta.k[(iter-1), info.single.gene$group.index[j]]*info.single.gene$var.BF[j])
-              
+
         }
       EUiZij[[i]]=UiZij
       BF.gene[iter,i]=bb
@@ -115,8 +115,8 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
 
     }  # end of i
     ############## EM algorithm: M step
-    #  delta.est[iter]=sum(EUi)/num.gene
-      delta.est[iter]=delta
+      delta.est[iter]=sum(EUi)/num.gene
+    #  delta.est[iter]=delta
     for (g in 1:num.group)
     {
       if (sum(total.Ui[,g])!=0)
@@ -274,18 +274,19 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
 #########################################
 #All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)
-All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\SCZData\\AnnotatedSCZ.txt", header=T)
-#N1=4315; N0=4315
-N1=2536; N0=2543
+All.Anno.Data=read.table("..\\AnnotatedTrans.txt", header=T)
+#All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\SCZData\\AnnotatedSCZ.txt", header=T)
+N1=4315; N0=4315
+#N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
 CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
 ########################################
-################ whole genome 
-gene.set=as.character(unique(All.Anno.Data$Gene))
-#gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+################ whole genome
+#gene.set=as.character(unique(All.Anno.Data$Gene))
+gene.set=as.character(read.csv("data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 vart.set=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene.set)])
 cand.data=Anno.Data[which(Anno.Data$ID %in% vart.set),]
