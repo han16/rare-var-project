@@ -346,7 +346,7 @@ sort_BF %>% print(n=20)
 ```
 
 
-This is the how FDR varies as the cutoff $\tau$ changes with $\hat{\delta}=0.18$ as prior. 
+This is the how FDR varies as the posterior probability cutoff $\tau$ changes with $\hat{\delta}=0.18$ as prior. 
 
 
 ```{r, echo=F}
@@ -381,6 +381,16 @@ const.gene.pvalue.adj=const.gene.pvalue%>%mutate("SKATO.pvalue.adj"=p.adjust(SKA
 const.gene.BF.pvalue.combine=full_join(const.gene.BF, const.gene.pvalue.adj, by="Gene")
 ```
 
+```{r, echo=T}
+MIRAGE_gene=const.gene.BF.pvalue.combine %>% filter(post_prob>0.92)%>%select(Gene, BF, post_prob)
+MIRAGE_gene%>%arrange(desc(post_prob))%>%print(n=29)
+ASUM_gene=const.gene.BF.pvalue.combine %>% filter(ASUM.pvalue.adj<0.05) %>% select(Gene,BF, post_prob, ASUM.pvalue.adj)
+ASUM_gene %>% arrange(ASUM.pvalue.adj) %>% print(n=20)
+right_join(as_tibble(const.gene.BF), ASUM_gene, by="Gene")%>% select(-post_prob.y, -BF.y)%>%arrange(desc(post_prob.x)) 
+```
+
+
+
 
 method    | FDR=0.05  | FDR=0.1  | FDR=0.2
 ---------|--------|---------------|-----------
@@ -390,8 +400,22 @@ CMC  | 0 | 0 | 0
 ASUM | 20 |20 | 20
 Burden | 0 | 0 | 0
 Burden.adj | 0 | 0 | 0
-Table: Number of genes identified by different methods at different FDR levels
+Table: Number of genes identified by different methods at different FDR levels. 
 
+20 gene selected by ASUM are "ADAR"    "CHST1"   "PLXNB1"  "INO80"   "TRIM8"   "TRIM3"   "RBM14"   "ZIC2"    "ZSCAN10" "SMARCA4" "AP2A1"  "DHX30"   "TRA2B"   "NR2F1"   "EBF1"    "NRF1"    "ABCA2"   "TUBG1"   "PCBP1"   "MAFB
+
+29 genes selected by MIRAGE at FDR=0.05 are "UBR4"     "ADAR"     "EP400"    "CHD8"     "METTL3"   "DYNC1H1"  "GLG1"     "ACACA"    "SNRNP200" "ANAPC1"  "PLXNB1"   "KALRN"    "MACF1"    "CYFIP1"   "INO80"    "FBN1"     "SRCAP"    "NOTCH3"   "TP63"     "SLC4A8"   "BAZ1A"    "MYH10"    "TRIP12"   "HIRA"     "TOP3B"    "CACNA1D"  "DOCK4"    "WHSC1L1"  "ABCA2" 
+
+
+
+
+When FDR=0.05, there are 4 genes "ADAR"   "PLXNB1" "INO80"  "ABCA2" overlapping between MIRAGE and ASUM. 
+
+
+When FDR=0.1 there are 8 genes overlapping. 
+
+
+When FDR=0.2, all 20 genes from ASUM are included in genes selected by MIRAGE. 
 
 
 
