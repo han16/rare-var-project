@@ -1492,111 +1492,95 @@ No.co
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre><code>## Warning: Column `Gene` joining factors with different levels, coercing to
 ## character vector</code></pre>
-<pre class="r"><code>MIRAGE_gene=const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.92)%&gt;%select(Gene, BF, post_prob)
-MIRAGE_gene%&gt;%arrange(desc(post_prob))%&gt;%print(n=29)</code></pre>
-<pre><code>## # A tibble: 29 x 3
-##    Gene        BF post_prob
-##    &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
-##  1 CYFIP1   27.4      0.992
-##  2 EP400    15.3      0.986
-##  3 FBN1     11.9      0.982
-##  4 SRCAP     9.83     0.978
-##  5 DYNC1H1   9.48     0.977
-##  6 ABCA2     8.92     0.976
-##  7 DOCK4     8.45     0.975
-##  8 CACNA1D   6.28     0.966
-##  9 CHD8      5.19     0.959
-## 10 TRIP12    4.79     0.956
-## 11 KALRN     4.79     0.956
-## 12 PLXNB1    4.67     0.955
-## 13 HIRA      4.29     0.951
-## 14 MYH10     3.59     0.942
-## 15 UBR4      3.58     0.942
-## 16 INO80     3.56     0.942
-## 17 TP63      3.55     0.942
-## 18 MACF1     3.42     0.940
-## 19 GLG1      3.29     0.938
-## 20 METTL3    3.14     0.935
-## 21 BAZ1A     3.13     0.934
-## 22 ANAPC1    3.10     0.934
-## 23 ADAR      3.10     0.934
-## 24 ACACA     3.07     0.933
-## 25 SLC4A8    2.87     0.929
-## 26 SNRNP200  2.82     0.928
-## 27 TOP3B     2.65     0.924
-## 28 NOTCH3    2.58     0.922
-## 29 WHSC1L1   2.53     0.920</code></pre>
+<pre class="r"><code>MIRAGE_gene=const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.72)%&gt;%select(Gene, BF, post_prob)
+MIRAGE_gene%&gt;%arrange(desc(post_prob))  # FDR&lt;0.2</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   Gene      BF post_prob
+##   &lt;chr&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+## 1 CYFIP1  27.4     0.858
+## 2 EP400   15.3     0.771
+## 3 FBN1    11.9     0.722</code></pre>
+<pre class="r"><code>const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.52)%&gt;%select(Gene, BF, post_prob) %&gt;% arrange(desc(post_prob)) # FDR&lt;0.3</code></pre>
+<pre><code>## # A tibble: 9 x 3
+##   Gene       BF post_prob
+##   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 CYFIP1  27.4      0.858
+## 2 EP400   15.3      0.771
+## 3 FBN1    11.9      0.722
+## 4 SRCAP    9.83     0.683
+## 5 DYNC1H1  9.48     0.675
+## 6 ABCA2    8.92     0.662
+## 7 DOCK4    8.45     0.650
+## 8 CACNA1D  6.28     0.579
+## 9 CHD8     5.19     0.532</code></pre>
 <pre class="r"><code>ASUM_gene=const.gene.BF.pvalue.combine %&gt;% filter(ASUM.pvalue.adj&lt;0.05) %&gt;% select(Gene,BF, post_prob, ASUM.pvalue.adj)
 ASUM_gene %&gt;% arrange(ASUM.pvalue.adj) %&gt;% print(n=20)</code></pre>
-<pre><code>## # A tibble: 20 x 4
+<pre><code>## # A tibble: 16 x 4
 ##    Gene       BF post_prob ASUM.pvalue.adj
 ##    &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;
-##  1 ADAR     3.10     0.934               0
-##  2 CHST1    1.43     0.867               0
-##  3 PLXNB1   4.67     0.955               0
-##  4 INO80    3.56     0.942               0
-##  5 TRIM8    1.32     0.858               0
-##  6 TRIM3    2.19     0.909               0
-##  7 RBM14    1.19     0.845               0
-##  8 ZIC2     1.19     0.845               0
-##  9 ZSCAN10  1.42     0.866               0
-## 10 SMARCA4  1.19     0.845               0
-## 11 AP2A1    1.32     0.858               0
-## 12 DHX30    1.38     0.863               0
-## 13 TRA2B    1.29     0.854               0
-## 14 NR2F1    1.23     0.849               0
-## 15 EBF1     1.32     0.858               0
-## 16 NRF1     1.19     0.845               0
-## 17 ABCA2    8.92     0.976               0
-## 18 TUBG1    1.25     0.850               0
-## 19 PCBP1    1.25     0.850               0
-## 20 MAFB     1.16     0.841               0</code></pre>
+##  1 CHST1    1.43     0.239          0     
+##  2 TRIM8    1.32     0.225          0     
+##  3 RBM14    1.19     0.208          0     
+##  4 ZIC2     1.19     0.208          0     
+##  5 ZSCAN10  1.42     0.238          0     
+##  6 SMARCA4  1.19     0.208          0     
+##  7 AP2A1    1.32     0.225          0     
+##  8 DHX30    1.38     0.233          0     
+##  9 TRA2B    1.29     0.220          0     
+## 10 NR2F1    1.23     0.213          0     
+## 11 EBF1     1.32     0.225          0     
+## 12 NRF1     1.19     0.208          0     
+## 13 TUBG1    1.25     0.215          0     
+## 14 PCBP1    1.25     0.215          0     
+## 15 MAFB     1.16     0.203          0     
+## 16 ADAR     3.10     0.405          0.0290</code></pre>
 <pre class="r"><code>right_join(as_tibble(const.gene.BF), ASUM_gene, by=&quot;Gene&quot;)%&gt;% select(-post_prob.y, -BF.y)%&gt;%arrange(desc(post_prob.x)) </code></pre>
 <pre><code>## Warning: Column `Gene` joining factor and character vector, coercing into
 ## character vector</code></pre>
-<pre><code>## # A tibble: 20 x 6
+<pre><code>## # A tibble: 16 x 6
 ##    Gene     BF.x LoF.BF nonLoF.BF post_prob.x ASUM.pvalue.adj
 ##    &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
-##  1 ABCA2    8.92   1         8.92       0.976               0
-##  2 PLXNB1   4.67   1.29      3.63       0.955               0
-##  3 INO80    3.56   1         3.56       0.942               0
-##  4 ADAR     3.10   1.29      2.41       0.934               0
-##  5 TRIM3    2.19   1         2.19       0.909               0
-##  6 CHST1    1.43   1.29      1.11       0.867               0
-##  7 ZSCAN10  1.42   1         1.42       0.866               0
-##  8 DHX30    1.38   1         1.38       0.863               0
-##  9 TRIM8    1.32   1         1.32       0.858               0
-## 10 AP2A1    1.32   1         1.32       0.858               0
-## 11 EBF1     1.32   1         1.32       0.858               0
-## 12 TRA2B    1.29   1         1.29       0.854               0
-## 13 TUBG1    1.25   1         1.25       0.850               0
-## 14 PCBP1    1.25   1         1.25       0.850               0
-## 15 NR2F1    1.23   1         1.23       0.849               0
-## 16 RBM14    1.19   1         1.19       0.845               0
-## 17 ZIC2     1.19   1         1.19       0.845               0
-## 18 SMARCA4  1.19   1         1.19       0.845               0
-## 19 NRF1     1.19   1         1.19       0.845               0
-## 20 MAFB     1.16   1         1.16       0.841               0</code></pre>
+##  1 ADAR     3.10   1.29      2.41       0.405          0.0290
+##  2 CHST1    1.43   1.29      1.11       0.239          0     
+##  3 ZSCAN10  1.42   1         1.42       0.238          0     
+##  4 DHX30    1.38   1         1.38       0.233          0     
+##  5 TRIM8    1.32   1         1.32       0.225          0     
+##  6 AP2A1    1.32   1         1.32       0.225          0     
+##  7 EBF1     1.32   1         1.32       0.225          0     
+##  8 TRA2B    1.29   1         1.29       0.220          0     
+##  9 TUBG1    1.25   1         1.25       0.215          0     
+## 10 PCBP1    1.25   1         1.25       0.215          0     
+## 11 NR2F1    1.23   1         1.23       0.213          0     
+## 12 RBM14    1.19   1         1.19       0.208          0     
+## 13 ZIC2     1.19   1         1.19       0.208          0     
+## 14 SMARCA4  1.19   1         1.19       0.208          0     
+## 15 NRF1     1.19   1         1.19       0.208          0     
+## 16 MAFB     1.16   1         1.16       0.203          0</code></pre>
+<pre class="r"><code>left_join(as_tibble(MIRAGE_gene), ASUM_gene, by=&quot;Gene&quot;)%&gt;% select(-post_prob.y, -BF.y)%&gt;%arrange(desc(post_prob.x))%&gt;% print(n=29) ## ASUM: does not work for genes with one variant, resutling in NA </code></pre>
+<pre><code>## # A tibble: 3 x 4
+##   Gene    BF.x post_prob.x ASUM.pvalue.adj
+##   &lt;chr&gt;  &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
+## 1 CYFIP1  27.4       0.858              NA
+## 2 EP400   15.3       0.771              NA
+## 3 FBN1    11.9       0.722              NA</code></pre>
+<p>FDR has the minimum of 0.14</p>
 <table>
 <caption>Number of genes identified by different methods at different FDR levels.</caption>
 <thead>
 <tr class="header">
 <th>method</th>
-<th>FDR=0.05</th>
-<th>FDR=0.1</th>
-<th>FDR=0.2</th>
+<th>FDR&lt;0.2</th>
+<th>FDR&lt;0.3</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>MIRAGE</td>
-<td>29</td>
-<td>131</td>
-<td>749</td>
+<td>3</td>
+<td>9</td>
 </tr>
 <tr class="even">
 <td>SKATO</td>
-<td>0</td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -1604,11 +1588,9 @@ ASUM_gene %&gt;% arrange(ASUM.pvalue.adj) %&gt;% print(n=20)</code></pre>
 <td>CMC</td>
 <td>0</td>
 <td>0</td>
-<td>0</td>
 </tr>
 <tr class="even">
 <td>ASUM</td>
-<td>20</td>
 <td>20</td>
 <td>20</td>
 </tr>
@@ -1616,21 +1598,14 @@ ASUM_gene %&gt;% arrange(ASUM.pvalue.adj) %&gt;% print(n=20)</code></pre>
 <td>Burden</td>
 <td>0</td>
 <td>0</td>
-<td>0</td>
 </tr>
 <tr class="even">
 <td>Burden.adj</td>
 <td>0</td>
 <td>0</td>
-<td>0</td>
 </tr>
 </tbody>
 </table>
-<p>20 gene selected by ASUM are “ADAR” “CHST1” “PLXNB1” “INO80” “TRIM8” “TRIM3” “RBM14” “ZIC2” “ZSCAN10” “SMARCA4” “AP2A1” “DHX30” “TRA2B” “NR2F1” “EBF1” “NRF1” “ABCA2” “TUBG1” “PCBP1” “MAFB</p>
-<p>29 genes selected by MIRAGE at FDR=0.05 are “UBR4” “ADAR” “EP400” “CHD8” “METTL3” “DYNC1H1” “GLG1” “ACACA” “SNRNP200” “ANAPC1” “PLXNB1” “KALRN” “MACF1” “CYFIP1” “INO80” “FBN1” “SRCAP” “NOTCH3” “TP63” “SLC4A8” “BAZ1A” “MYH10” “TRIP12” “HIRA” “TOP3B” “CACNA1D” “DOCK4” “WHSC1L1” “ABCA2”</p>
-<p>When FDR=0.05, there are 4 genes “ADAR” “PLXNB1” “INO80” “ABCA2” overlapping between MIRAGE and ASUM.</p>
-<p>When FDR=0.1 there are 8 genes overlapping.</p>
-<p>When FDR=0.2, all 20 genes from ASUM are included in genes selected by MIRAGE.</p>
 </div>
 <div id="cons-estimate-eta_i" class="section level3">
 <h3>Cons: Estimate <span class="math inline">\(\eta_i\)</span></h3>

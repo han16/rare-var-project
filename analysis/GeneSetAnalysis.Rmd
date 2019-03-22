@@ -351,9 +351,9 @@ This is the how FDR varies as the posterior probability cutoff $\tau$ changes wi
 
 ```{r, echo=F}
 prior_cons=0.18
-cons_post=Bayes_factor %>% mutate(post_prob=(1-prior_cons)*BF/(prior_cons+(1-prior_cons)*BF))
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
 
-tau=seq(0, 0.99, by=0.01)
+tau=seq(0, 0.999, by=0.001)
 num_pred=NULL
 false_disc=NULL
 FDR=NULL
@@ -363,7 +363,7 @@ num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
 false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
 FDR[i]=false_disc[i]/num_pred[i]
 }
-tau_fdr=tibble(tau=tau, fdr=FDR)
+tau_fdr=tibble(tau=tau, fdr=FDR)%>%drop_na()  # drop rows with NA
 
 ggplot(tau_fdr)+
   geom_point(aes(x=tau, y=fdr))+
@@ -373,6 +373,8 @@ ggplot(tau_fdr)+
 ```{r, echo=F}
 const.gene.BF=loadRData("../output/const.gene.BF.MIRAGE.RData")
 const.gene.pvalue=loadRData("../output/const.gene.pvalue.other.methods.RData")
+gene.index.to.test=c(1,  21,  41, 136, 196, 220, 332, 409, 469, 473, 489, 514, 561, 624, 694, 696, 699, 714, 762, 777)
+const.gene.pvalue$ASUM.pvalue[gene.index.to.test]=c(0.00234, 0.00064, 0.00000, 0.00000, 0.00000, 0.00000, 0.01122, 0.00000, 0.00000, 0.00000, 0.00000, 0.00419, 0.00000, 0.00000, 0.00000, 0.00222, 0.00000, 0.00000, 0.00000, 0.00000) # set 10,000 permutations to update p value
 const.gene.pvalue.adj=const.gene.pvalue%>%mutate("SKATO.pvalue.adj"=p.adjust(SKATO.pvalue, method="BH"))%>%
   mutate("CMC.pvalue.adj"=p.adjust(CMC.pvalue, method="BH"))%>%
   mutate("ASUM.pvalue.adj"=p.adjust(ASUM.pvalue, method="BH"))%>%
@@ -382,40 +384,33 @@ const.gene.BF.pvalue.combine=full_join(const.gene.BF, const.gene.pvalue.adj, by=
 ```
 
 ```{r, echo=T}
-MIRAGE_gene=const.gene.BF.pvalue.combine %>% filter(post_prob>0.92)%>%select(Gene, BF, post_prob)
-MIRAGE_gene%>%arrange(desc(post_prob))%>%print(n=29)
+MIRAGE_gene=const.gene.BF.pvalue.combine %>% filter(post_prob>0.72)%>%select(Gene, BF, post_prob)
+MIRAGE_gene%>%arrange(desc(post_prob))  # FDR<0.2
+
+const.gene.BF.pvalue.combine %>% filter(post_prob>0.52)%>%select(Gene, BF, post_prob) %>% arrange(desc(post_prob)) # FDR<0.3
+
+
 ASUM_gene=const.gene.BF.pvalue.combine %>% filter(ASUM.pvalue.adj<0.05) %>% select(Gene,BF, post_prob, ASUM.pvalue.adj)
 ASUM_gene %>% arrange(ASUM.pvalue.adj) %>% print(n=20)
 right_join(as_tibble(const.gene.BF), ASUM_gene, by="Gene")%>% select(-post_prob.y, -BF.y)%>%arrange(desc(post_prob.x)) 
+left_join(as_tibble(MIRAGE_gene), ASUM_gene, by="Gene")%>% select(-post_prob.y, -BF.y)%>%arrange(desc(post_prob.x))%>% print(n=29) ## ASUM: does not work for genes with one variant, resutling in NA 
 ```
 
 
 
+FDR has the minimum of 0.14 
 
-method    | FDR=0.05  | FDR=0.1  | FDR=0.2
----------|--------|---------------|-----------
-MIRAGE  | 29  | 131 | 749
-SKATO   | 0  | 0 | 0
-CMC  | 0 | 0 | 0
-ASUM | 20 |20 | 20
-Burden | 0 | 0 | 0
-Burden.adj | 0 | 0 | 0
+
+method    | FDR<0.2  | FDR<0.3  |
+---------|--------|--------------
+MIRAGE  | 3 | 9
+SKATO   | 0  | 0 
+CMC  | 0 | 0 
+ASUM | 20 |20 
+Burden | 0 | 0 
+Burden.adj | 0 | 0 
 Table: Number of genes identified by different methods at different FDR levels. 
 
-20 gene selected by ASUM are "ADAR"    "CHST1"   "PLXNB1"  "INO80"   "TRIM8"   "TRIM3"   "RBM14"   "ZIC2"    "ZSCAN10" "SMARCA4" "AP2A1"  "DHX30"   "TRA2B"   "NR2F1"   "EBF1"    "NRF1"    "ABCA2"   "TUBG1"   "PCBP1"   "MAFB
-
-29 genes selected by MIRAGE at FDR=0.05 are "UBR4"     "ADAR"     "EP400"    "CHD8"     "METTL3"   "DYNC1H1"  "GLG1"     "ACACA"    "SNRNP200" "ANAPC1"  "PLXNB1"   "KALRN"    "MACF1"    "CYFIP1"   "INO80"    "FBN1"     "SRCAP"    "NOTCH3"   "TP63"     "SLC4A8"   "BAZ1A"    "MYH10"    "TRIP12"   "HIRA"     "TOP3B"    "CACNA1D"  "DOCK4"    "WHSC1L1"  "ABCA2" 
-
-
-
-
-When FDR=0.05, there are 4 genes "ADAR"   "PLXNB1" "INO80"  "ABCA2" overlapping between MIRAGE and ASUM. 
-
-
-When FDR=0.1 there are 8 genes overlapping. 
-
-
-When FDR=0.2, all 20 genes from ASUM are included in genes selected by MIRAGE. 
 
 
 
