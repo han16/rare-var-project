@@ -381,6 +381,7 @@ const.gene.pvalue.adj=const.gene.pvalue%>%mutate("SKATO.pvalue.adj"=p.adjust(SKA
   mutate("Fisher.pvalue.adj"=p.adjust(Fisher.pvalue, method="BH"))%>%
   mutate("Fisher.adj.pvalue.adj"=p.adjust(Fisher.adj.pvalue, method="BH"))
 const.gene.BF.pvalue.combine=full_join(const.gene.BF, const.gene.pvalue.adj, by="Gene")
+const.gene.BF.pvalue.combine %>% filter(ASUM.pvalue.adj==0)%>%select(SKATO.pvalue.adj:Fisher.adj.pvalue.adj)
 ```
 
 ```{r, echo=T}
