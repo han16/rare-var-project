@@ -15,8 +15,16 @@ library(kableExtra)
 library(RColorBrewer)
 library(gplots)
 library(tidyverse)
+#source("..\\code\\MIRAGE_burden_only_variant_level.R")
 ```
 
+```{r, echo=F}
+loadRData <- function(fileName){
+#loads an RData file, and returns it
+    load(fileName)
+    get(ls()[ls() != "fileName"])
+}
+```
 
 
 ```{r defined function, echo=F, results='hide'}
@@ -390,13 +398,15 @@ kable(seizure.summ)
 ###  combination of gene set+AF+exon
 
 
-```{r burdern analysis for combined set of variants and genes, results='hide', echo=F}
+```{r burdern analysis for combined set of variants and genes, results='hide', echo=F, eval=F}
+
 comb.exon.cutoff=exon.cutoff[1:3];
 sub.com=c(exon.fea[1:3], "LoF", "Prby Damaging", "CriticalExon", "Consensus")
 comb.fea=paste(rep(sub.com, each=length(gene.set)), gene.set)
 AF.cutoff=c("MAF<1e-2", "MAF<1e-3", "MAF<1e-4", "Private"); colname=c("OR", "p.value", "rate.ca", "rate.co")
 comb.summ=matrix(nrow=length(comb.fea), ncol=4*length(AF.cutoff))
 rownames(comb.summ)=comb.fea; colnames(comb.summ)=paste(rep(AF.cutoff, each=length(colname)), colname, sep="~")
+comb.summ.MIRAGE=comb.summ
 all.evid=list(); ii=0; all.evid.fea=paste(rep(comb.fea, each=length(AF.cutoff)), AF.cutoff)
 signal1.evid=list(); jj1=0
 signal2.evid=list(); jj2=0
@@ -416,6 +426,22 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid
+    ###################### MIRAGE burden
+    cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
+    gene.data=eight.partition(cand.data)
+    overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+    order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
+    psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+    delta.init=runif(1); beta.init=runif(actu.num.group)
+    for (jj in 1:actu.num.group)
+  order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
+    #  delta=runif(1)
+   para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+    
+
+    ######################
+    
     if (pois.test$p.value<0.05)
      {
       if (k==1)
@@ -441,6 +467,21 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid 
+    
+    ###################### MIRAGE burden
+    cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
+    gene.data=eight.partition(cand.data)
+    overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+    order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
+    psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+    delta.init=runif(1); beta.init=runif(actu.num.group)
+    for (jj in 1:actu.num.group)
+  order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
+    #  delta=runif(1)
+   para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+    
+    
     if (pois.test$p.value<0.05)
     {
       jj4=jj4+1
@@ -458,6 +499,21 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid
+    
+    ###################### MIRAGE burden
+    cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
+    gene.data=eight.partition(cand.data)
+    overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+    order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
+    psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+    delta.init=runif(1); beta.init=runif(actu.num.group)
+    for (jj in 1:actu.num.group)
+  order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
+    #  delta=runif(1)
+   para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+    
+    
     if (pois.test$p.value<0.05)
      {
       if (k==1)
@@ -482,7 +538,22 @@ for (i in 1:length(sub.com))
     pois.test=test.func(comb.evid, var.data, N1, N0)
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
-    all.evid[[ii]]=comb.evid  
+    all.evid[[ii]]=comb.evid 
+    
+    ###################### MIRAGE burden
+    cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
+    gene.data=eight.partition(cand.data)
+    overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+    order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
+    psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+    delta.init=runif(1); beta.init=runif(actu.num.group)
+    for (jj in 1:actu.num.group)
+  order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
+    #  delta=runif(1)
+   para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+    
+    
     if (pois.test$p.value<0.05)
     {
       jj4=jj4+1
@@ -500,6 +571,21 @@ for (i in 1:length(sub.com))
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
     all.evid[[ii]]=comb.evid
+    
+    ###################### MIRAGE burden
+    cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
+    gene.data=eight.partition(cand.data)
+    overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+    order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
+    psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+    delta.init=runif(1); beta.init=runif(actu.num.group)
+    for (jj in 1:actu.num.group)
+  order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
+    #  delta=runif(1)
+   para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+    
+    
     if (pois.test$p.value<0.05)
      {
       if (k==1)
@@ -524,7 +610,22 @@ for (i in 1:length(sub.com))
     pois.test=test.func(comb.evid, var.data, N1, N0)
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     ii=ii+1
-    all.evid[[ii]]=comb.evid   
+    all.evid[[ii]]=comb.evid 
+    
+    ###################### MIRAGE burden
+    cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
+    gene.data=eight.partition(cand.data)
+    overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+    order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
+    psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+    delta.init=runif(1); beta.init=runif(actu.num.group)
+    for (jj in 1:actu.num.group)
+  order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
+    #  delta=runif(1)
+   para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+    
+    
     if (pois.test$p.value<0.05)
     {
       jj4=jj4+1
@@ -533,10 +634,28 @@ for (i in 1:length(sub.com))
     }
    
 }  
+#save(comb.summ, comb.summ.MIRAGE, file="Burden_MIRAGE_Comparison.RData")
 ```
 
 
 
+```{r, echo=F}
+#Burden_MIRAGE_Summary=loadRData("../output/Burden_MIRAGE_Comparison.RData")
+load("../output/Burden_MIRAGE_Comparison.RData")
+Burden_summary=comb.summ
+MIRAGE_summary=comb.summ.MIRAGE
+pick.feature=1:6
+num.feature=length(pick.feature)
+burden_mirage_pvalue=tibble(pvalue=c(Burden_summary[pick.feature,2], MIRAGE_summary[pick.feature,2]), cate=c(rownames(Burden_summary)[pick.feature], c(rownames(Burden_summary)[pick.feature])), method=c(rep("Burden", num.feature), rep("MIRAGE", num.feature)))
+ggplot(burden_mirage_pvalue, aes(x=cate, y=-log(pvalue, base=10), fill=method))+
+  geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab("-log(pvalue, base=10)")+
+  ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
+  coord_flip()
+  
+```
+
+
+Burden test: one sided two sample Poisson test, MIRAGE: estimate parameters, then do likelihood ratio test. 
 
 
 **Feature combinations: exon/LoF/missense+gene+MAF cutoff**
@@ -590,7 +709,7 @@ scroll_box(height = "200px")
 ```
 
 
-```{r, eco=F, eval=F}
+```{r, echo=F, eval=F}
 #pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\CombinedFeatureAFMinus2.pdf")
 #plot(poten.signal[which(poten.signal[,2]<0.05),1],seq(1, nrow(poten.signal[which(poten.signal[,2]<0.05),])),  pch=15, col=1, xlim=c(0, max(poten.signal[,1])+1), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})))
 barcenters=barplot(poten.signal[which(poten.signal[,2]<0.05),1],  pch=15, col="blue", xlim=c(0, max(poten.signal[,1])+2), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})), horiz=T, width=0.85)

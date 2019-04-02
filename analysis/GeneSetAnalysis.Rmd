@@ -447,7 +447,7 @@ row.names(BF.const.gene.common.delta)=NULL
 
 ```{r, echo=F}
 library(gridExtra)
-pdf("..\\..\\Figure\\top20gene.pdf")
+#pdf("..\\..\\Figure\\top20gene.pdf")
 top20gene=as.character(rank.BF.const.gene.common.delta$Gene)[1:20]
 top20gene.BF=as.numeric(rank.BF.const.gene.common.delta$BF)[1:20]
 BF.data=data.frame(Gene=top20gene, BF=top20gene.BF)
@@ -471,7 +471,7 @@ p2=ggplot(data=rate.data, aes(x=Gene, y=rate, fill=group)) +
   xlab("")+coord_flip()
 
 grid.arrange(p1, p2, nrow = 1)
-dev.off()
+#dev.off()
 ```
 
 ```{r, echo=T}

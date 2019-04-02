@@ -1044,7 +1044,7 @@ ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
   geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
            stat=&quot;identity&quot;)+coord_flip()+geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
   geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;) </code></pre>
-<p><img src="ASD_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="ASD_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre class="r"><code>#dev.off()</code></pre>
 </div>
 <div id="lof-in-different-gene-set" class="section level3">
@@ -1489,6 +1489,8 @@ NaN
 <h2>Combined feature analysis</h2>
 <div id="combination-of-gene-setafexon" class="section level3">
 <h3>combination of gene set+AF+exon</h3>
+<p><img src="ASD_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Burden test: one sided two sample Poisson test, MIRAGE: estimate parameters, then do likelihood ratio test.</p>
 <p><strong>Feature combinations: exon/LoF/missense+gene+MAF cutoff</strong></p>
 <pre class="r"><code>kable(comb.summ[,1:4], caption=&quot;Combined Annotations&quot;, &quot;html&quot;)%&gt;%
 kable_styling() %&gt;%
@@ -2304,16 +2306,16 @@ NaN
 Prby Damaging Mod
 </td>
 <td style="text-align:right;">
-Inf
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -2321,16 +2323,16 @@ Inf
 Prby Damaging PSD
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -2338,16 +2340,16 @@ Prby Damaging PSD
 Prby Damaging FMRP
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -2355,16 +2357,16 @@ NaN
 Prby Damaging AutismKB
 </td>
 <td style="text-align:right;">
-Inf
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -2372,16 +2374,16 @@ Inf
 Prby Damaging constraint gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -2389,16 +2391,16 @@ NaN
 Prby Damaging RVIS
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -2406,16 +2408,16 @@ NaN
 Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -2423,16 +2425,16 @@ Prby Damaging Haploinsuff
 Prby Damaging SCZ gene
 </td>
 <td style="text-align:right;">
-1.0119048
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0196987
+NA
 </td>
 <td style="text-align:right;">
-0.0194670
+NA
 </td>
 </tr>
 <tr>
@@ -2440,16 +2442,16 @@ Prby Damaging SCZ gene
 Prby Damaging Olfac.gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -2457,16 +2459,16 @@ NaN
 CriticalExon ID gene
 </td>
 <td style="text-align:right;">
-0.9885057
+NA
 </td>
 <td style="text-align:right;">
-0.5604006
+NA
 </td>
 <td style="text-align:right;">
-0.0199305
+NA
 </td>
 <td style="text-align:right;">
-0.0201622
+NA
 </td>
 </tr>
 <tr>
@@ -2474,16 +2476,16 @@ CriticalExon ID gene
 CriticalExon High
 </td>
 <td style="text-align:right;">
-2.3846154
+NA
 </td>
 <td style="text-align:right;">
-0.0047799
+NA
 </td>
 <td style="text-align:right;">
-0.0071842
+NA
 </td>
 <td style="text-align:right;">
-0.0030127
+NA
 </td>
 </tr>
 <tr>
@@ -2491,16 +2493,16 @@ CriticalExon High
 CriticalExon Mod
 </td>
 <td style="text-align:right;">
-1.2558140
+NA
 </td>
 <td style="text-align:right;">
-0.1549668
+NA
 </td>
 <td style="text-align:right;">
-0.0125145
+NA
 </td>
 <td style="text-align:right;">
-0.0099652
+NA
 </td>
 </tr>
 <tr>
@@ -2508,16 +2510,16 @@ CriticalExon Mod
 CriticalExon PSD
 </td>
 <td style="text-align:right;">
-1.0327869
+NA
 </td>
 <td style="text-align:right;">
-0.4244829
+NA
 </td>
 <td style="text-align:right;">
-0.0292005
+NA
 </td>
 <td style="text-align:right;">
-0.0282735
+NA
 </td>
 </tr>
 <tr>
@@ -2525,16 +2527,16 @@ CriticalExon PSD
 CriticalExon FMRP
 </td>
 <td style="text-align:right;">
-1.0130396
+NA
 </td>
 <td style="text-align:right;">
-0.2734638
+NA
 </td>
 <td style="text-align:right;">
-1.0442642
+NA
 </td>
 <td style="text-align:right;">
-1.0308227
+NA
 </td>
 </tr>
 <tr>
@@ -2542,16 +2544,16 @@ CriticalExon FMRP
 CriticalExon AutismKB
 </td>
 <td style="text-align:right;">
-1.0303030
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0078795
+NA
 </td>
 <td style="text-align:right;">
-0.0076477
+NA
 </td>
 </tr>
 <tr>
@@ -2559,16 +2561,16 @@ CriticalExon AutismKB
 CriticalExon constraint gene
 </td>
 <td style="text-align:right;">
-1.1842105
+NA
 </td>
 <td style="text-align:right;">
-0.1024518
+NA
 </td>
 <td style="text-align:right;">
-0.0312862
+NA
 </td>
 <td style="text-align:right;">
-0.0264195
+NA
 </td>
 </tr>
 <tr>
@@ -2576,16 +2578,16 @@ CriticalExon constraint gene
 CriticalExon RVIS
 </td>
 <td style="text-align:right;">
-1.2344828
+NA
 </td>
 <td style="text-align:right;">
-0.0042190
+NA
 </td>
 <td style="text-align:right;">
-0.0829664
+NA
 </td>
 <td style="text-align:right;">
-0.0672074
+NA
 </td>
 </tr>
 <tr>
@@ -2593,16 +2595,16 @@ CriticalExon RVIS
 CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
-1.0221182
+NA
 </td>
 <td style="text-align:right;">
-0.1454124
+NA
 </td>
 <td style="text-align:right;">
-1.1137891
+NA
 </td>
 <td style="text-align:right;">
-1.0896871
+NA
 </td>
 </tr>
 <tr>
@@ -2610,16 +2612,16 @@ CriticalExon Haploinsuff
 CriticalExon SCZ gene
 </td>
 <td style="text-align:right;">
-1.0057447
+NA
 </td>
 <td style="text-align:right;">
-0.3944332
+NA
 </td>
 <td style="text-align:right;">
-1.0954809
+NA
 </td>
 <td style="text-align:right;">
-1.0892236
+NA
 </td>
 </tr>
 <tr>
@@ -2627,16 +2629,16 @@ CriticalExon SCZ gene
 CriticalExon Olfac.gene
 </td>
 <td style="text-align:right;">
-1.1627907
+NA
 </td>
 <td style="text-align:right;">
-0.2670299
+NA
 </td>
 <td style="text-align:right;">
-0.0115875
+NA
 </td>
 <td style="text-align:right;">
-0.0099652
+NA
 </td>
 </tr>
 <tr>
@@ -2644,16 +2646,16 @@ CriticalExon Olfac.gene
 Consensus ID gene
 </td>
 <td style="text-align:right;">
-0.9538462
+NA
 </td>
 <td style="text-align:right;">
-0.6386065
+NA
 </td>
 <td style="text-align:right;">
-0.0143685
+NA
 </td>
 <td style="text-align:right;">
-0.0150637
+NA
 </td>
 </tr>
 <tr>
@@ -2661,16 +2663,16 @@ Consensus ID gene
 Consensus High
 </td>
 <td style="text-align:right;">
-2.5454545
+NA
 </td>
 <td style="text-align:right;">
-0.0047377
+NA
 </td>
 <td style="text-align:right;">
-0.0064890
+NA
 </td>
 <td style="text-align:right;">
-0.0025492
+NA
 </td>
 </tr>
 <tr>
@@ -2678,16 +2680,16 @@ Consensus High
 Consensus Mod
 </td>
 <td style="text-align:right;">
-0.9930556
+NA
 </td>
 <td style="text-align:right;">
-0.5542106
+NA
 </td>
 <td style="text-align:right;">
-0.0994206
+NA
 </td>
 <td style="text-align:right;">
-0.1001159
+NA
 </td>
 </tr>
 <tr>
@@ -2695,16 +2697,16 @@ Consensus Mod
 Consensus PSD
 </td>
 <td style="text-align:right;">
-1.1641791
+NA
 </td>
 <td style="text-align:right;">
-0.2031840
+NA
 </td>
 <td style="text-align:right;">
-0.0180765
+NA
 </td>
 <td style="text-align:right;">
-0.0155272
+NA
 </td>
 </tr>
 <tr>
@@ -2712,16 +2714,16 @@ Consensus PSD
 Consensus FMRP
 </td>
 <td style="text-align:right;">
-1.0083824
+NA
 </td>
 <td style="text-align:right;">
-0.3511014
+NA
 </td>
 <td style="text-align:right;">
-1.0315180
+NA
 </td>
 <td style="text-align:right;">
-1.0229432
+NA
 </td>
 </tr>
 <tr>
@@ -2729,16 +2731,16 @@ Consensus FMRP
 Consensus AutismKB
 </td>
 <td style="text-align:right;">
-1.1842105
+NA
 </td>
 <td style="text-align:right;">
-0.2552050
+NA
 </td>
 <td style="text-align:right;">
-0.0104287
+NA
 </td>
 <td style="text-align:right;">
-0.0088065
+NA
 </td>
 </tr>
 <tr>
@@ -2746,16 +2748,16 @@ Consensus AutismKB
 Consensus constraint gene
 </td>
 <td style="text-align:right;">
-1.1971831
+NA
 </td>
 <td style="text-align:right;">
-0.1489668
+NA
 </td>
 <td style="text-align:right;">
-0.0196987
+NA
 </td>
 <td style="text-align:right;">
-0.0164542
+NA
 </td>
 </tr>
 <tr>
@@ -2763,16 +2765,16 @@ Consensus constraint gene
 Consensus RVIS
 </td>
 <td style="text-align:right;">
-1.3244444
+NA
 </td>
 <td style="text-align:right;">
-0.0008084
+NA
 </td>
 <td style="text-align:right;">
-0.0690614
+NA
 </td>
 <td style="text-align:right;">
-0.0521437
+NA
 </td>
 </tr>
 <tr>
@@ -2780,16 +2782,16 @@ Consensus RVIS
 Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
-1.0052290
+NA
 </td>
 <td style="text-align:right;">
-0.4031845
+NA
 </td>
 <td style="text-align:right;">
-1.1137891
+NA
 </td>
 <td style="text-align:right;">
-1.1079954
+NA
 </td>
 </tr>
 <tr>
@@ -2797,16 +2799,16 @@ Consensus Haploinsuff
 Consensus SCZ gene
 </td>
 <td style="text-align:right;">
-0.9975850
+NA
 </td>
 <td style="text-align:right;">
-0.5554293
+NA
 </td>
 <td style="text-align:right;">
-1.3402086
+NA
 </td>
 <td style="text-align:right;">
-1.3434531
+NA
 </td>
 </tr>
 <tr>
@@ -2814,16 +2816,16 @@ Consensus SCZ gene
 Consensus Olfac.gene
 </td>
 <td style="text-align:right;">
-0.9234088
+NA
 </td>
 <td style="text-align:right;">
-0.9559288
+NA
 </td>
 <td style="text-align:right;">
-0.1983778
+NA
 </td>
 <td style="text-align:right;">
-0.2148320
+NA
 </td>
 </tr>
 </tbody>
@@ -3626,16 +3628,16 @@ Prby Damaging ID gene
 Prby Damaging High
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -3643,16 +3645,16 @@ NaN
 Prby Damaging Mod
 </td>
 <td style="text-align:right;">
-Inf
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -3660,16 +3662,16 @@ Inf
 Prby Damaging PSD
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -3677,16 +3679,16 @@ Prby Damaging PSD
 Prby Damaging FMRP
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -3694,16 +3696,16 @@ NaN
 Prby Damaging AutismKB
 </td>
 <td style="text-align:right;">
-Inf
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -3711,16 +3713,16 @@ Inf
 Prby Damaging constraint gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -3728,16 +3730,16 @@ NaN
 Prby Damaging RVIS
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -3745,16 +3747,16 @@ NaN
 Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -3762,16 +3764,16 @@ Prby Damaging Haploinsuff
 Prby Damaging SCZ gene
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -3779,16 +3781,16 @@ Prby Damaging SCZ gene
 Prby Damaging Olfac.gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -3796,16 +3798,16 @@ NaN
 CriticalExon ID gene
 </td>
 <td style="text-align:right;">
-1.0533333
+NA
 </td>
 <td style="text-align:right;">
-0.4045363
+NA
 </td>
 <td style="text-align:right;">
-0.0183082
+NA
 </td>
 <td style="text-align:right;">
-0.0173812
+NA
 </td>
 </tr>
 <tr>
@@ -3813,16 +3815,16 @@ CriticalExon ID gene
 CriticalExon High
 </td>
 <td style="text-align:right;">
-2.3846154
+NA
 </td>
 <td style="text-align:right;">
-0.0047799
+NA
 </td>
 <td style="text-align:right;">
-0.0071842
+NA
 </td>
 <td style="text-align:right;">
-0.0030127
+NA
 </td>
 </tr>
 <tr>
@@ -3830,16 +3832,16 @@ CriticalExon High
 CriticalExon Mod
 </td>
 <td style="text-align:right;">
-1.2558140
+NA
 </td>
 <td style="text-align:right;">
-0.1549668
+NA
 </td>
 <td style="text-align:right;">
-0.0125145
+NA
 </td>
 <td style="text-align:right;">
-0.0099652
+NA
 </td>
 </tr>
 <tr>
@@ -3847,16 +3849,16 @@ CriticalExon Mod
 CriticalExon PSD
 </td>
 <td style="text-align:right;">
-1.0327869
+NA
 </td>
 <td style="text-align:right;">
-0.4244829
+NA
 </td>
 <td style="text-align:right;">
-0.0292005
+NA
 </td>
 <td style="text-align:right;">
-0.0282735
+NA
 </td>
 </tr>
 <tr>
@@ -3864,16 +3866,16 @@ CriticalExon PSD
 CriticalExon FMRP
 </td>
 <td style="text-align:right;">
-1.4957983
+NA
 </td>
 <td style="text-align:right;">
-0.0003686
+NA
 </td>
 <td style="text-align:right;">
-0.0412514
+NA
 </td>
 <td style="text-align:right;">
-0.0275782
+NA
 </td>
 </tr>
 <tr>
@@ -3881,16 +3883,16 @@ CriticalExon FMRP
 CriticalExon AutismKB
 </td>
 <td style="text-align:right;">
-1.0303030
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0078795
+NA
 </td>
 <td style="text-align:right;">
-0.0076477
+NA
 </td>
 </tr>
 <tr>
@@ -3898,16 +3900,16 @@ CriticalExon AutismKB
 CriticalExon constraint gene
 </td>
 <td style="text-align:right;">
-1.1946903
+NA
 </td>
 <td style="text-align:right;">
-0.0911267
+NA
 </td>
 <td style="text-align:right;">
-0.0312862
+NA
 </td>
 <td style="text-align:right;">
-0.0261877
+NA
 </td>
 </tr>
 <tr>
@@ -3915,16 +3917,16 @@ CriticalExon constraint gene
 CriticalExon RVIS
 </td>
 <td style="text-align:right;">
-1.1990741
+NA
 </td>
 <td style="text-align:right;">
-0.0269268
+NA
 </td>
 <td style="text-align:right;">
-0.0600232
+NA
 </td>
 <td style="text-align:right;">
-0.0500579
+NA
 </td>
 </tr>
 <tr>
@@ -3932,16 +3934,16 @@ CriticalExon RVIS
 CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
-1.2286689
+NA
 </td>
 <td style="text-align:right;">
-0.0048738
+NA
 </td>
 <td style="text-align:right;">
-0.0834299
+NA
 </td>
 <td style="text-align:right;">
-0.0679027
+NA
 </td>
 </tr>
 <tr>
@@ -3949,16 +3951,16 @@ CriticalExon Haploinsuff
 CriticalExon SCZ gene
 </td>
 <td style="text-align:right;">
-1.0754717
+NA
 </td>
 <td style="text-align:right;">
-0.1652750
+NA
 </td>
 <td style="text-align:right;">
-0.0924681
+NA
 </td>
 <td style="text-align:right;">
-0.0859791
+NA
 </td>
 </tr>
 <tr>
@@ -3966,16 +3968,16 @@ CriticalExon SCZ gene
 CriticalExon Olfac.gene
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.6127930
+NA
 </td>
 <td style="text-align:right;">
-0.0013905
+NA
 </td>
 <td style="text-align:right;">
-0.0013905
+NA
 </td>
 </tr>
 <tr>
@@ -3983,16 +3985,16 @@ CriticalExon Olfac.gene
 Consensus ID gene
 </td>
 <td style="text-align:right;">
-0.9538462
+NA
 </td>
 <td style="text-align:right;">
-0.6386065
+NA
 </td>
 <td style="text-align:right;">
-0.0143685
+NA
 </td>
 <td style="text-align:right;">
-0.0150637
+NA
 </td>
 </tr>
 <tr>
@@ -4000,16 +4002,16 @@ Consensus ID gene
 Consensus High
 </td>
 <td style="text-align:right;">
-2.5454545
+NA
 </td>
 <td style="text-align:right;">
-0.0047377
+NA
 </td>
 <td style="text-align:right;">
-0.0064890
+NA
 </td>
 <td style="text-align:right;">
-0.0025492
+NA
 </td>
 </tr>
 <tr>
@@ -4017,16 +4019,16 @@ Consensus High
 Consensus Mod
 </td>
 <td style="text-align:right;">
-1.4000000
+NA
 </td>
 <td style="text-align:right;">
-0.0412037
+NA
 </td>
 <td style="text-align:right;">
-0.0162225
+NA
 </td>
 <td style="text-align:right;">
-0.0115875
+NA
 </td>
 </tr>
 <tr>
@@ -4034,16 +4036,16 @@ Consensus Mod
 Consensus PSD
 </td>
 <td style="text-align:right;">
-1.1641791
+NA
 </td>
 <td style="text-align:right;">
-0.2031840
+NA
 </td>
 <td style="text-align:right;">
-0.0180765
+NA
 </td>
 <td style="text-align:right;">
-0.0155272
+NA
 </td>
 </tr>
 <tr>
@@ -4051,16 +4053,16 @@ Consensus PSD
 Consensus FMRP
 </td>
 <td style="text-align:right;">
-1.4588235
+NA
 </td>
 <td style="text-align:right;">
-0.0042096
+NA
 </td>
 <td style="text-align:right;">
-0.0287370
+NA
 </td>
 <td style="text-align:right;">
-0.0196987
+NA
 </td>
 </tr>
 <tr>
@@ -4068,16 +4070,16 @@ Consensus FMRP
 Consensus AutismKB
 </td>
 <td style="text-align:right;">
-1.1842105
+NA
 </td>
 <td style="text-align:right;">
-0.2552050
+NA
 </td>
 <td style="text-align:right;">
-0.0104287
+NA
 </td>
 <td style="text-align:right;">
-0.0088065
+NA
 </td>
 </tr>
 <tr>
@@ -4085,16 +4087,16 @@ Consensus AutismKB
 Consensus constraint gene
 </td>
 <td style="text-align:right;">
-1.2142857
+NA
 </td>
 <td style="text-align:right;">
-0.1303660
+NA
 </td>
 <td style="text-align:right;">
-0.0196987
+NA
 </td>
 <td style="text-align:right;">
-0.0162225
+NA
 </td>
 </tr>
 <tr>
@@ -4102,16 +4104,16 @@ Consensus constraint gene
 Consensus RVIS
 </td>
 <td style="text-align:right;">
-1.3623188
+NA
 </td>
 <td style="text-align:right;">
-0.0004008
+NA
 </td>
 <td style="text-align:right;">
-0.0653534
+NA
 </td>
 <td style="text-align:right;">
-0.0479722
+NA
 </td>
 </tr>
 <tr>
@@ -4119,16 +4121,16 @@ Consensus RVIS
 Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
-1.0825472
+NA
 </td>
 <td style="text-align:right;">
-0.1262653
+NA
 </td>
 <td style="text-align:right;">
-0.1063731
+NA
 </td>
 <td style="text-align:right;">
-0.0982619
+NA
 </td>
 </tr>
 <tr>
@@ -4136,16 +4138,16 @@ Consensus Haploinsuff
 Consensus SCZ gene
 </td>
 <td style="text-align:right;">
-1.0810127
+NA
 </td>
 <td style="text-align:right;">
-0.1397891
+NA
 </td>
 <td style="text-align:right;">
-0.0989571
+NA
 </td>
 <td style="text-align:right;">
-0.0915411
+NA
 </td>
 </tr>
 <tr>
@@ -4153,16 +4155,16 @@ Consensus SCZ gene
 Consensus Olfac.gene
 </td>
 <td style="text-align:right;">
-0.9137931
+NA
 </td>
 <td style="text-align:right;">
-0.7153899
+NA
 </td>
 <td style="text-align:right;">
-0.0122827
+NA
 </td>
 <td style="text-align:right;">
-0.0134415
+NA
 </td>
 </tr>
 </tbody>
@@ -4965,16 +4967,16 @@ Prby Damaging ID gene
 Prby Damaging High
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -4982,16 +4984,16 @@ NaN
 Prby Damaging Mod
 </td>
 <td style="text-align:right;">
-Inf
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -4999,16 +5001,16 @@ Inf
 Prby Damaging PSD
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -5016,16 +5018,16 @@ Prby Damaging PSD
 Prby Damaging FMRP
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -5033,16 +5035,16 @@ NaN
 Prby Damaging AutismKB
 </td>
 <td style="text-align:right;">
-Inf
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -5050,16 +5052,16 @@ Inf
 Prby Damaging constraint gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -5067,16 +5069,16 @@ NaN
 Prby Damaging RVIS
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -5084,16 +5086,16 @@ NaN
 Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -5101,16 +5103,16 @@ Prby Damaging Haploinsuff
 Prby Damaging SCZ gene
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -5118,16 +5120,16 @@ Prby Damaging SCZ gene
 Prby Damaging Olfac.gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -5135,16 +5137,16 @@ NaN
 CriticalExon ID gene
 </td>
 <td style="text-align:right;">
-1.0181818
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0129780
+NA
 </td>
 <td style="text-align:right;">
-0.0127462
+NA
 </td>
 </tr>
 <tr>
@@ -5152,16 +5154,16 @@ CriticalExon ID gene
 CriticalExon High
 </td>
 <td style="text-align:right;">
-2.3846154
+NA
 </td>
 <td style="text-align:right;">
-0.0047799
+NA
 </td>
 <td style="text-align:right;">
-0.0071842
+NA
 </td>
 <td style="text-align:right;">
-0.0030127
+NA
 </td>
 </tr>
 <tr>
@@ -5169,16 +5171,16 @@ CriticalExon High
 CriticalExon Mod
 </td>
 <td style="text-align:right;">
-1.3636364
+NA
 </td>
 <td style="text-align:right;">
-0.1063414
+NA
 </td>
 <td style="text-align:right;">
-0.0104287
+NA
 </td>
 <td style="text-align:right;">
-0.0076477
+NA
 </td>
 </tr>
 <tr>
@@ -5186,16 +5188,16 @@ CriticalExon Mod
 CriticalExon PSD
 </td>
 <td style="text-align:right;">
-1.1263158
+NA
 </td>
 <td style="text-align:right;">
-0.2195166
+NA
 </td>
 <td style="text-align:right;">
-0.0247972
+NA
 </td>
 <td style="text-align:right;">
-0.0220162
+NA
 </td>
 </tr>
 <tr>
@@ -5203,16 +5205,16 @@ CriticalExon PSD
 CriticalExon FMRP
 </td>
 <td style="text-align:right;">
-1.5398230
+NA
 </td>
 <td style="text-align:right;">
-0.0001899
+NA
 </td>
 <td style="text-align:right;">
-0.0403244
+NA
 </td>
 <td style="text-align:right;">
-0.0261877
+NA
 </td>
 </tr>
 <tr>
@@ -5220,16 +5222,16 @@ CriticalExon FMRP
 CriticalExon AutismKB
 </td>
 <td style="text-align:right;">
-1.0769231
+NA
 </td>
 <td style="text-align:right;">
-0.4459616
+NA
 </td>
 <td style="text-align:right;">
-0.0064890
+NA
 </td>
 <td style="text-align:right;">
-0.0060255
+NA
 </td>
 </tr>
 <tr>
@@ -5237,16 +5239,16 @@ CriticalExon AutismKB
 CriticalExon constraint gene
 </td>
 <td style="text-align:right;">
-1.2135922
+NA
 </td>
 <td style="text-align:right;">
-0.0820774
+NA
 </td>
 <td style="text-align:right;">
-0.0289687
+NA
 </td>
 <td style="text-align:right;">
-0.0238702
+NA
 </td>
 </tr>
 <tr>
@@ -5254,16 +5256,16 @@ CriticalExon constraint gene
 CriticalExon RVIS
 </td>
 <td style="text-align:right;">
-1.2000000
+NA
 </td>
 <td style="text-align:right;">
-0.0314344
+NA
 </td>
 <td style="text-align:right;">
-0.0556199
+NA
 </td>
 <td style="text-align:right;">
-0.0463499
+NA
 </td>
 </tr>
 <tr>
@@ -5271,16 +5273,16 @@ CriticalExon RVIS
 CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
-1.2819549
+NA
 </td>
 <td style="text-align:right;">
-0.0013197
+NA
 </td>
 <td style="text-align:right;">
-0.0790267
+NA
 </td>
 <td style="text-align:right;">
-0.0616454
+NA
 </td>
 </tr>
 <tr>
@@ -5288,16 +5290,16 @@ CriticalExon Haploinsuff
 CriticalExon SCZ gene
 </td>
 <td style="text-align:right;">
-1.1518987
+NA
 </td>
 <td style="text-align:right;">
-0.0357047
+NA
 </td>
 <td style="text-align:right;">
-0.0843569
+NA
 </td>
 <td style="text-align:right;">
-0.0732329
+NA
 </td>
 </tr>
 <tr>
@@ -5305,16 +5307,16 @@ CriticalExon SCZ gene
 CriticalExon Olfac.gene
 </td>
 <td style="text-align:right;">
-1.2500000
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0011587
+NA
 </td>
 <td style="text-align:right;">
-0.0009270
+NA
 </td>
 </tr>
 <tr>
@@ -5322,16 +5324,16 @@ CriticalExon Olfac.gene
 Consensus ID gene
 </td>
 <td style="text-align:right;">
-0.9818182
+NA
 </td>
 <td style="text-align:right;">
-0.5759026
+NA
 </td>
 <td style="text-align:right;">
-0.0125145
+NA
 </td>
 <td style="text-align:right;">
-0.0127462
+NA
 </td>
 </tr>
 <tr>
@@ -5339,16 +5341,16 @@ Consensus ID gene
 Consensus High
 </td>
 <td style="text-align:right;">
-2.5454545
+NA
 </td>
 <td style="text-align:right;">
-0.0047377
+NA
 </td>
 <td style="text-align:right;">
-0.0064890
+NA
 </td>
 <td style="text-align:right;">
-0.0025492
+NA
 </td>
 </tr>
 <tr>
@@ -5356,16 +5358,16 @@ Consensus High
 Consensus Mod
 </td>
 <td style="text-align:right;">
-1.4242424
+NA
 </td>
 <td style="text-align:right;">
-0.0728177
+NA
 </td>
 <td style="text-align:right;">
-0.0108922
+NA
 </td>
 <td style="text-align:right;">
-0.0076477
+NA
 </td>
 </tr>
 <tr>
@@ -5373,16 +5375,16 @@ Consensus Mod
 Consensus PSD
 </td>
 <td style="text-align:right;">
-1.2777778
+NA
 </td>
 <td style="text-align:right;">
-0.1033236
+NA
 </td>
 <td style="text-align:right;">
-0.0159907
+NA
 </td>
 <td style="text-align:right;">
-0.0125145
+NA
 </td>
 </tr>
 <tr>
@@ -5390,16 +5392,16 @@ Consensus PSD
 Consensus FMRP
 </td>
 <td style="text-align:right;">
-1.5714286
+NA
 </td>
 <td style="text-align:right;">
-0.0010819
+NA
 </td>
 <td style="text-align:right;">
-0.0280417
+NA
 </td>
 <td style="text-align:right;">
-0.0178447
+NA
 </td>
 </tr>
 <tr>
@@ -5407,16 +5409,16 @@ Consensus FMRP
 Consensus AutismKB
 </td>
 <td style="text-align:right;">
-1.1842105
+NA
 </td>
 <td style="text-align:right;">
-0.2552050
+NA
 </td>
 <td style="text-align:right;">
-0.0104287
+NA
 </td>
 <td style="text-align:right;">
-0.0088065
+NA
 </td>
 </tr>
 <tr>
@@ -5424,16 +5426,16 @@ Consensus AutismKB
 Consensus constraint gene
 </td>
 <td style="text-align:right;">
-1.2413793
+NA
 </td>
 <td style="text-align:right;">
-0.1270623
+NA
 </td>
 <td style="text-align:right;">
-0.0166860
+NA
 </td>
 <td style="text-align:right;">
-0.0134415
+NA
 </td>
 </tr>
 <tr>
@@ -5441,16 +5443,16 @@ Consensus constraint gene
 Consensus RVIS
 </td>
 <td style="text-align:right;">
-1.3975904
+NA
 </td>
 <td style="text-align:right;">
-0.0005477
+NA
 </td>
 <td style="text-align:right;">
-0.0537659
+NA
 </td>
 <td style="text-align:right;">
-0.0384705
+NA
 </td>
 </tr>
 <tr>
@@ -5458,16 +5460,16 @@ Consensus RVIS
 Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
-1.1273210
+NA
 </td>
 <td style="text-align:right;">
-0.0484642
+NA
 </td>
 <td style="text-align:right;">
-0.0984936
+NA
 </td>
 <td style="text-align:right;">
-0.0873696
+NA
 </td>
 </tr>
 <tr>
@@ -5475,16 +5477,16 @@ Consensus Haploinsuff
 Consensus SCZ gene
 </td>
 <td style="text-align:right;">
-1.2187500
+NA
 </td>
 <td style="text-align:right;">
-0.0070581
+NA
 </td>
 <td style="text-align:right;">
-0.0813441
+NA
 </td>
 <td style="text-align:right;">
-0.0667439
+NA
 </td>
 </tr>
 <tr>
@@ -5492,16 +5494,16 @@ Consensus SCZ gene
 Consensus Olfac.gene
 </td>
 <td style="text-align:right;">
-1.1764706
+NA
 </td>
 <td style="text-align:right;">
-0.3714147
+NA
 </td>
 <td style="text-align:right;">
-0.0046350
+NA
 </td>
 <td style="text-align:right;">
-0.0039397
+NA
 </td>
 </tr>
 </tbody>
@@ -6304,16 +6306,16 @@ Prby Damaging ID gene
 Prby Damaging High
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6321,16 +6323,16 @@ NaN
 Prby Damaging Mod
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6338,16 +6340,16 @@ NaN
 Prby Damaging PSD
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -6355,16 +6357,16 @@ Prby Damaging PSD
 Prby Damaging FMRP
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6372,16 +6374,16 @@ NaN
 Prby Damaging AutismKB
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6389,16 +6391,16 @@ NaN
 Prby Damaging constraint gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6406,16 +6408,16 @@ NaN
 Prby Damaging RVIS
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6423,16 +6425,16 @@ NaN
 Prby Damaging Haploinsuff
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6440,16 +6442,16 @@ NaN
 Prby Damaging SCZ gene
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0002317
+NA
 </td>
 </tr>
 <tr>
@@ -6457,16 +6459,16 @@ Prby Damaging SCZ gene
 Prby Damaging Olfac.gene
 </td>
 <td style="text-align:right;">
-NaN
+NA
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0000000
+NA
 </td>
 </tr>
 <tr>
@@ -6474,16 +6476,16 @@ NaN
 CriticalExon ID gene
 </td>
 <td style="text-align:right;">
-1.1000000
+NA
 </td>
 <td style="text-align:right;">
-0.4006532
+NA
 </td>
 <td style="text-align:right;">
-0.0076477
+NA
 </td>
 <td style="text-align:right;">
-0.0069525
+NA
 </td>
 </tr>
 <tr>
@@ -6491,16 +6493,16 @@ CriticalExon ID gene
 CriticalExon High
 </td>
 <td style="text-align:right;">
-3.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.0062705
+NA
 </td>
 <td style="text-align:right;">
-0.0048667
+NA
 </td>
 <td style="text-align:right;">
-0.0016222
+NA
 </td>
 </tr>
 <tr>
@@ -6508,16 +6510,16 @@ CriticalExon High
 CriticalExon Mod
 </td>
 <td style="text-align:right;">
-1.4705882
+NA
 </td>
 <td style="text-align:right;">
-0.1399781
+NA
 </td>
 <td style="text-align:right;">
-0.0057937
+NA
 </td>
 <td style="text-align:right;">
-0.0039397
+NA
 </td>
 </tr>
 <tr>
@@ -6525,16 +6527,16 @@ CriticalExon Mod
 CriticalExon PSD
 </td>
 <td style="text-align:right;">
-1.1525424
+NA
 </td>
 <td style="text-align:right;">
-0.2389610
+NA
 </td>
 <td style="text-align:right;">
-0.0157590
+NA
 </td>
 <td style="text-align:right;">
-0.0136732
+NA
 </td>
 </tr>
 <tr>
@@ -6542,16 +6544,16 @@ CriticalExon PSD
 CriticalExon FMRP
 </td>
 <td style="text-align:right;">
-1.6857143
+NA
 </td>
 <td style="text-align:right;">
-0.0002860
+NA
 </td>
 <td style="text-align:right;">
-0.0273465
+NA
 </td>
 <td style="text-align:right;">
-0.0162225
+NA
 </td>
 </tr>
 <tr>
@@ -6559,16 +6561,16 @@ CriticalExon FMRP
 CriticalExon AutismKB
 </td>
 <td style="text-align:right;">
-1.0769231
+NA
 </td>
 <td style="text-align:right;">
-0.5000000
+NA
 </td>
 <td style="text-align:right;">
-0.0032445
+NA
 </td>
 <td style="text-align:right;">
-0.0030127
+NA
 </td>
 </tr>
 <tr>
@@ -6576,16 +6578,16 @@ CriticalExon AutismKB
 CriticalExon constraint gene
 </td>
 <td style="text-align:right;">
-1.3088235
+NA
 </td>
 <td style="text-align:right;">
-0.0550786
+NA
 </td>
 <td style="text-align:right;">
-0.0206257
+NA
 </td>
 <td style="text-align:right;">
-0.0157590
+NA
 </td>
 </tr>
 <tr>
@@ -6593,16 +6595,16 @@ CriticalExon constraint gene
 CriticalExon RVIS
 </td>
 <td style="text-align:right;">
-1.3697479
+NA
 </td>
 <td style="text-align:right;">
-0.0051610
+NA
 </td>
 <td style="text-align:right;">
-0.0377752
+NA
 </td>
 <td style="text-align:right;">
-0.0275782
+NA
 </td>
 </tr>
 <tr>
@@ -6610,16 +6612,16 @@ CriticalExon RVIS
 CriticalExon Haploinsuff
 </td>
 <td style="text-align:right;">
-1.4687500
+NA
 </td>
 <td style="text-align:right;">
-0.0000944
+NA
 </td>
 <td style="text-align:right;">
-0.0544612
+NA
 </td>
 <td style="text-align:right;">
-0.0370800
+NA
 </td>
 </tr>
 <tr>
@@ -6627,16 +6629,16 @@ CriticalExon Haploinsuff
 CriticalExon SCZ gene
 </td>
 <td style="text-align:right;">
-1.2528090
+NA
 </td>
 <td style="text-align:right;">
-0.0139386
+NA
 </td>
 <td style="text-align:right;">
-0.0516802
+NA
 </td>
 <td style="text-align:right;">
-0.0412514
+NA
 </td>
 </tr>
 <tr>
@@ -6644,16 +6646,16 @@ CriticalExon SCZ gene
 CriticalExon Olfac.gene
 </td>
 <td style="text-align:right;">
-1.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.6875000
+NA
 </td>
 <td style="text-align:right;">
-0.0004635
+NA
 </td>
 <td style="text-align:right;">
-0.0004635
+NA
 </td>
 </tr>
 <tr>
@@ -6661,16 +6663,16 @@ CriticalExon Olfac.gene
 Consensus ID gene
 </td>
 <td style="text-align:right;">
-0.9545455
+NA
 </td>
 <td style="text-align:right;">
-0.6196042
+NA
 </td>
 <td style="text-align:right;">
-0.0048667
+NA
 </td>
 <td style="text-align:right;">
-0.0050985
+NA
 </td>
 </tr>
 <tr>
@@ -6678,16 +6680,16 @@ Consensus ID gene
 Consensus High
 </td>
 <td style="text-align:right;">
-2.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.1189423
+NA
 </td>
 <td style="text-align:right;">
-0.0027810
+NA
 </td>
 <td style="text-align:right;">
-0.0013905
+NA
 </td>
 </tr>
 <tr>
@@ -6695,16 +6697,16 @@ Consensus High
 Consensus Mod
 </td>
 <td style="text-align:right;">
-2.3000000
+NA
 </td>
 <td style="text-align:right;">
-0.0175410
+NA
 </td>
 <td style="text-align:right;">
-0.0053302
+NA
 </td>
 <td style="text-align:right;">
-0.0023175
+NA
 </td>
 </tr>
 <tr>
@@ -6712,16 +6714,16 @@ Consensus Mod
 Consensus PSD
 </td>
 <td style="text-align:right;">
-1.2758621
+NA
 </td>
 <td style="text-align:right;">
-0.1945262
+NA
 </td>
 <td style="text-align:right;">
-0.0085747
+NA
 </td>
 <td style="text-align:right;">
-0.0067207
+NA
 </td>
 </tr>
 <tr>
@@ -6729,16 +6731,16 @@ Consensus PSD
 Consensus FMRP
 </td>
 <td style="text-align:right;">
-1.8787879
+NA
 </td>
 <td style="text-align:right;">
-0.0019164
+NA
 </td>
 <td style="text-align:right;">
-0.0143685
+NA
 </td>
 <td style="text-align:right;">
-0.0076477
+NA
 </td>
 </tr>
 <tr>
@@ -6746,16 +6748,16 @@ Consensus FMRP
 Consensus AutismKB
 </td>
 <td style="text-align:right;">
-2.3333333
+NA
 </td>
 <td style="text-align:right;">
-0.0082945
+NA
 </td>
 <td style="text-align:right;">
-0.0064890
+NA
 </td>
 <td style="text-align:right;">
-0.0027810
+NA
 </td>
 </tr>
 <tr>
@@ -6763,16 +6765,16 @@ Consensus AutismKB
 Consensus constraint gene
 </td>
 <td style="text-align:right;">
-1.7777778
+NA
 </td>
 <td style="text-align:right;">
-0.0101492
+NA
 </td>
 <td style="text-align:right;">
-0.0111240
+NA
 </td>
 <td style="text-align:right;">
-0.0062572
+NA
 </td>
 </tr>
 <tr>
@@ -6780,16 +6782,16 @@ Consensus constraint gene
 Consensus RVIS
 </td>
 <td style="text-align:right;">
-1.5405405
+NA
 </td>
 <td style="text-align:right;">
-0.0021624
+NA
 </td>
 <td style="text-align:right;">
-0.0264195
+NA
 </td>
 <td style="text-align:right;">
-0.0171495
+NA
 </td>
 </tr>
 <tr>
@@ -6797,16 +6799,16 @@ Consensus RVIS
 Consensus Haploinsuff
 </td>
 <td style="text-align:right;">
-1.3485714
+NA
 </td>
 <td style="text-align:right;">
-0.0015170
+NA
 </td>
 <td style="text-align:right;">
-0.0546929
+NA
 </td>
 <td style="text-align:right;">
-0.0405562
+NA
 </td>
 </tr>
 <tr>
@@ -6814,16 +6816,16 @@ Consensus Haploinsuff
 Consensus SCZ gene
 </td>
 <td style="text-align:right;">
-1.4070796
+NA
 </td>
 <td style="text-align:right;">
-0.0031288
+NA
 </td>
 <td style="text-align:right;">
-0.0368482
+NA
 </td>
 <td style="text-align:right;">
-0.0261877
+NA
 </td>
 </tr>
 <tr>
@@ -6831,16 +6833,16 @@ Consensus SCZ gene
 Consensus Olfac.gene
 </td>
 <td style="text-align:right;">
-2.0000000
+NA
 </td>
 <td style="text-align:right;">
-0.1938477
+NA
 </td>
 <td style="text-align:right;">
-0.0018540
+NA
 </td>
 <td style="text-align:right;">
-0.0009270
+NA
 </td>
 </tr>
 </tbody>
@@ -6879,7 +6881,7 @@ MAF&lt;1e-2~rate.co
 ExonTop90% FMRP
 </td>
 <td style="text-align:right;">
-1.7000000
+1.700000
 </td>
 <td style="text-align:right;">
 0.0016398
@@ -6896,7 +6898,7 @@ ExonTop90% FMRP
 ExonTop90% RVIS
 </td>
 <td style="text-align:right;">
-1.3951613
+1.395161
 </td>
 <td style="text-align:right;">
 0.0026307
@@ -6913,7 +6915,7 @@ ExonTop90% RVIS
 ExonTop90% Haploinsuff
 </td>
 <td style="text-align:right;">
-1.4316547
+1.431655
 </td>
 <td style="text-align:right;">
 0.0006486
@@ -6930,7 +6932,7 @@ ExonTop90% Haploinsuff
 ExonTop80% High
 </td>
 <td style="text-align:right;">
-1.9230769
+1.923077
 </td>
 <td style="text-align:right;">
 0.0364757
@@ -6947,7 +6949,7 @@ ExonTop80% High
 ExonTop80% PSD
 </td>
 <td style="text-align:right;">
-1.4074074
+1.407407
 </td>
 <td style="text-align:right;">
 0.0325432
@@ -6964,7 +6966,7 @@ ExonTop80% PSD
 ExonTop80% FMRP
 </td>
 <td style="text-align:right;">
-1.6666667
+1.666667
 </td>
 <td style="text-align:right;">
 0.0002497
@@ -6981,7 +6983,7 @@ ExonTop80% FMRP
 ExonTop80% RVIS
 </td>
 <td style="text-align:right;">
-1.3282828
+1.328283
 </td>
 <td style="text-align:right;">
 0.0014176
@@ -6998,7 +7000,7 @@ ExonTop80% RVIS
 ExonTop80% Haploinsuff
 </td>
 <td style="text-align:right;">
-1.2996390
+1.299639
 </td>
 <td style="text-align:right;">
 0.0005709
@@ -7015,7 +7017,7 @@ ExonTop80% Haploinsuff
 ExonTop80% SCZ gene
 </td>
 <td style="text-align:right;">
-1.2196262
+1.219626
 </td>
 <td style="text-align:right;">
 0.0173472
@@ -7032,7 +7034,7 @@ ExonTop80% SCZ gene
 ExonTop70% High
 </td>
 <td style="text-align:right;">
-2.3076923
+2.307692
 </td>
 <td style="text-align:right;">
 0.0068591
@@ -7049,7 +7051,7 @@ ExonTop70% High
 ExonTop70% PSD
 </td>
 <td style="text-align:right;">
-1.3066667
+1.306667
 </td>
 <td style="text-align:right;">
 0.0470574
@@ -7066,7 +7068,7 @@ ExonTop70% PSD
 ExonTop70% FMRP
 </td>
 <td style="text-align:right;">
-1.5408163
+1.540816
 </td>
 <td style="text-align:right;">
 0.0004725
@@ -7083,7 +7085,7 @@ ExonTop70% FMRP
 ExonTop70% RVIS
 </td>
 <td style="text-align:right;">
-1.2627451
+1.262745
 </td>
 <td style="text-align:right;">
 0.0029777
@@ -7100,7 +7102,7 @@ ExonTop70% RVIS
 ExonTop70% Haploinsuff
 </td>
 <td style="text-align:right;">
-1.2597403
+1.259740
 </td>
 <td style="text-align:right;">
 0.0003901
@@ -7117,7 +7119,7 @@ ExonTop70% Haploinsuff
 LoF High
 </td>
 <td style="text-align:right;">
-1.7222222
+1.722222
 </td>
 <td style="text-align:right;">
 0.0055873
@@ -7134,7 +7136,7 @@ LoF High
 LoF RVIS
 </td>
 <td style="text-align:right;">
-1.2034976
+1.203498
 </td>
 <td style="text-align:right;">
 0.0003207
@@ -7148,78 +7150,10 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon High
-</td>
-<td style="text-align:right;">
-2.3846154
-</td>
-<td style="text-align:right;">
-0.0047799
-</td>
-<td style="text-align:right;">
-0.0071842
-</td>
-<td style="text-align:right;">
-0.0030127
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon RVIS
-</td>
-<td style="text-align:right;">
-1.2344828
-</td>
-<td style="text-align:right;">
-0.0042190
-</td>
-<td style="text-align:right;">
-0.0829664
-</td>
-<td style="text-align:right;">
-0.0672074
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus High
-</td>
-<td style="text-align:right;">
-2.5454545
-</td>
-<td style="text-align:right;">
-0.0047377
-</td>
-<td style="text-align:right;">
-0.0064890
-</td>
-<td style="text-align:right;">
-0.0025492
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus RVIS
-</td>
-<td style="text-align:right;">
-1.3244444
-</td>
-<td style="text-align:right;">
-0.0008084
-</td>
-<td style="text-align:right;">
-0.0690614
-</td>
-<td style="text-align:right;">
-0.0521437
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 LoF Mod
 </td>
 <td style="text-align:right;">
-1.0386643
+1.038664
 </td>
 <td style="text-align:right;">
 0.2687646
@@ -7236,7 +7170,7 @@ LoF Mod
 LoF FMRP
 </td>
 <td style="text-align:right;">
-1.0157964
+1.015796
 </td>
 <td style="text-align:right;">
 0.2294357
@@ -7250,78 +7184,10 @@ LoF FMRP
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon FMRP
-</td>
-<td style="text-align:right;">
-1.0130396
-</td>
-<td style="text-align:right;">
-0.2734638
-</td>
-<td style="text-align:right;">
-1.0442642
-</td>
-<td style="text-align:right;">
-1.0308227
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon Haploinsuff
-</td>
-<td style="text-align:right;">
-1.0221182
-</td>
-<td style="text-align:right;">
-0.1454124
-</td>
-<td style="text-align:right;">
-1.1137891
-</td>
-<td style="text-align:right;">
-1.0896871
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Mod
-</td>
-<td style="text-align:right;">
-0.9930556
-</td>
-<td style="text-align:right;">
-0.5542106
-</td>
-<td style="text-align:right;">
-0.0994206
-</td>
-<td style="text-align:right;">
-0.1001159
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus FMRP
-</td>
-<td style="text-align:right;">
-1.0083824
-</td>
-<td style="text-align:right;">
-0.3511014
-</td>
-<td style="text-align:right;">
-1.0315180
-</td>
-<td style="text-align:right;">
-1.0229432
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 ExonTop70% SCZ gene
 </td>
 <td style="text-align:right;">
-1.0784314
+1.078431
 </td>
 <td style="text-align:right;">
 0.1607942
@@ -7338,7 +7204,7 @@ ExonTop70% SCZ gene
 LoF Haploinsuff
 </td>
 <td style="text-align:right;">
-1.0188679
+1.018868
 </td>
 <td style="text-align:right;">
 0.1656237
@@ -7355,7 +7221,7 @@ LoF Haploinsuff
 LoF SCZ gene
 </td>
 <td style="text-align:right;">
-1.0116018
+1.011602
 </td>
 <td style="text-align:right;">
 0.2283991
@@ -7369,61 +7235,10 @@ LoF SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon SCZ gene
-</td>
-<td style="text-align:right;">
-1.0057447
-</td>
-<td style="text-align:right;">
-0.3944332
-</td>
-<td style="text-align:right;">
-1.0954809
-</td>
-<td style="text-align:right;">
-1.0892236
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Haploinsuff
-</td>
-<td style="text-align:right;">
-1.0052290
-</td>
-<td style="text-align:right;">
-0.4031845
-</td>
-<td style="text-align:right;">
-1.1137891
-</td>
-<td style="text-align:right;">
-1.1079954
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus SCZ gene
-</td>
-<td style="text-align:right;">
-0.9975850
-</td>
-<td style="text-align:right;">
-0.5554293
-</td>
-<td style="text-align:right;">
-1.3402086
-</td>
-<td style="text-align:right;">
-1.3434531
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
-1.1842105
+1.184211
 </td>
 <td style="text-align:right;">
 0.1024518
@@ -7440,7 +7255,7 @@ ExonTop90% SCZ gene
 ExonTop80% constraint gene
 </td>
 <td style="text-align:right;">
-1.2244898
+1.224490
 </td>
 <td style="text-align:right;">
 0.0773892
@@ -7457,7 +7272,7 @@ ExonTop80% constraint gene
 LoF constraint gene
 </td>
 <td style="text-align:right;">
-1.0668954
+1.066895
 </td>
 <td style="text-align:right;">
 0.1368236
@@ -7467,40 +7282,6 @@ LoF constraint gene
 </td>
 <td style="text-align:right;">
 0.1351101
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus AutismKB
-</td>
-<td style="text-align:right;">
-1.1842105
-</td>
-<td style="text-align:right;">
-0.2552050
-</td>
-<td style="text-align:right;">
-0.0104287
-</td>
-<td style="text-align:right;">
-0.0088065
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus constraint gene
-</td>
-<td style="text-align:right;">
-1.1971831
-</td>
-<td style="text-align:right;">
-0.1489668
-</td>
-<td style="text-align:right;">
-0.0196987
-</td>
-<td style="text-align:right;">
-0.0164542
 </td>
 </tr>
 </tbody>
@@ -7804,74 +7585,6 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon High
-</td>
-<td style="text-align:right;">
-2.384615
-</td>
-<td style="text-align:right;">
-0.0047799
-</td>
-<td style="text-align:right;">
-0.0071842
-</td>
-<td style="text-align:right;">
-0.0030127
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon RVIS
-</td>
-<td style="text-align:right;">
-1.199074
-</td>
-<td style="text-align:right;">
-0.0269268
-</td>
-<td style="text-align:right;">
-0.0600232
-</td>
-<td style="text-align:right;">
-0.0500579
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus High
-</td>
-<td style="text-align:right;">
-2.545454
-</td>
-<td style="text-align:right;">
-0.0047377
-</td>
-<td style="text-align:right;">
-0.0064890
-</td>
-<td style="text-align:right;">
-0.0025492
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus RVIS
-</td>
-<td style="text-align:right;">
-1.362319
-</td>
-<td style="text-align:right;">
-0.0004008
-</td>
-<td style="text-align:right;">
-0.0653534
-</td>
-<td style="text-align:right;">
-0.0479722
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 LoF Mod
 </td>
 <td style="text-align:right;">
@@ -7902,74 +7615,6 @@ LoF FMRP
 </td>
 <td style="text-align:right;">
 0.0530707
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon FMRP
-</td>
-<td style="text-align:right;">
-1.495798
-</td>
-<td style="text-align:right;">
-0.0003686
-</td>
-<td style="text-align:right;">
-0.0412514
-</td>
-<td style="text-align:right;">
-0.0275782
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon Haploinsuff
-</td>
-<td style="text-align:right;">
-1.228669
-</td>
-<td style="text-align:right;">
-0.0048738
-</td>
-<td style="text-align:right;">
-0.0834299
-</td>
-<td style="text-align:right;">
-0.0679027
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Mod
-</td>
-<td style="text-align:right;">
-1.400000
-</td>
-<td style="text-align:right;">
-0.0412037
-</td>
-<td style="text-align:right;">
-0.0162225
-</td>
-<td style="text-align:right;">
-0.0115875
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus FMRP
-</td>
-<td style="text-align:right;">
-1.458824
-</td>
-<td style="text-align:right;">
-0.0042096
-</td>
-<td style="text-align:right;">
-0.0287370
-</td>
-<td style="text-align:right;">
-0.0196987
 </td>
 </tr>
 <tr>
@@ -8025,57 +7670,6 @@ LoF SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon SCZ gene
-</td>
-<td style="text-align:right;">
-1.075472
-</td>
-<td style="text-align:right;">
-0.1652750
-</td>
-<td style="text-align:right;">
-0.0924681
-</td>
-<td style="text-align:right;">
-0.0859791
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Haploinsuff
-</td>
-<td style="text-align:right;">
-1.082547
-</td>
-<td style="text-align:right;">
-0.1262653
-</td>
-<td style="text-align:right;">
-0.1063731
-</td>
-<td style="text-align:right;">
-0.0982619
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus SCZ gene
-</td>
-<td style="text-align:right;">
-1.081013
-</td>
-<td style="text-align:right;">
-0.1397891
-</td>
-<td style="text-align:right;">
-0.0989571
-</td>
-<td style="text-align:right;">
-0.0915411
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
@@ -8123,40 +7717,6 @@ LoF constraint gene
 </td>
 <td style="text-align:right;">
 0.0400927
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus AutismKB
-</td>
-<td style="text-align:right;">
-1.184211
-</td>
-<td style="text-align:right;">
-0.2552050
-</td>
-<td style="text-align:right;">
-0.0104287
-</td>
-<td style="text-align:right;">
-0.0088065
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus constraint gene
-</td>
-<td style="text-align:right;">
-1.214286
-</td>
-<td style="text-align:right;">
-0.1303660
-</td>
-<td style="text-align:right;">
-0.0196987
-</td>
-<td style="text-align:right;">
-0.0162225
 </td>
 </tr>
 </tbody>
@@ -8460,74 +8020,6 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon High
-</td>
-<td style="text-align:right;">
-2.384615
-</td>
-<td style="text-align:right;">
-0.0047799
-</td>
-<td style="text-align:right;">
-0.0071842
-</td>
-<td style="text-align:right;">
-0.0030127
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon RVIS
-</td>
-<td style="text-align:right;">
-1.200000
-</td>
-<td style="text-align:right;">
-0.0314344
-</td>
-<td style="text-align:right;">
-0.0556199
-</td>
-<td style="text-align:right;">
-0.0463499
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus High
-</td>
-<td style="text-align:right;">
-2.545454
-</td>
-<td style="text-align:right;">
-0.0047377
-</td>
-<td style="text-align:right;">
-0.0064890
-</td>
-<td style="text-align:right;">
-0.0025492
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus RVIS
-</td>
-<td style="text-align:right;">
-1.397590
-</td>
-<td style="text-align:right;">
-0.0005477
-</td>
-<td style="text-align:right;">
-0.0537659
-</td>
-<td style="text-align:right;">
-0.0384705
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 LoF Mod
 </td>
 <td style="text-align:right;">
@@ -8558,74 +8050,6 @@ LoF FMRP
 </td>
 <td style="text-align:right;">
 0.0444959
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon FMRP
-</td>
-<td style="text-align:right;">
-1.539823
-</td>
-<td style="text-align:right;">
-0.0001899
-</td>
-<td style="text-align:right;">
-0.0403244
-</td>
-<td style="text-align:right;">
-0.0261877
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon Haploinsuff
-</td>
-<td style="text-align:right;">
-1.281955
-</td>
-<td style="text-align:right;">
-0.0013197
-</td>
-<td style="text-align:right;">
-0.0790267
-</td>
-<td style="text-align:right;">
-0.0616454
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Mod
-</td>
-<td style="text-align:right;">
-1.424242
-</td>
-<td style="text-align:right;">
-0.0728177
-</td>
-<td style="text-align:right;">
-0.0108922
-</td>
-<td style="text-align:right;">
-0.0076477
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus FMRP
-</td>
-<td style="text-align:right;">
-1.571429
-</td>
-<td style="text-align:right;">
-0.0010819
-</td>
-<td style="text-align:right;">
-0.0280417
-</td>
-<td style="text-align:right;">
-0.0178447
 </td>
 </tr>
 <tr>
@@ -8681,57 +8105,6 @@ LoF SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon SCZ gene
-</td>
-<td style="text-align:right;">
-1.151899
-</td>
-<td style="text-align:right;">
-0.0357047
-</td>
-<td style="text-align:right;">
-0.0843569
-</td>
-<td style="text-align:right;">
-0.0732329
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Haploinsuff
-</td>
-<td style="text-align:right;">
-1.127321
-</td>
-<td style="text-align:right;">
-0.0484642
-</td>
-<td style="text-align:right;">
-0.0984936
-</td>
-<td style="text-align:right;">
-0.0873696
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus SCZ gene
-</td>
-<td style="text-align:right;">
-1.218750
-</td>
-<td style="text-align:right;">
-0.0070581
-</td>
-<td style="text-align:right;">
-0.0813441
-</td>
-<td style="text-align:right;">
-0.0667439
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
@@ -8779,40 +8152,6 @@ LoF constraint gene
 </td>
 <td style="text-align:right;">
 0.0322132
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus AutismKB
-</td>
-<td style="text-align:right;">
-1.184211
-</td>
-<td style="text-align:right;">
-0.2552050
-</td>
-<td style="text-align:right;">
-0.0104287
-</td>
-<td style="text-align:right;">
-0.0088065
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus constraint gene
-</td>
-<td style="text-align:right;">
-1.241379
-</td>
-<td style="text-align:right;">
-0.1270623
-</td>
-<td style="text-align:right;">
-0.0166860
-</td>
-<td style="text-align:right;">
-0.0134415
 </td>
 </tr>
 </tbody>
@@ -9116,74 +8455,6 @@ LoF RVIS
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon High
-</td>
-<td style="text-align:right;">
-3.000000
-</td>
-<td style="text-align:right;">
-0.0062705
-</td>
-<td style="text-align:right;">
-0.0048667
-</td>
-<td style="text-align:right;">
-0.0016222
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon RVIS
-</td>
-<td style="text-align:right;">
-1.369748
-</td>
-<td style="text-align:right;">
-0.0051610
-</td>
-<td style="text-align:right;">
-0.0377752
-</td>
-<td style="text-align:right;">
-0.0275782
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus High
-</td>
-<td style="text-align:right;">
-2.000000
-</td>
-<td style="text-align:right;">
-0.1189423
-</td>
-<td style="text-align:right;">
-0.0027810
-</td>
-<td style="text-align:right;">
-0.0013905
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus RVIS
-</td>
-<td style="text-align:right;">
-1.540541
-</td>
-<td style="text-align:right;">
-0.0021624
-</td>
-<td style="text-align:right;">
-0.0264195
-</td>
-<td style="text-align:right;">
-0.0171495
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 LoF Mod
 </td>
 <td style="text-align:right;">
@@ -9214,74 +8485,6 @@ LoF FMRP
 </td>
 <td style="text-align:right;">
 0.0259560
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon FMRP
-</td>
-<td style="text-align:right;">
-1.685714
-</td>
-<td style="text-align:right;">
-0.0002860
-</td>
-<td style="text-align:right;">
-0.0273465
-</td>
-<td style="text-align:right;">
-0.0162225
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CriticalExon Haploinsuff
-</td>
-<td style="text-align:right;">
-1.468750
-</td>
-<td style="text-align:right;">
-0.0000944
-</td>
-<td style="text-align:right;">
-0.0544612
-</td>
-<td style="text-align:right;">
-0.0370800
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Mod
-</td>
-<td style="text-align:right;">
-2.300000
-</td>
-<td style="text-align:right;">
-0.0175410
-</td>
-<td style="text-align:right;">
-0.0053302
-</td>
-<td style="text-align:right;">
-0.0023175
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus FMRP
-</td>
-<td style="text-align:right;">
-1.878788
-</td>
-<td style="text-align:right;">
-0.0019164
-</td>
-<td style="text-align:right;">
-0.0143685
-</td>
-<td style="text-align:right;">
-0.0076477
 </td>
 </tr>
 <tr>
@@ -9337,57 +8540,6 @@ LoF SCZ gene
 </tr>
 <tr>
 <td style="text-align:left;">
-CriticalExon SCZ gene
-</td>
-<td style="text-align:right;">
-1.252809
-</td>
-<td style="text-align:right;">
-0.0139386
-</td>
-<td style="text-align:right;">
-0.0516802
-</td>
-<td style="text-align:right;">
-0.0412514
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus Haploinsuff
-</td>
-<td style="text-align:right;">
-1.348571
-</td>
-<td style="text-align:right;">
-0.0015170
-</td>
-<td style="text-align:right;">
-0.0546929
-</td>
-<td style="text-align:right;">
-0.0405562
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus SCZ gene
-</td>
-<td style="text-align:right;">
-1.407080
-</td>
-<td style="text-align:right;">
-0.0031288
-</td>
-<td style="text-align:right;">
-0.0368482
-</td>
-<td style="text-align:right;">
-0.0261877
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 ExonTop90% SCZ gene
 </td>
 <td style="text-align:right;">
@@ -9437,56 +8589,10 @@ LoF constraint gene
 0.0194670
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Consensus AutismKB
-</td>
-<td style="text-align:right;">
-2.333333
-</td>
-<td style="text-align:right;">
-0.0082945
-</td>
-<td style="text-align:right;">
-0.0064890
-</td>
-<td style="text-align:right;">
-0.0027810
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Consensus constraint gene
-</td>
-<td style="text-align:right;">
-1.777778
-</td>
-<td style="text-align:right;">
-0.0101492
-</td>
-<td style="text-align:right;">
-0.0111240
-</td>
-<td style="text-align:right;">
-0.0062572
-</td>
-</tr>
 </tbody>
 </table>
 </div>
-<pre class="r"><code>#pdf(&quot;D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\CombinedFeatureAFMinus2.pdf&quot;)
-#plot(poten.signal[which(poten.signal[,2]&lt;0.05),1],seq(1, nrow(poten.signal[which(poten.signal[,2]&lt;0.05),])),  pch=15, col=1, xlim=c(0, max(poten.signal[,1])+1), ylab=&quot;&quot;, xlab=&quot;OR&quot;, yaxt=&#39;n&#39;, main=expression(paste(&quot;Combined features with AF&lt;&quot;, 10^{-2})))
-barcenters=barplot(poten.signal[which(poten.signal[,2]&lt;0.05),1],  pch=15, col=&quot;blue&quot;, xlim=c(0, max(poten.signal[,1])+2), ylab=&quot;&quot;, xlab=&quot;OR&quot;, yaxt=&#39;n&#39;, main=expression(paste(&quot;Combined features with AF&lt;&quot;, 10^{-2})), horiz=T, width=0.85)
-#lines(-log(poten.signal[which(poten.signal[,2]&lt;0.05),2], base=10), seq(1,nrow(poten.signal[which(poten.signal[,2]&lt;0.05),])), pch=16, col=2, type=&quot;p&quot;)
-points(-log(poten.signal[which(poten.signal[,2]&lt;0.05),2], base=10), barcenters, pch=16, col=2, type=&quot;p&quot;)
-#segments(barcenters,poten.signal[which(poten.signal[,2]&lt;0.05),1] , poten.signal[which(poten.signal[,2]&lt;0.05),1],  barcenters, -log(poten.signal[which(poten.signal[,2]&lt;0.05),2],base=10),lwd = 1.5 )
-abline(v=1, col=&quot;blue&quot;, lty=4)
-abline(v=-log(0.05, base=10), col=2, lty=4)
-axis.labels &lt;-row.names(poten.signal[which(poten.signal[,2]&lt;0.05),])
-axis(side=2, las=2, at=seq(1,length(axis.labels)), labels=wrap.it(axis.labels, 15), cex.axis=0.4)
-legend(3.5, 21, c(&quot;OR&quot;, &quot;-log(p.val)&quot;), col=c(&quot;blue&quot;,2), pch=c(15,16))
-#dev.off()</code></pre>
-<p><img src="ASD_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASD_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">
