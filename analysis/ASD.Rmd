@@ -436,8 +436,13 @@ for (i in 1:length(sub.com))
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
+  if (nrow(order.overlap.data)>0)  
+  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+  }
+  if (nrow(order.overlap.data)==0)  
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
     
 
     ######################
@@ -478,8 +483,14 @@ for (i in 1:length(sub.com))
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
+    if (nrow(order.overlap.data)>0)  
+  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+  }
+  if (nrow(order.overlap.data)==0)  
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+    
     
     
     if (pois.test$p.value<0.05)
@@ -510,8 +521,13 @@ for (i in 1:length(sub.com))
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
+    if (nrow(order.overlap.data)>0)  
+  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+  }
+  if (nrow(order.overlap.data)==0)  
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
     
     
     if (pois.test$p.value<0.05)
@@ -550,8 +566,15 @@ for (i in 1:length(sub.com))
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
+    if (nrow(order.overlap.data)>0)  
+  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+  }
+  if (nrow(order.overlap.data)==0)  
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+    
+    
     
     
     if (pois.test$p.value<0.05)
@@ -582,8 +605,15 @@ for (i in 1:length(sub.com))
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
+    if (nrow(order.overlap.data)>0)  
+  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+  }
+  if (nrow(order.overlap.data)==0)  
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+    
+  
     
     
     if (pois.test$p.value<0.05)
@@ -622,8 +652,14 @@ for (i in 1:length(sub.com))
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
+    if (nrow(order.overlap.data)>0)  
+  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
+  }
+  if (nrow(order.overlap.data)==0)  
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+    
     
     
     if (pois.test$p.value<0.05)
@@ -634,7 +670,7 @@ for (i in 1:length(sub.com))
     }
    
 }  
-#save(comb.summ, comb.summ.MIRAGE, file="Burden_MIRAGE_Comparison.RData")
+save(comb.summ, comb.summ.MIRAGE, file="../output/Burden_MIRAGE_Comparison.RData")
 ```
 
 
