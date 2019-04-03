@@ -130,29 +130,6 @@ multi.group.func.for.variant=function(new.data, N1, N0, gamma.mean, sigma, delta
       }
   teststat[num.var+1]=2*total.lkhd
   pvalue[num.var+1]=pchisq(teststat[num.var+1], num.actu.group, lower.tail=F)
-  ##################
-  #cate.lkhd=rep(1,num.group); cate.stat=numeric()
-  #cate.pvalue=numeric(num.group); sum.lkhd=0
-  #for (g in 1:num.group)
-  #{ # g=2
-  #  total.lkhd=0; lkhd.gene=rep(1, num.gene)
-  #  for (i in 1:num.gene)
-  #  {
-  #    data=full.info.genevar[[i]]
-  #    if (nrow(data)>0)
-  #      for (j in 1:nrow(data))
-  #        if (data$group.index[j]==g)
-  #        {
-  #          lkhd.gene[i]=lkhd.gene[i]*((1-beta.k[(iter-1), g])+beta.k[(iter-1), g]*data$var.BF[j])
-  #          cate.lkhd[g]=cate.lkhd[g]*((1-beta.k[(iter-1), g])+beta.k[(iter-1), g]*data$var.BF[j])
-  #       }
-  #    
-  #    total.lkhd=total.lkhd+log((1-delta.est[iter-1])+delta.est[iter-1]*lkhd.gene[i])
-  #  } # end of i
-  #  cate.stat[g]=2*total.lkhd
-  #  cate.pvalue[g]=pchisq(2*total.lkhd, 1, lower.tail=F)
-  #} # end of g
-  #sum.lkhd=sum(cate.stat)
   ##############################################
   if (num.group>1)
     beta.est=beta.k[(iter-1),]
@@ -250,158 +227,33 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
 #########################################
 #All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)
-All.Anno.Data=read.table("..\\AnnotatedTrans.txt", header=T)
+#All.Anno.Data=read.table("..\\AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\SCZData\\AnnotatedSCZ.txt", header=T)
-N1=4315; N0=4315
+#N1=4315; N0=4315
 #N1=2536; N0=2543
-All.Anno.Data[All.Anno.Data =="."] <- NA
-All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
-Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
-var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
-CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
+#All.Anno.Data[All.Anno.Data =="."] <- NA
+#All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
+#Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+#var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr)
+#CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
 ########################################
 ################ whole genome
 #gene.set=as.character(unique(All.Anno.Data$Gene))
-gene.set=as.character(read.csv("data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+#gene.set=as.character(read.csv("data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
-vart.set=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene.set)])
+#vart.set=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene.set)])
 #cand.data=Anno.Data[which(Anno.Data$ID %in% vart.set),]
-cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
-gene.data=eight.partition(cand.data)
-#{ #i=1
-  overlap.id=gene.data$ID
-  if (length(overlap.id)>0)
-#  {
-    overlap.data=gene.data[gene.data$ID %in% overlap.id,]
-    order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
-    psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
-    delta.init=runif(1); beta.init=runif(actu.num.group)
-    for (j in 1:actu.num.group)
-      order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[j]]=j # re-index the group labels
+
+
+#cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
+#gene.data=eight.partition(cand.data)
+#overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+#order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
+#psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+#delta.init=runif(1); beta.init=runif(actu.num.group)
+#for (j in 1:actu.num.group)
+#  order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[j]]=j # re-index the group labels
     #  delta=runif(1)
-    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
-    cutoff=1
-    #    for (j in 1:actu.num.group)
-    #    {
-    #      if (para.est$beta.stat[j]<1)
-    #        para.est$beta.est[j]=0
-    #      pASD.cons.para.est[(1+psbl.index[j]),((i-1)*2+1)]=para.est$beta.est[j]
-    #      pASD.cons.para.est[(1+psbl.index[j]),((i-1)*2+2)]=para.est$beta.stat[j]
-    
-    #    }
-    ########################## after category selection, enrichment of top 20 genes with denovo genes
-    #    beta.est=pASD.cons.para.est[2:16,((i-1)*2+1)]
-    #    beta.stat=pASD.cons.para.est[2:16,((i-1)*2+2)]
-    #    beta.stat[is.na(beta.stat)]=0
-    #    beta.stat[which(beta.stat<1)]=0
-    #    beta.est[which(beta.stat==0)]=0
-    #    BF.calculation=fixed.beta.func(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, beta=beta.est)
-    #    BF.gene=BF.calculation[[1]]
-    #    order.BF.gene=BF.gene[order(BF.gene$BF, decreasing=T),]
-    #    topgene=as.character(order.BF.gene$Gene[1:20]); totalgene=order.BF.gene$Gene
-    #    count=matrix(nrow=2, ncol=2)
-    #    count[1,1]=length(unique(intersect(top1000denovogene, topgene))); count[1,2]=20
-    #    count[2,1]=length(unique(intersect(top1000denovogene, totalgene))); count[2,2]=length(totalgene)
-    #    burden.summ[i, 1]=fisher.test(count)$estimate; burden.summ[i, 2]=fisher.test(count)$p.value
-    #    burden.summ[i, 3]=count[1,1]; burden.summ[i, 4]=count[2,1]
-    ##########################
-  }
-  #  if (length(overlap.id)==0)
-  #    pASD.cons.para.est[,i]=NA
-}
-##########################
-############# use other methods to find risk genes #################
-gene_var_data=as_tibble(cand.data %>% select(ID, Gene, No.case, No.contr))
-gene=levels(factor(gene_var_data$Gene))
+#  para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
 
-SKATO.pvalue=numeric()
-CMC.pvalue=numeric()
-ASUM.pvalue=numeric()
-Fisher.pvalue=numeric()
-Fisher.adj.pvalue=numeric()
-for (i in 1:length(gene))
-{
-  # i=1
-  cat(i, "is running", "\n")
-  single_gene_var=gene_var_data %>% filter(Gene==gene[i])
-  var_in_gene=levels(factor((single_gene_var%>% select(ID))$ID))
-  No_var=length(var_in_gene)
-  geno=matrix(0,nrow=(N1+N0), ncol=No_var)
-  for (j in 1:No_var)
-  {
-    if (single_gene_var[j,3]>0)
-    {
-      case_var_pos=sample(seq(1,N1),as.numeric(single_gene_var[j,3]), replace=F)
-      geno[case_var_pos,j]=1
-    }
-    if (single_gene_var[j,4]>0)
-    {
-      contr_var_pos=N1+sample(seq(1,N0),as.numeric(single_gene_var[j,4]), replace=F)
-      geno[contr_var_pos,j]=1
-    }
-    
-  }  # end of j
-  
-  pheno_geno=list(pheno=c(rep(1,N1), rep(0, N0)), geno=geno)
-  
-  ############ SKATO
-  library(SKAT)
-  library(AssotesteR)
-  detach("package:AssotesteR", unload=TRUE)
-  obj<-SKAT_Null_Model(pheno_geno$pheno~ 1, out_type="D")  # without covariates
-  if (ncol(pheno_geno$geno)>1)
-    SKATO.pvalue[i]=SKAT(pheno_geno$geno, obj, method="SKATO")$p.value
-  if (ncol(pheno_geno$geno)==1)
-    SKATO.pvalue[i]=NA
-  
-  library(AssotesteR)
-  ############ CMC
-  if (ncol(pheno_geno$geno)>1)
-  {
-    cmc.test=CMC(pheno_geno$pheno, pheno_geno$geno, maf=10^(-4)*c(0.05, 0.2, 0.5), perm=10000)
-    CMC.pvalue[i]=cmc.test$asym.pval
-  }
-  if (ncol(pheno_geno$geno)==1)
-    CMC.pvalue[i]=NA
-  
-  ############  ASUM test
-  if (ncol(pheno_geno$geno)>1)
-  {
-    ASUM.test=ASUM(pheno_geno$pheno, pheno_geno$geno, perm=10000)
-    if (ASUM.test$asum.stat>0)
-      ASUM.pvalue[i]=ASUM.test$perm.pval
-    if (ASUM.test$asum.stat<0)
-      ASUM.pvalue[i]=1
-    
-  }
-  if (ncol(pheno_geno$geno)==1)
-    ASUM.pvalue[i]=NA
-  
-  
-  ########### Burden test
-  cont_matrix=matrix(nrow=2, ncol=2)
-  cont_matrix[1,]=c(sum(single_gene_var$No.case), sum(single_gene_var$No.contr))
-  cont_matrix[2,]=c(N1, N0)
-  Fisher.pvalue[i]=fisher.test(cont_matrix)$p.value
-  
-  ########## Burden test for every category
-  single_gene_cate=gene.data[gene.data$Gene==gene[i],]
-  var_cate=unique(single_gene_cate$group.index)
-  cate_pvalue=numeric()
-  for (j in 1:length(var_cate))
-  {
-    cate_data=single_gene_cate[single_gene_cate$group.index==var_cate[j],]
-    cate_pvalue[j]=fisher.test(matrix(c(sum(cate_data$No.case), N1, sum(cate_data$No.contr), N0), nrow=2))$p.value
-  }
-  Fisher.adj.pvalue[i]=min(p.adjust(cate_pvalue, method = "bonferroni", n = length(cate_pvalue)))
-  
-}  # end of j
-
-all_pvalue=data.frame(Gene=gene,SKATO.pvalue=SKATO.pvalue, CMC.pvalue=CMC.pvalue, ASUM.pvalue=ASUM.pvalue, Fisher.pvalue=Fisher.pvalue, Fisher.adj.pvalue=Fisher.adj.pvalue)
-#all_pvalue[is.na(all_pvalue)] <- 1
-all_pvalue_adj=all_pvalue
-for (i in 1:ncol(all_pvalue))
-  all_pvalue_adj[,i]=p.adjust(all_pvalue[,i], method="BH", n=length(all_pvalue[,i]))
-fdr.level=0.05
-cbind(cons_post, all_pvalue_adj)
 

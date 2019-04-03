@@ -232,14 +232,16 @@ Features=rownames(summy)
 OR=summy[,1]; pval=summy[,2]
 result.summary=data.frame(Features=Features, OR=OR, pval=pval)
 
-#pdf("../../Figure/burden_single_feature.pdf")
+pdf("../../Figure/burden_single_feature.pdf")
 ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
   geom_bar(stat="identity")+
   ylab("")+xlab("Features")+ ggtitle("Burden analysis of single features")+
-  geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
+  geom_point(aes(x=Features, y=-log(pval, base=10),fill=Features, size=-log(pval, base=10)),
            stat="identity")+coord_flip()+geom_hline(yintercept=1,linetype="dashed")+
-  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red") 
-#dev.off()
+  guides(fill = FALSE)+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+   theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
+dev.off()
 ```
 
 
@@ -683,11 +685,13 @@ MIRAGE_summary=comb.summ.MIRAGE
 pick.feature=1:6
 num.feature=length(pick.feature)
 burden_mirage_pvalue=tibble(pvalue=c(Burden_summary[pick.feature,2], MIRAGE_summary[pick.feature,2]), cate=c(rownames(Burden_summary)[pick.feature], c(rownames(Burden_summary)[pick.feature])), method=c(rep("Burden", num.feature), rep("MIRAGE", num.feature)))
+pdf("../../Figure/burden_pvalue_comparison.pdf")
 ggplot(burden_mirage_pvalue, aes(x=cate, y=-log(pvalue, base=10), fill=method))+
   geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab("-log(pvalue, base=10)")+
   ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
   coord_flip()
-  
+dev.off()  
 ```
 
 

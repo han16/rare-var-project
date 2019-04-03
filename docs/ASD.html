@@ -1037,15 +1037,18 @@ axis(2,  las=2, at=seq(1,11), labels=axis.labels, cex.axis=0.5)
 OR=summy[,1]; pval=summy[,2]
 result.summary=data.frame(Features=Features, OR=OR, pval=pval)
 
-#pdf(&quot;../../Figure/burden_single_feature.pdf&quot;)
+pdf(&quot;../../Figure/burden_single_feature.pdf&quot;)
 ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
   geom_bar(stat=&quot;identity&quot;)+
   ylab(&quot;&quot;)+xlab(&quot;Features&quot;)+ ggtitle(&quot;Burden analysis of single features&quot;)+
-  geom_point(aes(x=Features, y=-log(pval, base=10),color=Features, size=-log(pval, base=10)),
+  geom_point(aes(x=Features, y=-log(pval, base=10),fill=Features, size=-log(pval, base=10)),
            stat=&quot;identity&quot;)+coord_flip()+geom_hline(yintercept=1,linetype=&quot;dashed&quot;)+
-  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;) </code></pre>
-<p><img src="ASD_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<pre class="r"><code>#dev.off()</code></pre>
+  guides(fill = FALSE)+
+  geom_hline(yintercept=-log(0.05, base=10), linetype=&quot;dashed&quot;, color = &quot;red&quot;)+
+   theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
 </div>
 <div id="lof-in-different-gene-set" class="section level3">
 <h3>LoF in different gene set</h3>
@@ -1489,7 +1492,8 @@ NaN
 <h2>Combined feature analysis</h2>
 <div id="combination-of-gene-setafexon" class="section level3">
 <h3>combination of gene set+AF+exon</h3>
-<p><img src="ASD_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre><code>## png 
+##   2</code></pre>
 <p>Burden test: one sided two sample Poisson test, MIRAGE: estimate parameters, then do likelihood ratio test.</p>
 <p><strong>Feature combinations: exon/LoF/missense+gene+MAF cutoff</strong></p>
 <pre class="r"><code>kable(comb.summ[,1:4], caption=&quot;Combined Annotations&quot;, &quot;html&quot;)%&gt;%
