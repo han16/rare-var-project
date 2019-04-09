@@ -10,6 +10,8 @@ library(gridExtra)
 library(matrixStats)
 library(plotROC)
 library(grid)
+library(tidyverse)
+library(cowplot)
 ```
 
 
@@ -831,6 +833,42 @@ ggplot(summary, aes(x=para, y=mean, fill=method)) +
   #ylim(0.05,0.15)+
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
 ```
+
+
+
+### type I error
+
+#### Only variant level, no gene level
+
+To investigate the type one error, we simulated 100 independent data sets, each with $N1=N0=3000$, 100 variants in one group; no risk variants, i.e., $\eta=0$ and other parameters are pretty the same as before 
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma= 1$.
+
+
+
+
+```{r, echo=F}
+load("../output/Simulation_OneGene_OneNonrisk_VarGroup.RData")
+summary=as_tibble(summary)
+mirage_fisher=data.frame(pvalue=c(summary$MIRAGE.pvalue,summary$Fisher.pvalue), method=c(rep("MIRAGE", nrow(summary)), rep("Burden", nrow(summary))))
+g1=ggplot(summary, aes(x=eta_est))+
+  geom_density()+
+  scale_fill_manual(values=c("#00BFC4"))+
+  xlab(expression(paste(hat(eta))))
+g1
+
+g2=ggplot(mirage_fisher, aes(x=pvalue, fill=method))+
+  geom_histogram(position="dodge2")+
+  xlab("p value")
+g2
+
+#plot_grid(g1, g2)
+#ggplot(mirage_fisher, aes(x=pvalue, colour=method))+
+#geom_freqpoly()
+```
+
+Burden test: use fisher exact test
+MIRAGE: first estimate parameter $\eta$, then do likelihood ratio test 
+
 
 
 ## Logistic priors  

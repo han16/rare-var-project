@@ -314,6 +314,21 @@ div.tocify {
 </div>
 
 
+<pre><code>## -- Attaching packages ---------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v tibble  1.4.2     v purrr   0.2.5
+## v tidyr   0.8.2     v dplyr   0.7.7
+## v readr   1.1.1     v stringr 1.3.1
+## v tibble  1.4.2     v forcats 0.3.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------- tidyverse_conflicts() --
+## x dplyr::combine() masks gridExtra::combine()
+## x dplyr::count()   masks matrixStats::count()
+## x dplyr::filter()  masks stats::filter()
+## x dplyr::lag()     masks stats::lag()</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -393,6 +408,17 @@ div.tocify {
 <p><strong>Parameter estimate</strong></p>
 <p><span class="math inline">\(\beta_1=0.05,\beta_2=0.2, \beta_3=0.5, \delta=0.1\)</span></p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+</div>
+</div>
+<div id="type-i-error" class="section level3">
+<h3>type I error</h3>
+<div id="only-variant-level-no-gene-level" class="section level4">
+<h4>Only variant level, no gene level</h4>
+<p>To investigate the type one error, we simulated 100 independent data sets, each with <span class="math inline">\(N1=N0=3000\)</span>, 100 variants in one group; no risk variants, i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma= 1\)</span>.</p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
+<p>Burden test: use fisher exact test MIRAGE: first estimate parameter <span class="math inline">\(\eta\)</span>, then do likelihood ratio test</p>
 </div>
 </div>
 </div>
