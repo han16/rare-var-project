@@ -854,7 +854,7 @@ g1=ggplot(summary, aes(x=eta_est))+
   geom_density()+
   scale_fill_manual(values=c("#00BFC4"))+
   xlab(expression(paste(hat(eta))))
-g1
+#g1
 
 g2=ggplot(mirage_fisher, aes(x=pvalue, fill=method))+
   geom_histogram(position="dodge2")+
