@@ -81,7 +81,7 @@ num.group=1
 split.ratio=c(0, 1)
 pi=0
 max.run=100
-all.pi=matrix(nrow=max.run, ncol=(num.group+1))
+all.pi=matrix(nrow=max.run, ncol=1)
 all.teststat=numeric()
 pvalue.fish=numeric()
 all.pvalue=numeric()
@@ -193,7 +193,7 @@ for (run in 1:max.run) {
   plot(beta.k, ylim=c(0, 1), main=expression(paste(eta)), xlab="Iteration index", ylab="")
   abline(h=pi, col="red")
   
-  all.pi[run]=c(beta.k[iter-1])
+  all.pi[run]=beta.k[iter-1]
   
   ###################### store statistics for further analysis
   Gene.Risk.Status[[run]]=Ui
@@ -204,7 +204,7 @@ for (run in 1:max.run) {
 } # end of run
 ######################
 
-
+summary=tibble(eta_est=all.pi, MIRAGE.pvalue=MIRAGE.pvalue, Fisher.pvalue=Fisher.pvalue, SKATO.pvalue=SKATO.pvalue)
 
 end.time=date()
 cat("program ends at", date(),"\n\n")

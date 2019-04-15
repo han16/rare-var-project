@@ -847,7 +847,7 @@ $\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma= 1$.
 
 
 ```{r, echo=F}
-load("../output/Simulation_OneGene_OneNonrisk_VarGroup.RData")
+load("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup.RData")
 summary=as_tibble(summary)
 mirage_fisher=data.frame(pvalue=c(summary$MIRAGE.pvalue,summary$Fisher.pvalue), method=c(rep("MIRAGE", nrow(summary)), rep("Burden", nrow(summary))))
 g1=ggplot(summary, aes(x=eta_est))+
@@ -869,6 +869,81 @@ g2
 Burden test: use fisher exact test
 MIRAGE: first estimate parameter $\eta$, then do likelihood ratio test 
 
+
+
+
+To investigate the type one error, we simulated one independent data set,  with $N1=N0=3000$, 1000 genes are all non-risk genes. Every gene has 100 variants in three non-risk variant  groups; no risk variant groups i.e., $\eta=0$ and other parameters are pretty the same as before 
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=3,4,5,\sigma= 1$.
+
+
+
+```{r, echo=F}
+load("../output/TypeOneError/All_Nonrisk_Gene_Gammamean3.RData")
+pvalue_gammamean3=tibble(mirage.pvalue=mirage.pvalue, fisher.pvalue=fisher.pvalue, skato.pvalue=skat.pvalue)
+pvalue_gammamean3_gather=pvalue_gammamean3 %>% gather(method, pvalue, mirage.pvalue:skato.pvalue)
+ggplot(pvalue_gammamean3_gather, aes(x=pvalue, y=(..count..)/sum(..count..)))+
+#  geom_histogram()+
+  geom_histogram(position="dodge2")+
+  facet_grid(~method)+
+  xlab("p value")+
+  ylab("Proportion")
+
+eta_est_gammamean3=as_tibble(beta.k)
+
+#plot_grid(g1, g2)
+#ggplot(mirage_fisher, aes(x=pvalue, colour=method))+
+#geom_freqpoly()
+```
+
+
+
+### Bayesian FDR control 
+
+
+Simulated one data set, $N1=N0=3000$, 10\% of 1000 genes are risk genes. Every gene has 100 variants in three variant  groups with $\eta_1=0.05, \eta_2=0.2, \eta_3=0.5$ and the proportion of variants are 30\%, 40\% and 30\%. Other parameters are pretty the same as before 
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
+
+
+```{r, echo=F}
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr=tibble(tau=tau, fdr=FDR)%>%drop_na()  # drop rows with NA
+
+ggplot(tau_fdr)+
+  geom_point(aes(x=tau, y=fdr))+
+  xlab(expression(paste(tau)))+ylab("FDR")
+
+```
+
+
+When $FDR<0.1, \tau>0.5$
+
+```{r, echo=T}
+(No.Disc=cons_post %>% filter(post_prob>0.5) %>% tally())
+
+(TP=cons_post %>% filter(post_prob>0.5) %>% filter(RiskStatus==1) %>% tally())
+
+FDR=1-TP/No.Disc
+FDR
+```
 
 
 ## Logistic priors  
