@@ -881,15 +881,46 @@ $\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=3,4,5,\sigma= 1
 load("../output/TypeOneError/All_Nonrisk_Gene_Gammamean3.RData")
 pvalue_gammamean3=tibble(mirage.pvalue=mirage.pvalue, fisher.pvalue=fisher.pvalue, skato.pvalue=skat.pvalue)
 pvalue_gammamean3_gather=pvalue_gammamean3 %>% gather(method, pvalue, mirage.pvalue:skato.pvalue)
-ggplot(pvalue_gammamean3_gather, aes(x=pvalue, y=(..count..)/sum(..count..)))+
+g1=ggplot(pvalue_gammamean3_gather, aes(x=pvalue, y=(..count..)/sum(..count..)))+
 #  geom_histogram()+
   geom_histogram(position="dodge2")+
   facet_grid(~method)+
   xlab("p value")+
-  ylab("Proportion")
+  ylab("Proportion")+
+  ggtitle(expression(paste(bar(gamma), "=3")))
 
-eta_est_gammamean3=as_tibble(beta.k)
+#eta_est_gammamean3=as_tibble(beta.k)
 
+load("../output/TypeOneError/All_Nonrisk_Gene_Gammamean4.RData")
+pvalue_gammamean3=tibble(mirage.pvalue=mirage.pvalue, fisher.pvalue=fisher.pvalue, skato.pvalue=skat.pvalue)
+pvalue_gammamean3_gather=pvalue_gammamean3 %>% gather(method, pvalue, mirage.pvalue:skato.pvalue)
+g2=ggplot(pvalue_gammamean3_gather, aes(x=pvalue, y=(..count..)/sum(..count..)))+
+#  geom_histogram()+
+  geom_histogram(position="dodge2")+
+  facet_grid(~method)+
+  xlab("p value")+
+  ylab("Proportion")+
+  ggtitle(expression(paste(bar(gamma), "=4")))
+
+
+
+load("../output/TypeOneError/All_Nonrisk_Gene_Gammamean5.RData")
+pvalue_gammamean3=tibble(mirage.pvalue=mirage.pvalue, fisher.pvalue=fisher.pvalue, skato.pvalue=skat.pvalue)
+pvalue_gammamean3_gather=pvalue_gammamean3 %>% gather(method, pvalue, mirage.pvalue:skato.pvalue)
+g3=ggplot(pvalue_gammamean3_gather, aes(x=pvalue, y=(..count..)/sum(..count..)))+
+#  geom_histogram()+
+  geom_histogram(position="dodge2")+
+  facet_grid(~method)+
+  xlab("p value")+
+  ylab("Proportion")+
+  ggtitle(expression(paste(bar(gamma), "=5")))
+
+
+#grid.arrange(g1, g2, g3, nrow=3) 
+
+g1
+g2
+g3
 #plot_grid(g1, g2)
 #ggplot(mirage_fisher, aes(x=pvalue, colour=method))+
 #geom_freqpoly()
