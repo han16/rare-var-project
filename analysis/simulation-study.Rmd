@@ -50,6 +50,120 @@ $\pi(\eta)$ is the link function between annotations and prior probability and t
 
 ## Disjoint group priors 
 
+
+### Power comparison between MIRAGE-VS and other methods
+
+We simulated 100  variants in one category. $N1=N0=1000, 3000, 5000$, $\eta=0.1, 0.2, 0.3, 0.4$, $\bar{\gamma}=5$,  $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. We independetly run Monte Carlo  100 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO.  Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants $\hat{\eta}$, and performs the likelihood ratio test to get p value.  
+
+
+
+```{r, echo=F}
+sig.cutoff=0.05
+########### eta=0.1
+SS1000eta01=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize1000_eta0.1.RData")
+SS3000eta01=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize3000_eta0.1.RData")
+SS5000eta01=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize5000_eta0.1.RData")
+SS1000eta01_mirage=as.numeric(as_tibble(SS1000eta01) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS1000eta01_burden=as.numeric(as_tibble(SS1000eta01) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS1000eta01_skato=as.numeric(as_tibble(SS1000eta01) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS3000eta01_mirage=as.numeric(as_tibble(SS3000eta01) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS3000eta01_burden=as.numeric(as_tibble(SS3000eta01) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS3000eta01_skato=as.numeric(as_tibble(SS3000eta01) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS5000eta01_mirage=as.numeric(as_tibble(SS5000eta01) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS5000eta01_burden=as.numeric(as_tibble(SS5000eta01) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS5000eta01_skato=as.numeric(as_tibble(SS5000eta01) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+powereta01=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta01_mirage, SS3000eta01_mirage, SS5000eta01_mirage), Burden=c(SS1000eta01_burden, SS3000eta01_burden, SS5000eta01_burden), SKATO=c(SS1000eta01_skato, SS3000eta01_skato, SS5000eta01_skato))
+powereta01_gather=powereta01 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+g1=ggplot(powereta01_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab("N1=N0")+ 
+  ylab("True positive rate")+
+  ggtitle(expression(paste(eta, "=0.1")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+
+########### eta=0.2
+SS1000eta02=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize1000_eta0.2.RData")
+SS3000eta02=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize3000_eta0.2.RData")
+SS5000eta02=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize5000_eta0.2.RData")
+SS1000eta02_mirage=as.numeric(as_tibble(SS1000eta02) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS1000eta02_burden=as.numeric(as_tibble(SS1000eta02) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS1000eta02_skato=as.numeric(as_tibble(SS1000eta02) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS3000eta02_mirage=as.numeric(as_tibble(SS3000eta02) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS3000eta02_burden=as.numeric(as_tibble(SS3000eta02) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS3000eta02_skato=as.numeric(as_tibble(SS3000eta02) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS5000eta02_mirage=as.numeric(as_tibble(SS5000eta02) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS5000eta02_burden=as.numeric(as_tibble(SS5000eta02) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS5000eta02_skato=as.numeric(as_tibble(SS5000eta02) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+powereta02=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta02_mirage, SS3000eta02_mirage, SS5000eta02_mirage), Burden=c(SS1000eta02_burden, SS3000eta02_burden, SS5000eta02_burden), SKATO=c(SS1000eta02_skato, SS3000eta02_skato, SS5000eta02_skato))
+powereta02_gather=powereta02 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+g2=ggplot(powereta02_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab("N1=N0")+ 
+  ylab("True positive rate")+
+  ggtitle(expression(paste(eta, "=0.2")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+#g2
+
+########### eta=0.3
+SS1000eta03=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize1000_eta0.3.RData")
+SS3000eta03=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize3000_eta0.3.RData")
+SS5000eta03=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize5000_eta0.3.RData")
+SS1000eta03_mirage=as.numeric(as_tibble(SS1000eta03) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS1000eta03_burden=as.numeric(as_tibble(SS1000eta03) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS1000eta03_skato=as.numeric(as_tibble(SS1000eta03) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS3000eta03_mirage=as.numeric(as_tibble(SS3000eta03) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS3000eta03_burden=as.numeric(as_tibble(SS3000eta03) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS3000eta03_skato=as.numeric(as_tibble(SS3000eta03) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS5000eta03_mirage=as.numeric(as_tibble(SS5000eta03) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS5000eta03_burden=as.numeric(as_tibble(SS5000eta03) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS5000eta03_skato=as.numeric(as_tibble(SS5000eta03) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+powereta03=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta03_mirage, SS3000eta03_mirage, SS5000eta03_mirage), Burden=c(SS1000eta03_burden, SS3000eta03_burden, SS5000eta03_burden), SKATO=c(SS1000eta03_skato, SS3000eta03_skato, SS5000eta03_skato))
+powereta03_gather=powereta03 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+g3=ggplot(powereta03_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab("N1=N0")+ 
+  ylab("True positive rate")+
+  ggtitle(expression(paste(eta, "=0.3")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+#g3
+
+########### eta=0.4
+SS1000eta04=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize1000_eta0.4.RData")
+SS3000eta04=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize3000_eta0.4.RData")
+SS5000eta04=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize5000_eta0.4.RData")
+SS1000eta04_mirage=as.numeric(as_tibble(SS1000eta04) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS1000eta04_burden=as.numeric(as_tibble(SS1000eta04) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS1000eta04_skato=as.numeric(as_tibble(SS1000eta04) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS3000eta04_mirage=as.numeric(as_tibble(SS3000eta04) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS3000eta04_burden=as.numeric(as_tibble(SS3000eta04) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS3000eta04_skato=as.numeric(as_tibble(SS3000eta04) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+SS5000eta04_mirage=as.numeric(as_tibble(SS5000eta04) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+SS5000eta04_burden=as.numeric(as_tibble(SS5000eta04) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+SS5000eta04_skato=as.numeric(as_tibble(SS5000eta04) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+powereta04=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta04_mirage, SS3000eta04_mirage, SS5000eta04_mirage), Burden=c(SS1000eta03_burden, SS3000eta03_burden, SS5000eta04_burden), SKATO=c(SS1000eta04_skato, SS3000eta04_skato, SS5000eta04_skato))
+powereta04_gather=powereta04 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+g4=ggplot(powereta04_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab("N1=N0")+ 
+  ylab("True positive rate")+
+  ggtitle(expression(paste(eta, "=0.4")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+#g4
+
+grid.arrange(g1, g2, g3, g4, nrow=2)
+
+```
+
+
 ###  All genes are risk genes, fix $\delta=1$, only estimate $\eta$
 
 
@@ -715,15 +829,15 @@ roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -m
 p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
-p=p.basic+
-  annotate("text", x =rep(0.85, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=3)+
+p_delta0.1=p.basic+
+  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.1")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
 theme(axis.text.y= element_text(size=6))+
   theme(axis.text = element_text(size = 1))
-p
+p_delta0.1
 ```
 
 
@@ -740,30 +854,35 @@ cmc_pvalue=CMC.pvalue[[i]]
 asum_pvalue=ASUM.pvalue[[i]]
 fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 fisher.adj.pvalue=numeric()
+fisher.combine.pvalue=numeric()
 for (i in 1:nrow(fisher.separate.pvalue))
+{
   fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
+  fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+}  
   # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
 
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj"), each=num_run)
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
 
-roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue), method=method)
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
 p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
-p1=p1.basic+
-  annotate("text", x =rep(0.7, 7), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
+p1_delta0.01=p1.basic+
+  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.01")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
 theme(axis.text.y= element_text(size=6))+
   theme(axis.text = element_text(size = 1))
 
+################################ delta=0.05
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
-load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/6methods_delta0.05_gammamean335.RData")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/6methods_delta0.05_gammamean335_2.RData")
 i=1
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
@@ -791,18 +910,68 @@ roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -m
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
-pdf("../../Figure/power_comparison_different_methods.pdf")
-p2=p2.basic+
-  annotate("text", x =rep(0.85, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=3)+
+#pdf("../../Figure/power_comparison_different_methods.pdf")
+p2_delta0.05=p2.basic+
+  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.34, 0.4), 
+           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.05")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
 theme(axis.text.y= element_text(size=6))+
   theme(axis.text = element_text(size = 1))
-p2
+p2_delta0.05
 #grid.arrange(p1, p2, top=grid.text("ROC curves"), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000"))), nrow=1)
-dev.off()
+#dev.off()
+
+#############################
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/6methods_delta0.2_gammamean335.RData")
+i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+cmc_pvalue=CMC.pvalue[[i]]
+asum_pvalue=ASUM.pvalue[[i]]
+fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
+fisher.adj.pvalue=numeric()
+fisher.combine.pvalue=numeric()
+for (i in 1:nrow(fisher.separate.pvalue))
+{
+  fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
+  fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+}  
+  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
+
+roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
+p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+#pdf("../../Figure/power_comparison_different_methods.pdf")
+p_delta0.2=p2.basic+
+  annotate("text", x =rep(0.7,8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, "=0.2")))+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  theme(axis.text = element_text(size = 1))
+p_delta0.2
+```
+
+```{r, echo=F}
+grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
+
+#p1_delta0.01
+#p2_delta0.05
+#p_delta0.1
+#p_delta0.2
 ```
 
 **Parameter estimate**
@@ -936,6 +1105,7 @@ $\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
 
 
 ```{r, echo=F}
+################## true gamma.bar=5, use true value ###############
 rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
 load("../output/BayesianFDR/Mixed_Gene_Gammamean5.delta0.1.RData")
 BF.gene=BF.gene[complete.cases(BF.gene), ]
@@ -945,6 +1115,13 @@ Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
 prior_cons=0.1
 cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
 cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+(No.Disc=cons_post %>% filter(post_prob>0.5) %>% tally())
+
+(TP=cons_post %>% filter(post_prob>0.5) %>% filter(RiskStatus==1) %>% tally())
+
+FDR=1-TP/No.Disc
+FDR
+
 
 tau=seq(0, 0.999, by=0.001)
 num_pred=NULL
@@ -956,25 +1133,109 @@ num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
 false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
 FDR[i]=false_disc[i]/num_pred[i]
 }
-tau_fdr=tibble(tau=tau, fdr=FDR)%>%drop_na()  # drop rows with NA
+tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
 
-ggplot(tau_fdr)+
-  geom_point(aes(x=tau, y=fdr))+
-  xlab(expression(paste(tau)))+ylab("FDR")
+#g1=ggplot(tau_fdr)+
+#  geom_point(aes(x=tau, y=fdr))+
+#  xlab(expression(paste(tau)))+ylab("FDR")
 
+
+##################### true gamma.bar=5, use gamma.bar=3 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5_useGammabar3.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr3=tibble(tau=tau, bar3_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+
+(No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally())
+
+(TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally())
+
+FDR=1-TP/No.Disc
+FDR
+#g2=ggplot(tau_fdr)+
+#  geom_point(aes(x=tau, y=fdr))+
+#  xlab(expression(paste(tau)))+ylab("FDR")
+
+
+##################### true gamma.bar=5, use gamma.bar=4 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5_useGammabar4.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr4=tibble(tau=tau, bar4_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+(No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally())
+
+(TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally())
+
+FDR=1-TP/No.Disc
+FDR
+
+#g3=ggplot(tau_fdr)+
+#  geom_point(aes(x=tau, y=fdr))+
+#  xlab(expression(paste(tau)))+ylab("FDR")
+
+#plot_grid(g1, g2, g3, nrow=1)
+tau_fdr_combine=full_join(full_join(tau_fdr3, tau_fdr4), tau_fdr5)
+tau_fdr_combine_tidy=tau_fdr_combine %>% gather(gamma.bar, fdr, bar3_fdr:bar5_fdr)
+
+ggplot(tau_fdr_combine_tidy)+
+  geom_point(aes(x=tau, y=fdr, color=gamma.bar))+
+  xlab(expression(paste(tau)))+ylab("FDR")+
+  ggtitle(expression(paste("True ", bar(gamma), "=5")))
 ```
+
+
 
 
 When $FDR<0.1, \tau>0.5$
 
-```{r, echo=T}
-(No.Disc=cons_post %>% filter(post_prob>0.5) %>% tally())
 
-(TP=cons_post %>% filter(post_prob>0.5) %>% filter(RiskStatus==1) %>% tally())
+true $\bar{\gamma}=5$|No.Gene picked | No. true risk gene | FDR 
+---------------|---------------|-------------------|-----
+  5 | 84 | 72 | 9.76%
+  4| 87 | 74 | 14.94%
+3 | 71 | 67 | 5.63%  
+  
 
-FDR=1-TP/No.Disc
-FDR
-```
 
 
 ## Logistic priors  

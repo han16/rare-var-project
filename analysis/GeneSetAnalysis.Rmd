@@ -414,6 +414,16 @@ Table: Number of genes identified by different methods at different FDR levels.
 
 
 
+method    | FDR<0.2  | FDR<0.3  |
+---------|--------|--------------
+MIRAGE  | 3 | 9
+SKATO   | 0  | 0 
+CMC  | 0 | 0 
+Burden | 0 | 0 
+Burden.adj | 0 | 0 
+Table: Number of genes identified by different methods at different FDR levels. 
+
+
 
 ### Cons: Estimate $\eta_i$
 
@@ -623,7 +633,7 @@ para.est.sum[1,]=para.est
 para.est.sum[2,]=para.summ[,1]
 para.est.sum[3,]=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17)
 colnames(para.est.sum)=seq(1,8)
-barplot(para.est.sum, beside=T, col=c("darkblue", "red", "green"), legend=c(expression(paste("fixed common", delta, "=0.1")), expression(paste("gene specific ", delta[i])), expression(paste(hat(delta), "=0.18"))), ylim=c(0,1), ylab=expression(paste(hat(beta))), cex.lab=0.7) 
+barplot(para.est.sum, beside=T, col=c("darkblue", "red", "green"), legend=c(expression(paste("fixed common", delta, "=0.1")), expression(paste("gene specific ", delta[i])), expression(paste(hat(delta), "=0.18"))), ylim=c(0,1), ylab=expression(paste(hat(eta))), cex.lab=0.7) 
 #dev.off()
 ```
 

@@ -314,12 +314,12 @@ div.tocify {
 </div>
 
 
-<pre><code>## -- Attaching packages ---------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## -- Attaching packages -------------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
 <pre><code>## v tibble  1.4.2     v purrr   0.2.5
 ## v tidyr   0.8.2     v dplyr   0.7.7
 ## v readr   1.1.1     v stringr 1.3.1
 ## v tibble  1.4.2     v forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts ----------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x dplyr::combine() masks gridExtra::combine()
 ## x dplyr::count()   masks matrixStats::count()
 ## x dplyr::filter()  masks stats::filter()
@@ -357,6 +357,11 @@ div.tocify {
 </div>
 <div id="disjoint-group-priors" class="section level2">
 <h2>Disjoint group priors</h2>
+<div id="power-comparison-between-mirage-vs-and-other-methods" class="section level3">
+<h3>Power comparison between MIRAGE-VS and other methods</h3>
+<p>We simulated 100 variants in one category. <span class="math inline">\(N1=N0=1000, 3000, 5000\)</span>, <span class="math inline">\(\eta=0.1, 0.2, 0.3, 0.4\)</span>, <span class="math inline">\(\bar{\gamma}=5\)</span>, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. We independetly run Monte Carlo 100 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO. Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants <span class="math inline">\(\hat{\eta}\)</span>, and performs the likelihood ratio test to get p value.</p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
 <div id="all-genes-are-risk-genes-fix-delta1-only-estimate-eta" class="section level3">
 <h3>All genes are risk genes, fix <span class="math inline">\(\delta=1\)</span>, only estimate <span class="math inline">\(\eta\)</span></h3>
 <ul>
@@ -376,13 +381,13 @@ div.tocify {
 <p>For every simulated risk gene, three different methods are used to test the power of detecting risk genes. Significance level of 0.05 is used as cutoff. Burnden test looks at the variants in cases and controls and performs the enrichment analysis for every gene. SKATO tests the significance of effect size and generate p value without covariates. MIRAGE-LRT first estimates the parameter <span class="math inline">\(\eta\)</span>, then does a likelihood ratio test and returns p value by <span class="math inline">\(\chi^2_k\)</span> (<span class="math inline">\(k\)</span> is the number of unknown parameters <span class="math inline">\(\eta\)</span>).</p>
 <p><strong>Case 1: every risk gene only has one risk variant group with the proportion of <span class="math inline">\(\eta\)</span> and fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta=0.1, 0.2, 0.3\)</span> risk variants, but the actural <span class="math inline">\(\eta\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\bar{\gamma}=5\)</span>. For every <span class="math inline">\(\eta\)</span>, perform 100 independent runs.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p><strong>Case 2: every risk gene has multiple risk variant groups with varying proportion of <span class="math inline">\(\eta\)</span> and fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variant, the second has 40% and the rest 30% are in the third group. In each group of every gene, the proportion of risk genes <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 respectively. <span class="math inline">\(\bar{\gamma}=2, 3,4, 5\)</span>. For every <span class="math inline">\(\bar{\gamma}\)</span>, perform 100 independent runs.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p><strong>Case 3: every risk gene has multiple risk variant groups with varying proportion of <span class="math inline">\(\eta\)</span> and varying <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and every risk category has its own <span class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have. Perform 100 independent runs.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="mixture-of-risk-genes-and-non-risk-genes-0delta1-estimate-both-eta-delta" class="section level3">
 <h3>Mixture of risk genes and non-risk genes <span class="math inline">\(0&lt;\delta&lt;1\)</span>, estimate both <span class="math inline">\(\eta, \delta\)</span></h3>
@@ -391,23 +396,23 @@ div.tocify {
 <h4>Power comparison</h4>
 <p><strong>case 1: one risk gene has only one risk variant category with fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta=0.03, 0.07, 0.1, 0.2\)</span> risk variants, but the actural <span class="math inline">\(\eta\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\delta=0.5\)</span>, i.e. half genes are risk genes and the rest half are nonrisk genes. <span class="math inline">\(\bar{\gamma}=5\)</span>.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p><strong>case2: one risk gene has multiple risk variant categories with group specific <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.5\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and every risk category has its own <span class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.1, 0.2, 0.3, 0.4\)</span>. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.05, 0.2, 0.5 and every risk category has its own <span class="math inline">\(\bar{\gamma}\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
 <p><strong>burden test: for every gene, use all variants in cases and control</strong></p>
 <p><span class="math inline">\(\bar{\gamma}=1, 3,5\)</span></p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p><strong>burden-adj: for every gene, compute p values for 3 variant categories, adjust p values by bonferroni correction and take the minimum</strong></p>
 <p><span class="math inline">\(\bar{\gamma}=3,3,5\)</span>. burden-comb: use Fisher method to comine p values from 3 independent tests.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-<pre><code>## png 
-##   2</code></pre>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-20-1.png" width="672" /><img src="simulation-study_files/figure-html/unnamed-chunk-20-2.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p><strong>Parameter estimate</strong></p>
 <p><span class="math inline">\(\beta_1=0.05,\beta_2=0.2, \beta_3=0.5, \delta=0.1\)</span></p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 </div>
 <div id="type-i-error" class="section level3">
@@ -416,36 +421,84 @@ div.tocify {
 <h4>Only variant level, no gene level</h4>
 <p>To investigate the type one error, we simulated 100 independent data sets, each with <span class="math inline">\(N1=N0=3000\)</span>, 100 variants in one group; no risk variants, i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma= 1\)</span>.</p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>Burden test: use fisher exact test MIRAGE: first estimate parameter <span class="math inline">\(\eta\)</span>, then do likelihood ratio test</p>
 <p>To investigate the type one error, we simulated one independent data set, with <span class="math inline">\(N1=N0=3000\)</span>, 1000 genes are all non-risk genes. Every gene has 100 variants in three non-risk variant groups; no risk variant groups i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=3,4,5,\sigma= 1\)</span>.</p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-24-2.png" width="672" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-22-3.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-24-3.png" width="672" /></p>
 </div>
 </div>
 <div id="bayesian-fdr-control" class="section level3">
 <h3>Bayesian FDR control</h3>
 <p>Simulated one data set, <span class="math inline">\(N1=N0=3000\)</span>, 10% of 1000 genes are risk genes. Every gene has 100 variants in three variant groups with <span class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and the proportion of variants are 30%, 40% and 30%. Other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1\)</span>.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<p>When <span class="math inline">\(FDR&lt;0.1, \tau&gt;0.5\)</span></p>
-<pre class="r"><code>(No.Disc=cons_post %&gt;% filter(post_prob&gt;0.5) %&gt;% tally())</code></pre>
 <pre><code>## # A tibble: 1 x 1
 ##       n
 ##   &lt;int&gt;
 ## 1    82</code></pre>
-<pre class="r"><code>(TP=cons_post %&gt;% filter(post_prob&gt;0.5) %&gt;% filter(RiskStatus==1) %&gt;% tally())</code></pre>
 <pre><code>## # A tibble: 1 x 1
 ##       n
 ##   &lt;int&gt;
 ## 1    74</code></pre>
-<pre class="r"><code>FDR=1-TP/No.Disc
-FDR</code></pre>
 <pre><code>##            n
 ## 1 0.09756098</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1    71</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1    67</code></pre>
+<pre><code>##            n
+## 1 0.05633803</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1    87</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1    74</code></pre>
+<pre><code>##           n
+## 1 0.1494253</code></pre>
+<pre><code>## Joining, by = &quot;tau&quot;
+## Joining, by = &quot;tau&quot;</code></pre>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p>When <span class="math inline">\(FDR&lt;0.1, \tau&gt;0.5\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th>true <span class="math inline">\(\bar{\gamma}=5\)</span></th>
+<th>No.Gene picked</th>
+<th>No. true risk gene</th>
+<th>FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>5</td>
+<td>84</td>
+<td>72</td>
+<td>9.76%</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>87</td>
+<td>74</td>
+<td>14.94%</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>71</td>
+<td>67</td>
+<td>5.63%</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="logistic-priors" class="section level2">
