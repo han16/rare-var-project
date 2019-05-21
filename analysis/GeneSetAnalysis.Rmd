@@ -335,7 +335,33 @@ result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
 
 ### Cons: Estimate all parameters, $\delta, \eta$
 
+
+#### Parameter estimate 
+
+
+
+```{r, echo=F}
+pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-MIRAGE-para_est_ASD_topconstgene_var_group.pdf")
+cate.index=1:8
+para.est=tibble(cate.index=cate.index, eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17))
+ggplot(para.est, aes(x=cate.index, y=eta.est)) + 
+   geom_bar(stat="identity", 
+           position=position_dodge(), fill="sky blue")+
+  ylab("Parameter estimate")+
+  theme(legend.title=element_blank())+
+  xlab("")+ylab(expression(paste(hat(eta))))+
+  ggtitle(expression(paste(hat(delta), "=0.18")))+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title+
+theme(axis.text.x = element_text(angle = 0, vjust = 0.5)) +
+  scale_x_continuous( labels = as.character(cate.index), breaks = cate.index)
+  
+dev.off()
+```
+
+
 $\hat{\delta}=0.18$. 
+
+#### Bayesian FDR 
 
 ```{r, echo=F}
 BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
@@ -390,6 +416,8 @@ MIRAGE_gene%>%arrange(desc(post_prob))  # FDR<0.2
 
 const.gene.BF.pvalue.combine %>% filter(post_prob>0.52)%>%select(Gene, BF, post_prob) %>% arrange(desc(post_prob)) # FDR<0.3
 
+
+const.gene.BF.pvalue.combine %>% filter(post_prob>0.4)%>%select(Gene, BF, post_prob) %>% arrange(desc(post_prob))
 
 ASUM_gene=const.gene.BF.pvalue.combine %>% filter(ASUM.pvalue.adj<0.05) %>% select(Gene,BF, post_prob, ASUM.pvalue.adj)
 ASUM_gene %>% arrange(ASUM.pvalue.adj) %>% print(n=20)
@@ -667,6 +695,39 @@ Non-Consensus Damaging, $0.001 \leq AF < 0.01$ |  0 | 0
 Non-Consensus Damaging,  $AF < 0.001$ | 0.0737 | 0
 Table: Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific  $\delta$.
 
+### QQ plot of p values by different methods 
+
+```{r, echo=F}
+plotQQ.unif <- function(p.obs) {
+  obs <- (p.obs)
+  theo <- (ppoints(length(obs)))
+  qqplot(-log(theo, base=10), -log(obs, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="A")
+  abline(0,1,col='red')
+}
+
+```
+
+
+
+
+```{r, echo=F}
+pvalues.othermethod=loadRData("../output/const.gene.pvalue.other.methods.RData")
+SKATO.pvalue=pvalues.othermethod$SKATO.pvalue
+CMC.pvalue=pvalues.othermethod$CMC.pvalue
+ASUM.pvalue=pvalues.othermethod$ASUM.pvalue
+Burden.pvalue=pvalues.othermethod$Fisher.pvalue
+pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf")
+par(mfrow=c(1,2))
+theo <- (ppoints(length(Burden.pvalue)))
+  qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="Burden")
+  abline(0,1,col='red')
+
+theo <- (ppoints(length(SKATO.pvalue)))
+  qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="SKATO")
+  abline(0,1,col='red')
+dev.off()    
+
+```
 
 ## Constraint genes 
 

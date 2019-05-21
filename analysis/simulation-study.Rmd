@@ -51,7 +51,7 @@ $\pi(\eta)$ is the link function between annotations and prior probability and t
 ## Disjoint group priors 
 
 
-### Power comparison between MIRAGE-VS and other methods
+### Comparison between MIRAGE-VS and other methods
 
 We simulated 100  variants in one category. $N1=N0=1000, 3000, 5000$, $\eta=0.1, 0.2, 0.3, 0.4$, $\bar{\gamma}=5$,  $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. We independetly run Monte Carlo  100 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO.  Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants $\hat{\eta}$, and performs the likelihood ratio test to get p value.  
 
@@ -159,9 +159,196 @@ g4=ggplot(powereta04_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
 #g4
 
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Main/Fig2-power_comparison_MIRAGE-vs.pdf")
 grid.arrange(g1, g2, g3, g4, nrow=2)
+#dev.off()
+```
+
+#### Sensitivity analysis of $\bar{\gamma}$
+
+
+We simulated 100  variants in one category. $\eta= 0.4$, true $\bar{\gamma}=5$,   and we vary $\bar{\gamma}=3,4,5,6$ and $N1=N0=1000, 3000, 5000$,, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. We independetly run Monte Carlo  100 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO.  Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants $\hat{\eta}$, and performs the likelihood ratio test to get p value.  
+
+
+
+```{r, echo=F}
+
+
+########### sample size 1000
+gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.sample.size1000.RData")
+gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.sample.size1000.RData")
+gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.sample.size1000.RData")
+gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.sample.size1000.RData")
+gammabar3_mirage=as.numeric(as_tibble(gammabar3) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar3_burden=as.numeric(as_tibble(gammabar3) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar3_skato=as.numeric(as_tibble(gammabar3) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar4_mirage=as.numeric(as_tibble(gammabar4) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar4_burden=as.numeric(as_tibble(gammabar4) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar4_skato=as.numeric(as_tibble(gammabar4) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar5_mirage=as.numeric(as_tibble(gammabar5) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar5_burden=as.numeric(as_tibble(gammabar5) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar5_skato=as.numeric(as_tibble(gammabar5) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar6_mirage=as.numeric(as_tibble(gammabar6) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar6_burden=as.numeric(as_tibble(gammabar6) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar6_skato=as.numeric(as_tibble(gammabar6) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+power=tibble(gamma_bar=3:6, MIRAGE_VS=c(gammabar3_mirage, gammabar4_mirage, gammabar5_mirage, gammabar6_mirage), Burden=c(gammabar3_burden, gammabar4_burden, gammabar5_burden, gammabar6_burden), SKATO=c(gammabar3_skato, gammabar4_skato, gammabar5_skato, gammabar6_skato))
+power_gather=power %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+power_gather_SS1000=power_gather %>% add_column(SampleSize=1000)
+
+g3=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  ylim(0,1)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab(expression(paste(bar(gamma))))+ 
+  ylab("True positive rate")+
+  ggtitle("N1=N0=1000")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))
+
+
+########### sample size 3000
+gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.sample.size3000.RData")
+gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.sample.size3000.RData")
+gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.sample.size3000.RData")
+gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.sample.size3000.RData")
+gammabar3_mirage=as.numeric(as_tibble(gammabar3) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar3_burden=as.numeric(as_tibble(gammabar3) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar3_skato=as.numeric(as_tibble(gammabar3) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar4_mirage=as.numeric(as_tibble(gammabar4) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar4_burden=as.numeric(as_tibble(gammabar4) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar4_skato=as.numeric(as_tibble(gammabar4) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar5_mirage=as.numeric(as_tibble(gammabar5) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar5_burden=as.numeric(as_tibble(gammabar5) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar5_skato=as.numeric(as_tibble(gammabar5) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar6_mirage=as.numeric(as_tibble(gammabar6) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar6_burden=as.numeric(as_tibble(gammabar6) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar6_skato=as.numeric(as_tibble(gammabar6) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+power=tibble(gamma_bar=3:6, MIRAGE_VS=c(gammabar3_mirage, gammabar4_mirage, gammabar5_mirage, gammabar6_mirage), Burden=c(gammabar3_burden, gammabar4_burden, gammabar5_burden, gammabar6_burden), SKATO=c(gammabar3_skato, gammabar4_skato, gammabar5_skato, gammabar6_skato))
+power_gather=power %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+power_gather_SS3000=power_gather %>% add_column(SampleSize=3000)
+
+g2=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  ylim(0,1)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab(expression(paste(bar(gamma))))+ 
+  ylab("True positive rate")+
+  ggtitle("N1=N0=3000")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))
+
+
+########### sample size 5000
+gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.RData")
+gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.RData")
+gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.RData")
+gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.RData")
+gammabar3_mirage=as.numeric(as_tibble(gammabar3) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar3_burden=as.numeric(as_tibble(gammabar3) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar3_skato=as.numeric(as_tibble(gammabar3) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar4_mirage=as.numeric(as_tibble(gammabar4) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar4_burden=as.numeric(as_tibble(gammabar4) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar4_skato=as.numeric(as_tibble(gammabar4) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar5_mirage=as.numeric(as_tibble(gammabar5) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar5_burden=as.numeric(as_tibble(gammabar5) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar5_skato=as.numeric(as_tibble(gammabar5) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+gammabar6_mirage=as.numeric(as_tibble(gammabar6) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
+gammabar6_burden=as.numeric(as_tibble(gammabar6) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
+gammabar6_skato=as.numeric(as_tibble(gammabar6) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
+
+power=tibble(gamma_bar=3:6, MIRAGE_VS=c(gammabar3_mirage, gammabar4_mirage, gammabar5_mirage, gammabar6_mirage), Burden=c(gammabar3_burden, gammabar4_burden, gammabar5_burden, gammabar6_burden), SKATO=c(gammabar3_skato, gammabar4_skato, gammabar5_skato, gammabar6_skato))
+power_gather=power %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+power_gather_SS5000=power_gather %>% add_column(SampleSize=5000)
+
+g1=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  ylim(0,1)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab(expression(paste(bar(gamma))))+ 
+  ylab("True positive rate")+
+  ggtitle("N1=N0=5000")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))
+
+power_gather_combine=bind_rows(power_gather_SS1000, power_gather_SS3000, power_gather_SS5000)
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig1-power_comparison_MIRAGE-vs_varyGammabar.pdf")
+ggplot(power_gather_combine, aes(x=gamma_bar, y=TPR/100, group=Method))+
+  geom_line(aes(color=Method), size=0.8)+
+  ylim(0,1)+
+  geom_point(aes(color=Method, shape=Method))+
+  xlab(expression(paste(bar(gamma))))+ 
+  ylab("True positive rate")+
+  ggtitle(expression(paste("True ", bar(gamma), "=5")))+
+  facet_grid(~SampleSize)+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))
+#dev.off()
 
 ```
+
+#### Type one error
+
+To investigate the type one error, we simulated 100 independent data sets, with varying sample size $N1=N0=1000, 3000, 5000$, 100 variants in one group; no risk variants, i.e., $\eta=0$ and other parameters are pretty the same as before 
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
+
+
+```{r, echo=F}
+null.pvalue.SS1000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS1000.RData")
+null.pvalue.SS1000.gather=null.pvalue.SS1000 %>% gather(Method, pvalue, 2:4)
+null.pvalue.SS1000.combine=null.pvalue.SS1000.gather %>% add_column(SampleSize=1000)
+
+null.pvalue.SS3000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000.RData")
+null.pvalue.SS3000.gather=null.pvalue.SS3000 %>% gather(Method, pvalue, 2:4)
+null.pvalue.SS3000.combine=null.pvalue.SS3000.gather %>% add_column(SampleSize=3000)
+
+null.pvalue.SS5000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS5000.RData")
+null.pvalue.SS5000.gather=null.pvalue.SS5000 %>% gather(Method, pvalue, 2:4)
+null.pvalue.SS5000.combine=null.pvalue.SS5000.gather %>% add_column(SampleSize=5000)
+
+null.pvalue.combine=bind_rows(null.pvalue.SS1000.combine, null.pvalue.SS3000.combine, null.pvalue.SS5000.combine)
+
+null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="MIRAGE_VS", Fisher.pvalue="Burden", SKATO.pvalue="SKATO")
+
+#ggplot(null.pvalue.SS5000.gather, aes(x=pvalue, fill=Method))+
+#geom_histogram(position="dodge2")+
+#  ylim(c(0,100))+
+#  xlab("p value")  
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig2-typeIerror_MIRAGE-vs.pdf")
+ggplot(null.pvalue.combine, aes(x=pvalue, fill=Method))+
+  geom_histogram(position="dodge2")+
+  theme(axis.text = element_text(size = 10))+ # customize the font size of axis label
+  #ylim(c(0,100))+
+  facet_grid(rows=vars(SampleSize))+
+  xlab("p value")
+#dev.off()
+
+#plot_grid(g1, g2)
+#ggplot(mirage_fisher, aes(x=pvalue, colour=method))+
+#geom_freqpoly()
+```
+
+Burden test: use fisher exact test
+MIRAGE: first estimate parameter $\eta$, then do likelihood ratio test 
+
+
+
+
+
+
+
 
 
 ###  All genes are risk genes, fix $\delta=1$, only estimate $\eta$
@@ -254,9 +441,11 @@ p2=ggplot(eta.summary, aes(x=sample.size, y=mean, group=1)) +
   guides(fill=guide_legend(title=NULL))+
   ylim(0.05,0.15)+
    geom_hline(yintercept=0.1,linetype="dashed", color = "red")
-pdf("../../Figure/para_est_risk_gene_only.pdf")
-grid.arrange(p1, p2, top=grid.text(expression(paste("Estimate of ", eta," across 100 replicates"))), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000,", eta[i], "=0.1"))), nrow=1)
-dev.off()
+#pdf("../../Figure/para_est_risk_gene_only.pdf")
+#grid.arrange(p1, p2, top=grid.text(expression(paste("Estimate of ", eta," across 100 replicates"))), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000,", eta[i], "=0.1"))), nrow=1)
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig3-parameter_estimate.pdf")
+grid.arrange(p1, p2, nrow=1)
+#dev.off()
 ```  
 
 
@@ -966,8 +1155,10 @@ p_delta0.2
 ```
 
 ```{r, echo=F}
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Main/Fig3-power_comparison_MIRAGE-gene.pdf")
 grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
-
+#dev.off()
+#grid.arrange(p1_delta0.01, p_delta0.1, nrow=1) 
 #p1_delta0.01
 #p2_delta0.05
 #p_delta0.1
@@ -1099,31 +1290,82 @@ g3
 
 ### Bayesian FDR control 
 
+#### Bayesian FDR vs actual FDR 
 
-Simulated one data set, $N1=N0=3000$, 10\% of 1000 genes are risk genes. Every gene has 100 variants in three variant  groups with $\eta_1=0.05, \eta_2=0.2, \eta_3=0.5$ and the proportion of variants are 30\%, 40\% and 30\%. Other parameters are pretty the same as before 
+Simulated one data set, $N1=N0=1000, 3000, 5000$, 10\% of 1000 genes are risk genes. Every gene has 100 variants in three variant  groups with $\eta_1=0.05, \eta_2=0.2, \eta_3=0.5$ and $\bar{\gamma}=3,3,5$ respectively and the proportion of variants are 60\%, 30\% and 10\%. Other parameters are pretty the same as before 
 $\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
 
 
 ```{r, echo=F}
-################## true gamma.bar=5, use true value ###############
-rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
-load("../output/BayesianFDR/Mixed_Gene_Gammamean5.delta0.1.RData")
+num.run=2; delta.index=4
+bayes.fdr=seq(0, 0.5, length=100)
+################## true gamma.bar=5, use true value  sample size 1000 ###############
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue", "all.pi")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5.delta0.1.SS1000.RData")
 BF.gene=BF.gene[complete.cases(BF.gene), ]
 Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
 
-
-prior_cons=0.1
+########## calculate post prob #############
+prior_cons=0.1   # true value 
+#prior_cons=all.pi[num.run, delta.index]
 cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
 cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
-(No.Disc=cons_post %>% filter(post_prob>0.5) %>% tally())
 
-(TP=cons_post %>% filter(post_prob>0.5) %>% filter(RiskStatus==1) %>% tally())
+######### use 0.5 as post prob cutoff ########  
+#(No.Disc=cons_post %>% filter(post_prob>0.5) %>% tally()) # use 0.5 as cutoff 
 
-FDR=1-TP/No.Disc
-FDR
+#(TP=cons_post %>% filter(post_prob>0.5) %>% filter(RiskStatus==1) %>% tally())
 
+#FDR=1-TP/No.Disc
+#FDR
+####################  use different cutoffs for post prob #########
+tau=seq(0, 0.999, length=1000)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>=tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>=tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
 
-tau=seq(0, 0.999, by=0.001)
+actual.fdr=numeric()
+tau.select=numeric()
+for (i in 1:length(bayes.fdr))
+{
+  tau.select[i]=max(tau_fdr5 %>% filter(bar5_fdr>bayes.fdr[i] & bar5_fdr<bayes.fdr[i]+0.1) %>% pull(tau))
+  No.Disc=cons_post %>% filter(post_prob>tau.select[i]) %>% tally() %>% pull()
+  TP=cons_post %>% filter(post_prob>tau.select[i]) %>% filter(RiskStatus==1) %>% tally() %>% pull()
+  # pull is used to convert tibble to a vector 
+  actual.fdr[i]=1-TP/No.Disc
+}
+combine.fdr.SS1000=tibble(Bayes.FDR=bayes.fdr, Actual.FDR=actual.fdr) %>% add_column(SampleSize=1000)
+
+################################################################################################################
+
+################## true gamma.bar=5, use true value  sample size 3000 ###############
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue", "all.pi")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5.delta0.1.SS3000.2.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+########## calculate post prob #############
+prior_cons=0.1  
+#prior_cons=all.pi[1, delta.index]
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+######### use 0.5 as post prob cutoff ########  
+#(No.Disc=cons_post %>% filter(post_prob>0.5) %>% tally()) # use 0.5 as cutoff 
+
+#(TP=cons_post %>% filter(post_prob>0.5) %>% filter(RiskStatus==1) %>% tally())
+
+#FDR=1-TP/No.Disc
+#FDR
+####################  use different cutoffs for post prob #########
+tau=seq(0, 0.999, length=1000)
 num_pred=NULL
 false_disc=NULL
 FDR=NULL
@@ -1135,23 +1377,99 @@ FDR[i]=false_disc[i]/num_pred[i]
 }
 tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
 
-#g1=ggplot(tau_fdr)+
-#  geom_point(aes(x=tau, y=fdr))+
-#  xlab(expression(paste(tau)))+ylab("FDR")
+actual.fdr=numeric()
+tau.select=numeric()
+for (i in 1:length(bayes.fdr))
+{
+  tau.select[i]=max(tau_fdr5 %>% filter(bar5_fdr>bayes.fdr[i] & bar5_fdr<bayes.fdr[i]+0.1) %>% pull(tau))
+  No.Disc=cons_post %>% filter(post_prob>tau.select[i]) %>% tally() %>% pull()
+  TP=cons_post %>% filter(post_prob>tau.select[i]) %>% filter(RiskStatus==1) %>% tally() %>% pull()
+  # pull is used to convert tibble to a vector 
+  actual.fdr[i]=1-TP/No.Disc
+}
+combine.fdr.SS3000=tibble(Bayes.FDR=bayes.fdr, Actual.FDR=actual.fdr) %>% add_column(SampleSize=3000)
 
 
-##################### true gamma.bar=5, use gamma.bar=3 ##########
-rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
-load("../output/BayesianFDR/Mixed_Gene_Gammamean5_useGammabar3.delta0.1.RData")
+
+################## true gamma.bar=5, use true value  sample size 5000 ###############
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue", "all.pi")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5.delta0.1.SS5000.4.RData")
 BF.gene=BF.gene[complete.cases(BF.gene), ]
 Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
 
+########## calculate post prob #############
+prior_cons=0.1  
+#prior_cons=all.pi[num.run, delta.index]
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+######### use 0.5 as post prob cutoff ########  
+#(No.Disc=cons_post %>% filter(post_prob>0.5) %>% tally()) # use 0.5 as cutoff 
+
+#(TP=cons_post %>% filter(post_prob>0.5) %>% filter(RiskStatus==1) %>% tally())
+
+#FDR=1-TP/No.Disc
+#FDR
+####################  use different cutoffs for post prob #########
+tau=seq(0, 0.999, length=1000)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+actual.fdr=numeric()
+tau.select=numeric()
+for (i in 1:length(bayes.fdr))
+{
+  tau.select[i]=max(tau_fdr5 %>% filter(bar5_fdr>bayes.fdr[i] & bar5_fdr<bayes.fdr[i]+0.1 ) %>%  pull(tau))
+  No.Disc=cons_post %>% filter(post_prob>tau.select[i]) %>% tally() %>% pull()
+  TP=cons_post %>% filter(post_prob>tau.select[i]) %>% filter(RiskStatus==1) %>% tally() %>% pull()
+  # pull is used to convert tibble to a vector 
+  actual.fdr[i]=1-TP/No.Disc
+}
+combine.fdr.SS5000=tibble(Bayes.FDR=bayes.fdr, Actual.FDR=actual.fdr) %>% add_column(SampleSize=5000)
+
+combine.fdr=bind_rows(combine.fdr.SS1000, combine.fdr.SS3000, combine.fdr.SS5000)
+
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-MIRAGE_gene_Bayes_FDR.pdf")
+ggplot(combine.fdr, aes(x=Bayes.FDR, y=Actual.FDR))+
+  geom_abline(intercept =0, slope =1, color="red", 
+                 linetype="dashed", size=1.5)+
+  geom_point()+
+  facet_grid(~SampleSize)
+#dev.off()
+
+
+
+```
+
+
+
+#### Robustness of Bayesian FDR  for $\bar{\gamma}$
+
+Simulated one data set, $N1=N0=3000$, 10\% of 1000 genes are risk genes. Every gene has 100 variants in three variant  groups with $\eta_1=0.05, \eta_2=0.2, \eta_3=0.5$ and the proportion of variants are 30\%, 30\% and 10\%. Each data set has one fixed $\bar{\gamma}$ and it is varied at $\bar{\gamma}=3,4,5,6$. Other parameters are pretty the same as before 
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
+
+
+
+```{r, echo=F}
+
+##################### true gamma.bar=3, use gamma.bar=3 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean3_useGammabar3.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
 
 prior_cons=0.1
 cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
 cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
-
-
 
 tau=seq(0, 0.999, by=0.001)
 num_pred=NULL
@@ -1167,16 +1485,249 @@ tau_fdr3=tibble(tau=tau, bar3_fdr=FDR)%>%drop_na()  # drop rows with NA
 
 
 
-(No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally())
+#No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally()
 
-(TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally())
+#TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally()
 
-FDR=1-TP/No.Disc
-FDR
-#g2=ggplot(tau_fdr)+
-#  geom_point(aes(x=tau, y=fdr))+
-#  xlab(expression(paste(tau)))+ylab("FDR")
+#FDR=1-TP/No.Disc
+#FDR
 
+##################### true gamma.bar=3, use gamma.bar=4 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean3_useGammabar4.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr4=tibble(tau=tau, bar4_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+##################### true gamma.bar=3, use gamma.bar=5 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean3_useGammabar5.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+##################### true gamma.bar=3, use gamma.bar=6 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean3_useGammabar6.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr6=tibble(tau=tau, bar6_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+
+tau_fdr_combine=full_join(full_join(full_join(tau_fdr3, tau_fdr4), tau_fdr5), tau_fdr6)
+tau_fdr_combine_tidy=tau_fdr_combine %>% gather(gamma.bar, fdr, bar3_fdr:bar6_fdr)
+tau_fdr_combine_tidy$gamma.bar=tau_fdr_combine_tidy$gamma.bar %>% recode(bar3_fdr="3", bar4_fdr="4", bar5_fdr="5", bar6_fdr="6") 
+
+g1=ggplot(tau_fdr_combine_tidy)+
+  geom_point(aes(x=tau, y=fdr, color=gamma.bar))+
+  xlab(expression(paste(tau)))+ylab("FDR")+
+  ggtitle(expression(paste("True ", bar(gamma), "=3")))+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1)) 
+#################################################################################################################
+#################################################################################################################
+##################### true gamma.bar=4, use gamma.bar=3 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean4_useGammabar3.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr3=tibble(tau=tau, bar3_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+
+#No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally()
+
+#TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally()
+
+#FDR=1-TP/No.Disc
+#FDR
+
+##################### true gamma.bar=3, use gamma.bar=4 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean4_useGammabar4.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr4=tibble(tau=tau, bar4_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+##################### true gamma.bar=3, use gamma.bar=5 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean4_useGammabar5.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+##################### true gamma.bar=3, use gamma.bar=6 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean4_useGammabar6.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr6=tibble(tau=tau, bar6_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+
+tau_fdr_combine=full_join(full_join(full_join(tau_fdr3, tau_fdr4), tau_fdr5), tau_fdr6)
+tau_fdr_combine_tidy=tau_fdr_combine %>% gather(gamma.bar, fdr, bar3_fdr:bar6_fdr)
+tau_fdr_combine_tidy$gamma.bar=tau_fdr_combine_tidy$gamma.bar %>% recode(bar3_fdr="3", bar4_fdr="4", bar5_fdr="5", bar6_fdr="6") 
+
+g2=ggplot(tau_fdr_combine_tidy)+
+  geom_point(aes(x=tau, y=fdr, color=gamma.bar))+
+  xlab(expression(paste(tau)))+ylab("FDR")+
+  ggtitle(expression(paste("True ", bar(gamma), "=4")))+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1)) 
+
+###############################################################################################################
+###############################################################################################################
+##################### true gamma.bar=5, use gamma.bar=3 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5_useGammabar3.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr3=tibble(tau=tau, bar3_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+
+#No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally()
+
+#TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally()
+
+#FDR=1-TP/No.Disc
+#FDR
 
 ##################### true gamma.bar=5, use gamma.bar=4 ##########
 rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
@@ -1202,39 +1753,191 @@ FDR[i]=false_disc[i]/num_pred[i]
 }
 tau_fdr4=tibble(tau=tau, bar4_fdr=FDR)%>%drop_na()  # drop rows with NA
 
-(No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally())
 
-(TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally())
+##################### true gamma.bar=5, use gamma.bar=5 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5_useGammabar5.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
 
-FDR=1-TP/No.Disc
-FDR
 
-#g3=ggplot(tau_fdr)+
-#  geom_point(aes(x=tau, y=fdr))+
-#  xlab(expression(paste(tau)))+ylab("FDR")
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
 
-#plot_grid(g1, g2, g3, nrow=1)
-tau_fdr_combine=full_join(full_join(tau_fdr3, tau_fdr4), tau_fdr5)
-tau_fdr_combine_tidy=tau_fdr_combine %>% gather(gamma.bar, fdr, bar3_fdr:bar5_fdr)
 
-ggplot(tau_fdr_combine_tidy)+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+##################### true gamma.bar=5, use gamma.bar=6 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean5_useGammabar6.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr6=tibble(tau=tau, bar6_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+tau_fdr_combine=full_join(full_join(full_join(tau_fdr3, tau_fdr4), tau_fdr5), tau_fdr6)
+tau_fdr_combine_tidy=tau_fdr_combine %>% gather(gamma.bar, fdr, bar3_fdr:bar6_fdr)
+tau_fdr_combine_tidy$gamma.bar=tau_fdr_combine_tidy$gamma.bar %>% recode(bar3_fdr="3", bar4_fdr="4", bar5_fdr="5", bar6_fdr="6") 
+
+g3=ggplot(tau_fdr_combine_tidy)+
   geom_point(aes(x=tau, y=fdr, color=gamma.bar))+
   xlab(expression(paste(tau)))+ylab("FDR")+
-  ggtitle(expression(paste("True ", bar(gamma), "=5")))
+  ggtitle(expression(paste("True ", bar(gamma), "=5")))+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1)) 
+
+###############################################################################################################
+###############################################################################################################
+##################### true gamma.bar=6, use gamma.bar=3 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean6_useGammabar3.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr3=tibble(tau=tau, bar3_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+
+#No.Disc=cons_post %>% filter(post_prob>0.495) %>% tally()
+
+#TP=cons_post %>% filter(post_prob>0.495) %>% filter(RiskStatus==1) %>% tally()
+
+#FDR=1-TP/No.Disc
+#FDR
+
+##################### true gamma.bar=5, use gamma.bar=4 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean6_useGammabar4.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr4=tibble(tau=tau, bar4_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+##################### true gamma.bar=5, use gamma.bar=5 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean6_useGammabar5.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr5=tibble(tau=tau, bar5_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+
+##################### true gamma.bar=5, use gamma.bar=6 ##########
+rm("beta.k", "BF.gene", "mirage.pvalue", "skat.pvalue", "fisher.pvalue")
+load("../output/BayesianFDR/Mixed_Gene_Gammamean6_useGammabar6.delta0.1.RData")
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+Bayes_factor=tibble(BF=BF.gene[nrow(BF.gene),])
+
+
+prior_cons=0.1
+cons_post=Bayes_factor %>% mutate(post_prob=prior_cons*BF/(1-prior_cons+prior_cons*BF))
+cons_post=as_tibble(cbind(cons_post, RiskStatus=Ui))
+
+
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(cons_post$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-cons_post$post_prob)*ifelse(cons_post$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr6=tibble(tau=tau, bar6_fdr=FDR)%>%drop_na()  # drop rows with NA
+
+tau_fdr_combine=full_join(full_join(full_join(tau_fdr3, tau_fdr4), tau_fdr5), tau_fdr6)
+tau_fdr_combine_tidy=tau_fdr_combine %>% gather(gamma.bar, fdr, bar3_fdr:bar6_fdr)
+tau_fdr_combine_tidy$gamma.bar=tau_fdr_combine_tidy$gamma.bar %>% recode(bar3_fdr="3", bar4_fdr="4", bar5_fdr="5", bar6_fdr="6") 
+
+g4=ggplot(tau_fdr_combine_tidy)+
+  geom_point(aes(x=tau, y=fdr, color=gamma.bar))+
+  xlab(expression(paste(tau)))+ylab("FDR")+
+  ggtitle(expression(paste("True ", bar(gamma), "=6")))+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1)) 
+
+grid.arrange(g1, g2, g3, g4, nrow=2)
 ```
 
 
 
 
-When $FDR<0.1, \tau>0.5$
-
-
-true $\bar{\gamma}=5$|No.Gene picked | No. true risk gene | FDR 
----------------|---------------|-------------------|-----
-  5 | 84 | 72 | 9.76%
-  4| 87 | 74 | 14.94%
-3 | 71 | 67 | 5.63%  
-  
 
 
 
