@@ -1293,7 +1293,7 @@ g3
 #### Bayesian FDR vs actual FDR 
 
 Simulated one data set, $N1=N0=1000, 3000, 5000$, 10\% of 1000 genes are risk genes. Every gene has 100 variants in three variant  groups with $\eta_1=0.05, \eta_2=0.2, \eta_3=0.5$ and $\bar{\gamma}=3,3,5$ respectively and the proportion of variants are 60\%, 30\% and 10\%. Other parameters are pretty the same as before 
-$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1$.
 
 
 ```{r, echo=F}
@@ -1454,8 +1454,8 @@ ggplot(combine.fdr, aes(x=Bayes.FDR, y=Actual.FDR))+
 
 #### Robustness of Bayesian FDR  for $\bar{\gamma}$
 
-Simulated one data set, $N1=N0=3000$, 10\% of 1000 genes are risk genes. Every gene has 100 variants in three variant  groups with $\eta_1=0.05, \eta_2=0.2, \eta_3=0.5$ and the proportion of variants are 30\%, 30\% and 10\%. Each data set has one fixed $\bar{\gamma}$ and it is varied at $\bar{\gamma}=3,4,5,6$. Other parameters are pretty the same as before 
-$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
+Simulated one data set, $N1=N0=3000$, 10\% of 1000 genes are risk genes. Every gene has 100 variants in three variant  groups with $\eta_1=0.05, \eta_2=0.2, \eta_3=0.5$ and the proportion of variants are 30\%, 40\% and 30\%. Each data set has one fixed $\bar{\gamma}$ and it is varied at $\bar{\gamma}=3,4,5,6$. Other parameters are pretty the same as before 
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1$.
 
 
 
@@ -1932,7 +1932,10 @@ g4=ggplot(tau_fdr_combine_tidy)+
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1)) 
 
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-MIRAGE_gene_Bayes_FDR_misspecified_gammabar.pdf")
 grid.arrange(g1, g2, g3, g4, nrow=2)
+#dev.off()
+
 ```
 
 
