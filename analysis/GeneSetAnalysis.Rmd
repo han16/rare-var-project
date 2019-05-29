@@ -313,10 +313,10 @@ legend(1.32, 8, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16), cex=1)
 ```
 
 ```{r, echo=F}
-Cate=1:8
+Cate=c("1", "2", "3", "4", "5", "6", "7", "8")
 OR=burden.summy[,1]; pval=burden.summy[,2]
 result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
-# pdf("../../Figure/burden_constgene.pdf")
+# pdf("C:\\Users\\han24\\OneDrive - UWM\\rare-var\\Figure\\burden_constgene.pdf")
   ggplot(result.summary, aes(x=Cate, y=OR, fill=Cate))+
   geom_bar(stat="identity")+
   ylab("")+xlab("Variant Categories")+ ggtitle("Burden analysis for eight categories")+
@@ -324,7 +324,7 @@ result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
     coord_flip()+
     geom_hline(yintercept=1,linetype="dashed")+
   geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
-    scale_color_viridis(discrete=T)+
+    #scale_color_viridis(discrete=T)+
     guides(fill = FALSE)+
   theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
 #dev.off()
