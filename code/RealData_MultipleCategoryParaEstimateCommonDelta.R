@@ -285,8 +285,8 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
 ########################################
 ################ whole genome
-#gene.set=as.character(unique(All.Anno.Data$Gene))
-gene.set=as.character(read.csv("data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+gene.set=as.character(unique(All.Anno.Data$Gene))
+#gene.set=as.character(read.csv("data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 vart.set=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene.set)])
 cand.data=Anno.Data[which(Anno.Data$ID %in% vart.set),]
@@ -342,7 +342,8 @@ CMC.pvalue=numeric()
 ASUM.pvalue=numeric()
 Fisher.pvalue=numeric()
 Fisher.adj.pvalue=numeric()
-for (i in 1:length(gene))
+#for (i in 1:length(gene))
+for (i in 12001:length(gene))
 {
  # i=1
   cat(i, "is running", "\n")

@@ -15,6 +15,7 @@ library(kableExtra)
 library(RColorBrewer)
 library(gplots)
 library(tidyverse)
+library(gridExtra)
 #source("..\\code\\MIRAGE_burden_only_variant_level.R")
 ```
 
@@ -245,7 +246,7 @@ ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
 ```
 
 
-### LoF in different gene set 
+### different gene set 
 
 
 ```{r burdern analysis-gene level, results='hide', echo=F}
@@ -278,35 +279,35 @@ LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
 gene.summy=matrix(nrow=max.gene, ncol=4)
 gene.evid=list(); var.index=1
-gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate2$GeneID  & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[3]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate3$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate4$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[5]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate5$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[6]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate6$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[7]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cateS$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan5percentgene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[9]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan20percentgene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan30percentgene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[11]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan40percentgene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[12]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan50percentgene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[13]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlargerthan90percentgene & Anno.Data$Annotation %in% LoF.def==T )])
-gene.evid[[14]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% IDGene$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[1]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate1$GeneID )])
+gene.evid[[2]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate2$GeneID  )])
+gene.evid[[3]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate3$GeneID )])
+gene.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate4$GeneID )])
+gene.evid[[5]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate5$GeneID )])
+gene.evid[[6]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cate6$GeneID )])
+gene.evid[[7]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene_cateS$GeneID )])
+gene.evid[[8]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan5percentgene)])
+gene.evid[[9]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan20percentgene )])
+gene.evid[[10]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan30percentgene )])
+gene.evid[[11]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan40percentgene )])
+gene.evid[[12]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlessthan50percentgene )])
+gene.evid[[13]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% Qlargerthan90percentgene  )])
+gene.evid[[14]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% IDGene$GeneID )])
 high.conf=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
 mod.conf=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
-gene.evid[[15]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% high.conf & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[16]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% mod.conf & Anno.Data$Annotation %in% LoF.def==T )])
+gene.evid[[15]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% high.conf )])
+gene.evid[[16]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% mod.conf )])
 psd.gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
 FMRP.gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
-gene.evid[[17]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% psd.gene & Anno.Data$Annotation %in% LoF.def==T )])
-gene.evid[[18]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% FMRP.gene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[19]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% ASD.gene$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[20]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% constraint.gene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[21]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% RVIS.gene & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.gene$GeneID & Anno.Data$Annotation %in% LoF.def==T)])
-gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol & Anno.Data$Annotation %in% LoF.def==T)])
+gene.evid[[17]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% psd.gene )])
+gene.evid[[18]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% FMRP.gene )])
+gene.evid[[19]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% ASD.gene$GeneID )])
+gene.evid[[20]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% constraint.gene )])
+gene.evid[[21]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% RVIS.gene )])
+gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.gene$GeneID )])
+gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol )])
 olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
-gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID & Anno.Data$Annotation %in% LoF.def==T )])
+gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID )])
 #sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
 #gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene & Anno.Data$Annotation %in% LoF.def==T)])
 
@@ -402,13 +403,18 @@ kable(seizure.summ)
 
 ```{r burdern analysis for combined set of variants and genes, results='hide', echo=F, eval=F}
 
-comb.exon.cutoff=exon.cutoff[1:3];
-sub.com=c(exon.fea[1:3], "LoF", "Prby Damaging", "CriticalExon", "Consensus")
+comb.exon.cutoff=exon.cutoff;
+#sub.com=c(exon.fea, "LoF", "Prby Damaging", "CriticalExon", "Consensus")
+sub.com=c(exon.fea, var.fea)
 comb.fea=paste(rep(sub.com, each=length(gene.set)), gene.set)
 AF.cutoff=c("MAF<1e-2", "MAF<1e-3", "MAF<1e-4", "Private"); colname=c("OR", "p.value", "rate.ca", "rate.co")
 comb.summ=matrix(nrow=length(comb.fea), ncol=4*length(AF.cutoff))
 rownames(comb.summ)=comb.fea; colnames(comb.summ)=paste(rep(AF.cutoff, each=length(colname)), colname, sep="~")
 comb.summ.MIRAGE=comb.summ
+MIRAGE.pvalue=list()
+MIRAGE.para.est=list()
+MIRAGE.cate.index=list()
+nn=0
 all.evid=list(); ii=0; all.evid.fea=paste(rep(comb.fea, each=length(AF.cutoff)), AF.cutoff)
 signal1.evid=list(); jj1=0
 signal2.evid=list(); jj2=0
@@ -442,9 +448,13 @@ for (i in 1:length(sub.com))
   {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
-  }
+   nn=nn+1
+   MIRAGE.pvalue[[nn]]=para.est$cate.pvalue
+   MIRAGE.para.est[[nn]]=para.est$beta.est
+   MIRAGE.cate.index[[nn]]=psbl.index
+   }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
     
 
     ######################
@@ -489,9 +499,13 @@ for (i in 1:length(sub.com))
   {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
-  }
+   nn=nn+1
+   MIRAGE.pvalue[[nn]]=para.est$cate.pvalue
+   MIRAGE.para.est[[nn]]=para.est$beta.est
+   MIRAGE.cate.index[[nn]]=psbl.index
+   }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
     
     
     
@@ -527,9 +541,13 @@ for (i in 1:length(sub.com))
   {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
-  }
+   nn=nn+1
+   MIRAGE.pvalue[[nn]]=para.est$cate.pvalue
+   MIRAGE.para.est[[nn]]=para.est$beta.est
+   MIRAGE.cate.index[[nn]]=psbl.index
+   }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
     
     
     if (pois.test$p.value<0.05)
@@ -572,9 +590,13 @@ for (i in 1:length(sub.com))
   {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
-  }
+   nn=nn+1
+   MIRAGE.pvalue[[nn]]=para.est$cate.pvalue
+   MIRAGE.para.est[[nn]]=para.est$beta.est
+   MIRAGE.cate.index[[nn]]=psbl.index
+   }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
     
     
     
@@ -611,9 +633,13 @@ for (i in 1:length(sub.com))
   {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
-  }
+   nn=nn+1
+   MIRAGE.pvalue[[nn]]=para.est$cate.pvalue
+   MIRAGE.para.est[[nn]]=para.est$beta.est
+   MIRAGE.cate.index[[nn]]=psbl.index
+   }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
     
   
     
@@ -658,9 +684,13 @@ for (i in 1:length(sub.com))
   {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
-  }
+   nn=nn+1
+   MIRAGE.pvalue[[nn]]=para.est$cate.pvalue
+   MIRAGE.para.est[[nn]]=para.est$beta.est
+   MIRAGE.cate.index[[nn]]=psbl.index
+   }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
     
     
     
@@ -672,14 +702,42 @@ for (i in 1:length(sub.com))
     }
    
 }  
-save(comb.summ, comb.summ.MIRAGE, file="../output/Burden_MIRAGE_Comparison.RData")
+#save(comb.summ, comb.summ.MIRAGE, MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.Feature.RData")
 ```
 
+
+```{r, echo=F}
+load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.Feature.RData")
+Burden.result=tibble(OR=as.numeric(comb.summ[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ[,c(2,6,10,14)]))
+g1=ggplot(Burden.result, aes(x=OR, y=-log(pvalue, base=10)))+
+  geom_point()+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+  ggtitle("Burden test")
+
+MIRAGE.result=tibble(OR=as.numeric(comb.summ.MIRAGE[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ.MIRAGE[,c(2,6,10,14)]))
+g2=ggplot(MIRAGE.result, aes(x=OR, y=-log(pvalue, base=10)))+
+  geom_point()+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+  ggtitle("MIRAGE")
+
+
+RiskVar.prop.pvalue=tibble(Risk.prop=unlist(MIRAGE.para.est), pvalue=-log(unlist(MIRAGE.pvalue), base=10), cate.index=unlist(MIRAGE.cate.index))
+RiskVar.prop.pvalue$cate.index<-RiskVar.prop.pvalue$cate.index %>% recode("1"= "1", "2" = "2", "3" = "3","4"= "4", "5" ="5", "6" ="6", "7" ="7", "8" ="8")
+g3=ggplot(RiskVar.prop.pvalue, aes(x=Risk.prop, y=pvalue, color=cate.index))+
+  geom_point()+
+  xlab(expression(paste(hat(eta))))+
+  ylab(expression(paste("-log" [10], "(p value)")))+
+  ggtitle("MIRAGE")
+grid.arrange(g1, g3, nrow=1)
+
+```
 
 
 ```{r, echo=F}
 #Burden_MIRAGE_Summary=loadRData("../output/Burden_MIRAGE_Comparison.RData")
-load("../output/Burden_MIRAGE_Comparison.RData")
+load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.Feature.RData")
 Burden_summary=comb.summ
 MIRAGE_summary=comb.summ.MIRAGE
 pick.feature=1:6
@@ -687,7 +745,7 @@ num.feature=length(pick.feature)
 burden_mirage_pvalue=tibble(pvalue=c(Burden_summary[pick.feature,2], MIRAGE_summary[pick.feature,2]), cate=c(rownames(Burden_summary)[pick.feature], c(rownames(Burden_summary)[pick.feature])), method=c(rep("Burden", num.feature), rep("MIRAGE", num.feature)))
 #pdf("../../Figure/burden_pvalue_comparison.pdf")
 ggplot(burden_mirage_pvalue, aes(x=cate, y=-log(pvalue, base=10), fill=method))+
-  geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab("-log(pvalue, base=10)")+
+  geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab(expression(paste("-log" [10], "(p value)")))+
   ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
   geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
   coord_flip()
