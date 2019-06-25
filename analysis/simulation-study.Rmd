@@ -1012,15 +1012,15 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
+method=rep(c( "Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
 
-roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
+roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
 p_delta0.1=p.basic+
-  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
+  #annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+  #         label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.1")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
@@ -1054,15 +1054,15 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
+method=rep(c("Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
 
-roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
+roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
 p1_delta0.01=p1.basic+
-  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
+ # annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+#           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.01")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
@@ -1093,16 +1093,16 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
+method=rep(c( "Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
 
-roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
+roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
 #pdf("../../Figure/power_comparison_different_methods.pdf")
 p2_delta0.05=p2.basic+
-  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.34, 0.4), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
+#  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.34, 0.4), 
+#           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.05")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
@@ -1136,16 +1136,16 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("MIRAGE-LRT", "Burden", "SKATO", "MIRAGE-BF", "CMC", "ASUM", "Burden_adj", "Burden_comb"), each=num_run)
+method=rep(c( "Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
 
-roc_single_run=data.frame(D=Ui, m=c(mirage_pvalue,fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
+roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
 #pdf("../../Figure/power_comparison_different_methods.pdf")
 p_delta0.2=p2.basic+
-  annotate("text", x =rep(0.7,8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
+ # annotate("text", x =rep(0.7,8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+#           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.2")))+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 

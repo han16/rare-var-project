@@ -36,6 +36,31 @@ loadRData <- function(fileName){
 }
 ```
 
+```{r, echo=F}
+eight.partition=function(cand.data) # given gene data and annotations, do variant partitions
+{
+  par.evid=list()
+  LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+  par.evid[[1]]=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.05 & cand.data$ExacAF>=0.01 )
+  par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==T &  cand.data$ExacAF<0.01)
+
+  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid[[4]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[5]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001)
+
+  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF<0.001)
+
+  group.index=rep(NA, nrow(cand.data))
+  for (i in 1:length(par.evid))
+    group.index[par.evid[[i]]]=i
+  gene.data=data.frame(ID=cand.data$ID, Gene=cand.data$Gene, No.case=cand.data$No.case, No.contr=cand.data$No.contr, group.index=group.index)
+  gene.data=gene.data[complete.cases(gene.data),]
+  return(gene.data)
+}
+```
+
 <!-- Add your analysis here -->
 
 ```{r read into data, echo=F, results='hide', cache=T}
@@ -477,6 +502,27 @@ Burden | 0 | 0
 Burden.adj | 0 | 0 
 Table: Number of genes identified by different methods at different FDR levels. 
 
+
+
+#### highlight genes
+
+
+```{r, echo=F}
+Gene_CYFIP1=Anno.Data[which(Anno.Data$Gene=="CYFIP1"),]
+Gene_CYFIP1_par=eight.partition(Gene_CYFIP1)
+Gene_CYFIP1_merge=Gene_CYFIP1_par %>% gather(status, No.var, 3:4) 
+Gene_CYFIP1_merge$group.index=Gene_CYFIP1_merge$group.index %>% recode("1"="1", "2"="2", "3"="3", "4"="4", "5"="5", "6"="6", "7"="7", "8"="8")
+```
+
+```{r, echo=F}
+ggplot(as_tibble(Gene_CYFIP1_merge), aes(x=ID, y=No.var, color=status, shape=group.index))+
+  geom_point()+
+  ggtitle("CYFIP1")+
+  xlab("Coordinate")+ylab("#.var")+
+  geom_hline(yintercept=0, linetype="solid", color = "black")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size=6))
+```
 
 
 ### Cons: Estimate $\eta_i$
