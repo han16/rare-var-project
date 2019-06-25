@@ -421,14 +421,14 @@ signal2.evid=list(); jj2=0
 signal3.evid=list(); jj3=0
 signal4.evid=list(); jj4=0
 for (i in 1:length(sub.com))
-{ 
-#  cat(i, "th subcom is running", "\n")
+{# i=1 
+  cat(i, "th subcom of ", length(sub.com), " is running", "\n")
   
   if (i<=length(comb.exon.cutoff))    # this is for exon 
   for (j in 1:length(gene.set))
-  {  
+  { # j=1
    for (k in 1:(length(AF.cutoff)-1)) 
-  {
+  { #k=1
     comb.evid=intersect(intersect(evid.exon[[i]], gene.evid[[13+j]]), var.evid[[k]]) 
     pois.test=test.func(comb.evid, var.data, N1, N0)
     comb.summ[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
@@ -441,6 +441,8 @@ for (i in 1:length(sub.com))
     order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
     psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
     delta.init=runif(1); beta.init=runif(actu.num.group)
+    order.overlap.data$original.group.index=order.overlap.data$group.index
+    
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
@@ -492,6 +494,8 @@ for (i in 1:length(sub.com))
     order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
     psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
     delta.init=runif(1); beta.init=runif(actu.num.group)
+    order.overlap.data$original.group.index=order.overlap.data$group.index
+    
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
@@ -534,6 +538,7 @@ for (i in 1:length(sub.com))
     order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
     psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
     delta.init=runif(1); beta.init=runif(actu.num.group)
+    order.overlap.data$original.group.index=order.overlap.data$group.index
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
@@ -583,6 +588,7 @@ for (i in 1:length(sub.com))
     order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
     psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
     delta.init=runif(1); beta.init=runif(actu.num.group)
+    order.overlap.data$original.group.index=order.overlap.data$group.index
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
@@ -626,6 +632,8 @@ for (i in 1:length(sub.com))
     order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
     psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
     delta.init=runif(1); beta.init=runif(actu.num.group)
+    order.overlap.data$original.group.index=order.overlap.data$group.index
+    
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
@@ -677,6 +685,8 @@ for (i in 1:length(sub.com))
     order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
     psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
     delta.init=runif(1); beta.init=runif(actu.num.group)
+    order.overlap.data$original.group.index=order.overlap.data$group.index
+    
     for (jj in 1:actu.num.group)
   order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
     #  delta=runif(1)
