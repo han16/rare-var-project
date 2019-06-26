@@ -80,8 +80,10 @@ g1=ggplot(powereta01_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
   xlab("N1=N0")+ 
   ylab("True positive rate")+
   ggtitle(expression(paste(eta, "=0.1")))+
+  theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+  theme(legend.position = "none")
 
 
 ########### eta=0.2
@@ -103,10 +105,12 @@ g2=ggplot(powereta02_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
   geom_point(aes(color=Method, shape=Method))+
   xlab("N1=N0")+ 
-  ylab("True positive rate")+
+  ylab("")+
   ggtitle(expression(paste(eta, "=0.2")))+
+  theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+  theme(legend.position = "none")
 #g2
 
 ########### eta=0.3
@@ -124,14 +128,19 @@ SS5000eta03_burden=as.numeric(as_tibble(SS5000eta03) %>% filter(Fisher.pvalue<si
 SS5000eta03_skato=as.numeric(as_tibble(SS5000eta03) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
 powereta03=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta03_mirage, SS3000eta03_mirage, SS5000eta03_mirage), Burden=c(SS1000eta03_burden, SS3000eta03_burden, SS5000eta03_burden), SKATO=c(SS1000eta03_skato, SS3000eta03_skato, SS5000eta03_skato))
 powereta03_gather=powereta03 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+powereta03_gather$Method=powereta03_gather$Method %>% recode(MIRAGE_VS="MIRAGE-VS") # change the method name 
 g3=ggplot(powereta03_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
   geom_point(aes(color=Method, shape=Method))+
   xlab("N1=N0")+ 
-  ylab("True positive rate")+
+  ylab("")+
   ggtitle(expression(paste(eta, "=0.3")))+
+  theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+  theme(legend.position = c(0.72, 0.2),
+          legend.direction = "vertical")
+
 #g3
 
 ########### eta=0.4
@@ -160,7 +169,7 @@ g4=ggplot(powereta04_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
 #g4
 
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Main/Fig2-power_comparison_MIRAGE-vs.pdf")
-grid.arrange(g1, g2, g3, g4, nrow=2)
+grid.arrange(g1, g2, g3, nrow=1)
 #dev.off()
 ```
 
@@ -392,7 +401,7 @@ eta.summary=data.frame(mean=eta.mean, sd=eta.sd, bar.gamma=bar.gamma)
 p1=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) + 
    geom_point() +
   geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
-  ggtitle("N1=N0=3000")+
+  ggtitle("(I) N1=N0=3000")+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
   ylab(expression(paste(hat(eta))))+ 
@@ -434,7 +443,7 @@ eta.summary=data.frame(mean=eta.mean, sd=eta.sd, sample.size=sample.size)
 p2=ggplot(eta.summary, aes(x=sample.size, y=mean, group=1)) + 
    geom_point() +
   geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
-  ggtitle(expression(paste(bar(gamma), "=5")))+
+  ggtitle(expression(paste("(II) ", bar(gamma), "=5")))+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
   xlab(expression(paste("N1=N0 ")))+
   ylab(expression(paste(hat(eta))))+ 
