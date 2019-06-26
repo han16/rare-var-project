@@ -328,20 +328,31 @@ null.pvalue.SS5000.combine=null.pvalue.SS5000.gather %>% add_column(SampleSize=5
 
 null.pvalue.combine=bind_rows(null.pvalue.SS1000.combine, null.pvalue.SS3000.combine, null.pvalue.SS5000.combine)
 
-null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="MIRAGE_VS", Fisher.pvalue="Burden", SKATO.pvalue="SKATO")
+null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="MIRAGE-VS", Fisher.pvalue="Burden", SKATO.pvalue="SKATO")
+
+###### loot at count with p value less than 0.05 
+null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
+null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),3)), count=c(4,2,3, 1,2,4, 4,2,6),sample.size=rep(c(1000,3000, 5000), each=3))
+null.pvalue.combine.significant.count$sample.size=as.factor(null.pvalue.combine.significant.count$sample.size)
+ggplot(null.pvalue.combine.significant.count, aes(x=sample.size, y=count/100, fill=Method)) +
+  geom_bar(stat="identity", position="dodge")+
+  geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
+  xlab("N1=N0")+ylab("% of test with p value less than 5%" )+
+  theme_classic()
 
 #ggplot(null.pvalue.SS5000.gather, aes(x=pvalue, fill=Method))+
 #geom_histogram(position="dodge2")+
 #  ylim(c(0,100))+
 #  xlab("p value")  
 
+####### this is for drawing histogram ########## 
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig2-typeIerror_MIRAGE-vs.pdf")
-ggplot(null.pvalue.combine, aes(x=pvalue, fill=Method))+
-  geom_histogram(position="dodge2")+
-  theme(axis.text = element_text(size = 10))+ # customize the font size of axis label
+#ggplot(null.pvalue.combine, aes(x=pvalue, fill=Method))+
+#  geom_histogram(position="dodge2")+
+#  theme(axis.text = element_text(size = 10))+ # customize the font size of axis label
   #ylim(c(0,100))+
-  facet_grid(rows=vars(SampleSize))+
-  xlab("p value")
+#  facet_grid(rows=vars(SampleSize))+
+#  xlab("p value")
 #dev.off()
 
 #plot_grid(g1, g2)
@@ -377,6 +388,38 @@ Parameter settings: N1=N0=3000, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000
 ```{r, echo=F}
 num.gamma=4
 all.eta=matrix(nrow=100, ncol=num.gamma)
+
+############ sample size 1000
+bargamma_2=load("../output/Varybargamma/gammabar_2_samplesize1000.RData")
+all.eta[,1]=all.pi[,1]
+bargamma_3=load("../output/Varybargamma/gammabar_3_samplesize1000.RData")
+all.eta[,2]=all.pi[,1]
+bargamma_4=load("../output/Varybargamma/gammabar_4_samplesize1000.RData")
+all.eta[,3]=all.pi[,1]
+bargamma_5=load("../output/Varybargamma/gammabar_5_samplesize1000.RData")
+all.eta[,4]=all.pi[,1]
+#bargamma_6=load("../output/Varybargamma/bargamma_6.RData")
+#all.eta[,5]=all.pi[,1]
+colnames(all.eta)=2:(2+num.gamma-1)
+
+eta.mean=c(mean(all.eta[which(all.eta[,1]>0),1]), mean(all.eta[which(all.eta[,2]>0),2]), mean(all.eta[which(all.eta[,3]>0),3]), mean(all.eta[which(all.eta[,4]>0),4]))
+eta.sd=c(sd(all.eta[which(all.eta[,1]>0),1]), sd(all.eta[which(all.eta[,2]>0),2]), sd(all.eta[which(all.eta[,3]>0),3]), sd(all.eta[which(all.eta[,4]>0),4]))
+
+bar.gamma=2:5
+eta.summary=data.frame(mean=eta.mean, sd=eta.sd, bar.gamma=bar.gamma)
+p1=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  ggtitle(" N1=N0=1000")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  xlab(expression(paste(bar(gamma))))+
+  ylab(expression(paste(hat(eta))))+ 
+  guides(fill=guide_legend(title=NULL))+
+  ylim(0.05,0.15)+
+   geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+
+############ sample size 3000
 bargamma_2=load("../output/Varybargamma/gammabar_2.RData")
 all.eta[,1]=all.pi[,1]
 bargamma_3=load("../output/Varybargamma/gammabar_3.RData")
@@ -391,23 +434,22 @@ colnames(all.eta)=2:(2+num.gamma-1)
 
 eta.mean=c(mean(all.eta[which(all.eta[,1]>0),1]), mean(all.eta[which(all.eta[,2]>0),2]), mean(all.eta[which(all.eta[,3]>0),3]), mean(all.eta[which(all.eta[,4]>0),4]))
 eta.sd=c(sd(all.eta[which(all.eta[,1]>0),1]), sd(all.eta[which(all.eta[,2]>0),2]), sd(all.eta[which(all.eta[,3]>0),3]), sd(all.eta[which(all.eta[,4]>0),4]))
-```
 
-
-
-```{r, echo=F}
 bar.gamma=2:5
 eta.summary=data.frame(mean=eta.mean, sd=eta.sd, bar.gamma=bar.gamma)
-p1=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+p2=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) + 
    geom_point() +
   geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
-  ggtitle("(I) N1=N0=3000")+
+  ggtitle("N1=N0=3000")+
+  theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
-  ylab(expression(paste(hat(eta))))+ 
+  ylab("")+ 
   guides(fill=guide_legend(title=NULL))+
   ylim(0.05,0.15)+
    geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+
+grid.arrange(p1, p2, nrow=1)
 ```  
   
 
@@ -453,7 +495,7 @@ p2=ggplot(eta.summary, aes(x=sample.size, y=mean, group=1)) +
 #pdf("../../Figure/para_est_risk_gene_only.pdf")
 #grid.arrange(p1, p2, top=grid.text(expression(paste("Estimate of ", eta," across 100 replicates"))), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000,", eta[i], "=0.1"))), nrow=1)
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig3-parameter_estimate.pdf")
-grid.arrange(p1, p2, nrow=1)
+#grid.arrange(p1, p2, nrow=1)
 #dev.off()
 ```  
 
