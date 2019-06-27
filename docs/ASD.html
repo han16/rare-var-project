@@ -1592,9 +1592,11 @@ NaN
 <h2>Combined feature analysis</h2>
 <div id="combination-of-gene-setafexon" class="section level3">
 <h3>combination of gene set+AF+exon</h3>
-<pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
 <p><img src="ASD_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<p><img src="ASD_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>For more than 700 combined features, each one is split into one or more partition groups by the definition. For every split partition group, perform burden test and MIRAGE-vs test.</p>
 <p>Burden test: one sided two sample Poisson test, MIRAGE: estimate parameters, then do likelihood ratio test.</p>
 <p><strong>Feature combinations: exon/LoF/missense+gene+MAF cutoff</strong></p>
 <pre class="r"><code>kable(comb.summ[,1:4], caption=&quot;Combined Annotations&quot;, &quot;html&quot;)%&gt;%

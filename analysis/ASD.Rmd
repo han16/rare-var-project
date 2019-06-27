@@ -16,6 +16,7 @@ library(RColorBrewer)
 library(gplots)
 library(tidyverse)
 library(gridExtra)
+library(ggpubr)
 #source("..\\code\\MIRAGE_burden_only_variant_level.R")
 ```
 
@@ -422,7 +423,7 @@ signal1.evid=list(); jj1=0
 signal2.evid=list(); jj2=0
 signal3.evid=list(); jj3=0
 signal4.evid=list(); jj4=0
-for (i in 1:length(sub.com))
+for (i in 14:length(sub.com))
 {# i=1 
   cat(i, "th subcom of ", length(sub.com), " is running", "\n")
   
@@ -445,6 +446,8 @@ for (i in 1:length(sub.com))
     delta.init=runif(1); beta.init=runif(actu.num.group)
     order.overlap.data$original.group.index=order.overlap.data$group.index
     
+    if (nrow(order.overlap.data)>0)
+  {  
     burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
     colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
     for (jj in 1:actu.num.group)
@@ -454,9 +457,6 @@ for (i in 1:length(sub.com))
       burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     }
     
-    #  delta=runif(1)
-  if (nrow(order.overlap.data)>0)  
-  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
    nn=nn+1
@@ -466,7 +466,7 @@ for (i in 1:length(sub.com))
    Burden.cate[[nn]]=burden.matrix
    }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
     
 
     ######################
@@ -506,6 +506,8 @@ for (i in 1:length(sub.com))
     delta.init=runif(1); beta.init=runif(actu.num.group)
     order.overlap.data$original.group.index=order.overlap.data$group.index
     
+    if (nrow(order.overlap.data)>0)
+  {  
     burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
     colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
     for (jj in 1:actu.num.group)
@@ -515,8 +517,6 @@ for (i in 1:length(sub.com))
       burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     }
     #  delta=runif(1)
-    if (nrow(order.overlap.data)>0)  
-  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
    nn=nn+1
@@ -526,7 +526,7 @@ for (i in 1:length(sub.com))
    Burden.cate[[nn]]=burden.matrix
    }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA 
     
     
     
@@ -556,7 +556,9 @@ for (i in 1:length(sub.com))
     psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
     delta.init=runif(1); beta.init=runif(actu.num.group)
     order.overlap.data$original.group.index=order.overlap.data$group.index
-    
+   
+  if (nrow(order.overlap.data)>0)
+  {     
    burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
     colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
     for (jj in 1:actu.num.group)
@@ -566,8 +568,6 @@ for (i in 1:length(sub.com))
       burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     }
     #  delta=runif(1)
-    if (nrow(order.overlap.data)>0)  
-  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
    nn=nn+1
@@ -577,7 +577,7 @@ for (i in 1:length(sub.com))
    Burden.cate[[nn]]=burden.matrix
    }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
     
     
     if (pois.test$p.value<0.05)
@@ -615,6 +615,8 @@ for (i in 1:length(sub.com))
     delta.init=runif(1); beta.init=runif(actu.num.group)
     order.overlap.data$original.group.index=order.overlap.data$group.index
     
+    if (nrow(order.overlap.data)>0)
+  {  
     burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
     colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
     for (jj in 1:actu.num.group)
@@ -623,9 +625,7 @@ for (i in 1:length(sub.com))
       pois.test=test.func(order.overlap.data[order.overlap.data$original.group.index==psbl.index[jj],]$ID, var.data, N1, N0)
       burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     }
-    #  delta=runif(1)
-    if (nrow(order.overlap.data)>0)  
-  {
+   
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
    nn=nn+1
@@ -635,7 +635,7 @@ for (i in 1:length(sub.com))
    Burden.cate[[nn]]=burden.matrix
    }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
     
     
     
@@ -667,6 +667,8 @@ for (i in 1:length(sub.com))
     delta.init=runif(1); beta.init=runif(actu.num.group)
     order.overlap.data$original.group.index=order.overlap.data$group.index
     
+    if (nrow(order.overlap.data)>0)
+  {  
     burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
     colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
     for (jj in 1:actu.num.group)
@@ -676,8 +678,6 @@ for (i in 1:length(sub.com))
       burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     }
     #  delta=runif(1)
-    if (nrow(order.overlap.data)>0)  
-  {
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
    nn=nn+1
@@ -687,7 +687,7 @@ for (i in 1:length(sub.com))
    Burden.cate[[nn]]=burden.matrix
    }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
     
   
     
@@ -727,6 +727,8 @@ for (i in 1:length(sub.com))
     delta.init=runif(1); beta.init=runif(actu.num.group)
     order.overlap.data$original.group.index=order.overlap.data$group.index
     
+     if (nrow(order.overlap.data)>0)
+  {     
     burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
     colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
     for (jj in 1:actu.num.group)
@@ -736,8 +738,7 @@ for (i in 1:length(sub.com))
       burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
     }
     #  delta=runif(1)
-    if (nrow(order.overlap.data)>0)  
-  {
+
    para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
    comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
    nn=nn+1
@@ -747,7 +748,7 @@ for (i in 1:length(sub.com))
    Burden.cate[[nn]]=burden.matrix
    }
   if (nrow(order.overlap.data)==0)  
-   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(NA, NA, pois.test$rate.case, pois.test$rate.contr) 
+   comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA 
     
     
     
@@ -759,38 +760,77 @@ for (i in 1:length(sub.com))
     }
    
 }  
-#save(comb.summ, comb.summ.MIRAGE, MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.Feature2.RData")
+#save(comb.summ, comb.summ.MIRAGE, MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.Feature.RData")
 ```
 
 
 ```{r, echo=F}
 load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.Feature.RData")
-Burden.result=tibble(OR=as.numeric(comb.summ[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ[,c(2,6,10,14)]))
-g1=ggplot(Burden.result, aes(x=OR, y=-log(pvalue, base=10)))+
+#Burden.result=tibble(OR=as.numeric(comb.summ[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ[,c(2,6,10,14)]))
+#g1=ggplot(Burden.result, aes(x=OR, y=-log(pvalue, base=10)))+
+#  geom_point()+
+#  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+#  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+#  ggtitle("Burden test")
+
+#MIRAGE.result=tibble(OR=as.numeric(comb.summ.MIRAGE[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ.MIRAGE[,c(2,6,10,14)]))
+#g2=ggplot(MIRAGE.result, aes(x=OR, y=-log(pvalue, base=10)))+
+#  geom_point()+
+#  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+#  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+#  ggtitle("MIRAGE")
+
+
+Burden.OR=numeric(); Burden.pvalue=numeric()
+for (ii in 1:length(Burden.cate))
+{
+  Burden.OR=c(Burden.OR, Burden.cate[[ii]][,1])
+  Burden.pvalue=c(Burden.pvalue, Burden.cate[[ii]][,2])
+}
+
+
+Burden.MIRAGE.combine=tibble(Burden.OR=Burden.OR, Burden.pvalue=-log(Burden.pvalue, base=10), MIRAGE.risk.prop=unlist(MIRAGE.para.est), MIRAGE.pvalue=-log(unlist(MIRAGE.pvalue), base=10), cate.index=unlist(MIRAGE.cate.index))
+Burden.MIRAGE.combine <- drop_na(Burden.MIRAGE.combine) # remove rows with NA
+Burden.MIRAGE.combine.clear <- as_tibble(data.matrix(Burden.MIRAGE.combine)[is.finite(rowSums(data.matrix(Burden.MIRAGE.combine))),])
+Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
+
+g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=Burden.pvalue, color=as.factor(cate.index), shape=as.factor(cate.index)))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+
   geom_point()+
+  xlim(c(0,4))+
   geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
-  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
-  ggtitle("Burden test")
+  xlab("OR")+ylab(expression(paste("-log" [10], "(p value)")))+
+  ggtitle("Burden test")+
+  theme_classic()+
+   theme(legend.position = "none")+  # no legend 
+theme(plot.title = element_text(hjust = 0.5, size=10)) +# center the title 
+theme(legend.title=element_blank())
 
-MIRAGE.result=tibble(OR=as.numeric(comb.summ.MIRAGE[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ.MIRAGE[,c(2,6,10,14)]))
-g2=ggplot(MIRAGE.result, aes(x=OR, y=-log(pvalue, base=10)))+
-  geom_point()+
-  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
-  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
-  ggtitle("MIRAGE")
-
-
-RiskVar.prop.pvalue=tibble(Risk.prop=unlist(MIRAGE.para.est), pvalue=-log(unlist(MIRAGE.pvalue), base=10), cate.index=unlist(MIRAGE.cate.index))
-RiskVar.prop.pvalue$cate.index<-RiskVar.prop.pvalue$cate.index %>% recode("1"= "1", "2" = "2", "3" = "3","4"= "4", "5" ="5", "6" ="6", "7" ="7", "8" ="8")
-g3=ggplot(RiskVar.prop.pvalue, aes(x=Risk.prop, y=pvalue, color=cate.index))+
+g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=MIRAGE.pvalue, color=as.factor(cate.index), shape=as.factor(cate.index)))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+  # manually define shapes if more than 6 groups 
   geom_point()+
   xlab(expression(paste(hat(eta))))+
-  ylab(expression(paste("-log" [10], "(p value)")))+
-  ggtitle("MIRAGE")
-grid.arrange(g1, g3, nrow=1)
+  ylab("")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  ggtitle("MIRAGE-VS")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
+  #labs(color='variant group')+   # define legend title 
+  theme(legend.title=element_blank())+
+  theme(legend.text=element_text(size=1))
+  #theme(legend.position = c(0.8, 4),
+  #        legend.direction = "vertical")
+#+
+  #theme(legend.position="bottom")
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  
+#grid.arrange(g1, g2, nrow=1)
+
+
+
 
 ```
 
+For more than 700 combined features, each one is split into one or more partition groups by the definition. For every split partition group, perform burden test and MIRAGE-vs test.   
 
 ```{r, echo=F}
 #Burden_MIRAGE_Summary=loadRData("../output/Burden_MIRAGE_Comparison.RData")
@@ -801,11 +841,11 @@ pick.feature=1:6
 num.feature=length(pick.feature)
 burden_mirage_pvalue=tibble(pvalue=c(Burden_summary[pick.feature,2], MIRAGE_summary[pick.feature,2]), cate=c(rownames(Burden_summary)[pick.feature], c(rownames(Burden_summary)[pick.feature])), method=c(rep("Burden", num.feature), rep("MIRAGE", num.feature)))
 #pdf("../../Figure/burden_pvalue_comparison.pdf")
-ggplot(burden_mirage_pvalue, aes(x=cate, y=-log(pvalue, base=10), fill=method))+
-  geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab(expression(paste("-log" [10], "(p value)")))+
-  ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
-  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
-  coord_flip()
+#ggplot(burden_mirage_pvalue, aes(x=cate, y=-log(pvalue, base=10), fill=method))+
+#  geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab(expression(paste("-log" [10], "(p value)")))+
+#  ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
+#  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+#  coord_flip()
 #dev.off()  
 ```
 
