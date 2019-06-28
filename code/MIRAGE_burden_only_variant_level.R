@@ -128,23 +128,31 @@ multi.group.func.for.variant=function(new.data, N1, N0, gamma.mean, sigma, delta
       }
   teststat[num.var+1]=2*total.lkhd
   pvalue[num.var+1]=pchisq(teststat[num.var+1], num.actu.group, lower.tail=F)
-  ##############################################
+  ############################################## calculate category specific test statistics and p value
   ##################
   cate.lkhd=rep(1,num.group); cate.stat=numeric()
   cate.pvalue=numeric(num.group); sum.lkhd=0
+  if (num.group>1)
   for (g in 1:num.group)
   { # g=2
-    total.lkhd=0
       if (nrow(full.info.var)>0)
         for (j in 1:nrow(full.info.var))
           if (full.info.var$group.index[j]==g)
-            cate.lkhd[g]=cate.lkhd[g]*((1-beta.k[(iter-1), g])+beta.k[(iter-1), g]*data$var.BF[j])
+          cate.lkhd[g]=cate.lkhd[g]*((1-beta.k[(iter-1), g])+beta.k[(iter-1), g]*full.info.var$var.BF[j])
 
-      total.lkhd=total.lkhd+log((1-delta.est[iter-1])+delta.est[iter-1]*lkhd.gene[i])
-
-    cate.stat[g]=2*total.lkhd
-    cate.pvalue[g]=pchisq(2*total.lkhd, 1, lower.tail=F)
+    cate.stat[g]=2*log(cate.lkhd[g])
+    cate.pvalue[g]=pchisq(cate.stat[g], 1, lower.tail=F)
   } # end of g
+  if (num.group==1)
+  {
+    if (nrow(full.info.var)>0)
+      for (j in 1:nrow(full.info.var))
+          cate.lkhd[1]=cate.lkhd[1]*((1-beta.k[(iter-1)])+beta.k[(iter-1)]*full.info.var$var.BF[j])
+
+        cate.stat[1]=2*log(cate.lkhd)
+        cate.pvalue[1]=pchisq(cate.stat, 1, lower.tail=F)
+
+  }
   ######################
   if (num.group>1)
     beta.est=beta.k[(iter-1),]

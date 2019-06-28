@@ -310,7 +310,7 @@ ggplot(power_gather_combine, aes(x=gamma_bar, y=TPR/100, group=Method))+
 #### Type one error
 
 To investigate the type one error, we simulated 100 independent data sets, with varying sample size $N1=N0=1000, 3000, 5000$, 100 variants in one group; no risk variants, i.e., $\eta=0$ and other parameters are pretty the same as before 
-$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$.
+$\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$. The basic idea is to see the proportion of significant test under null. 
 
 
 ```{r, echo=F}
@@ -366,7 +366,47 @@ MIRAGE: first estimate parameter $\eta$, then do likelihood ratio test
 
 
 
+```{r, echo=F}
+null.pvalue.truegamma5.use3=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use3.RData")
+null.pvalue.truegamma5.use3.gather=null.pvalue.truegamma5.use3 %>% gather(Method, pvalue, 2:4)
+null.pvalue.truegamma5.use3.combine=null.pvalue.truegamma5.use3.gather %>% add_column(gammabar=3)
 
+null.pvalue.truegamma5.use4=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use4.RData")
+null.pvalue.truegamma5.use4.gather=null.pvalue.truegamma5.use4 %>% gather(Method, pvalue, 2:4)
+null.pvalue.truegamma5.use4.combine=null.pvalue.truegamma5.use4.gather %>% add_column(gammabar=4)
+
+null.pvalue.truegamma5.use5=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use5.RData")
+null.pvalue.truegamma5.use5.gather=null.pvalue.truegamma5.use5 %>% gather(Method, pvalue, 2:4)
+null.pvalue.truegamma5.use5.combine=null.pvalue.truegamma5.use5.gather %>% add_column(gammabar=5)
+
+null.pvalue.truegamma5.use6=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use6.RData")
+null.pvalue.truegamma5.use6.gather=null.pvalue.truegamma5.use6 %>% gather(Method, pvalue, 2:4)
+null.pvalue.truegamma5.use6.combine=null.pvalue.truegamma5.use6.gather %>% add_column(gammabar=6)
+
+
+null.pvalue.combine=bind_rows(null.pvalue.truegamma5.use3.combine, null.pvalue.truegamma5.use4.combine, null.pvalue.truegamma5.use5.combine, null.pvalue.truegamma5.use6.combine)
+
+null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="MIRAGE-VS", Fisher.pvalue="Burden", SKATO.pvalue="SKATO")
+
+###### loot at count with p value less than 0.05 and manually enter the result
+null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
+
+null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),4)), count=c(3,4,5, 4,2,1, 6,3,4, 1,7,6),gammabar=rep(3:6, each=3))
+null.pvalue.combine.significant.count$gammabar=as.factor(null.pvalue.combine.significant.count$gammabar)
+ggplot(null.pvalue.combine.significant.count, aes(x=gammabar, y=count/100, fill=Method)) +
+  geom_bar(stat="identity", position="dodge")+
+  ggtitle(expression(paste("True ", bar(gamma), "=5")))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
+  xlab(expression(paste(bar(gamma))))+
+ylab("% of test with p value less than 5%" )
+```
+
+This is to test how sensitive is the effect of mis-specified $\bar{\gamma}$ on type one error.  
+
+
+The same parameter settings. The only diffrence is that $\bar{\gamma}=5$ when generating the data and different mis-specified $\bar{\gamma}$ (on x axis) is used to make inference.  
 
 
 
@@ -449,7 +489,39 @@ p2=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) +
   ylim(0.05,0.15)+
    geom_hline(yintercept=0.1,linetype="dashed", color = "red")
 
-grid.arrange(p1, p2, nrow=1)
+############ sample size 5000
+bargamma_2=load("../output/Varybargamma/gammabar_2_samplesize5000.RData")
+all.eta[,1]=all.pi[,1]
+bargamma_3=load("../output/Varybargamma/gammabar_3_samplesize5000.RData")
+all.eta[,2]=all.pi[,1]
+bargamma_4=load("../output/Varybargamma/gammabar_4_samplesize5000.RData")
+all.eta[,3]=all.pi[,1]
+bargamma_5=load("../output/Varybargamma/gammabar_5_samplesize5000.RData")
+all.eta[,4]=all.pi[,1]
+#bargamma_6=load("../output/Varybargamma/bargamma_6.RData")
+#all.eta[,5]=all.pi[,1]
+colnames(all.eta)=2:(2+num.gamma-1)
+
+eta.mean=c(mean(all.eta[which(all.eta[,1]>0),1]), mean(all.eta[which(all.eta[,2]>0),2]), mean(all.eta[which(all.eta[,3]>0),3]), mean(all.eta[which(all.eta[,4]>0),4]))
+eta.sd=c(sd(all.eta[which(all.eta[,1]>0),1]), sd(all.eta[which(all.eta[,2]>0),2]), sd(all.eta[which(all.eta[,3]>0),3]), sd(all.eta[which(all.eta[,4]>0),4]))
+
+bar.gamma=2:5
+eta.summary=data.frame(mean=eta.mean, sd=eta.sd, bar.gamma=bar.gamma)
+p3=ggplot(eta.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  ggtitle(" N1=N0=5000")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  xlab(expression(paste(bar(gamma))))+
+  ylab("")+ 
+  guides(fill=guide_legend(title=NULL))+
+  ylim(0.05,0.15)+
+   geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+
+#png("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig3-parameter_estimate.png")
+grid.arrange(p1, p2, p3,  nrow=1)
+#dev.off()
 ```  
   
 
@@ -1063,21 +1135,25 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
+method=rep(c( "Burden(0.556)", "SKATO(0.724)", "MIRAGE(0.839)", "CMC(0.755)", "ASUM(0.672)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
-  geom_roc(increasing=F, n.cuts=0)+
+  geom_roc(increasing=F, n.cuts=0, labels=F)+
   style_roc(theme = theme_grey)
 p_delta0.1=p.basic+
   #annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
   #         label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.1")))+
+  theme_classic()+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
 theme(axis.text.y= element_text(size=6))+
-  theme(axis.text = element_text(size = 1))
-p_delta0.1
+  geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
+  theme(legend.text = element_text(size = 7)) # adjust legend text size 
+#p_delta0.1
 ```
 
 
@@ -1105,7 +1181,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
+method=rep(c("Burden(0.446)", "SKATO(0.540)", "MIRAGE(0.805)", "CMC(0.563)", "ASUM(0.417)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1115,10 +1191,16 @@ p1_delta0.01=p1.basic+
  # annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
 #           label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.01")))+
+  theme_classic()+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
 theme(axis.text.y= element_text(size=6))+
-  theme(axis.text = element_text(size = 1))
+  theme(axis.text = element_text(size = 1))+
+  geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0))+
+  theme(legend.text = element_text(size = 7)) # adjust legend text size 
+#p1_delta0.01
 
 ################################ delta=0.05
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
@@ -1144,7 +1226,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
+method=rep(c( "Burden(0.513)", "SKATO(0.722)", "MIRAGE(0.821)", "CMC(0.723)", "ASUM(0.650)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1155,11 +1237,17 @@ p2_delta0.05=p2.basic+
 #  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.34, 0.4), 
 #           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.05")))+
+  theme_classic()+
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
 theme(axis.text.y= element_text(size=6))+
-  theme(axis.text = element_text(size = 1))
-p2_delta0.05
+  theme(axis.text = element_text(size = 1))+
+geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0))+
+  theme(legend.text = element_text(size = 7))+ # adjust legend text size 
+  theme(axis.title.y = element_blank())  # remove labels on y axis 
+#p2_delta0.05
 #grid.arrange(p1, p2, top=grid.text("ROC curves"), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000"))), nrow=1)
 #dev.off()
 
@@ -1187,7 +1275,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden", "SKATO", "MIRAGE", "CMC", "ASUM"), each=num_run)
+method=rep(c( "Burden(0.543)", "SKATO(0.756)", "MIRAGE(0.843)", "CMC(0.744)", "ASUM(0.672)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1198,22 +1286,24 @@ p_delta0.2=p2.basic+
  # annotate("text", x =rep(0.7,8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
 #           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
   ggtitle(expression(paste(delta, "=0.2")))+
+  theme_classic()+  # make the background as classic clear 
 theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
  theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
 theme(axis.text.y= element_text(size=6))+
-  theme(axis.text = element_text(size = 1))
-p_delta0.2
+  theme(axis.text = element_text(size = 1))+
+  geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # no legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
+  theme(legend.text = element_text(size = 7))+ # adjust legend text size 
+  theme(axis.title.y = element_blank())  # remove labels on y axis 
+#p_delta0.2
 ```
 
 ```{r, echo=F}
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Main/Fig3-power_comparison_MIRAGE-gene.pdf")
 grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
 #dev.off()
-#grid.arrange(p1_delta0.01, p_delta0.1, nrow=1) 
-#p1_delta0.01
-#p2_delta0.05
-#p_delta0.1
-#p_delta0.2
+
 ```
 
 **Parameter estimate**
