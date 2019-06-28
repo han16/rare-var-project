@@ -337,7 +337,7 @@ null.pvalue.combine.significant.count$sample.size=as.factor(null.pvalue.combine.
 ggplot(null.pvalue.combine.significant.count, aes(x=sample.size, y=count/100, fill=Method)) +
   geom_bar(stat="identity", position="dodge")+
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
-  xlab("N1=N0")+ylab("% of test with p value less than 5%" )+
+  xlab("N1=N0")+ylab("False positive rate with p value less than 5%" )+
   theme_classic()
 
 #ggplot(null.pvalue.SS5000.gather, aes(x=pvalue, fill=Method))+
@@ -400,7 +400,7 @@ ggplot(null.pvalue.combine.significant.count, aes(x=gammabar, y=count/100, fill=
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
   xlab(expression(paste(bar(gamma))))+
-ylab("% of test with p value less than 5%" )
+ylab("False positive rate with p value less than 5%" )
 ```
 
 This is to test how sensitive is the effect of mis-specified $\bar{\gamma}$ on type one error.  
