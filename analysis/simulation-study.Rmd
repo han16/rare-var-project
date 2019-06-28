@@ -406,7 +406,7 @@ ylab("% of test with p value less than 5%" )
 This is to test how sensitive is the effect of mis-specified $\bar{\gamma}$ on type one error.  
 
 
-The same parameter settings. The only diffrence is that $\bar{\gamma}=5$ when generating the data and different mis-specified $\bar{\gamma}$ (on x axis) is used to make inference.  
+The same parameter settings. The only diffrence is that $\bar{\gamma}=5$ when generating the data and different mis-specified $\bar{\gamma}$ (on x axis) is used to make inference.  N1=N0=3000. 
 
 
 
