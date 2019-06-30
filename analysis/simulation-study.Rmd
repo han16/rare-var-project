@@ -176,7 +176,7 @@ grid.arrange(g1, g2, g3, nrow=1)
 #### Sensitivity analysis of $\bar{\gamma}$
 
 
-We simulated 100  variants in one category. $\eta= 0.4$, true $\bar{\gamma}=5$,   and we vary $\bar{\gamma}=3,4,5,6$ and $N1=N0=1000, 3000, 5000$,, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. We independetly run Monte Carlo  100 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO.  Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants $\hat{\eta}$, and performs the likelihood ratio test to get p value.  
+We simulated 100  variants in one category. $\eta= 0.4$, true $\bar{\gamma}=5$,   and we vary $\bar{\gamma}=3,4,5,6$ and $N1=N0=1000, 3000, 5000$,, $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$. We independetly run Monte Carlo  1000 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO.  Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants $\hat{\eta}$, and performs the likelihood ratio test to get p value.  
 
 
 
@@ -184,10 +184,10 @@ We simulated 100  variants in one category. $\eta= 0.4$, true $\bar{\gamma}=5$, 
 
 
 ########### sample size 1000
-gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.sample.size1000.RData")
-gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.sample.size1000.RData")
-gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.sample.size1000.RData")
-gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.sample.size1000.RData")
+gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.sample.size1000.replicate1000.RData")
+gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.sample.size1000.replicate1000.RData")
+gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.sample.size1000.replicate1000.RData")
+gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.sample.size1000.replicate1000.RData")
 gammabar3_mirage=as.numeric(as_tibble(gammabar3) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
 gammabar3_burden=as.numeric(as_tibble(gammabar3) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
 gammabar3_skato=as.numeric(as_tibble(gammabar3) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
@@ -208,7 +208,8 @@ power=tibble(gamma_bar=3:6, MIRAGE_VS=c(gammabar3_mirage, gammabar4_mirage, gamm
 power_gather=power %>% gather(Method,TPR, MIRAGE_VS:SKATO)
 power_gather_SS1000=power_gather %>% add_column(SampleSize=1000)
 
-g3=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
+power_gather$Method =power_gather$Method %>% recode(MIRAGE_VS="MIRAGE-VS") 
+g3=ggplot(power_gather, aes(x=gamma_bar, y=TPR/1000, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
   ylim(0,1)+
   geom_point(aes(color=Method, shape=Method))+
@@ -220,10 +221,10 @@ g3=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
 
 
 ########### sample size 3000
-gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.sample.size3000.RData")
-gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.sample.size3000.RData")
-gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.sample.size3000.RData")
-gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.sample.size3000.RData")
+gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.sample.size3000.replicate1000.RData")
+gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.sample.size3000.replicate1000.RData")
+gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.sample.size3000.replicate1000.RData")
+gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.sample.size3000.replicate1000.RData")
 gammabar3_mirage=as.numeric(as_tibble(gammabar3) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
 gammabar3_burden=as.numeric(as_tibble(gammabar3) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
 gammabar3_skato=as.numeric(as_tibble(gammabar3) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
@@ -244,7 +245,8 @@ power=tibble(gamma_bar=3:6, MIRAGE_VS=c(gammabar3_mirage, gammabar4_mirage, gamm
 power_gather=power %>% gather(Method,TPR, MIRAGE_VS:SKATO)
 power_gather_SS3000=power_gather %>% add_column(SampleSize=3000)
 
-g2=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
+power_gather$Method =power_gather$Method %>% recode(MIRAGE_VS="MIRAGE-VS") 
+g2=ggplot(power_gather, aes(x=gamma_bar, y=TPR/1000, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
   ylim(0,1)+
   geom_point(aes(color=Method, shape=Method))+
@@ -256,10 +258,10 @@ g2=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
 
 
 ########### sample size 5000
-gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.RData")
-gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.RData")
-gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.RData")
-gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.RData")
+gammabar3=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.3.true5.eta.0.4.sample.size5000.replicate1000.RData")
+gammabar4=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.4.true5.eta.0.4.sample.size5000.replicate1000.RData")
+gammabar5=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.5.true5.eta.0.4.sample.size5000.replicate1000.RData")
+gammabar6=loadRData("../output/Power_Analysis_MIRAGE-VS/varyGammamean/gamma.bar.6.true5.eta.0.4.sample.size5000.replicate1000.RData")
 gammabar3_mirage=as.numeric(as_tibble(gammabar3) %>% filter(MIRAGE.pvalue<sig.cutoff) %>% tally())
 gammabar3_burden=as.numeric(as_tibble(gammabar3) %>% filter(Fisher.pvalue<sig.cutoff) %>% tally())
 gammabar3_skato=as.numeric(as_tibble(gammabar3) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
@@ -280,7 +282,8 @@ power=tibble(gamma_bar=3:6, MIRAGE_VS=c(gammabar3_mirage, gammabar4_mirage, gamm
 power_gather=power %>% gather(Method,TPR, MIRAGE_VS:SKATO)
 power_gather_SS5000=power_gather %>% add_column(SampleSize=5000)
 
-g1=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
+power_gather$Method =power_gather$Method %>% recode(MIRAGE_VS="MIRAGE-VS")
+g1=ggplot(power_gather, aes(x=gamma_bar, y=TPR/1000, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
   ylim(0,1)+
   geom_point(aes(color=Method, shape=Method))+
@@ -293,7 +296,8 @@ g1=ggplot(power_gather, aes(x=gamma_bar, y=TPR/100, group=Method))+
 power_gather_combine=bind_rows(power_gather_SS1000, power_gather_SS3000, power_gather_SS5000)
 
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig1-power_comparison_MIRAGE-vs_varyGammabar.pdf")
-ggplot(power_gather_combine, aes(x=gamma_bar, y=TPR/100, group=Method))+
+power_gather_combine$Method=power_gather_combine$Method %>% recode(MIRAGE_VS="MIRAGE-VS")
+ggplot(power_gather_combine, aes(x=gamma_bar, y=TPR/1000, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
   ylim(0,1)+
   geom_point(aes(color=Method, shape=Method))+
