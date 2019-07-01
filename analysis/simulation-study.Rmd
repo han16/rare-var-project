@@ -313,20 +313,20 @@ ggplot(power_gather_combine, aes(x=gamma_bar, y=TPR/1000, group=Method))+
 
 #### Type one error
 
-To investigate the type one error, we simulated 100 independent data sets, with varying sample size $N1=N0=1000, 3000, 5000$, 100 variants in one group; no risk variants, i.e., $\eta=0$ and other parameters are pretty the same as before 
+To investigate the type one error, we simulated 1000 independent data sets, with varying sample size $N1=N0=1000, 3000, 5000$, 100 variants in one group; no risk variants, i.e., $\eta=0$ and other parameters are pretty the same as before 
 $\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1$. The basic idea is to see the proportion of significant test under null. 
 
 
 ```{r, echo=F}
-null.pvalue.SS1000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS1000.RData")
+null.pvalue.SS1000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS1000_replicate1000.RData")
 null.pvalue.SS1000.gather=null.pvalue.SS1000 %>% gather(Method, pvalue, 2:4)
 null.pvalue.SS1000.combine=null.pvalue.SS1000.gather %>% add_column(SampleSize=1000)
 
-null.pvalue.SS3000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000.RData")
+null.pvalue.SS3000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_replicate1000.RData")
 null.pvalue.SS3000.gather=null.pvalue.SS3000 %>% gather(Method, pvalue, 2:4)
 null.pvalue.SS3000.combine=null.pvalue.SS3000.gather %>% add_column(SampleSize=3000)
 
-null.pvalue.SS5000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS5000.RData")
+null.pvalue.SS5000=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS5000_replicate1000.RData")
 null.pvalue.SS5000.gather=null.pvalue.SS5000 %>% gather(Method, pvalue, 2:4)
 null.pvalue.SS5000.combine=null.pvalue.SS5000.gather %>% add_column(SampleSize=5000)
 
@@ -336,12 +336,12 @@ null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="
 
 ###### loot at count with p value less than 0.05 
 null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
-null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),3)), count=c(4,2,3, 1,2,4, 4,2,6),sample.size=rep(c(1000,3000, 5000), each=3))
+null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),3)), count=c(21,26,31, 14,38,45, 15,37,42),sample.size=rep(c(1000,3000, 5000), each=3))
 null.pvalue.combine.significant.count$sample.size=as.factor(null.pvalue.combine.significant.count$sample.size)
-ggplot(null.pvalue.combine.significant.count, aes(x=sample.size, y=count/100, fill=Method)) +
+ggplot(null.pvalue.combine.significant.count, aes(x=sample.size, y=count/1000, fill=Method)) +
   geom_bar(stat="identity", position="dodge")+
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
-  xlab("N1=N0")+ylab("False positive rate with p value less than 5%" )+
+  xlab("N1=N0")+ylab("False positive (p value <5%) rate" )+
   theme_classic()
 
 #ggplot(null.pvalue.SS5000.gather, aes(x=pvalue, fill=Method))+
@@ -371,19 +371,19 @@ MIRAGE: first estimate parameter $\eta$, then do likelihood ratio test
 
 
 ```{r, echo=F}
-null.pvalue.truegamma5.use3=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use3.RData")
+null.pvalue.truegamma5.use3=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use3_replicate1000.RData")
 null.pvalue.truegamma5.use3.gather=null.pvalue.truegamma5.use3 %>% gather(Method, pvalue, 2:4)
 null.pvalue.truegamma5.use3.combine=null.pvalue.truegamma5.use3.gather %>% add_column(gammabar=3)
 
-null.pvalue.truegamma5.use4=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use4.RData")
+null.pvalue.truegamma5.use4=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use4_replicate1000.RData")
 null.pvalue.truegamma5.use4.gather=null.pvalue.truegamma5.use4 %>% gather(Method, pvalue, 2:4)
 null.pvalue.truegamma5.use4.combine=null.pvalue.truegamma5.use4.gather %>% add_column(gammabar=4)
 
-null.pvalue.truegamma5.use5=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use5.RData")
+null.pvalue.truegamma5.use5=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use5_replicate1000.RData")
 null.pvalue.truegamma5.use5.gather=null.pvalue.truegamma5.use5 %>% gather(Method, pvalue, 2:4)
 null.pvalue.truegamma5.use5.combine=null.pvalue.truegamma5.use5.gather %>% add_column(gammabar=5)
 
-null.pvalue.truegamma5.use6=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use6.RData")
+null.pvalue.truegamma5.use6=loadRData("../output/TypeOneError/Simulation_OneGene_OneNonrisk_VarGroup_SS3000_truegamma5_use6_replicate1000.RData")
 null.pvalue.truegamma5.use6.gather=null.pvalue.truegamma5.use6 %>% gather(Method, pvalue, 2:4)
 null.pvalue.truegamma5.use6.combine=null.pvalue.truegamma5.use6.gather %>% add_column(gammabar=6)
 
@@ -395,16 +395,16 @@ null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="
 ###### loot at count with p value less than 0.05 and manually enter the result
 null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
 
-null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),4)), count=c(3,4,5, 4,2,1, 6,3,4, 1,7,6),gammabar=rep(3:6, each=3))
+null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),4)), count=c(22,32,39, 22,46,55, 25,32,44, 11,35,47),gammabar=rep(3:6, each=3))
 null.pvalue.combine.significant.count$gammabar=as.factor(null.pvalue.combine.significant.count$gammabar)
-ggplot(null.pvalue.combine.significant.count, aes(x=gammabar, y=count/100, fill=Method)) +
+ggplot(null.pvalue.combine.significant.count, aes(x=gammabar, y=count/1000, fill=Method)) +
   geom_bar(stat="identity", position="dodge")+
   ggtitle(expression(paste("True ", bar(gamma), "=5")))+
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
   xlab(expression(paste(bar(gamma))))+
-ylab("False positive rate with p value less than 5%" )
+ylab("False positive (p values less than 5%) rate" )
 ```
 
 This is to test how sensitive is the effect of mis-specified $\bar{\gamma}$ on type one error.  
