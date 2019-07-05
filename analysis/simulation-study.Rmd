@@ -338,12 +338,13 @@ null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="
 null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
 null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),3)), count=c(21,26,31, 14,38,45, 15,37,42),sample.size=rep(c(1000,3000, 5000), each=3))
 null.pvalue.combine.significant.count$sample.size=as.factor(null.pvalue.combine.significant.count$sample.size)
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig2-typeIerror_MIRAGE-vs.pdf")
 ggplot(null.pvalue.combine.significant.count, aes(x=sample.size, y=count/1000, fill=Method)) +
   geom_bar(stat="identity", position="dodge")+
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
   xlab("N1=N0")+ylab("False positive (p value <5%) rate" )+
   theme_classic()
-
+#dev.off()
 #ggplot(null.pvalue.SS5000.gather, aes(x=pvalue, fill=Method))+
 #geom_histogram(position="dodge2")+
 #  ylim(c(0,100))+
@@ -397,6 +398,8 @@ null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
 
 null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),4)), count=c(22,32,39, 22,46,55, 25,32,44, 11,35,47),gammabar=rep(3:6, each=3))
 null.pvalue.combine.significant.count$gammabar=as.factor(null.pvalue.combine.significant.count$gammabar)
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig2-typeIerror_MIRAGE-vs_misspecified_gammabar.pdf")
 ggplot(null.pvalue.combine.significant.count, aes(x=gammabar, y=count/1000, fill=Method)) +
   geom_bar(stat="identity", position="dodge")+
   ggtitle(expression(paste("True ", bar(gamma), "=5")))+
@@ -405,6 +408,7 @@ ggplot(null.pvalue.combine.significant.count, aes(x=gammabar, y=count/1000, fill
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
   xlab(expression(paste(bar(gamma))))+
 ylab("False positive (p values less than 5%) rate" )
+#dev.off()
 ```
 
 This is to test how sensitive is the effect of mis-specified $\bar{\gamma}$ on type one error.  
@@ -1158,6 +1162,28 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
   theme(legend.text = element_text(size = 7)) # adjust legend text size 
 #p_delta0.1
+
+################## comparison among three burden p values ##########
+method=rep(c( "Burden(0.556)", "Burden-adj(0.565)", "Burden-combine(0.437)"), each=num_run)
+
+roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, fisher.combine.pvalue), method=method)
+p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0, labels=F)+
+  style_roc(theme = theme_grey)
+p_delta0.1_burden=p.basic_burden+
+  #annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+  #         label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, "=0.1")))+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
+  theme(legend.text = element_text(size = 7)) # adjust legend text size 
+#p_delta0.1_burden
+
 ```
 
 
@@ -1206,6 +1232,27 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.text = element_text(size = 7)) # adjust legend text size 
 #p1_delta0.01
 
+################## comparison among three burden p values ##########
+method=rep(c( "Burden(0.446)", "Burden-adj(0.386)", "Burden-combine(0.607)"), each=num_run)
+
+roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, fisher.combine.pvalue), method=method)
+p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0, labels=F)+
+  style_roc(theme = theme_grey)
+p_delta0.01_burden=p.basic_burden+
+  #annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+  #         label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, "=0.01")))+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # no legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0))+
+  theme(legend.text = element_text(size = 7)) # adjust legend text size 
+#p_delta0.01_burden
+############################################################################################################
 ################################ delta=0.05
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
 load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/6methods_delta0.05_gammamean335_2.RData")
@@ -1254,8 +1301,30 @@ geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line
 #p2_delta0.05
 #grid.arrange(p1, p2, top=grid.text("ROC curves"), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000"))), nrow=1)
 #dev.off()
+####################### comparison among three burdens ############
+method=rep(c( "Burden(0.513)", "Burden-adj(0.518)", "Burden-combine(0.456)"), each=num_run)
 
-#############################
+roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, fisher.combine.pvalue), method=method)
+p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0, labels=F)+
+  style_roc(theme = theme_grey)
+p_delta0.05_burden=p.basic_burden+
+  #annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+  #         label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, "=0.05")))+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
+  theme(legend.text = element_text(size = 7))+ # adjust legend text size 
+  theme(axis.title.y = element_blank())  # remove labels on y axis 
+#p_delta0.05_burden
+
+######################################################################################################
+############################# delta=0.2
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
 load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/6methods_delta0.2_gammamean335.RData")
 i=1
@@ -1301,6 +1370,28 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.text = element_text(size = 7))+ # adjust legend text size 
   theme(axis.title.y = element_blank())  # remove labels on y axis 
 #p_delta0.2
+################## comparison among three burdens ########
+method=rep(c( "Burden(0.543)", "Burden-adj(0.526)", "Burden-combine(0.464)"), each=num_run)
+
+roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, fisher.combine.pvalue), method=method)
+p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0, labels=F)+
+  style_roc(theme = theme_grey)
+p_delta0.2_burden=p.basic_burden+
+  #annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+  #         label = paste(c("ASUM:AUC", "Burden_adj:AUC", "Burden:AUC=", "Burden_comb:AUC", "CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, "=0.2")))+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
+  theme(legend.text = element_text(size = 7))+ # adjust legend text size 
+  theme(axis.title.y = element_blank())  # remove labels on y axis 
+#p_delta0.2_burden
+
 ```
 
 ```{r, echo=F}
@@ -1309,6 +1400,17 @@ grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2)
 #dev.off()
 
 ```
+
+
+Comparisons among three burden tests 
+
+```{r, echo=F}
+pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-power_comparison_three-burden-gene.pdf")
+grid.arrange(p_delta0.01_burden, p_delta0.05_burden, p_delta0.1_burden, p_delta0.2_burden, nrow=2) 
+dev.off()
+
+```
+
 
 **Parameter estimate**
 

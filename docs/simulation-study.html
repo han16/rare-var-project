@@ -527,9 +527,12 @@ div.tocify {
 <p><strong>burden-adj: for every gene, compute p values for 3 variant categories, adjust p values by bonferroni correction and take the minimum</strong></p>
 <p><span class="math inline">\(\bar{\gamma}=3,3,5\)</span>. burden-comb: use Fisher method to comine p values from 3 independent tests.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>Comparisons among three burden tests</p>
+<pre><code>## png 
+##   2</code></pre>
 <p><strong>Parameter estimate</strong></p>
 <p><span class="math inline">\(\beta_1=0.05,\beta_2=0.2, \beta_3=0.5, \delta=0.1\)</span></p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 </div>
 </div>
 <div id="type-i-error" class="section level3">
@@ -538,15 +541,15 @@ div.tocify {
 <h4>Only variant level, no gene level</h4>
 <p>To investigate the type one error, we simulated 100 independent data sets, each with <span class="math inline">\(N1=N0=3000\)</span>, 100 variants in one group; no risk variants, i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma= 1\)</span>.</p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <p>Burden test: use fisher exact test MIRAGE: first estimate parameter <span class="math inline">\(\eta\)</span>, then do likelihood ratio test</p>
 <p>To investigate the type one error, we simulated one independent data set, with <span class="math inline">\(N1=N0=3000\)</span>, 1000 genes are all non-risk genes. Every gene has 100 variants in three non-risk variant groups; no risk variant groups i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=3,4,5,\sigma= 1\)</span>.</p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-27-2.png" width="672" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-26-3.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-27-3.png" width="672" /></p>
 </div>
 </div>
 <div id="bayesian-fdr-control" class="section level3">
@@ -554,12 +557,12 @@ div.tocify {
 <div id="bayesian-fdr-vs-actual-fdr" class="section level4">
 <h4>Bayesian FDR vs actual FDR</h4>
 <p>Simulated one data set, <span class="math inline">\(N1=N0=1000, 3000, 5000\)</span>, 10% of 1000 genes are risk genes. Every gene has 100 variants in three variant groups with <span class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and <span class="math inline">\(\bar{\gamma}=3,3,5\)</span> respectively and the proportion of variants are 60%, 30% and 10%. Other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1\)</span>.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 </div>
 <div id="robustness-of-bayesian-fdr-for-bargamma" class="section level4">
 <h4>Robustness of Bayesian FDR for <span class="math inline">\(\bar{\gamma}\)</span></h4>
 <p>Simulated one data set, <span class="math inline">\(N1=N0=3000\)</span>, 10% of 1000 genes are risk genes. Every gene has 100 variants in three variant groups with <span class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and the proportion of variants are 30%, 40% and 30%. Each data set has one fixed <span class="math inline">\(\bar{\gamma}\)</span> and it is varied at <span class="math inline">\(\bar{\gamma}=3,4,5,6\)</span>. Other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1\)</span>.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-28-1.png" width="672" /><img src="simulation-study_files/figure-html/unnamed-chunk-28-2.png" width="672" /><img src="simulation-study_files/figure-html/unnamed-chunk-28-3.png" width="672" /><img src="simulation-study_files/figure-html/unnamed-chunk-28-4.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-29-1.png" width="672" /><img src="simulation-study_files/figure-html/unnamed-chunk-29-2.png" width="672" /><img src="simulation-study_files/figure-html/unnamed-chunk-29-3.png" width="672" /><img src="simulation-study_files/figure-html/unnamed-chunk-29-4.png" width="672" /></p>
 </div>
 </div>
 </div>
