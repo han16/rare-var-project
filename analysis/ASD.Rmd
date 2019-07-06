@@ -800,7 +800,7 @@ g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=Burden.pval
   xlim(c(0,4))+
   geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
   xlab("OR")+ylab(expression(paste("-log" [10], "(p value)")))+
-  ggtitle("Burden test")+
+  ggtitle("Burden")+
   theme_classic()+
    theme(legend.position = "none")+  # no legend 
 theme(plot.title = element_text(hjust = 0.5, size=10)) +# center the title 
@@ -822,8 +822,9 @@ g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=MIRA
   #        legend.direction = "vertical")
 #+
   #theme(legend.position="bottom")
-ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  
-#grid.arrange(g1, g2, nrow=1)
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-Burden_MIRAGE-vs_CombinedFeature_Split.pdf")
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple panels share one legend 
+#dev.off()
 
 
 
@@ -840,6 +841,7 @@ MIRAGE_summary=comb.summ.MIRAGE
 pick.feature=1:6
 num.feature=length(pick.feature)
 burden_mirage_pvalue=tibble(pvalue=c(Burden_summary[pick.feature,2], MIRAGE_summary[pick.feature,2]), cate=c(rownames(Burden_summary)[pick.feature], c(rownames(Burden_summary)[pick.feature])), method=c(rep("Burden", num.feature), rep("MIRAGE", num.feature)))
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-power_comparison_MIRAGE-vs_varyGammabar.pdf")
 #pdf("../../Figure/burden_pvalue_comparison.pdf")
 #ggplot(burden_mirage_pvalue, aes(x=cate, y=-log(pvalue, base=10), fill=method))+
 #  geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab(expression(paste("-log" [10], "(p value)")))+

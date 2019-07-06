@@ -340,18 +340,25 @@ legend(1.32, 8, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16), cex=1)
 ```{r, echo=F}
 Cate=c("1", "2", "3", "4", "5", "6", "7", "8")
 OR=burden.summy[,1]; pval=burden.summy[,2]
-result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
-# pdf("C:\\Users\\han24\\OneDrive - UWM\\rare-var\\Figure\\burden_constgene.pdf")
+result.summary=tibble(Cate=Cate, OR=OR, pval=pval)
+result.summary$Cate=result.summary$Cate %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
+
+ #pdf("C:\\Users\\han24\\OneDrive - UWM\\rare-var\\Figure\\Supp\\Fig-burden_variant_group_of_constgene.pdf")
   ggplot(result.summary, aes(x=Cate, y=OR, fill=Cate))+
   geom_bar(stat="identity")+
-  ylab("")+xlab("Variant Categories")+ ggtitle("Burden analysis for eight categories")+
+  ylab("")+xlab("")+ ggtitle("")+
    geom_point(aes(x=Cate, y=-log(pval, base=10), size=-log(pval, base=10)))+ 
     coord_flip()+
     geom_hline(yintercept=1,linetype="dashed")+
   geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
     #scale_color_viridis(discrete=T)+
     guides(fill = FALSE)+
-  theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
+  theme(plot.title = element_text(hjust = 0.5, size=10))+ #center the title
+    theme(axis.text.y = element_text(angle = 0, hjust = 1,size=7))+
+    labs(size=expression(paste("-log"[10], "(p value)")))+ # the argument in labs could be size, color, fill depends on which character the legend demonstrate!!!!!!!!
+    theme(legend.text = element_text(size = 7))+ # change legend text size 
+    theme(legend.title=element_text(size=10))#+
+    #theme(legend.position="bottom")
 #dev.off()
 ```
 
@@ -367,18 +374,19 @@ result.summary=data.frame(Cate=Cate, OR=OR, pval=pval)
 
 ```{r, echo=F}
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-MIRAGE-para_est_ASD_topconstgene_var_group.pdf")
-cate.index=1:8
-para.est=tibble(cate.index=cate.index, eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17))
-ggplot(para.est, aes(x=cate.index, y=eta.est)) + 
-   geom_bar(stat="identity", 
-           position=position_dodge(), fill="sky blue")+
+cate.index=1:9
+para.est=tibble(cate.index=cate.index, eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17, 0.18))
+para.est$cate.index=para.est$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%", "9"="Proportion of risk genes")
+#para.est$cate.index=as.factor(para.est$cate.index)
+ggplot(para.est, aes(x=cate.index, y=eta.est, fill=cate.index)) + 
+   geom_bar(stat="identity")+
+ # coord_flip()+
+ # theme(legend.title=element_blank())+
+  theme(legend.position = "none")+
+  xlab("")+
   ylab("Parameter estimate")+
-  theme(legend.title=element_blank())+
-  xlab("")+ylab(expression(paste(hat(eta))))+
-  ggtitle(expression(paste(hat(delta), "=0.18")))+
-  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title+
-theme(axis.text.x = element_text(angle = 0, vjust = 0.5)) +
-  scale_x_continuous( labels = as.character(cate.index), breaks = cate.index)
+  theme(plot.title = element_text(hjust = 0.5, size=7))+  #center the title+
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=7))
   
 #dev.off()
 ```
