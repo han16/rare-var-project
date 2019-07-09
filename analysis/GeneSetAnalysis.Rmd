@@ -380,6 +380,7 @@ para.est$cate.index=para.est$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF
 #para.est$cate.index=as.factor(para.est$cate.index)
 ggplot(para.est, aes(x=cate.index, y=eta.est, fill=cate.index)) + 
    geom_bar(stat="identity")+
+  theme_classic()+
  # coord_flip()+
  # theme(legend.title=element_blank())+
   theme(legend.position = "none")+
@@ -387,6 +388,7 @@ ggplot(para.est, aes(x=cate.index, y=eta.est, fill=cate.index)) +
   ylab("Parameter estimate")+
   theme(plot.title = element_text(hjust = 0.5, size=7))+  #center the title+
 theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=7))
+
   
 #dev.off()
 ```
@@ -790,6 +792,7 @@ plotQQ.unif <- function(p.obs) {
 
 
 
+
 ```{r, echo=F}
 pvalues.othermethod=loadRData("../output/const.gene.pvalue.other.methods.RData")
 SKATO.pvalue=pvalues.othermethod$SKATO.pvalue
@@ -808,6 +811,31 @@ theo <- (ppoints(length(SKATO.pvalue)))
 #dev.off()    
 
 ```
+
+
+
+This is for LoF and damaging variants only. 
+
+
+```{r, echo=F}
+pvalues.othermethod=loadRData("../output/const.gene.pvalue.other.methods.LoFandDamagingVariant.RData")
+SKATO.pvalue=pvalues.othermethod$SKATO.pvalue
+CMC.pvalue=pvalues.othermethod$CMC.pvalue
+ASUM.pvalue=pvalues.othermethod$ASUM.pvalue
+Burden.pvalue=pvalues.othermethod$Fisher.pvalue
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf")
+par(mfrow=c(1,2))
+theo <- (ppoints(length(Burden.pvalue)))
+  qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="Burden", frame=F, cex.lab=0.8, pch=16)
+  abline(0,1,col='red')
+
+theo <- (ppoints(length(SKATO.pvalue)))
+  qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab="", main="SKATO", frame=F, cex.lab=0.8, pch=16)
+  abline(0,1,col='red')
+#dev.off()    
+
+```
+
 
 ## Constraint genes 
 

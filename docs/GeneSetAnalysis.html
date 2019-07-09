@@ -2959,6 +2959,8 @@ abline(h=0, lty=2)</code></pre>
 <div id="qq-plot-of-p-values-by-different-methods" class="section level3">
 <h3>QQ plot of p values by different methods</h3>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p>This is for LoF and damaging variants only.</p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 </div>
 </div>
 <div id="constraint-genes" class="section level2">
@@ -2984,7 +2986,7 @@ betas=c(expression(paste(hat(beta)[1])),expression(paste(hat(beta)[2])), express
 expression(paste(hat(beta)[5])),expression(paste(hat(beta)[6])), expression(paste(hat(beta)[7])),expression(paste(hat(beta)[8])))
 #legend(2, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))
 legend(4, 1, betas, col=seq(1,8), lty=rep(1,8), ncol=2)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 <p>Replace “Damaging” with “Consensus damaging”</p>
 <pre class="r"><code>beta=matrix(nrow=5, ncol=8)
 rownames(beta)=c(&quot;top10%&quot;, &quot;top10-20%&quot;, &quot;top20-30%&quot;, &quot;top30-40%&quot;, &quot;top40-50%&quot;)
@@ -2998,7 +3000,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <table style="width:81%;">
 <caption>Number of variants in C5 and C8 at different constrait level.</caption>
 <colgroup>
@@ -3137,7 +3139,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -3201,7 +3203,7 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <pre class="r"><code>para.est=c(0, 0.08, 0, 0, 0.06, 0, 0, 0.06)
 x=1:8
 plot(para.est, type=&quot;p&quot;, ylim=c(0,0.5), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of all genes in the whole genome&quot;)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">
