@@ -839,7 +839,7 @@ theo <- (ppoints(length(SKATO.pvalue)))
 
 ### Empirical distribution of BF by permutations
 
-permutate the variant count in cases and controls for every gene, calculate Bayes factor and get their empirical p value by comparing MIRAGE-BF and permutated BF. The null distribution of BF is  pooling all BF's through permutations together. 
+permutate the variant count in cases and controls for every gene 100 times, calculate Bayes factor by MIRAGE and get their empirical p value by comparing original BF and 100 permutated BF. The null distribution of BF is  pooling BF's of all genes through permutations together. 
 
 ```{r, echo=F}
 BF.permutation=loadRData("../output/const.gene.BF.by.100permutations.RData")
