@@ -2962,6 +2962,25 @@ abline(h=0, lty=2)</code></pre>
 <p>This is for LoF and damaging variants only.</p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 </div>
+<div id="empirical-distribution-of-bf-by-permutations" class="section level3">
+<h3>Empirical distribution of BF by permutations</h3>
+<p>permutate the variant count in cases and controls for every gene, calculate Bayes factor and get their empirical p value by comparing MIRAGE-BF and permutated BF. The null distribution of BF is pooling all BF’s through permutations together.</p>
+<pre><code>## # A tibble: 771 x 6
+##    Gene       BF LoF.BF nonLoF.BF post_prob empirical.pvalue
+##    &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;            &lt;dbl&gt;
+##  1 CYFIP1  27.4   1         27.4      0.858          0.00115
+##  2 EP400   15.3   0.940     16.3      0.771          0.00154
+##  3 FBN1    11.9   1         11.9      0.722          0.00200
+##  4 SRCAP    9.83  1          9.83     0.683          0.00246
+##  5 DYNC1H1  9.48  1.29       7.37     0.675          0.00259
+##  6 ABCA2    8.92  1          8.92     0.662          0.00279
+##  7 DOCK4    8.45  1          8.45     0.650          0.00293
+##  8 CACNA1D  6.28  1          6.28     0.579          0.00428
+##  9 CHD8     5.19  1.29       4.03     0.532          0.00559
+## 10 KALRN    4.79  1.29       3.72     0.513          0.00658
+## # ... with 761 more rows</code></pre>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+</div>
 </div>
 <div id="constraint-genes" class="section level2">
 <h2>Constraint genes</h2>
@@ -2986,7 +3005,7 @@ betas=c(expression(paste(hat(beta)[1])),expression(paste(hat(beta)[2])), express
 expression(paste(hat(beta)[5])),expression(paste(hat(beta)[6])), expression(paste(hat(beta)[7])),expression(paste(hat(beta)[8])))
 #legend(2, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))
 legend(4, 1, betas, col=seq(1,8), lty=rep(1,8), ncol=2)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p>Replace “Damaging” with “Consensus damaging”</p>
 <pre class="r"><code>beta=matrix(nrow=5, ncol=8)
 rownames(beta)=c(&quot;top10%&quot;, &quot;top10-20%&quot;, &quot;top20-30%&quot;, &quot;top30-40%&quot;, &quot;top40-50%&quot;)
@@ -3000,7 +3019,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 <table style="width:81%;">
 <caption>Number of variants in C5 and C8 at different constrait level.</caption>
 <colgroup>
@@ -3139,7 +3158,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -3203,7 +3222,7 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <pre class="r"><code>para.est=c(0, 0.08, 0, 0, 0.06, 0, 0, 0.06)
 x=1:8
 plot(para.est, type=&quot;p&quot;, ylim=c(0,0.5), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of all genes in the whole genome&quot;)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">

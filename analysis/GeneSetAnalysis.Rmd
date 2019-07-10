@@ -837,6 +837,34 @@ theo <- (ppoints(length(SKATO.pvalue)))
 ```
 
 
+### Empirical distribution of BF by permutations
+
+permutate the variant count in cases and controls for every gene, calculate Bayes factor and get their empirical p value by comparing MIRAGE-BF and permutated BF. The null distribution of BF is  pooling all BF's through permutations together. 
+
+```{r, echo=F}
+BF.permutation=loadRData("../output/const.gene.BF.by.100permutations.RData")
+null.BF.all.gene=NA
+for (i in 1:length(BF.permutation))
+  null.BF.all.gene=c(null.BF.all.gene, BF.permutation[[i]]$BF)
+null.BF.all.gene=null.BF.all.gene[-1]
+const.gene.BF=loadRData("../output/const.gene.BF.MIRAGE.RData")
+empirical.pvalue=numeric()
+for (i in 1:nrow(const.gene.BF))
+  empirical.pvalue[i]=1-sum(const.gene.BF[i,]$BF>null.BF.all.gene)/length(null.BF.all.gene) # empirical p value
+const.gene.BF.postprob.empirical.pvalue=const.gene.BF %>% add_column(empirical.pvalue=empirical.pvalue)
+const.gene.BF.postprob.empirical.pvalue %>% arrange(empirical.pvalue)
+```
+
+
+```{r, echo=F}
+
+theo <- (ppoints(length(empirical.pvalue)))
+  qqplot(-log(theo, base=10), -log(empirical.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="Empirical p value of Bayes factor by permutation", frame=F, cex.lab=0.8, pch=16)
+  abline(0,1,col='red')
+
+```
+
+
 ## Constraint genes 
 
 There are 17,416 genes. 
