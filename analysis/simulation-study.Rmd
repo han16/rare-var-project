@@ -1715,6 +1715,7 @@ gene.prior=0.1 # use true value
 gene.fdr=list()
 num.run=20  # there are 20 replicates 
 bayesian.fdr=0.05
+max.ylab=0.12
 actual.fdr.range=matrix(nrow=4, ncol=num.run)
 for (i in 3:6)
 {
@@ -1778,7 +1779,7 @@ p1=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
-  ylab("Bayesian FDR")+ 
+  ylab("Bayesian FDR")+ylim(c(-0.01, max.ylab))+
   guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
    geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
@@ -1798,8 +1799,6 @@ p1=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
 ##################### true gamma.bar=4 ##########
 gene.prior=0.1 # use true value
 gene.fdr=list()
-bayesian.fdr=0.05
-num.run=20  # there are 20 replicates 
 actual.fdr.range=matrix(nrow=4, ncol=num.run)
 for (i in 3:6)
 {
@@ -1863,7 +1862,7 @@ p2=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
-  ylab("")+ 
+  ylab("")+ylim(c(0, max.ylab))+  
   guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
    geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")
@@ -1873,8 +1872,6 @@ p2=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
 ##################### true gamma.bar=5, use gamma.bar=3,4,5,6 ##########
 gene.prior=0.1 # use true value
 gene.fdr=list()
-bayesian.fdr=0.05
-num.run=20  # there are 20 replicates 
 actual.fdr.range=matrix(nrow=4, ncol=num.run)
 for (i in 3:6)
 {
@@ -1938,7 +1935,7 @@ p3=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
-  ylab("Bayesian FDR")+ 
+  ylab("Bayesian FDR")+ylim(c(0, max.ylab))+  
   guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
    geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
@@ -1953,7 +1950,6 @@ p3=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
 gene.prior=0.1 # use true value
 gene.fdr=list()
 bayesian.fdr=0.05
-num.run=20  # there are 20 replicates 
 actual.fdr.range=matrix(nrow=4, ncol=num.run)
 for (i in 3:6)
 {
@@ -2013,11 +2009,12 @@ actual.fdr.summary=data.frame(mean=fdr.mean, sd=fdr.sd, bar.gamma=bar.gamma)
 p4=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) + 
    geom_point() +
   geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  #geom_pointrange(aes(ymin=c(min(actual.fdr.range[1,]),min(actual.fdr.range[2,]), min(actual.fdr.range[3,]), min(actual.fdr.range[4,])), ymax=c(max(actual.fdr.range[1,]),max(actual.fdr.range[2,]), max(actual.fdr.range[3,]), max(actual.fdr.range[4,]))))+
   ggtitle(expression(paste("True ", bar(gamma), "=6")))+
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
-  ylab("")+ 
+  ylab("")+ylim(c(0, max.ylab))+  
   guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
    geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
