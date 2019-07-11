@@ -855,6 +855,16 @@ const.gene.BF.postprob.empirical.pvalue=const.gene.BF %>% add_column(empirical.p
 const.gene.BF.postprob.empirical.pvalue %>% arrange(empirical.pvalue)
 ```
 
+Histogram of empirical p values by permutations
+
+```{r, echo=F}
+ggplot(as_tibble(empirical.pvalue),aes(x=value))+
+  geom_histogram(aes(y=..density..), colour="black", fill="white")+
+ geom_density(alpha=.2, fill="#FF6666")+
+  xlab("p value")+
+  theme_classic()
+```
+
 
 ```{r, echo=F}
 

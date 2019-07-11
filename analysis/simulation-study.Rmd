@@ -1779,7 +1779,7 @@ p1=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
-  ylab("Bayesian FDR")+ylim(c(-0.01, max.ylab))+
+  ylab("Actual FDR")+ylim(c(-0.01, max.ylab))+
   guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
    geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
@@ -1935,7 +1935,7 @@ p3=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   xlab(expression(paste(bar(gamma))))+
-  ylab("Bayesian FDR")+ylim(c(0, max.ylab))+  
+  ylab("Actual  FDR")+ylim(c(0, max.ylab))+  
   guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
    geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
