@@ -180,4 +180,4 @@ for (i in 1:length(exon.fea))
 
 }  ############# end of i
 
-#save(comb.summ, comb.summ.MIRAGE, MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.Feature.RData")
+save(MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.exon.geneset.partition.RData")

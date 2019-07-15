@@ -1602,6 +1602,11 @@ NaN
 ## &quot;MIRAGE.pvalue&quot;): object &#39;MIRAGE.pvalue&#39; not found</code></pre>
 <p><img src="ASD_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>For about 480 combined features, perform burden test and MIRAGE-vs test. use BH (Benjamini &amp; Hochberg (1995)) multiple correcttion to adjust p values and blue line are with FDR 0.05.</p>
+<p>old version which is combining exon.score, AF and gene.set</p>
+<pre><code>## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
+<p><img src="ASD_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Burden test: one sided two sample Poisson test, MIRAGE: estimate parameters, then do likelihood ratio test.</p>
 <p><strong>Feature combinations: exon/LoF/missense+gene+MAF cutoff</strong></p>
 <pre class="r"><code>kable(comb.summ[,1:4], caption=&quot;Combined Annotations&quot;, &quot;html&quot;)%&gt;%
@@ -18428,7 +18433,7 @@ LoF constraint gene
 </tbody>
 </table>
 </div>
-<p><img src="ASD_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="ASD_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">
