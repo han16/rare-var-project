@@ -396,6 +396,41 @@ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=7))
 
 $\hat{\delta}=0.18$. 
 
+
+#### Top genes overlapping with SFARI genes 
+
+
+```{r, echo=F}
+BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
+Bayes_factor=as_tibble(BF_para_all_est)
+
+sort_BF=Bayes_factor %>% arrange(desc(BF))
+top10genes=as.character(sort_BF$Gene[1:10])
+all.const.gene=as.character(sort_BF$Gene)
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+## Top 10 genes 
+top10genes
+######################
+
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
+overlap1=length(intersect(top10genes, strong.ASD.gene))
+overlap2=length(intersect(all.const.gene, strong.ASD.gene))
+fisher.test(matrix(c(overlap1, overlap2, 10, 1003), nrow=2))
+
+
+##########################
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
+overlap1=length(intersect(top10genes, strong.ASD.gene))
+overlap2=length(intersect(all.const.gene, strong.ASD.gene))
+fisher.test(matrix(c(overlap1, overlap2, 10, 1003), nrow=2))
+
+
+```
+
+strong ASD gene score 1,2,3 : enrichemnt is 8/10 vs 76/1003 gives OR 10.5058 and p value $1.98\times 10^{-5}$
+
+strong ASD gene score 1,2: enrichemnt is 4/10 vs 31/1003 gives OR 12.8417 and p value $8.24\times 10^{-4}$
+
 #### Bayesian FDR 
 
 Below are top 20 genes with highest Bayes factor and their denovo rank. 
