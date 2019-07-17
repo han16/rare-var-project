@@ -514,6 +514,59 @@ theme(axis.text.x = element_text(angle =0, vjust = 0.5, size=7))+
   geom_text(aes(label=pvalue), position=position_dodge(width=0.9), vjust=-0.25)
 ```
 
+** Enrichment of top MIRAGE genes with Strong ASD gene, plausible ASD gene and DNM candidate genes 
+Strong ASD gene: SFARI score 1,2
+plausible ASD gene: SFARI score 3
+DNM candidate genes: top 1000 DNM genes
+
+
+```{r, echo=F}
+############# MIRAGE gene 
+BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
+Bayes_factor=as_tibble(BF_para_all_est)
+sort_BF=Bayes_factor %>% arrange(desc(BF))
+top10genes=as.character(sort_BF$Gene[1:10])
+top20genes=as.character(sort_BF$Gene[1:20])
+all.const.gene=as.character(sort_BF$Gene)
+
+################## SFARI gene 
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+plausible.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
+
+################## de novo gene 
+denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
+top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
+
+top10mirage.percent=c(length(intersect(top10genes, strong.ASD.gene)), length(intersect(top10genes, plausible.ASD.gene)), length(intersect(top10genes, top1000.denovo.gene)))/10
+top20mirage.percent=c(length(intersect(top20genes, strong.ASD.gene)), length(intersect(top20genes, plausible.ASD.gene)), length(intersect(top20genes, top1000.denovo.gene)))/20
+const.gene.percent=c(length(intersect(all.const.gene, strong.ASD.gene)), length(intersect(all.const.gene, plausible.ASD.gene)), length(intersect(all.const.gene, top1000.denovo.gene)))/1003
+top10mirage.enrichment=tibble(class=c("Top10 MIRAGE Gene", "All 1003 Constraint Gene"), Strong.ASD=c(top10mirage.percent[1], const.gene.percent[1]), Plausible.ASD=c(top10mirage.percent[2], const.gene.percent[2]), DNM=c(top10mirage.percent[3], const.gene.percent[3]))
+top10mirage.enrichment.tidy=top10mirage.enrichment %>% gather( group, percent,2:4)
+######## Top 10 mirage genes 
+ggplot(top10mirage.enrichment.tidy, aes(group, percent)) + 
+  geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+  xlab("")+
+  theme_classic()+
+   theme(legend.title = element_blank())+
+   theme(legend.position="bottom")
+########### top 20 mirage genes 
+top20mirage.enrichment=tibble(class=c("Top20 MIRAGE Gene", "All 1003 Constraint Gene"), Strong.ASD=c(top20mirage.percent[1], const.gene.percent[1]), Plausible.ASD=c(top20mirage.percent[2], const.gene.percent[2]), DNM=c(top20mirage.percent[3], const.gene.percent[3]))
+top20mirage.enrichment.tidy=top20mirage.enrichment %>% gather( group, percent,2:4)
+
+ggplot(top20mirage.enrichment.tidy, aes(group, percent)) + 
+  geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+  xlab("")+
+  theme_classic()+
+   theme(legend.title = element_blank())+
+   theme(legend.position="bottom")
+
+
+```
+
+
+
 
 
 ```{r, echo=F, eval=F}
