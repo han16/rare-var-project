@@ -374,9 +374,9 @@ result.summary$Cate=result.summary$Cate %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF
 
 ```{r, echo=F}
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-MIRAGE-para_est_ASD_topconstgene_var_group.pdf")
-cate.index=1:9
-para.est=tibble(cate.index=cate.index, eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17, 0.18))
-para.est$cate.index=para.est$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%", "9"="Proportion of risk genes")
+cate.index=1:8
+para.est=tibble(cate.index=cate.index, eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17))
+para.est$cate.index=para.est$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 #para.est$cate.index=as.factor(para.est$cate.index)
 ggplot(para.est, aes(x=cate.index, y=eta.est, fill=cate.index)) + 
    geom_bar(stat="identity")+
@@ -385,11 +385,9 @@ ggplot(para.est, aes(x=cate.index, y=eta.est, fill=cate.index)) +
  # theme(legend.title=element_blank())+
   theme(legend.position = "none")+
   xlab("")+
-  ylab("Parameter estimate")+
+  ylab(expression(paste(hat(eta))))+
   theme(plot.title = element_text(hjust = 0.5, size=7))+  #center the title+
-theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=7))
-
-  
+theme(axis.text.x = element_text(angle = 45, vjust = 0.5, size=7))
 #dev.off()
 ```
 
@@ -433,27 +431,87 @@ strong ASD gene score 1,2: enrichemnt is 4/10 vs 31/1003 gives OR 12.8417 and p 
 
 #### Bayesian FDR 
 
-Below are top 20 genes with highest Bayes factor and their denovo rank. 
+Below are top risk genes with highest Bayes factor and enrichment with de novo rank. 
 
 ```{r, echo=F}
 BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
 denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
 rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
+top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
+top.const.overlap.withdenovo=length(intersect(top1000.denovo.gene, BF_para_all_est$Gene))
 
 Bayes_factor=as_tibble(BF_para_all_est)
 sort_BF=Bayes_factor %>% arrange(desc(BF))
-sort_BF %>% print(n=20)
-top20gene=as.character(sort_BF$Gene)[1:20]
-top20gene.denovo.rank=NULL
-top20gene.denovo.qvalue=NULL
-for ( i in 1:length(top20gene))
-{
-  top20gene.denovo.rank[i]=which(rank.denovo.gene$RefSeqName==top20gene[i])
-  top20gene.denovo.qvalue[i]=rank.denovo.gene[rank.denovo.gene$RefSeqName==top20gene[i],]$qvalue.SNV
-}  
-Top20gene.with.DN.rank=tibble(Gene=top20gene, BF=sort_BF$BF[1:20], DN.rank=top20gene.denovo.rank, DN.qvalue=top20gene.denovo.qvalue)
-Top20gene.with.DN.rank
+#sort_BF %>% print(n=20)
 
+#################### non-overlapping 
+num.top.gene=seq(20,100, by=20)
+enrichment=matrix(nrow=length(num.top.gene), ncol=3)
+colnames(enrichment)=c("OR", "pvalue", "num.top.gene")
+for (i in 1:length(num.top.gene))
+{ #i=2
+  if (i==1)
+   topgene=as.character(sort_BF$Gene)[1:num.top.gene[i]]
+  if (i>1)
+    topgene=as.character(sort_BF$Gene)[num.top.gene[i-1]:num.top.gene[i]]  # non-overlapping gene sets 
+  
+  overlap=length(intersect(topgene, top1000.denovo.gene))
+  enrichment.test=fisher.test(matrix(c(overlap, top.const.overlap.withdenovo, 20, 1003), nrow=2))
+enrichment[i,]=c(enrichment.test$estimate, enrichment.test$p.value, num.top.gene[i])  
+}
+
+enrichment.result=as_tibble(enrichment)
+enrichment.result$pvalue=round(enrichment.result$pvalue,4)
+#enrichment.result$num.top.gene=enrichment.result$num.top.gene %>% recode("20"="Top 20", "40"="Top 40", "60" = "Top 60","80"= "Top 80", "100" ="Top 100", "120"="Top 120")
+#enrichemnt.test$num.top.gene=factor(enrichment.result$num.top.gene, levels=c("20", " 40", " 60", " 80", " 100", "120"))
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Main/Fig-overlap.with.denovo.gene.pdf")
+ggplot(enrichment.result, aes(x=num.top.gene, y=OR)) + 
+   geom_bar(stat="identity", fill="blue")+
+  theme_classic()+
+ # coord_flip()+
+ # theme(legend.title=element_blank())+
+  theme(legend.position = "none")+
+  xlab("")+
+  ylab("OR")+
+  theme(plot.title = element_text(hjust = 0.5, size=7))+  #center the title+
+theme(axis.text.x = element_text(angle =0, vjust = 0.5, size=7))+
+  scale_x_continuous("", labels = as.character(num.top.gene), breaks = num.top.gene)+ # list all x labels
+  geom_text(aes(label=pvalue), position=position_dodge(width=0.9), vjust=-0.25)
+#dev.off()
+
+################ overlapping 
+
+num.top.gene=seq(20,100, by=20)
+enrichment=matrix(nrow=length(num.top.gene), ncol=3)
+colnames(enrichment)=c("OR", "pvalue", "num.top.gene")
+for (i in 1:length(num.top.gene))
+{ #i=2
+   topgene=as.character(sort_BF$Gene)[1:num.top.gene[i]]
+  
+  overlap=length(intersect(topgene, top1000.denovo.gene))
+  enrichment.test=fisher.test(matrix(c(overlap, top.const.overlap.withdenovo, num.top.gene[i], 1003), nrow=2))
+enrichment[i,]=c(enrichment.test$estimate, enrichment.test$p.value, num.top.gene[i])  
+}
+
+enrichment.result=as_tibble(enrichment)
+enrichment.result$pvalue=round(enrichment.result$pvalue,4)
+#enrichment.result$num.top.gene=enrichment.result$num.top.gene %>% recode("20"="Top 20", "40"="Top 40", "60" = "Top 60","80"= "Top 80", "100" ="Top 100", "120"="Top 120")
+#enrichemnt.test$num.top.gene=factor(enrichment.result$num.top.gene, levels=c("20", " 40", " 60", " 80", " 100", "120"))
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Main/Fig-overlap.with.denovo.gene.pdf")
+ggplot(enrichment.result, aes(x=num.top.gene, y=OR)) + 
+   geom_bar(stat="identity", fill="blue")+
+  theme_classic()+
+ # coord_flip()+
+ # theme(legend.title=element_blank())+
+  theme(legend.position = "none")+
+  xlab("")+
+  ylab("OR")+
+  theme(plot.title = element_text(hjust = 0.5, size=7))+  #center the title+
+theme(axis.text.x = element_text(angle =0, vjust = 0.5, size=7))+
+  scale_x_continuous("", labels = as.character(num.top.gene), breaks = num.top.gene)+ # list all x labels
+  geom_text(aes(label=pvalue), position=position_dodge(width=0.9), vjust=-0.25)
 ```
 
 
@@ -557,16 +615,19 @@ Gene_CYFIP1=Anno.Data[which(Anno.Data$Gene=="CYFIP1"),]
 Gene_CYFIP1_par=eight.partition(Gene_CYFIP1)
 Gene_CYFIP1_merge=Gene_CYFIP1_par %>% gather(status, No.var, 3:4) 
 Gene_CYFIP1_merge$group.index=Gene_CYFIP1_merge$group.index %>% recode("1"="1", "2"="2", "3"="3", "4"="4", "5"="5", "6"="6", "7"="7", "8"="8")
+Gene_CYFIP1_merge$status=Gene_CYFIP1_merge$status %>% recode(No.case="Case", No.contr="Control")
+Gene_CYFIP1_merge=Gene_CYFIP1_merge[which(Gene_CYFIP1_merge$No.var<40),]
 ```
 
 ```{r, echo=F}
 ggplot(as_tibble(Gene_CYFIP1_merge), aes(x=ID, y=No.var, color=status, shape=group.index))+
   geom_point()+
   ggtitle("CYFIP1")+
+  theme_classic()+
   xlab("Coordinate")+ylab("#.var")+
   geom_hline(yintercept=0, linetype="solid", color = "black")+
   theme(plot.title = element_text(hjust = 0.5, size=10))+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, size=6))
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size=6))
 ```
 
 
@@ -834,18 +895,34 @@ SKATO.pvalue=pvalues.othermethod$SKATO.pvalue
 CMC.pvalue=pvalues.othermethod$CMC.pvalue
 ASUM.pvalue=pvalues.othermethod$ASUM.pvalue
 Burden.pvalue=pvalues.othermethod$Fisher.pvalue
-#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf")
+
+#######################   John storey's q value 
+library(qvalue)
+qobj.burden=qvalue(Burden.pvalue)
+localFDR.burden <- qobj.burden$lfdr
+min(localFDR.burden, na.rm=T)
+
+qobj.SKATO=qvalue(SKATO.pvalue)
+localFDR.SKATO <- qobj.SKATO$lfdr
+min(localFDR.SKATO, na.rm=T)
+#######################
+
+
+#png("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.png")
 par(mfrow=c(1,2))
 theo <- (ppoints(length(Burden.pvalue)))
-  qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="Burden")
+  qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="Burden", frame=F, cex.lab=0.8, pch=16)
   abline(0,1,col='red')
 
 theo <- (ppoints(length(SKATO.pvalue)))
-  qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="SKATO")
+  qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab="", main="SKATO", frame=F, cex.lab=0.8, pch=16)
   abline(0,1,col='red')
 #dev.off()    
 
 ```
+
+
+
 
 
 
