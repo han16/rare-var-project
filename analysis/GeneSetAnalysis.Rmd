@@ -531,7 +531,7 @@ all.const.gene=as.character(sort_BF$Gene)
 
 ################## SFARI gene 
 SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
-plausible.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
+plausible.ASD.gene=as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol)  # define strong ASD gene with score 1,2,3
 strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
 
 ################## de novo gene 
