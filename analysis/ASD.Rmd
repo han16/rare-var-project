@@ -917,7 +917,7 @@ Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>
 
 ################### save significant combined features with p values less than 0.05
 significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05) %>% arrange(MIRAGE.pvalue)
-write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.csv")
+#write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.csv")
 ###################
 y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
 
@@ -1016,7 +1016,7 @@ Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>
 
 ################### save significant combined features with p values less than 0.05
 significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05) %>% arrange(MIRAGE.pvalue)
-write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.redefined.csv")
+#write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.redefined.csv")
 ###################
 y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
 
@@ -1058,7 +1058,7 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple pane
 
 
 
-
+**** Below is damaging(4)+AF(3)+gene.set(10)+exon(6)=720 combined features
 
 ```{r, echo=F}
 rm("Burden.cate", "MIRAGE.cate.index", "MIRAGE.para.est", "MIRAGE.pvalue")
@@ -1118,7 +1118,8 @@ y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
 g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
   scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+
   geom_point()+
-  xlim(c(0,4))+ylim(c(0,y.max))+
+  xlim(c(0,4))+
+  ylim(c(0,y.max))+
   geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
   geom_hline(yintercept=-log(burden.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
   xlab("OR")+ylab(expression(paste("-log" [10], "(p value)")))+
@@ -1126,7 +1127,8 @@ g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden
   theme_classic()+
    theme(legend.position = "none")+  # no legend 
 theme(plot.title = element_text(hjust = 0.5, size=10)) +# center the title 
-theme(legend.title=element_blank())
+theme(legend.title=element_blank())+
+theme(legend.text=element_text(size=8))
 
 g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
   scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+  # manually define shapes if more than 6 groups 
@@ -1140,8 +1142,8 @@ g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log
   theme_classic()+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
   #labs(color='variant group')+   # define legend title 
-  theme(legend.title=element_blank())+
-  theme(legend.text=element_text(size=1))
+  theme(legend.title=element_blank())#+
+  #theme(legend.text=element_text(size=10))
   #theme(legend.position = c(0.8, 4),
   #        legend.direction = "vertical")
 #+
