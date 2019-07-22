@@ -914,16 +914,10 @@ Burden.MIRAGE.combine.clear=Burden.MIRAGE.combine
 Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 
 
-############ remove deplicate rows because of redundency of defining combined features. 
-#if two rows have same MIRAGE.pvalue, then they are deplicates 
-MIRAGE.pvalue=Burden.MIRAGE.combine.clear$MIRAGE.pvalue
-MIRAGE.pvalue.unique=unique(MIRAGE.pvalue)
-MIRAGE.pvalue.unique.index=match(MIRAGE.pvalue.unique, MIRAGE.pvalue)
-############
 
 ################### save significant combined features with p values less than 0.05
-significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05)
-#write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.pvalue.lessthan.0.05.csv")
+significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05) %>% arrange(MIRAGE.pvalue)
+write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.csv")
 ###################
 y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
 
@@ -968,153 +962,194 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple pane
 ```
 
 
+**** below  is redefined version to avoid redundency 
+
 
 ```{r, echo=F}
-#Burden_MIRAGE_Summary=loadRData("../output/Burden_MIRAGE_Comparison.RData")
-load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.Feature.RData")
-Burden_summary=comb.summ
-MIRAGE_summary=comb.summ.MIRAGE
-pick.feature=1:6
-num.feature=length(pick.feature)
-burden_mirage_pvalue=tibble(pvalue=c(Burden_summary[pick.feature,2], MIRAGE_summary[pick.feature,2]), cate=c(rownames(Burden_summary)[pick.feature], c(rownames(Burden_summary)[pick.feature])), method=c(rep("Burden", num.feature), rep("MIRAGE", num.feature)))
-#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-power_comparison_MIRAGE-vs_varyGammabar.pdf")
-#pdf("../../Figure/burden_pvalue_comparison.pdf")
-#ggplot(burden_mirage_pvalue, aes(x=cate, y=-log(pvalue, base=10), fill=method))+
-#  geom_bar(stat="identity", width=.5, position = "dodge")+xlab("Features")+ylab(expression(paste("-log" [10], "(p value)")))+
-#  ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
+rm("Burden.cate", "MIRAGE.cate.index", "MIRAGE.para.est", "MIRAGE.pvalue")
+load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.redefined.version.RData")
+#Burden.result=tibble(OR=as.numeric(comb.summ[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ[,c(2,6,10,14)]))
+#g1=ggplot(Burden.result, aes(x=OR, y=-log(pvalue, base=10)))+
+#  geom_point()+
 #  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
-#  coord_flip()
-#dev.off()  
-```
+#  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+#  ggtitle("Burden test")
+
+#MIRAGE.result=tibble(OR=as.numeric(comb.summ.MIRAGE[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ.MIRAGE[,c(2,6,10,14)]))
+#g2=ggplot(MIRAGE.result, aes(x=OR, y=-log(pvalue, base=10)))+
+#  geom_point()+
+#  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+#  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+#  ggtitle("MIRAGE")
 
 
-Burden test: one sided two sample Poisson test, MIRAGE: estimate parameters, then do likelihood ratio test. 
+Burden.OR=numeric(); Burden.pvalue=numeric(); No.var.case=numeric(); No.var.control=numeric()
+feature.name=numeric(); cate.index=numeric()
+for (ii in 1:length(Burden.cate))
+{
+  Burden.OR=c(Burden.OR, Burden.cate[[ii]][,1])
+  Burden.pvalue=c(Burden.pvalue, Burden.cate[[ii]][,2])
+  No.var.case=c(No.var.case, Burden.cate[[ii]][,3]*4315)
+  No.var.control=c(No.var.control, Burden.cate[[ii]][,4]*4315)
+  feature.name=c(feature.name, rownames(Burden.cate[[ii]]))
+  cate.index=c(cate.index, MIRAGE.cate.index[[ii]])
+}     
+
+############### multiple correction for p values
+MIRAGE.pvalue=unlist(MIRAGE.pvalue)
+Burden.MIRAGE.pvalue=cbind(Burden.pvalue, MIRAGE.pvalue)
+Burden.pvalue.adjust=p.adjust(Burden.pvalue, method="BH", n=length(Burden.pvalue))
+MIRAGE.pvalue.adjust=p.adjust(MIRAGE.pvalue, method="BH", n=length(MIRAGE.pvalue))
+Burden.MIRAGE.pvalue.adjust.pvalue=tibble(Burden.pvalue=Burden.pvalue, MIRAGE.pvalue=MIRAGE.pvalue, Burden.adjust.pvalue=Burden.pvalue.adjust, MIRAGE.adjust.pvalue=MIRAGE.pvalue.adjust)
+burden.pvalue.fdr.0.05.cutoff=Burden.MIRAGE.pvalue.adjust.pvalue%>% filter(Burden.adjust.pvalue<0.05) %>% summarize(max.burden.pvalue=max(Burden.pvalue)) %>% pull()
+mirage.pvalue.fdr.0.05.cutoff=Burden.MIRAGE.pvalue.adjust.pvalue%>% filter(MIRAGE.adjust.pvalue<0.05) %>% summarize(max.mirage.pvalue=max(MIRAGE.pvalue)) %>% pull()
+ 
+##############
+
+Burden.MIRAGE.combine=tibble(Burden.OR=Burden.OR, Burden.pvalue=Burden.pvalue, MIRAGE.risk.prop=unlist(MIRAGE.para.est), MIRAGE.pvalue=unlist(MIRAGE.pvalue), cate.index=unlist(MIRAGE.cate.index), No.var.case=No.var.case, No.var.control=No.var.control, combine.feature=feature.name)
+Burden.MIRAGE.combine <- drop_na(Burden.MIRAGE.combine) # remove rows with NA
+#Burden.MIRAGE.combine.clear <- as_tibble(data.matrix(Burden.MIRAGE.combine)[is.finite(rowSums(data.matrix(Burden.MIRAGE.combine))),])
+Burden.MIRAGE.combine.clear=Burden.MIRAGE.combine
+Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 
 
-**Feature combinations: exon/LoF/missense+gene+MAF cutoff**
 
+################### save significant combined features with p values less than 0.05
+significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05) %>% arrange(MIRAGE.pvalue)
+write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.redefined.csv")
+###################
+y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
 
-```{r feature combinations}
-kable(comb.summ[,1:4], caption="Combined Annotations", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px")
+g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+
+  geom_point()+
+  xlim(c(0,4))+ylim(c(0,y.max))+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(burden.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
+  xlab("OR")+ylab(expression(paste("-log" [10], "(p value)")))+
+  ggtitle("Burden")+
+  theme_classic()+
+   theme(legend.position = "none")+  # no legend 
+theme(plot.title = element_text(hjust = 0.5, size=10)) +# center the title 
+theme(legend.title=element_blank())
 
-kable(comb.summ[,5:8], caption="Combined Annotations (Cont)", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px")
-
-kable(comb.summ[,9:12], caption="Combined Annotations (Cont)", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px") 
-
-kable(comb.summ[,13:16], caption="Combined Annotations (Cont)", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px")
-
-```
-
-
-### significant features with p value less than 0.05. 
-
-**Signals with p value<0.05**
-
-
-```{r extract signal, echo=F}
-signal.row=unique(c(which(comb.summ[,2]<0.05), which(comb.summ[,6]<0.05), which(comb.summ[,10]<0.05), which(comb.summ[,14]<0.05)))
-poten.signal=comb.summ[signal.row,]
-kable(poten.signal[,1:4], caption="Signals with small p values", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px")
-
-kable(poten.signal[,5:8], caption="Signals with small p values (Cont)", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px")
-
-kable(poten.signal[,9:12], caption="Signals with small p values (Cont)", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px")
-
-
-kable(poten.signal[,13:16], caption="Signals with small p values (Cont)", "html")%>%
-kable_styling() %>%
-scroll_box(height = "200px")
-
-```
-
-
-```{r, echo=F, eval=F}
-#pdf("D:\\ResearchWork\\StatisticalGenetics\\Latex\\Paper\\PLoS\\Figure\\CombinedFeatureAFMinus2.pdf")
-#plot(poten.signal[which(poten.signal[,2]<0.05),1],seq(1, nrow(poten.signal[which(poten.signal[,2]<0.05),])),  pch=15, col=1, xlim=c(0, max(poten.signal[,1])+1), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})))
-barcenters=barplot(poten.signal[which(poten.signal[,2]<0.05),1],  pch=15, col="blue", xlim=c(0, max(poten.signal[,1])+2), ylab="", xlab="OR", yaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})), horiz=T, width=0.85)
-#lines(-log(poten.signal[which(poten.signal[,2]<0.05),2], base=10), seq(1,nrow(poten.signal[which(poten.signal[,2]<0.05),])), pch=16, col=2, type="p")
-points(-log(poten.signal[which(poten.signal[,2]<0.05),2], base=10), barcenters, pch=16, col=2, type="p")
-#segments(barcenters,poten.signal[which(poten.signal[,2]<0.05),1] , poten.signal[which(poten.signal[,2]<0.05),1],  barcenters, -log(poten.signal[which(poten.signal[,2]<0.05),2],base=10),lwd = 1.5 )
-abline(v=1, col="blue", lty=4)
-abline(v=-log(0.05, base=10), col=2, lty=4)
-axis.labels <-row.names(poten.signal[which(poten.signal[,2]<0.05),])
-axis(side=2, las=2, at=seq(1,length(axis.labels)), labels=wrap.it(axis.labels, 15), cex.axis=0.4)
-legend(3.5, 21, c("OR", "-log(p.val)"), col=c("blue",2), pch=c(15,16))
+g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+  # manually define shapes if more than 6 groups 
+  geom_point()+
+  xlab(expression(paste(hat(eta))))+
+  ylab("")+
+  ylim(c(0,y.max))+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(mirage.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
+  ggtitle("MIRAGE-VS")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
+  #labs(color='variant group')+   # define legend title 
+  theme(legend.title=element_blank())+
+  theme(legend.text=element_text(size=1))
+  #theme(legend.position = c(0.8, 4),
+  #        legend.direction = "vertical")
+#+
+  #theme(legend.position="bottom")
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-Burden_MIRAGE-vs_CombinedFeature_Split.pdf")
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple panels share one legend 
 #dev.off()
 ```
 
 
 
 
-```{r, echo=F, eval=F}
-Features=row.names(poten.signal[which(poten.signal[,2]<0.05),])
-OR=poten.signal[which(poten.signal[,2]<0.05),1]; pval=poten.signal[which(poten.signal[,2]<0.05),2]
-result.summary=tibble(Features=Features, OR=OR, pval=pval)
- #pdf("../../Figure/combined_feature_AFlessthan2per.pdf")
-  ggplot(result.summary, aes(x=Features, y=OR, fill = Features))+
-  geom_bar(stat="identity")+
-  ylab("")+xlab("Features")+ ggtitle(expression(paste("Combined features with AF<", 10^{-2})))+
-  geom_point(aes(x=Features, y=-log(pval, base=10), size=-log(pval, base=10)),
-           stat="identity")+coord_flip()+geom_hline(yintercept=1,linetype="dashed")+
-    guides(fill = FALSE)+
-  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")#+
-    #theme(legend.key.size = unit(0.65,"line"))  # this is to control legend size 
- #dev.off()
-```
-
-
-
 
 ```{r, echo=F}
-par(mfrow=c(2,2))
-plot(poten.signal[which(poten.signal[,2]<0.05),1], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,1])+1), xlab="", xaxt='n', main=expression(paste("Combined features with AF<", 10^{-2})))
-abline(h=1, col="red", lty=4)
-axis.labels <-row.names(poten.signal[which(poten.signal[,2]<0.05),])
-axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
+rm("Burden.cate", "MIRAGE.cate.index", "MIRAGE.para.est", "MIRAGE.pvalue")
+load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.old.version.v2.RData")
+#Burden.result=tibble(OR=as.numeric(comb.summ[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ[,c(2,6,10,14)]))
+#g1=ggplot(Burden.result, aes(x=OR, y=-log(pvalue, base=10)))+
+#  geom_point()+
+#  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+#  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+#  ggtitle("Burden test")
+
+#MIRAGE.result=tibble(OR=as.numeric(comb.summ.MIRAGE[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ.MIRAGE[,c(2,6,10,14)]))
+#g2=ggplot(MIRAGE.result, aes(x=OR, y=-log(pvalue, base=10)))+
+#  geom_point()+
+#  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+#  xlab("Odds ratio")+ylab(expression(paste("-log" [10], "(p value)")))+
+#  ggtitle("MIRAGE")
 
 
-plot(poten.signal[which(poten.signal[,6]<0.05),5], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,5])+1), xlab="", xaxt='n', main=expression(paste("Combined features with AF<", 10^{-3})))
-abline(h=1, col="red", lty=4)
-axis.labels <-row.names(poten.signal[which(poten.signal[,6]<0.05),])
-axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
+Burden.OR=numeric(); Burden.pvalue=numeric(); No.var.case=numeric(); No.var.control=numeric()
+feature.name=numeric(); cate.index=numeric()
+for (ii in 1:length(Burden.cate))
+{
+  Burden.OR=c(Burden.OR, Burden.cate[[ii]][,1])
+  Burden.pvalue=c(Burden.pvalue, Burden.cate[[ii]][,2])
+  No.var.case=c(No.var.case, Burden.cate[[ii]][,3]*4315)
+  No.var.control=c(No.var.control, Burden.cate[[ii]][,4]*4315)
+  feature.name=c(feature.name, rownames(Burden.cate[[ii]]))
+  cate.index=c(cate.index, MIRAGE.cate.index[[ii]])
+}     
+
+############### multiple correction for p values
+MIRAGE.pvalue=unlist(MIRAGE.pvalue)
+Burden.MIRAGE.pvalue=cbind(Burden.pvalue, MIRAGE.pvalue)
+Burden.pvalue.adjust=p.adjust(Burden.pvalue, method="BH", n=length(Burden.pvalue))
+MIRAGE.pvalue.adjust=p.adjust(MIRAGE.pvalue, method="BH", n=length(MIRAGE.pvalue))
+Burden.MIRAGE.pvalue.adjust.pvalue=tibble(Burden.pvalue=Burden.pvalue, MIRAGE.pvalue=MIRAGE.pvalue, Burden.adjust.pvalue=Burden.pvalue.adjust, MIRAGE.adjust.pvalue=MIRAGE.pvalue.adjust)
+burden.pvalue.fdr.0.05.cutoff=Burden.MIRAGE.pvalue.adjust.pvalue%>% filter(Burden.adjust.pvalue<0.05) %>% summarize(max.burden.pvalue=max(Burden.pvalue)) %>% pull()
+mirage.pvalue.fdr.0.05.cutoff=Burden.MIRAGE.pvalue.adjust.pvalue%>% filter(MIRAGE.adjust.pvalue<0.05) %>% summarize(max.mirage.pvalue=max(MIRAGE.pvalue)) %>% pull()
+ 
+##############
+
+Burden.MIRAGE.combine=tibble(Burden.OR=Burden.OR, Burden.pvalue=Burden.pvalue, MIRAGE.risk.prop=unlist(MIRAGE.para.est), MIRAGE.pvalue=unlist(MIRAGE.pvalue), cate.index=unlist(MIRAGE.cate.index), No.var.case=No.var.case, No.var.control=No.var.control, combine.feature=feature.name)
+Burden.MIRAGE.combine <- drop_na(Burden.MIRAGE.combine) # remove rows with NA
+#Burden.MIRAGE.combine.clear <- as_tibble(data.matrix(Burden.MIRAGE.combine)[is.finite(rowSums(data.matrix(Burden.MIRAGE.combine))),])
+Burden.MIRAGE.combine.clear=Burden.MIRAGE.combine
+Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 
 
-plot(poten.signal[which(poten.signal[,10]<0.05),9], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,9])+1), xlab="", xaxt='n', main=expression(paste("Combined features with AF<", 10^{-4})))
-abline(h=1, col="red", lty=4)
-axis.labels <-row.names(poten.signal[which(poten.signal[,10]<0.05),])
-axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
 
+################### save significant combined features with p values less than 0.05
+significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05) %>% arrange(MIRAGE.pvalue)
+#write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.redefined.csv")
+###################
+y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
 
-plot(poten.signal[which(poten.signal[,14]<0.05),13], ylab="OR", pch=19, ylim=c(0, max(poten.signal[,13])+1), xlab="", xaxt='n', main=expression(paste("Combined features with private variants")))
-abline(h=1, col="red", lty=4)
-axis.labels <-row.names(poten.signal[which(poten.signal[,14]<0.05),])
-axis(1, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
+g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+
+  geom_point()+
+  xlim(c(0,4))+ylim(c(0,y.max))+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(burden.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
+  xlab("OR")+ylab(expression(paste("-log" [10], "(p value)")))+
+  ggtitle("Burden")+
+  theme_classic()+
+   theme(legend.position = "none")+  # no legend 
+theme(plot.title = element_text(hjust = 0.5, size=10)) +# center the title 
+theme(legend.title=element_blank())
+
+g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+  # manually define shapes if more than 6 groups 
+  geom_point()+
+  xlab(expression(paste(hat(eta))))+
+  ylab("")+
+  ylim(c(0,y.max))+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(mirage.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
+  ggtitle("MIRAGE-VS")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
+  #labs(color='variant group')+   # define legend title 
+  theme(legend.title=element_blank())+
+  theme(legend.text=element_text(size=1))
+  #theme(legend.position = c(0.8, 4),
+  #        legend.direction = "vertical")
+#+
+  #theme(legend.position="bottom")
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-Burden_MIRAGE-vs_CombinedFeature_Split.pdf")
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple panels share one legend 
+#dev.off()
 ```
-
-
-```{r, echo=F, eval=F}
-#barplot(-log(poten.signal[which(poten.signal[,2]<0.05),2]), horiz=T)
-pval=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\output\\signal1.para.deltaof1.txt", header=T)
-plot(-log(poten.signal[which(poten.signal[,2]<0.05),2], base=10), seq(1,20), pch=16, xlim=c(0, 6), col=1, ylab="", xlab="-log(p.value)", yaxt='n')
-lines(-log(pval[,3], base=10), seq(1,20), pch=16, col=2, type="p")
-axis.labels <-row.names(poten.signal[which(poten.signal[,6]<0.05),])
-axis(2, las=2, at=seq(1,length(axis.labels)), labels=axis.labels, cex.axis=0.45)
-```
-
 
 
 
