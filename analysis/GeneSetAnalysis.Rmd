@@ -15,6 +15,8 @@ library(kableExtra)
 library(ggplot2)
 library(tidyverse)
 library(viridis)
+library(ggsignif)
+library(ggpubr)
 ```
 
 ```{r defined function, echo=F, results='hide'}
@@ -544,20 +546,39 @@ top20mirage.percent=c(length(intersect(top20genes, strong.ASD.gene)), length(int
 const.gene.percent=c(length(intersect(all.const.gene, strong.ASD.gene)), length(intersect(all.const.gene, plausible.ASD.gene)), length(intersect(all.const.gene, top1000.denovo.gene)))/1003
 top10mirage.enrichment=tibble(class=c("Top10 MIRAGE Gene", "All 1003 Constraint Gene"), Strong.ASD=c(top10mirage.percent[1], const.gene.percent[1]), Plausible.ASD=c(top10mirage.percent[2], const.gene.percent[2]), DNM=c(top10mirage.percent[3], const.gene.percent[3]))
 top10mirage.enrichment.tidy=top10mirage.enrichment %>% gather( group, percent,2:4)
+
 ######## Top 10 mirage genes 
-ggplot(top10mirage.enrichment.tidy, aes(group, percent)) + 
+top10mirage.enrichment.tidy$group =factor(top10mirage.enrichment.tidy$group, levels=c("Strong.ASD", "Plausible.ASD", "DNM")) # re order lables in x axis 
+
+pvalues=c(0.000825, 0.0028, 0.00025)
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/top_mirage_gene_enrichment.pdf")
+top10mirage_enrichment=ggplot(top10mirage.enrichment.tidy, aes(group, percent)) + 
   geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
-  xlab("")+
   theme_classic()+
+  xlab("")+ylab("Proportion of putative ASD genes")+
+  ylim(c(0, 0.8))+
+  theme(plot.title = element_text(hjust = 0.5, size=12, face="bold"))+
+  ggtitle("(C) Enrichment")+
+  #theme(plot.title = element_text(size=12))
    theme(legend.title = element_blank())+
+  geom_signif(annotations ="p=8.3E-4", y_position = 0.45  ,xmin=0.7, xmax=1.2, size=1, vjust=-0.5)+
+  geom_signif(annotations ="p=2.8E-3", y_position = 0.45  ,xmin=1.7, xmax=2.2, size=1, vjust=-0.5)+
+  geom_signif(annotations ="p=2.5E-4", y_position = 0.75  ,xmin=2.7, xmax=3.2, size=1, vjust=-0.5)+
+  #geom_signif(annotations =0.000825, y_position = 0.45  ,xmin=0.7, xmax=1.2)+
    theme(legend.position="bottom")
+#dev.off()
+#grid.text((paste("p<0.001")),
+#              x = unit(0.15, "npc"), y = unit(0.77, "npc"), just = c("left", "bottom"), 
+#              gp = gpar(fontface = "bold", fontsize = 8, col = "black"))
+
 ########### top 20 mirage genes 
 top20mirage.enrichment=tibble(class=c("Top20 MIRAGE Gene", "All 1003 Constraint Gene"), Strong.ASD=c(top20mirage.percent[1], const.gene.percent[1]), Plausible.ASD=c(top20mirage.percent[2], const.gene.percent[2]), DNM=c(top20mirage.percent[3], const.gene.percent[3]))
 top20mirage.enrichment.tidy=top20mirage.enrichment %>% gather( group, percent,2:4)
 
 ggplot(top20mirage.enrichment.tidy, aes(group, percent)) + 
   geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
-  xlab("")+
+  xlab("")+#title("(C)  Enrichment")
   theme_classic()+
    theme(legend.title = element_blank())+
    theme(legend.position="bottom")
@@ -961,17 +982,55 @@ min(localFDR.SKATO, na.rm=T)
 #######################
 
 
-#png("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.png")
-par(mfrow=c(1,2))
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf")
+#par(mfrow=c(1,2))
 theo <- (ppoints(length(Burden.pvalue)))
-  qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="Burden", frame=F, cex.lab=0.8, pch=16)
-  abline(0,1,col='red')
+  #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="(A) Burden", frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col='red', lwd=2)
 
+#################  use ggplot draw qq plot 
+sx <- sort(-log(theo, base=10)); sy <- sort(-log(Burden.pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+burden=tibble(sx=sx, sy=sy)
+ qqplot_burden=ggplot(burden) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   theme(plot.title = element_text(hjust = 0.5, size=12,face="bold"))+  #center the title+
+   ggtitle("(A) Burden")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)
+#################
 theo <- (ppoints(length(SKATO.pvalue)))
-  qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab="", main="SKATO", frame=F, cex.lab=0.8, pch=16)
-  abline(0,1,col='red')
+ 
+  #qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab="", main="(B) SKATO", frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col='red', lwd=2)
 #dev.off()    
+ 
 
+ sx <- sort(-log(theo, base=10)); sy <- sort(-log(SKATO.pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+ skato=tibble(sx=sx, sy=sy)
+ qqplot_skato=ggplot(skato) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   #ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   ylab("")+
+   theme(plot.title = element_text(hjust = 0.5, size=12,face="bold"))+  #center the title+
+   ggtitle("(B) SKATO")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)
+#png("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_ASD_topconstgene_enrichemnt.png") 
+ggarrange(qqplot_burden, qqplot_skato, top10mirage_enrichment, nrow=1)
+#dev.off()
 ```
 
 
@@ -988,16 +1047,53 @@ SKATO.pvalue=pvalues.othermethod$SKATO.pvalue
 CMC.pvalue=pvalues.othermethod$CMC.pvalue
 ASUM.pvalue=pvalues.othermethod$ASUM.pvalue
 Burden.pvalue=pvalues.othermethod$Fisher.pvalue
+############## use R base 
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf")
-par(mfrow=c(1,2))
+#par(mfrow=c(1,2))
 theo <- (ppoints(length(Burden.pvalue)))
-  qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="Burden", frame=F, cex.lab=0.8, pch=16)
-  abline(0,1,col='red')
+#  qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="(A) Burden", frame=F, cex.lab=0.8, pch=20)
+#  abline(0,1,col='red', lwd=2)
+################  use ggplot 
+sx <- sort(-log(theo, base=10)); sy <- sort(-log(Burden.pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+burden=tibble(sx=sx, sy=sy)
+ qqplot_burden=ggplot(burden) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   theme(plot.title = element_text(hjust = 0.5, size=12,face="bold"))+  #center the title+
+   ggtitle("(A) Burden")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)
 
 theo <- (ppoints(length(SKATO.pvalue)))
-  qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab="", main="SKATO", frame=F, cex.lab=0.8, pch=16)
-  abline(0,1,col='red')
-#dev.off()    
+#  qqplot(-log(theo, base=10), -log(SKATO.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab="", main="(B) SKATO", frame=F, cex.lab=0.8, pch=20)
+#  abline(0,1,col='red', lwd=2)
+#dev.off() 
+sx <- sort(-log(theo, base=10)); sy <- sort(-log(SKATO.pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+skato=tibble(sx=sx, sy=sy)
+ qqplot_skato=ggplot(skato) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   #ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   ylab("")+
+   theme(plot.title = element_text(hjust = 0.5, size=12,face="bold"))+  #center the title+
+   ggtitle("(B) SKATO")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene_LoFDamaging.pdf")
+ggarrange(qqplot_burden, qqplot_skato, nrow=1)
+#dev.off()
+################  
 
 ```
 

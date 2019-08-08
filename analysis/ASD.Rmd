@@ -1060,6 +1060,8 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple pane
 
 **** Below is damaging(4)+AF(3)+gene.set(10)+exon(6)=720 combined features
 
+solid blue line is FDR 0.05 and dashed red line is Bonferroni correction p = 0.05/1757(total number of tests). 
+
 ```{r, echo=F}
 rm("Burden.cate", "MIRAGE.cate.index", "MIRAGE.para.est", "MIRAGE.pvalue")
 load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.old.version.v2.RData")
@@ -1105,51 +1107,56 @@ Burden.MIRAGE.combine=tibble(Burden.OR=Burden.OR, Burden.pvalue=Burden.pvalue, M
 Burden.MIRAGE.combine <- drop_na(Burden.MIRAGE.combine) # remove rows with NA
 #Burden.MIRAGE.combine.clear <- as_tibble(data.matrix(Burden.MIRAGE.combine)[is.finite(rowSums(data.matrix(Burden.MIRAGE.combine))),])
 Burden.MIRAGE.combine.clear=Burden.MIRAGE.combine
-Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
+Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<AF<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 
 
 
 ################### save significant combined features with p values less than 0.05
 significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05) %>% arrange(MIRAGE.pvalue)
-#write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.pvalue.lessthan.0.05.redefined.csv")
+#write.csv(significant.combined.features, file="../output/CombinedFeature/significant.combined.features.of.Exon.gene.set.AF.damaging.pvalue.lessthan.0.05.csv")
 ###################
 y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
-
-g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
+num.test=1757
+g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index), size=15, stroke = 0.5))+
   scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+
   geom_point()+
-  xlim(c(0,4))+
+  #xlim(c(0,4))+
   ylim(c(0,y.max))+
-  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(0.05/num.test, base=10), linetype="dashed", color = "red")+
   geom_hline(yintercept=-log(burden.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
   xlab("OR")+ylab(expression(paste("-log" [10], "(p value)")))+
   ggtitle("Burden")+
   theme_classic()+
    theme(legend.position = "none")+  # no legend 
-theme(plot.title = element_text(hjust = 0.5, size=10)) +# center the title 
+theme(plot.title = element_text(hjust = 0.5, size=35)) +# center the title 
 theme(legend.title=element_blank())+
-theme(legend.text=element_text(size=8))
+theme(legend.text=element_text(size=30))+
+theme(text = element_text(size=35))+
+guides(size=FALSE)+  # suppress size legend 
+guides(shape = guide_legend(override.aes = list(size = 10))) # symbol size in legend 
 
-g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
+g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index),size=5))+
   scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+  # manually define shapes if more than 6 groups 
   geom_point()+
   xlab(expression(paste(hat(eta))))+
   ylab("")+
   ylim(c(0,y.max))+
-  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(0.05/num.test, base=10), linetype="dashed", color = "red")+
   geom_hline(yintercept=-log(mirage.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
   ggtitle("MIRAGE-VS")+
   theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
+  theme(plot.title = element_text(hjust = 0.5, size=35))+  # center the title 
   #labs(color='variant group')+   # define legend title 
-  theme(legend.title=element_blank())#+
+  theme(legend.title=element_blank())+
+theme(text = element_text(size=35))
+
   #theme(legend.text=element_text(size=10))
   #theme(legend.position = c(0.8, 4),
   #        legend.direction = "vertical")
 #+
   #theme(legend.position="bottom")
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-Burden_MIRAGE-vs_CombinedFeature_Split.pdf")
-ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple panels share one legend 
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom") 
 #dev.off()
 ```
 
