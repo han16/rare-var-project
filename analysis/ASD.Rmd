@@ -1167,7 +1167,7 @@ solid blue line is FDR 0.05 and dashed red line is Bonferroni correction p = 0.0
 
 there are four variant categories and each combined feature belongs to one categories, depending on where the most variants are from. 
 
-```{r, echo=F}
+```{r, echo=F, warning=F}
 rm("Burden.cate", "MIRAGE.cate.index", "MIRAGE.para.est", "MIRAGE.pvalue")
 load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.old.version.v3.RData")
 #Burden.result=tibble(OR=as.numeric(comb.summ[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ[,c(2,6,10,14)]))
@@ -1275,7 +1275,7 @@ solid blue line is FDR 0.05 and dashed red line is Bonferroni correction p = 0.0
 
 there are four variant categories and each combined feature belongs to one categories, depending on where the most variants are from. 
 
-```{r, echo=F}
+```{r, echo=F, warning=F}
 rm("Burden.cate", "MIRAGE.cate.index", "MIRAGE.para.est", "MIRAGE.pvalue")
 load("../output/CombinedFeature/Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.old.version.v4.RData")
 #Burden.result=tibble(OR=as.numeric(comb.summ[,c(1, 5, 9, 13)]), pvalue=as.numeric(comb.summ[,c(2,6,10,14)]))
