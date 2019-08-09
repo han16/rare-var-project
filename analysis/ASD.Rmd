@@ -1238,7 +1238,7 @@ g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden
 theme(legend.title=element_blank())+
 theme(legend.text=element_text(size=20))+
 theme(text = element_text(size=20))+
-guides(size=FALSE)#+  # suppress size legend 
+guides(size=FALSE)+  # suppress size legend 
 guides(shape = guide_legend(override.aes = list(size = 5))) # symbol size in legend 
 
 g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index),size=5))+
