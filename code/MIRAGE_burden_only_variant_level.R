@@ -247,6 +247,36 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
   gene.data=gene.data[complete.cases(gene.data),]
   return(gene.data)
 }
+
+four.partition=function(cand.data) # given gene data and annotations, do variant partitions
+{
+  par.evid=list()
+  LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+  par.evid[[1]]=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.05 & cand.data$ExacAF>=0.01 )  # other LoF sets
+  par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==T &  cand.data$ExacAF<0.01)  # LoF and AF<1%
+
+  par.evid1=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid2=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001) #  damaging and AF<0.1%
+
+
+  par.evid3=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid4=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid5=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF<0.001)
+
+  par.evid[[4]]=c(par.evid1, par.evid2, par.evid3, par.evid4, par.evid5)  # union of other missense variants
+
+
+
+  group.index=rep(NA, nrow(cand.data))
+  for (i in 1:length(par.evid))
+    group.index[par.evid[[i]]]=i
+  gene.data=data.frame(ID=cand.data$ID, Gene=cand.data$Gene, No.case=cand.data$No.case, No.contr=cand.data$No.contr, group.index=group.index)
+  gene.data=gene.data[complete.cases(gene.data),]
+  return(gene.data)
+}
+
+
 #########################################
 #All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)

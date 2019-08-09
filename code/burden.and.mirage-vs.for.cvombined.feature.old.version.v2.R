@@ -211,11 +211,11 @@ exon.summ[(1+length(exon.cutoff)),]=c(pois.test$odds.ratio, pois.test$p.value, p
 ###  combination of gene set+AF+exon+damaging
 
 
-comb.fea=paste(rep(sub.com, each=length(gene.set)), gene.set)
+#comb.fea=paste(rep(sub.com, each=length(gene.set)), gene.set)
 AF.cutoff=c("MAF<1e-2", "MAF<1e-3", "MAF<1e-4"); colname=c("OR", "p.value", "rate.ca", "rate.co")
-comb.summ=matrix(nrow=length(comb.fea), ncol=4*length(AF.cutoff))
-rownames(comb.summ)=comb.fea; colnames(comb.summ)=paste(rep(AF.cutoff, each=length(colname)), colname, sep="~")
-comb.summ.MIRAGE=comb.summ
+#comb.summ=matrix(nrow=length(comb.fea), ncol=4*length(AF.cutoff))
+#rownames(comb.summ)=comb.fea; colnames(comb.summ)=paste(rep(AF.cutoff, each=length(colname)), colname, sep="~")
+#comb.summ.MIRAGE=comb.summ
 #################  record burden and mirage for each cate split from combined feature ###########
 Burden.cate=list()
 MIRAGE.pvalue=list()
@@ -226,22 +226,31 @@ signal1.evid=list(); jj1=0
 signal2.evid=list(); jj2=0
 signal3.evid=list(); jj3=0
 signal4.evid=list(); jj4=0
-for (i in 1:length(var.fea))  # damaging 
-{ # k=1
-    for (j in 1:length(gene.fea))  # gene set 
-    { # j=1
-      for (k in 1:length(AF.cutoff))  # AF 
-      { # k=1  
-        for (l in 1:length(exon.fea))  # exon 
-      { # k=1
+#for (i in 1:length(var.fea))  # damaging 
+{  i=1
+  #  for (j in 1:length(gene.fea))  # gene set 
+    {  j=1
+    #  for (k in 1:length(AF.cutoff))  # AF 
+      {  k=1  
+    #    for (l in 1:length(exon.fea))  # exon 
+      {  l=1
         comb.evid=intersect(intersect(intersect(var.evid[[i]], gene.evid[[j]]), AF.evid[[k]]), evid.exon[[l]]) 
         cat(i," th of var.fea", "\t", j, "th gene.fea", "\t", k, "th AF.fea", "\t", l, "th exon.fea", "\n" )
         ###################### MIRAGE burden
         cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
-        gene.data=eight.partition(cand.data)
+        gene.data=four.partition(cand.data)
         overlap.data=gene.data[gene.data$ID %in% comb.evid,]
+        psbl.index=unique(overlap.data$group.index)
+        
+        num.var=numeric()   # each combined feature belongs to only one variant group with most number of variants 
+        for (ii in 1:length(psbl.index))
+          num.var[ii]=sum(overlap.data$group.index==psbl.index[ii])
+        keep.group.index=psbl.index[which.max(num.var)]
+        overlap.data=overlap.data[overlap.data$group.index==keep.group.index,]
+        
         order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
-        psbl.index=unique(order.overlap.data$group.index); actu.num.group=length(psbl.index)
+        actu.num.group=length(keep.group.index)
+        
         delta.init=runif(1); beta.init=runif(actu.num.group)
         order.overlap.data$original.group.index=order.overlap.data$group.index
         
@@ -249,12 +258,12 @@ for (i in 1:length(var.fea))  # damaging
         {  
           burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
           colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
-          rownames(burden.matrix)=paste(var.fea[i], gene.fea[j], AF.cutoff[k], exon.fea[l],  "cate", psbl.index, sep="_")
+          rownames(burden.matrix)=paste(var.fea[i], gene.fea[j], AF.cutoff[k], exon.fea[l], sep="_")
           
           for (jj in 1:actu.num.group)
           {    
-            order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[jj]]=jj # re-index the group labels
-            pois.test=test.func(order.overlap.data[order.overlap.data$original.group.index==psbl.index[jj],]$ID, var.data, N1, N0)
+            order.overlap.data$group.index[order.overlap.data$group.index==keep.group.index[jj]]=jj # re-index the group labels
+            pois.test=test.func(order.overlap.data[order.overlap.data$original.group.index==keep.group.index[jj],]$ID, var.data, N1, N0)
             burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
           }
           
@@ -263,11 +272,11 @@ for (i in 1:length(var.fea))  # damaging
           nn=nn+1
           MIRAGE.pvalue[[nn]]=para.est$cate.pvalue
           MIRAGE.para.est[[nn]]=para.est$beta.est
-          MIRAGE.cate.index[[nn]]=psbl.index
+          MIRAGE.cate.index[[nn]]=keep.group.index
           Burden.cate[[nn]]=burden.matrix
         }
-        if (nrow(order.overlap.data)==0)  
-          comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
+     #   if (nrow(order.overlap.data)==0)  
+    #      comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
         
         
         ######################
@@ -278,4 +287,4 @@ for (i in 1:length(var.fea))  # damaging
   } # end of j
 }  # end of i  
        
-#save(comb.summ, comb.summ.MIRAGE, MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.old.version.RData")
+#save( MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.old.version.v2.RData")
