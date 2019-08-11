@@ -287,8 +287,8 @@ three.partition=function(cand.data) # given gene data and annotations, do varian
   #par.evid1=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
   #par.evid2=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
   #par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001) #  damaging and AF<0.1%
-  par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==F &  cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)  # missense and MAF>1%
-  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F &  cand.data$ExacAF<0.01 )  # missense and MAF<1%
+  par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==F &  cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.05)  # missense and MAF>1%
+  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F &  cand.data$ExacAF<0.001 )  # missense and MAF<1%
 
   #par.evid3=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
   #par.evid4=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
