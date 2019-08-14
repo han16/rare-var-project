@@ -36,6 +36,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
   LoF.BF.gene=matrix(nrow=max.iter, ncol=num.gene)
   nonLoF.BF.gene=matrix(nrow=max.iter, ncol=num.gene)
   delta.est=numeric(); delta.est[1]=delta
+
   ########################
   # calculate the Bayes factor for variant (i,j) and gene i as initials.
   for (i in 1:num.gene)
@@ -91,7 +92,8 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
                                                                +(1-beta.k[(iter-1), info.single.gene$group.index[j]]))
           UiZij[j]=numer/denom
           bb=bb*((1-beta.k[(iter-1), info.single.gene$group.index[j]])+beta.k[(iter-1), info.single.gene$group.index[j]]*info.single.gene$var.BF[j])
-          ###########################
+
+          ########################### split into LoF and non-LoF two parts
           if (info.single.gene$group.index[j]<=2)
             bb.LoF=bb.LoF*((1-beta.k[(iter-1), info.single.gene$group.index[j]])+beta.k[(iter-1), info.single.gene$group.index[j]]*info.single.gene$var.BF[j])
           if (info.single.gene$group.index[j]>2)
@@ -129,7 +131,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
       diff=sum(abs(beta.k[iter,]-beta.k[(iter-1),]))
     if (diff<thrshd || iter>(max.iter-1))
       stop.cond=1
-    cat(iter, "th iteration is running", "\n")
+ #   cat(iter, "th iteration is running", "\n")
   } # end of iter
   ##############################
   if (iter<max.iter)
@@ -182,7 +184,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
   } # end of g
   sum.lkhd=sum(cate.stat)
   ##############################################
-  return(result=list(delta.est=delta.est[iter-1], delta.stat=sum.lkhd, beta.est=beta.k[(iter-1),], beta.stat=cate.stat, cate.pvalue=cate.pvalue, BF.gene=data.frame(Gene=unique.gene, BF=BF.gene[(iter-1),], LoF.BF=LoF.BF.gene[(iter-1),], nonLoF.BF=nonLoF.BF.gene[(iter-1),]), full.info=full.info.genevar, Eui=EUi))
+  return(result=list(delta.est=delta.est[iter-1], delta.pvalue=pvalue[length(pvalue)], beta.est=beta.k[(iter-1),], beta.stat=cate.stat, beta.pvalue=cate.pvalue, BF.gene=data.frame(Gene=unique.gene, BF=BF.gene[(iter-1),], LoF.BF=LoF.BF.gene[(iter-1),], nonLoF.BF=nonLoF.BF.gene[(iter-1),]), full.info=full.info.genevar, Eui=EUi))
 }
 #####################################
 fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
@@ -285,13 +287,13 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 CADD.cutoff=quantile(as.numeric(as.character(All.Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
 ########################################
 ################ whole genome
-gene.set=as.character(unique(All.Anno.Data$Gene))
-#gene.set=as.character(read.csv("data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
+#gene.set=as.character(unique(All.Anno.Data$Gene))
+gene.set=as.character(read.csv("data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 #gene.set=as.character(read.csv("C:\\Users\\han\\Dropbox\\StatisticalGenetics\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
 vart.set=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% gene.set)])
 cand.data=Anno.Data[which(Anno.Data$ID %in% vart.set),]
 gene.data=eight.partition(cand.data)
-{ #i=1
+
   overlap.id=gene.data$ID
   if (length(overlap.id)>0)
   {
@@ -302,8 +304,36 @@ gene.data=eight.partition(cand.data)
     for (j in 1:actu.num.group)
       order.overlap.data$group.index[order.overlap.data$group.index==psbl.index[j]]=j # re-index the group labels
   #  delta=runif(1)
-    para.est=multi.group.func(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
-    cutoff=1
+
+    ###########################################
+    permutate.BF.gene=list()
+    num.permu=100
+    for (ii in 1:num.permu)
+    {
+       cat(ii, "th permutation of ", num.permu, "is running", "\n")
+    ###################### permutate the data: re-distribute the variants in cases and controls  ##############
+    permutate.order.overlap.data=order.overlap.data
+
+   # for (i in 1:10)
+     for ( i in 1:nrow(order.overlap.data))
+     {
+       total.count=order.overlap.data[i,]$No.case+order.overlap.data[i,]$No.contr
+       if (total.count>0)
+         {
+          permutate.order.overlap.data[i,]$No.case=sum(rbinom(total.count, 1, 0.5))
+          permutate.order.overlap.data[i,]$No.contr=total.count-permutate.order.overlap.data[i,]$No.case
+       }
+       if (total.count==0)
+         permutate.order.overlap.data[i,]=order.overlap.data[i,]
+     }
+
+    ###########################################################################################################
+    #para.est=multi.group.func(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+     para.est=multi.group.func(permutate.order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+     permutate.BF.gene[[ii]]=para.est$BF.gene
+    } # end of ii
+
+#    cutoff=1
 #    for (j in 1:actu.num.group)
 #    {
 #      if (para.est$beta.stat[j]<1)
@@ -331,9 +361,10 @@ gene.data=eight.partition(cand.data)
   }
 #  if (length(overlap.id)==0)
 #    pASD.cons.para.est[,i]=NA
-}
 ##########################
 ############# use other methods to find risk genes #################
+cand.data=gene.data[gene.data$group.index<6,]  # removing non-damaging variants
+
 gene_var_data=as_tibble(cand.data %>% select(ID, Gene, No.case, No.contr))
 gene=levels(factor(gene_var_data$Gene))
 
@@ -342,8 +373,8 @@ CMC.pvalue=numeric()
 ASUM.pvalue=numeric()
 Fisher.pvalue=numeric()
 Fisher.adj.pvalue=numeric()
-#for (i in 1:length(gene))
-for (i in 12001:length(gene))
+for (i in 1:length(gene))
+#for (i in 1:1000)
 {
  # i=1
   cat(i, "is running", "\n")
@@ -382,7 +413,7 @@ for (i in 12001:length(gene))
   ############ CMC
   if (ncol(pheno_geno$geno)>1)
   {
-    cmc.test=CMC(pheno_geno$pheno, pheno_geno$geno, maf=10^(-4)*c(0.05, 0.2, 0.5), perm=10000)
+    cmc.test=CMC(pheno_geno$pheno, pheno_geno$geno, maf=10^(-4)*c(0.05, 0.2, 0.5), perm=100)
     CMC.pvalue[i]=cmc.test$asym.pval
   }
   if (ncol(pheno_geno$geno)==1)
@@ -391,7 +422,7 @@ for (i in 12001:length(gene))
   ############  ASUM test
   if (ncol(pheno_geno$geno)>1)
   {
-    ASUM.test=ASUM(pheno_geno$pheno, pheno_geno$geno, perm=10000)
+    ASUM.test=ASUM(pheno_geno$pheno, pheno_geno$geno, perm=100)
     if (ASUM.test$asum.stat>0)
       ASUM.pvalue[i]=ASUM.test$perm.pval
     if (ASUM.test$asum.stat<0)
