@@ -378,7 +378,7 @@ result.summary$Cate=result.summary$Cate %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-MIRAGE-para_est_ASD_topconstgene_var_group.pdf")
 cate.index=1:8
 para.est=tibble(cate.index=cate.index, eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17))
-para.est$cate.index=para.est$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
+para.est$cate.index=para.est$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<AF<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 #para.est$cate.index=as.factor(para.est$cate.index)
 ggplot(para.est, aes(x=cate.index, y=eta.est, fill=cate.index)) + 
    geom_bar(stat="identity")+
@@ -389,7 +389,8 @@ ggplot(para.est, aes(x=cate.index, y=eta.est, fill=cate.index)) +
   xlab("")+
   ylab(expression(paste(hat(eta))))+
   theme(plot.title = element_text(hjust = 0.5, size=7))+  #center the title+
-theme(axis.text.x = element_text(angle = 45, vjust = 0.5, size=7))
+theme(axis.text.x = element_text(angle = 45, vjust = 0.5, size=20))+
+theme(text = element_text(size=15))
 #dev.off()
 ```
 
@@ -524,6 +525,7 @@ DNM candidate genes: top 1000 DNM genes
 
 ```{r, echo=F}
 ############# MIRAGE gene 
+
 BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
 Bayes_factor=as_tibble(BF_para_all_est)
 sort_BF=Bayes_factor %>% arrange(desc(BF))
@@ -558,15 +560,18 @@ top10mirage_enrichment=ggplot(top10mirage.enrichment.tidy, aes(group, percent)) 
   theme_classic()+
   xlab("")+ylab("Proportion of putative ASD genes")+
   ylim(c(0, 0.8))+
-  theme(plot.title = element_text(hjust = 0.5, size=12, face="bold"))+
-  ggtitle("(C) Enrichment")+
+  theme(plot.title = element_text(hjust = 0.5, size=20, face="bold"))+
+  ggtitle("Enrichment of ASD genes in MIRAGE results")+
   #theme(plot.title = element_text(size=12))
    theme(legend.title = element_blank())+
-  geom_signif(annotations ="p=8.3E-4", y_position = 0.45  ,xmin=0.7, xmax=1.2, size=1, vjust=-0.5)+
-  geom_signif(annotations ="p=2.8E-3", y_position = 0.45  ,xmin=1.7, xmax=2.2, size=1, vjust=-0.5)+
-  geom_signif(annotations ="p=2.5E-4", y_position = 0.75  ,xmin=2.7, xmax=3.2, size=1, vjust=-0.5)+
+  geom_signif(annotations ="p=8.3E-4", y_position = 0.45  ,xmin=0.7, xmax=1.2, size=2, vjust=-0.5, textsize=10)+
+  geom_signif(annotations ="p=2.8E-3", y_position = 0.45  ,xmin=1.7, xmax=2.2, size=2, vjust=-0.5, textsize=10)+
+  geom_signif(annotations ="p=2.5E-4", y_position = 0.75  ,xmin=2.7, xmax=3.2, size=2, vjust=-0.5, textsize=10)+
   #geom_signif(annotations =0.000825, y_position = 0.45  ,xmin=0.7, xmax=1.2)+
-   theme(legend.position="bottom")
+   theme(legend.position="bottom")+
+theme(text = element_text(size=30))+
+theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+#top10mirage_enrichment
 #dev.off()
 #grid.text((paste("p<0.001")),
 #              x = unit(0.15, "npc"), y = unit(0.77, "npc"), just = c("left", "bottom"), 
@@ -687,14 +692,15 @@ Table: Number of genes identified by different methods at different FDR levels.
 ```{r, echo=F}
 Gene_CYFIP1=Anno.Data[which(Anno.Data$Gene=="CYFIP1"),]
 Gene_CYFIP1_par=eight.partition(Gene_CYFIP1)
+#write.csv(Gene_CYFIP1_par, file="../output/HighlightGene/Gene_CYFIP1_par.csv")
 Gene_CYFIP1_merge=Gene_CYFIP1_par %>% gather(status, No.var, 3:4) 
-Gene_CYFIP1_merge$group.index=Gene_CYFIP1_merge$group.index %>% recode("1"="1", "2"="2", "3"="3", "4"="4", "5"="5", "6"="6", "7"="7", "8"="8")
+Gene_CYFIP1_merge$variant.group=Gene_CYFIP1_merge$group.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<AF<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 Gene_CYFIP1_merge$status=Gene_CYFIP1_merge$status %>% recode(No.case="Case", No.contr="Control")
 Gene_CYFIP1_merge=Gene_CYFIP1_merge[which(Gene_CYFIP1_merge$No.var<40),]
 ```
 
 ```{r, echo=F}
-ggplot(as_tibble(Gene_CYFIP1_merge), aes(x=ID, y=No.var, color=status, shape=group.index))+
+ggplot(as_tibble(Gene_CYFIP1_merge), aes(x=ID, y=No.var, color=status, shape=variant.group))+
   geom_point()+
   ggtitle("CYFIP1")+
   theme_classic()+
@@ -702,6 +708,45 @@ ggplot(as_tibble(Gene_CYFIP1_merge), aes(x=ID, y=No.var, color=status, shape=gro
   geom_hline(yintercept=0, linetype="solid", color = "black")+
   theme(plot.title = element_text(hjust = 0.5, size=10))+
   theme(axis.text.x = element_text(angle = 60, hjust = 1, size=6))
+```
+
+
+```{r, echo=F}
+CYFIP1.gene=loadRData("../output/para.est.constraint.gene.estimate.delta.full.info.CYFIP1.gene.RData")
+eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17)
+var.BF=CYFIP1.gene$var.BF
+group.index=CYFIP1.gene$group.index
+
+adj.var.BF=numeric()
+
+for (i in 1:length(var.BF))
+  adj.var.BF[i]=(1-eta.est[group.index[i]])+eta.est[group.index[i]]*var.BF[i]
+prod(adj.var.BF)
+top.var.index=which(CYFIP1.gene$No.case==8)
+prod(adj.var.BF[-top.var.index])
+```
+
+
+
+
+#### highlight gene EP400
+
+
+```{r, echo=F}
+EP400.gene=loadRData("../output/para.est.constraint.gene.estimate.delta.full.info.EP400.gene.RData")
+eta.est=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17)
+var.BF=EP400.gene$var.BF
+group.index=EP400.gene$group.index
+
+post.prob=tibble(post.prob=eta.est[group.index]*var.BF/(1-eta.est[group.index]+eta.est[group.index]*var.BF))
+ggplot(post.prob, aes(x=post.prob))+
+  geom_histogram(position="dodge2", color="blue", fill="blue")+
+theme_classic()+
+  xlab("Post probability")+
+  ylab("")+
+  ggtitle("Histogram of posterior probability of individual variants in gene EP400")+
+  theme(plot.title = element_text(hjust = 0.5))+  # center the title 
+theme(text = element_text(size=10)) # size=20 is good enough
 ```
 
 
@@ -1000,10 +1045,12 @@ burden=tibble(sx=sx, sy=sy)
    theme_classic()+
    xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
    ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
-   theme(plot.title = element_text(hjust = 0.5, size=12,face="bold"))+  #center the title+
-   ggtitle("(A) Burden")+
+   theme(plot.title = element_text(hjust = 0.5, size=20,face="bold"))+  #center the title+
+   ggtitle("(A) QQ plot of Burden")+
    geom_abline(intercept = 0, slope = 1, color="red", 
-                 linetype="solid", size=1.5)
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=20))
+
 #################
 theo <- (ppoints(length(SKATO.pvalue)))
  
@@ -1022,12 +1069,14 @@ if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
  qqplot_skato=ggplot(skato) + geom_point(aes(x=sx, y=sy))+
    theme_classic()+
    xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
-   #ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
-   ylab("")+
-   theme(plot.title = element_text(hjust = 0.5, size=12,face="bold"))+  #center the title+
-   ggtitle("(B) SKATO")+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   #ylab("")+
+   theme(plot.title = element_text(hjust = 0.5, size=30,face="bold"))+  #center the title+
+   ggtitle("SKAT-O")+
    geom_abline(intercept = 0, slope = 1, color="red", 
-                 linetype="solid", size=1.5)
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=30))
+
 #png("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_ASD_topconstgene_enrichemnt.png") 
 ggarrange(qqplot_burden, qqplot_skato, top10mirage_enrichment, nrow=1)
 #dev.off()

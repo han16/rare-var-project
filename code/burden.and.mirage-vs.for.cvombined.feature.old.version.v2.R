@@ -70,14 +70,17 @@ rownames(AF.summary)=paste("MAF<", ExacAF.cutoff, sep="")
 colnames(AF.summary)=c("No.rows", "No.var.ca", "No.var.co",  "rate.ca", "rate.co")
 AF.summary[1,]=c(nrow(All.Anno.Data),sum(All.Anno.Data$No.case),sum(All.Anno.Data$No.contr), sum(All.Anno.Data$No.case)/N1, sum(All.Anno.Data$No.contr)/N0)
 AF.evid=list()
-for (i in 1:length(ExacAF.cutoff))
+
+for (i in 1:(length(ExacAF.cutoff)-1))
 {
   #cat(i, "is running", "\n") 
-  select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<ExacAF.cutoff[i]),]  
+  select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<ExacAF.cutoff[i] & All.Anno.Data$ExacAF>ExacAF.cutoff[i+1] ),]  
   AF.evid[[i]]=as.character(select.data$ID)
   AF.summary[i,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 }
-
+select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.0001),]  
+AF.evid[[i+1]]=as.character(select.data$ID)
+AF.summary[i+1,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 
 
 
@@ -85,14 +88,16 @@ for (i in 1:length(ExacAF.cutoff))
 
 ### single variant 
 
-var.fea=c("Damaging", "CADDtop10%", "Consensus", "LoF"); max.vart=length(var.fea)
+#var.fea=c("Damaging", "CADDtop10%", "Consensus", "LoF"); max.vart=length(var.fea)
+var.fea=c("Damaging", "CADDtop10%", "SIFT<0.05", "LoF"); max.vart=length(var.fea)
 var.evid=list()
 var.evid[[1]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))>=0.957 )]) # probably damaging >=0.957
 psbl.damaging=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))<=0.956 & as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))>=0.453)]) # possibly damaging
 sift=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$SIFT.score))<0.05 )]) # deleterious SIFT<0.05
 CADD.cutoff=quantile(as.numeric(as.character(Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
 var.evid[[2]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$CADD.raw))>CADD.cutoff)]) # CADD top 10% 
-var.evid[[3]]=union(union(var.evid[[1]], sift), var.evid[[2]]) # consensus
+#var.evid[[3]]=union(union(var.evid[[1]], sift), var.evid[[2]]) # consensus
+var.evid[[3]]=sift
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 var.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
 summy=matrix(nrow=max.vart, ncol=4)
@@ -212,7 +217,7 @@ exon.summ[(1+length(exon.cutoff)),]=c(pois.test$odds.ratio, pois.test$p.value, p
 
 
 #comb.fea=paste(rep(sub.com, each=length(gene.set)), gene.set)
-AF.cutoff=c("MAF<1e-2", "MAF<1e-3", "MAF<1e-4"); colname=c("OR", "p.value", "rate.ca", "rate.co")
+AF.cutoff=c("le-3<MAF<1e-2", "1e-4<MAF<1e-3", "MAF<1e-4"); colname=c("OR", "p.value", "rate.ca", "rate.co")
 #comb.summ=matrix(nrow=length(comb.fea), ncol=4*length(AF.cutoff))
 #rownames(comb.summ)=comb.fea; colnames(comb.summ)=paste(rep(AF.cutoff, each=length(colname)), colname, sep="~")
 #comb.summ.MIRAGE=comb.summ
@@ -221,24 +226,27 @@ Burden.cate=list()
 MIRAGE.pvalue=list()
 MIRAGE.para.est=list()
 MIRAGE.cate.index=list()
+PSBL.index=list()
 nn=0
 signal1.evid=list(); jj1=0
 signal2.evid=list(); jj2=0
 signal3.evid=list(); jj3=0
 signal4.evid=list(); jj4=0
-#for (i in 1:length(var.fea))  # damaging 
-{  i=1
-  #  for (j in 1:length(gene.fea))  # gene set 
-    {  j=1
-    #  for (k in 1:length(AF.cutoff))  # AF 
-      {  k=1  
-    #    for (l in 1:length(exon.fea))  # exon 
-      {  l=1
-        comb.evid=intersect(intersect(intersect(var.evid[[i]], gene.evid[[j]]), AF.evid[[k]]), evid.exon[[l]]) 
-        cat(i," th of var.fea", "\t", j, "th gene.fea", "\t", k, "th AF.fea", "\t", l, "th exon.fea", "\n" )
+for (i in 1:length(var.fea))  # damaging 
+{ # i=1
+    for (j in 1:length(gene.fea))  # gene set 
+    { # j=1
+      for (k in 1:length(AF.cutoff))  # AF 
+      { # k=3  
+   #     for (l in 1:length(exon.fea))  # exon 
+      { # l=1
+    #    comb.evid=intersect(intersect(intersect(var.evid[[i]], gene.evid[[j]]), AF.evid[[k]]), evid.exon[[l]]) 
+    #    cat(i," th of var.fea", "\t", j, "th gene.fea", "\t", k, "th AF.fea", "\t", l, "th exon.fea", "\n" )
+        comb.evid=intersect(intersect(var.evid[[i]], gene.evid[[j]]), AF.evid[[k]])
+        cat(i," th of var.fea", "\t", j, "th gene.fea", "\t", k, "th AF.fea",  "\n" )
         ###################### MIRAGE burden
         cand.data=Anno.Data[which(Anno.Data$ID %in% comb.evid),]
-        gene.data=four.partition(cand.data)
+        gene.data=three.partition(cand.data)
         overlap.data=gene.data[gene.data$ID %in% comb.evid,]
         psbl.index=unique(overlap.data$group.index)
         
@@ -258,7 +266,9 @@ signal4.evid=list(); jj4=0
         {  
           burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
           colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
-          rownames(burden.matrix)=paste(var.fea[i], gene.fea[j], AF.cutoff[k], exon.fea[l], sep="_")
+        #  rownames(burden.matrix)=paste(var.fea[i], gene.fea[j], AF.cutoff[k], exon.fea[l], sep="_")
+          rownames(burden.matrix)=paste(var.fea[i], gene.fea[j], AF.cutoff[k], sep="_")
+          
           
           for (jj in 1:actu.num.group)
           {    
@@ -274,6 +284,7 @@ signal4.evid=list(); jj4=0
           MIRAGE.para.est[[nn]]=para.est$beta.est
           MIRAGE.cate.index[[nn]]=keep.group.index
           Burden.cate[[nn]]=burden.matrix
+          PSBL.index[[nn]]=psbl.index
         }
      #   if (nrow(order.overlap.data)==0)  
     #      comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
