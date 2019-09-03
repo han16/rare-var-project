@@ -724,6 +724,17 @@ for (i in 1:length(var.BF))
 prod(adj.var.BF)
 top.var.index=which(CYFIP1.gene$No.case==8)
 prod(adj.var.BF[-top.var.index])
+
+post.prob=tibble(post.prob=eta.est[group.index]*var.BF/(1-eta.est[group.index]+eta.est[group.index]*var.BF))
+ggplot(post.prob, aes(x=post.prob))+
+  geom_histogram(position="dodge2", color="blue", fill="blue")+
+theme_classic()+
+  xlab("Post probability")+
+  ylab("")+
+  ggtitle("Histogram of posterior probability of individual variants in gene CYFIP1")+
+  theme(plot.title = element_text(hjust = 0.5))+  # center the title 
+theme(text = element_text(size=10)) # size=20 is good enough
+
 ```
 
 
@@ -749,6 +760,28 @@ theme_classic()+
 theme(text = element_text(size=10)) # size=20 is good enough
 ```
 
+
+
+
+```{r, echo=F}
+Gene_EP400=Anno.Data[which(Anno.Data$Gene=="EP400"),]
+Gene_EP400_par=eight.partition(Gene_EP400)
+#write.csv(Gene_CYFIP1_par, file="../output/HighlightGene/Gene_CYFIP1_par.csv")
+Gene_EP400_merge=Gene_EP400_par %>% gather(status, No.var, 3:4) 
+Gene_EP400_merge$variant.group=Gene_EP400_merge$group.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<AF<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
+Gene_EP400_merge$status=Gene_EP400_merge$status %>% recode(No.case="Case", No.contr="Control")
+```
+
+```{r, echo=F}
+ggplot(as_tibble(Gene_EP400_merge), aes(x=ID, y=No.var, color=status, shape=variant.group))+
+  geom_point()+
+  ggtitle("EP400")+
+  theme_classic()+
+  xlab("Coordinate")+ylab("#.var")+
+  geom_hline(yintercept=0, linetype="solid", color = "black")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size=6))
+```
 
 ### Cons: Estimate $\eta_i$
 
