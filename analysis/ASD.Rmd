@@ -1698,15 +1698,86 @@ g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log
 theme(text = element_text(size=20))
 
 
+
+
+damaging.nondamaging.burden=tibble(damaging.burden=Burden.MIRAGE.combine.clear$Burden.pvalue[1:30], damaging.burden.feature=Burden.MIRAGE.combine.clear$combine.feature[1:30], nondamaging.burden=Burden.MIRAGE.combine.clear$Burden.pvalue[118:147], nondamaging.burden.feature=Burden.MIRAGE.combine.clear$combine.feature[118:147])
+g3=ggplot(damaging.nondamaging.burden, aes(x=-log(nondamaging.burden, base=10), y=-log(damaging.burden, base=10), size=5))+
+  geom_point()+
+  xlab(expression(paste("-log" [10], " (p value) (non-damaging)")))+
+  ylab(expression(paste("-log" [10], " (p value) (damaging)")))+
+ ggtitle("Burden")+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5))+  # center the title 
+  geom_abline(intercept = 0, slope = 1)+
+guides(size=FALSE)+ 
+theme(text = element_text(size=20))
+
+
+damaging.nondamaging.mirage.vs=tibble(damaging.mirage.vs=Burden.MIRAGE.combine.clear$MIRAGE.pvalue[1:30], damaging.mirage.vs.feature=Burden.MIRAGE.combine.clear$combine.feature[1:30], nondamaging.mirage.vs=Burden.MIRAGE.combine.clear$MIRAGE.pvalue[118:147], nondamaging.mirage.vs.feature=Burden.MIRAGE.combine.clear$combine.feature[118:147])
+g4=ggplot(damaging.nondamaging.mirage.vs, aes(x=-log(nondamaging.mirage.vs, base=10), y=-log(damaging.mirage.vs, base=10), size=5))+
+  geom_point()+
+  xlab(expression(paste("-log" [10], " (p value) (non-damaging)")))+
+  ylab(expression(paste("-log" [10], " (p value) (damaging)")))+
+   xlim(c(0,6))+
+ggtitle("MIRAGE-VS")+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5))+  # center the title 
+  geom_abline(intercept = 0, slope = 1)+
+guides(size=FALSE)+ 
+theme(text = element_text(size=20))
+
+
+
+damaging.nondamaging.mirage.vs.tidy=tibble(pvalue=c(damaging.nondamaging.mirage.vs$damaging.mirage.vs, damaging.nondamaging.mirage.vs$nondamaging.mirage.vs), class=c(rep("damaing", nrow(damaging.nondamaging.mirage.vs)), rep("non-damaging", nrow(damaging.nondamaging.mirage.vs))))
+
+g5=ggplot(damaging.nondamaging.mirage.vs.tidy, aes(x=-log(pvalue, base=10), fill=class, size=5))+
+  #geom_histogram(aes(y=..density..), alpha=0.5,position='identity',binwidth=0.5)+
+  geom_histogram(aes(y=(..count..)/sum(..count..)), position="dodge2")+
+  #geom_histogram(position="dodge2")+
+  theme_classic()+
+  xlab(expression(paste("-log" [10], "(p value)")))+
+  ylab("Frequency")+
+theme(text = element_text(size=20))+
+guides(size=FALSE)+  # suppress size legend
+theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+#g5
+
+####### look at variant groups with FDR<0.05 damaging vs non-damaging
+damaging.vs.fdr.index=which(damaging.nondamaging.mirage.vs.tidy$pvalue[1:30]<mirage.pvalue.fdr.0.05.cutoff)
+nondamaging.vs.fdr.index=damaging.vs.fdr.index+30
+damaging.nondamaging.mirage.vs.tidy.fdr=tibble(var.group=c(damaging.nondamaging.mirage.vs$damaging.mirage.vs.feature[damaging.vs.fdr.index], damaging.nondamaging.mirage.vs$damaging.mirage.vs.feature[damaging.vs.fdr.index]), pvalue=c(damaging.nondamaging.mirage.vs.tidy$pvalue[damaging.vs.fdr.index],damaging.nondamaging.mirage.vs.tidy$pvalue[nondamaging.vs.fdr.index]), class=c(rep("damaging", length(damaging.vs.fdr.index)), rep("non.damaging", length(damaging.vs.fdr.index))))
+
+g6=ggplot(damaging.nondamaging.mirage.vs.tidy.fdr, aes(y=-log(pvalue, base=10), x=var.group, fill=class))+
+geom_bar(stat="identity", position=position_dodge())+
+theme_classic()+
+xlab("")+
+ylab(expression(paste("-log" [10], " (p value)")))+
+theme(plot.title = element_text(hjust = 0.5, size=7))+  #center the title+
+theme(axis.text.x = element_text(angle = 60, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))#+
+#  coord_flip()
+g6
   #theme(legend.text=element_text(size=10))
   #theme(legend.position = c(0.8, 4),
   #        legend.direction = "vertical")
 #+
   #theme(legend.position="bottom")
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-Burden_MIRAGE-vs_CombinedFeature_Split.pdf")
-ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom") 
-#dev.off()
+ggarrange( g1, g2, g5,   common.legend = TRUE, legend="right") 
+
 ```
+
+```{r, echo=F}
+
+Burden.MIRAGE.combine.clear.separate=Burden.MIRAGE.combine.clear %>% separate(combine.feature, c("var.effect", "gene.set", "maf"), sep="_")
+data.for.table=tibble(Variant.effect=Burden.MIRAGE.combine.clear.separate$var.effect, Gene.set=Burden.MIRAGE.combine.clear.separate$gene.set, MAF=Burden.MIRAGE.combine.clear.separate$maf, No.case=Burden.MIRAGE.combine.clear.separate$No.var.case, No.control=Burden.MIRAGE.combine.clear.separate$No.var.control, OR.burden=round(Burden.MIRAGE.combine.clear.separate$Burden.OR,4), Pvalue.burden=round(Burden.MIRAGE.combine.clear.separate$Burden.pvalue,4), eta.mirage=round(Burden.MIRAGE.combine.clear.separate$MIRAGE.risk.prop,4),pvalue.mirage=round(Burden.MIRAGE.combine.clear.separate$MIRAGE.pvalue,4))
+#kable(data.for.table, caption = "combined feature")
+```
+
+
+
+#### Highlight signal-driven variants 
+
 
 ## Session information
 
