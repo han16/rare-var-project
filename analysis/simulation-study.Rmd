@@ -58,6 +58,7 @@ We simulated 100  variants in one category. $N1=N0=1000, 3000, 5000$, $\eta=0.1,
 
 
 ```{r, echo=F}
+
 sig.cutoff=0.05
 ########### eta=0.1
 SS1000eta01=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize1000_eta0.1.RData")
@@ -74,16 +75,18 @@ SS5000eta01_burden=as.numeric(as_tibble(SS5000eta01) %>% filter(Fisher.pvalue<si
 SS5000eta01_skato=as.numeric(as_tibble(SS5000eta01) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
 powereta01=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta01_mirage, SS3000eta01_mirage, SS5000eta01_mirage), Burden=c(SS1000eta01_burden, SS3000eta01_burden, SS5000eta01_burden), SKATO=c(SS1000eta01_skato, SS3000eta01_skato, SS5000eta01_skato))
 powereta01_gather=powereta01 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
+point.size=5
+text.size=25
 g1=ggplot(powereta01_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
   geom_line(aes(color=Method), size=1)+
-  geom_point(aes(color=Method, shape=Method), size=4)+
+  geom_point(aes(color=Method, shape=Method), size=point.size)+
   xlab("N1=N0")+ 
   ylab("True positive rate")+
   ggtitle(expression(paste(eta, "=0.1")))+
   theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=15))+
+  theme(plot.title = element_text(hjust = 0.5, size=text.size))+
   #theme(axis.text.x = element_text(angle = 0, hjust = 1))+
-theme(text = element_text(size=15))+
+theme(text = element_text(size=text.size))+
   theme(legend.position = "none")
 
 
@@ -104,14 +107,14 @@ powereta02=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta02_mirag
 powereta02_gather=powereta02 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
 g2=ggplot(powereta02_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
-  geom_point(aes(color=Method, shape=Method), size=4)+
+  geom_point(aes(color=Method, shape=Method), size=point.size)+
   xlab("N1=N0")+ 
   ylab("")+
   ggtitle(expression(paste(eta, "=0.2")))+
   theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=15))+
+  theme(plot.title = element_text(hjust = 0.5, size=text.size))+
   #theme(axis.text.x = element_text(angle = 0, hjust = 1))+
-theme(text = element_text(size=15))+
+theme(text = element_text(size=text.size))+
   theme(legend.position = "none")
 #g2
 
@@ -130,23 +133,23 @@ SS5000eta03_burden=as.numeric(as_tibble(SS5000eta03) %>% filter(Fisher.pvalue<si
 SS5000eta03_skato=as.numeric(as_tibble(SS5000eta03) %>% filter(SKATO.pvalue<sig.cutoff) %>% tally())
 powereta03=tibble(Sample_Size=c(1000, 3000, 5000), MIRAGE_VS=c(SS1000eta03_mirage, SS3000eta03_mirage, SS5000eta03_mirage), Burden=c(SS1000eta03_burden, SS3000eta03_burden, SS5000eta03_burden), SKATO=c(SS1000eta03_skato, SS3000eta03_skato, SS5000eta03_skato))
 powereta03_gather=powereta03 %>% gather(Method,TPR, MIRAGE_VS:SKATO)
-powereta03_gather$Method=powereta03_gather$Method %>% recode(MIRAGE_VS="MIRAGE-VS") # change the method name 
+powereta03_gather$Method=powereta03_gather$Method %>% recode(MIRAGE_VS="MIRAGE-VS", SKATO="SKAT-O") # change the method name 
 g3=ggplot(powereta03_gather, aes(x=Sample_Size, y=TPR/100, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
-  geom_point(aes(color=Method, shape=Method), size=4)+
+  geom_point(aes(color=Method, shape=Method), size=point.size)+
   xlab("N1=N0")+ 
   ylab("")+
   ggtitle(expression(paste(eta, "=0.3")))+
   theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=15))+
+  theme(plot.title = element_text(hjust = 0.5, size=text.size))+
   #theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   theme(legend.position = c(0.72, 0.2),
           legend.direction = "vertical")+
-theme(text = element_text(size=15))+
-theme(legend.text=element_text(size=15))+  # change legend text size
+theme(text = element_text(size=text.size))+
+theme(legend.text=element_text(size=text.size))+  # change legend text size
 theme(legend.title=element_blank())
 
-#g3
+# g3
 
 ########### eta=0.4
 SS1000eta04=loadRData("../output/Power_Analysis_MIRAGE-VS/SampleSize1000_eta0.4.RData")

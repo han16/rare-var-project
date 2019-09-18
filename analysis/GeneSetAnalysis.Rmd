@@ -552,7 +552,8 @@ top10mirage.enrichment.tidy=top10mirage.enrichment %>% gather( group, percent,2:
 ######## Top 10 mirage genes 
 top10mirage.enrichment.tidy$group =factor(top10mirage.enrichment.tidy$group, levels=c("Strong.ASD", "Plausible.ASD", "DNM")) # re order lables in x axis 
 
-pvalues=c(0.000825, 0.0028, 0.00025)
+pvalues=c(0.000825, 0.0028, 0.00025)  # use fisher exact test in R fisher.test to get p values 
+#### for example, fisher.exact.test(matrix(c(4, round(0.0309*1003), 10,  1003), nrow=2))=0.000825
 
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/top_mirage_gene_enrichment.pdf")
 top10mirage_enrichment=ggplot(top10mirage.enrichment.tidy, aes(group, percent)) + 
@@ -631,14 +632,16 @@ ggplot(tau_fdr)+
 
 ```{r, echo=F}
 const.gene.BF=loadRData("../output/const.gene.BF.MIRAGE.RData")
-const.gene.pvalue=loadRData("../output/const.gene.pvalue.other.methods.RData")
-gene.index.to.test=c(1,  21,  41, 136, 196, 220, 332, 409, 469, 473, 489, 514, 561, 624, 694, 696, 699, 714, 762, 777)
-const.gene.pvalue$ASUM.pvalue[gene.index.to.test]=c(0.00234, 0.00064, 0.00000, 0.00000, 0.00000, 0.00000, 0.01122, 0.00000, 0.00000, 0.00000, 0.00000, 0.00419, 0.00000, 0.00000, 0.00000, 0.00222, 0.00000, 0.00000, 0.00000, 0.00000) # set 10,000 permutations to update p value
+const.gene.pvalue=loadRData("../output/const.gene.pvalue.other.methods.include.CALPHA.RData")
+#gene.index.to.test=c(1,  21,  41, 136, 196, 220, 332, 409, 469, 473, 489, 514, 561, 624, 694, 696, 699, 714, 762, 777)
+#const.gene.pvalue$ASUM.pvalue[gene.index.to.test]=c(0.00234, 0.00064, 0.00000, 0.00000, 0.00000, 0.00000, 0.01122, 0.00000, 0.00000, 0.00000, 0.00000, 0.00419, 0.00000, 0.00000, 0.00000, 0.00222, 0.00000, 0.00000, 0.00000, 0.00000) # set 10,000 permutations to update p value
 const.gene.pvalue.adj=const.gene.pvalue%>%mutate("SKATO.pvalue.adj"=p.adjust(SKATO.pvalue, method="BH"))%>%
   mutate("CMC.pvalue.adj"=p.adjust(CMC.pvalue, method="BH"))%>%
   mutate("ASUM.pvalue.adj"=p.adjust(ASUM.pvalue, method="BH"))%>%
   mutate("Fisher.pvalue.adj"=p.adjust(Fisher.pvalue, method="BH"))%>%
-  mutate("Fisher.adj.pvalue.adj"=p.adjust(Fisher.adj.pvalue, method="BH"))
+  mutate("Fisher.adj.pvalue.adj"=p.adjust(Fisher.adj.pvalue, method="BH")) %>%
+  mutate("CALPHA.pvalue.adj"=p.adjust(CALPHA.pvalue, method="BH")) 
+
 const.gene.BF.pvalue.combine=full_join(const.gene.BF, const.gene.pvalue.adj, by="Gene")
 const.gene.BF.pvalue.combine %>% filter(ASUM.pvalue.adj==0)%>%select(SKATO.pvalue.adj:Fisher.adj.pvalue.adj)
 ```
@@ -652,10 +655,11 @@ const.gene.BF.pvalue.combine %>% filter(post_prob>0.52)%>%select(Gene, BF, post_
 
 const.gene.BF.pvalue.combine %>% filter(post_prob>0.4)%>%select(Gene, BF, post_prob) %>% arrange(desc(post_prob))
 
-ASUM_gene=const.gene.BF.pvalue.combine %>% filter(ASUM.pvalue.adj<0.05) %>% select(Gene,BF, post_prob, ASUM.pvalue.adj)
-ASUM_gene %>% arrange(ASUM.pvalue.adj) %>% print(n=20)
-right_join(as_tibble(const.gene.BF), ASUM_gene, by="Gene")%>% select(-post_prob.y, -BF.y)%>%arrange(desc(post_prob.x)) 
-left_join(as_tibble(MIRAGE_gene), ASUM_gene, by="Gene")%>% select(-post_prob.y, -BF.y)%>%arrange(desc(post_prob.x))%>% print(n=29) ## ASUM: does not work for genes with one variant, resutling in NA 
+CALPHA_gene=const.gene.BF.pvalue.combine %>% filter(CALPHA.pvalue.adj<0.2) %>% select(Gene,BF, post_prob, CALPHA.pvalue.adj)
+CALPHA_gene %>% arrange(CALPHA.pvalue.adj) %>% print(n=7)
+
+right_join(as_tibble(const.gene.BF), CALPHA_gene, by="Gene")%>% select(-post_prob.y, -BF.y)%>%arrange(desc(post_prob.x)) 
+left_join(as_tibble(MIRAGE_gene), CALPHA_gene, by="Gene")%>% select(-post_prob.y, -BF.y)%>%arrange(desc(post_prob.x))%>% print(n=29) ## ASUM: does not work for genes with one variant, resutling in NA 
 ```
 
 
@@ -666,24 +670,45 @@ FDR has the minimum of 0.14
 method    | FDR<0.2  | FDR<0.3  |
 ---------|--------|--------------
 MIRAGE  | 3 | 9
-SKATO   | 0  | 0 
-CMC  | 0 | 0 
-ASUM | 20 |20 
+CALPHA | 7 |7 
 Burden | 0 | 0 
 Burden.adj | 0 | 0 
 Table: Number of genes identified by different methods at different FDR levels. 
 
 
+```{r, echo=T}
+####### enirchment of top 10 calpha genes 
+CALPHA_gene_sort=CALPHA_gene %>% arrange(CALPHA.pvalue.adj)
+top10_CALPHA_gene=CALPHA_gene_sort$Gene[1:10]
 
-method    | FDR<0.2  | FDR<0.3  |
----------|--------|--------------
-MIRAGE  | 3 | 9
-SKATO   | 0  | 0 
-CMC  | 0 | 0 
-Burden | 0 | 0 
-Burden.adj | 0 | 0 
-Table: Number of genes identified by different methods at different FDR levels. 
 
+top10CALPHA.percent=c(length(intersect(top10_CALPHA_gene, strong.ASD.gene)), length(intersect(top10_CALPHA_gene, plausible.ASD.gene)), length(intersect(top10_CALPHA_gene, top1000.denovo.gene)))/10
+const.gene.percent=c(length(intersect(all.const.gene, strong.ASD.gene)), length(intersect(all.const.gene, plausible.ASD.gene)), length(intersect(all.const.gene, top1000.denovo.gene)))/1003
+top10CALPHA.enrichment=tibble(class=c("Top10 CALPHA Gene", "All 1003 Constraint Gene"), Strong.ASD=c(top10CALPHA.percent[1], const.gene.percent[1]), Plausible.ASD=c(top10CALPHA.percent[2], const.gene.percent[2]), DNM=c(top10CALPHA.percent[3], const.gene.percent[3]))
+top10CALPHA.enrichment.tidy=top10CALPHA.enrichment %>% gather( group, percent,2:4)
+
+pvalue=numeric()
+for (i in 1:3)
+pvalue[i]=fisher.test(matrix(c(top10CALPHA.percent[i]*10, const.gene.percent[i]*1003, 10, 1003 ), nrow=2))$p.value
+
+top10CALPHA_enrichment=ggplot(top10CALPHA.enrichment.tidy, aes(group, percent)) + 
+  geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+  theme_classic()+
+  xlab("")+ylab("Proportion of putative ASD genes")+
+  ylim(c(0, 0.8))+
+  theme(plot.title = element_text(hjust = 0.5, size=10, face="bold"))+
+  ggtitle("Enrichment of ASD genes in CALPHA results")+
+  #theme(plot.title = element_text(size=12))
+   theme(legend.title = element_blank())+
+  geom_signif(annotations ="p=0.29", y_position = 0.15  ,xmin=0.7, xmax=1.2, size=1, vjust=-0.5, textsize=5)+
+  geom_signif(annotations ="p=1.00", y_position = 0.15  ,xmin=1.7, xmax=2.2, size=1, vjust=-0.5, textsize=5)+
+  geom_signif(annotations ="p=0.60", y_position = 0.15  ,xmin=2.7, xmax=3.2, size=1, vjust=-0.5, textsize=5)+
+  #geom_signif(annotations =0.000825, y_position = 0.45  ,xmin=0.7, xmax=1.2)+
+   theme(legend.position="bottom")+
+theme(text = element_text(size=10))+
+theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+top10CALPHA_enrichment
+```
 
 
 #### highlight genes
@@ -1169,7 +1194,7 @@ skato=tibble(sx=sx, sy=sy)
    #ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
    ylab("")+
    theme(plot.title = element_text(hjust = 0.5, size=12,face="bold"))+  #center the title+
-   ggtitle("(B) SKATO")+
+   ggtitle("(B) SKAT-O")+
    geom_abline(intercept = 0, slope = 1, color="red", 
                  linetype="solid", size=1.5)
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene_LoFDamaging.pdf")
