@@ -676,7 +676,7 @@ Burden.adj | 0 | 0
 Table: Number of genes identified by different methods at different FDR levels. 
 
 
-```{r, echo=T}
+```{r, echo=F}
 ####### enirchment of top 10 calpha genes 
 CALPHA_gene_sort=CALPHA_gene %>% arrange(CALPHA.pvalue.adj)
 top10_CALPHA_gene=CALPHA_gene_sort$Gene[1:10]
