@@ -1630,19 +1630,19 @@ MIRAGE_gene%&gt;%arrange(desc(post_prob))  # FDR&lt;0.2</code></pre>
 ## 1 CYFIP1  27.4     0.858
 ## 2 EP400   15.3     0.771
 ## 3 FBN1    11.9     0.722</code></pre>
-<pre class="r"><code>const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.52)%&gt;%select(Gene, BF, post_prob) %&gt;% arrange(desc(post_prob)) # FDR&lt;0.3</code></pre>
-<pre><code>## # A tibble: 9 x 3
-##   Gene       BF post_prob
-##   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-## 1 CYFIP1  27.4      0.858
-## 2 EP400   15.3      0.771
-## 3 FBN1    11.9      0.722
-## 4 SRCAP    9.83     0.683
-## 5 DYNC1H1  9.48     0.675
-## 6 ABCA2    8.92     0.662
-## 7 DOCK4    8.45     0.650
-## 8 CACNA1D  6.28     0.579
-## 9 CHD8     5.19     0.532</code></pre>
+<pre class="r"><code>const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.52)%&gt;%select(Gene, BF, post_prob, CALPHA.pvalue.adj) %&gt;% arrange(desc(post_prob)) # FDR&lt;0.3</code></pre>
+<pre><code>## # A tibble: 9 x 4
+##   Gene       BF post_prob CALPHA.pvalue.adj
+##   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;             &lt;dbl&gt;
+## 1 CYFIP1  27.4      0.858            1     
+## 2 EP400   15.3      0.771            1     
+## 3 FBN1    11.9      0.722            1     
+## 4 SRCAP    9.83     0.683            1     
+## 5 DYNC1H1  9.48     0.675            1     
+## 6 ABCA2    8.92     0.662           NA     
+## 7 DOCK4    8.45     0.650            0.0649
+## 8 CACNA1D  6.28     0.579            0.0296
+## 9 CHD8     5.19     0.532            1</code></pre>
 <pre class="r"><code>const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.4)%&gt;%select(Gene, BF, post_prob) %&gt;% arrange(desc(post_prob))</code></pre>
 <pre><code>## # A tibble: 24 x 3
 ##    Gene       BF post_prob
@@ -1723,7 +1723,8 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 </tr>
 </tbody>
 </table>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre><code>## png 
+##   2</code></pre>
 </div>
 <div id="highlight-genes" class="section level4">
 <h4>highlight genes</h4>

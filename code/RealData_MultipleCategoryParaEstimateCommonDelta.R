@@ -1,5 +1,6 @@
 #############################
 rm(list=ls())
+setwd("C:\\Shengtong\\Research\\rare-var\\rare-var-project\\")
 library(RSQLite)
 library(dplyr)
 library(knitr)
@@ -363,7 +364,7 @@ gene.data=eight.partition(cand.data)
 #    pASD.cons.para.est[,i]=NA
 ##########################
 ############# use other methods to find risk genes #################
-cand.data=gene.data[gene.data$group.index<6,]  # removing non-damaging variants
+#cand.data=gene.data[gene.data$group.index<6,]  # removing non-damaging variants  why?????????
 
 gene_var_data=as_tibble(cand.data %>% select(ID, Gene, No.case, No.contr))
 gene=levels(factor(gene_var_data$Gene))
@@ -373,6 +374,7 @@ CMC.pvalue=numeric()
 ASUM.pvalue=numeric()
 Fisher.pvalue=numeric()
 Fisher.adj.pvalue=numeric()
+CALPHA.pvalue=numeric()
 for (i in 1:length(gene))
 #for (i in 1:1000)
 {
@@ -410,6 +412,15 @@ for (i in 1:length(gene))
      SKATO.pvalue[i]=NA
 
   library(AssotesteR)
+  ############ CALPHA
+  if (ncol(pheno_geno$geno)>1)
+  {
+    c.alpha.test=CALPHA(pheno_geno$pheno, pheno_geno$geno,  perm=NULL)
+    CALPHA.pvalue[i]=c.alpha.test$asym.pval
+  }
+  if (ncol(pheno_geno$geno)==1)
+    CALPHA.pvalue[i]=NA
+
   ############ CMC
   if (ncol(pheno_geno$geno)>1)
   {
@@ -452,7 +463,9 @@ for (i in 1:length(gene))
 
 }  # end of j
 
-all_pvalue=data.frame(Gene=gene,SKATO.pvalue=SKATO.pvalue, CMC.pvalue=CMC.pvalue, ASUM.pvalue=ASUM.pvalue, Fisher.pvalue=Fisher.pvalue, Fisher.adj.pvalue=Fisher.adj.pvalue)
+
+all_pvalue=data.frame(Gene=gene,SKATO.pvalue=SKATO.pvalue, CMC.pvalue=CMC.pvalue, ASUM.pvalue=ASUM.pvalue, Fisher.pvalue=Fisher.pvalue, Fisher.adj.pvalue=Fisher.adj.pvalue,
+                      CALPHA.pvalue=CALPHA.pvalue)
 #all_pvalue[is.na(all_pvalue)] <- 1
 all_pvalue_adj=all_pvalue
 for (i in 1:ncol(all_pvalue))

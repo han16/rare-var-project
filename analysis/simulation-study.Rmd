@@ -304,7 +304,7 @@ g1=ggplot(power_gather, aes(x=gamma_bar, y=TPR/1000, group=Method))+
 power_gather_combine=bind_rows(power_gather_SS1000, power_gather_SS3000, power_gather_SS5000)
 
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig1-power_comparison_MIRAGE-vs_varyGammabar.pdf")
-power_gather_combine$Method=power_gather_combine$Method %>% recode(MIRAGE_VS="MIRAGE-VS")
+power_gather_combine$Method=power_gather_combine$Method %>% recode(MIRAGE_VS="MIRAGE-VS", SKATO="SKAT-O")
 ggplot(power_gather_combine, aes(x=gamma_bar, y=TPR/1000, group=Method))+
   geom_line(aes(color=Method), size=0.8)+
   ylim(0,1)+
@@ -344,13 +344,13 @@ null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="
 
 ###### loot at count with p value less than 0.05 
 null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
-null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),3)), count=c(21,26,31, 14,38,45, 15,37,42),sample.size=rep(c(1000,3000, 5000), each=3))
+null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKAT-O"),3)), count=c(21,26,31, 14,38,45, 15,37,42),sample.size=rep(c(1000,3000, 5000), each=3))
 null.pvalue.combine.significant.count$sample.size=as.factor(null.pvalue.combine.significant.count$sample.size)
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig2-typeIerror_MIRAGE-vs.pdf")
 ggplot(null.pvalue.combine.significant.count, aes(x=sample.size, y=count/1000, fill=Method)) +
   geom_bar(stat="identity", position="dodge")+
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
-  xlab("N1=N0")+ylab("False positive (p value <5%) rate" )+
+  xlab("N1=N0")+ylab("False positive (p value < 5%) rate" )+
   theme_classic()
 #dev.off()
 #ggplot(null.pvalue.SS5000.gather, aes(x=pvalue, fill=Method))+
@@ -404,7 +404,7 @@ null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="
 ###### loot at count with p value less than 0.05 and manually enter the result
 null.pvalue.combine.significant=null.pvalue.combine %>% filter(pvalue<0.05)
 
-null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKATO"),4)), count=c(22,32,39, 22,46,55, 25,32,44, 11,35,47),gammabar=rep(3:6, each=3))
+null.pvalue.combine.significant.count=tibble(Method=c(rep(c("MIRAGE-VS", "Burden", "SKAT-O"),4)), count=c(22,32,39, 22,46,55, 25,32,44, 11,35,47),gammabar=rep(3:6, each=3))
 null.pvalue.combine.significant.count$gammabar=as.factor(null.pvalue.combine.significant.count$gammabar)
 
 #pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig2-typeIerror_MIRAGE-vs_misspecified_gammabar.pdf")
@@ -415,7 +415,7 @@ ggplot(null.pvalue.combine.significant.count, aes(x=gammabar, y=count/1000, fill
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   geom_hline(yintercept=0.05, linetype="dashed", color = "red")+
   xlab(expression(paste(bar(gamma))))+
-ylab("False positive (p values less than 5%) rate" )
+ylab("False positive (p value < 5%) rate" )
 #dev.off()
 ```
 
@@ -1151,7 +1151,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden(0.556)", "SKATO(0.724)", "MIRAGE(0.839)", "CMC(0.755)", "ASUM(0.672)"), each=num_run)
+method=rep(c( "Burden(0.556)", "SKAT-O(0.724)", "MIRAGE(0.839)", "CMC(0.755)", "ASUM(0.672)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1219,7 +1219,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("Burden(0.446)", "SKATO(0.540)", "MIRAGE(0.805)", "CMC(0.563)", "ASUM(0.417)"), each=num_run)
+method=rep(c("Burden(0.446)", "SKAT-O(0.540)", "MIRAGE(0.805)", "CMC(0.563)", "ASUM(0.417)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1285,7 +1285,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden(0.513)", "SKATO(0.722)", "MIRAGE(0.821)", "CMC(0.723)", "ASUM(0.650)"), each=num_run)
+method=rep(c( "Burden(0.513)", "SKAT-O(0.722)", "MIRAGE(0.821)", "CMC(0.723)", "ASUM(0.650)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1356,7 +1356,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden(0.543)", "SKATO(0.756)", "MIRAGE(0.843)", "CMC(0.744)", "ASUM(0.672)"), each=num_run)
+method=rep(c( "Burden(0.543)", "SKAT-O(0.756)", "MIRAGE(0.843)", "CMC(0.744)", "ASUM(0.672)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 

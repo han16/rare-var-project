@@ -51,11 +51,11 @@ test.func=function(evid, Data, N1, N0) # given evid, and sample size, perform th
 }
 
 
-### Annotated data quality. 
+### Annotated data quality.
 All.Anno.Data=as_tibble(read.table("../../AnnotatedTrans.txt", header=T))
 N1=N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA
-All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
+All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
 Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 
@@ -63,8 +63,8 @@ var.data=data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Da
 
 
 
-### AF cutoff: three categories 
-ExacAF.cutoff=c(1e-2, 1e-3, 1e-4)  ######## 
+### AF cutoff: three categories
+ExacAF.cutoff=c(1e-2, 1e-3, 1e-4)  ########
 AF.summary=matrix(nrow=length(ExacAF.cutoff), ncol=5)
 rownames(AF.summary)=paste("MAF<", ExacAF.cutoff, sep="")
 colnames(AF.summary)=c("No.rows", "No.var.ca", "No.var.co",  "rate.ca", "rate.co")
@@ -73,12 +73,12 @@ AF.evid=list()
 
 for (i in 1:(length(ExacAF.cutoff)-1))
 {
-  #cat(i, "is running", "\n") 
-  select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<ExacAF.cutoff[i] & All.Anno.Data$ExacAF>ExacAF.cutoff[i+1] ),]  
+  #cat(i, "is running", "\n")
+  select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<ExacAF.cutoff[i] & All.Anno.Data$ExacAF>ExacAF.cutoff[i+1] ),]
   AF.evid[[i]]=as.character(select.data$ID)
   AF.summary[i,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 }
-select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.0001),]  
+select.data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.0001),]
 AF.evid[[i+1]]=as.character(select.data$ID)
 AF.summary[i+1,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No.contr), sum(select.data$No.case)/N1, sum(select.data$No.contr)/N0)
 
@@ -86,21 +86,22 @@ AF.summary[i+1,]=c(nrow(select.data),sum(select.data$No.case),sum(select.data$No
 
 ## Variant level analysis
 
-### single variant 
+### single variant
 
 #var.fea=c("Damaging", "CADDtop10%", "Consensus", "LoF"); max.vart=length(var.fea)
-var.fea=c("Damaging", "CADDtop10%", "SIFT<0.05", "LoF"); max.vart=length(var.fea)
+var.fea=c("Damaging", "CADDtop10%", "SIFT<0.05", "LoF", "Non-damaging"); max.vart=length(var.fea)
 var.evid=list()
 var.evid[[1]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))>=0.957 )]) # probably damaging >=0.957
 psbl.damaging=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))<=0.956 & as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))>=0.453)]) # possibly damaging
 sift=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$SIFT.score))<0.05 )]) # deleterious SIFT<0.05
 CADD.cutoff=quantile(as.numeric(as.character(Anno.Data$CADD.raw)), prob=0.9, na.rm=TRUE)
-var.evid[[2]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$CADD.raw))>CADD.cutoff)]) # CADD top 10% 
+var.evid[[2]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$CADD.raw))>CADD.cutoff)]) # CADD top 10%
 #var.evid[[3]]=union(union(var.evid[[1]], sift), var.evid[[2]]) # consensus
 var.evid[[3]]=sift
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
-var.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
-summy=matrix(nrow=max.vart, ncol=4)
+var.evid[[4]]=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
+var.evid[[5]]=as.character(Anno.Data$ID[which(as.numeric(as.character(Anno.Data$Polyphen2.HDIV.score))<=0.956)])
+summy=matrix(nrow=max.vart, ncol=5)
 colnames(summy)=c("OR", "p.value", "rate.ca", "rate.co")
 rownames(summy)=var.fea
 for (vart in 1:max.vart)
@@ -113,7 +114,7 @@ for (vart in 1:max.vart)
 
 
 
-### different gene set 
+### different gene set
 GeneDB=src_sqlite(path="C:\\Shengtong\\Research\\rare-var\\gene.list.db", create=F)
 #GeneDB=src_sqlite(path="../../gene.list.db", create=F)
 gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
@@ -131,14 +132,14 @@ Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
 Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
 Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
 Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
-purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
+purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene
 ASD.gene=data.frame(collect(tbl(GeneDB, "AutismKB_gene")))
 constraint.gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
 RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
-RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene 
+RVIS.gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene
 haploinsuff.gene=data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))
 gene.fea=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff", "SCZ gene")
-#gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set); 
+#gene.fea=c("cate1", "cate2", "cate3", "cate4", "cate5", "cate6", "cateS", "TADAq<5%", "TADAq<20%", "TADAq<30%", "TADAq<40%", "TADAq<50%", "TADAq>90%", gene.set);
 max.gene=length(gene.fea)
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
@@ -232,15 +233,15 @@ signal1.evid=list(); jj1=0
 signal2.evid=list(); jj2=0
 signal3.evid=list(); jj3=0
 signal4.evid=list(); jj4=0
-for (i in 1:length(var.fea))  # damaging 
+for (i in 1:length(var.fea))  # damaging
 { # i=1
-    for (j in 1:length(gene.fea))  # gene set 
+    for (j in 1:length(gene.fea))  # gene set
     { # j=1
-      for (k in 1:length(AF.cutoff))  # AF 
-      { # k=3  
-   #     for (l in 1:length(exon.fea))  # exon 
+      for (k in 1:length(AF.cutoff))  # AF
+      { # k=3
+   #     for (l in 1:length(exon.fea))  # exon
       { # l=1
-    #    comb.evid=intersect(intersect(intersect(var.evid[[i]], gene.evid[[j]]), AF.evid[[k]]), evid.exon[[l]]) 
+    #    comb.evid=intersect(intersect(intersect(var.evid[[i]], gene.evid[[j]]), AF.evid[[k]]), evid.exon[[l]])
     #    cat(i," th of var.fea", "\t", j, "th gene.fea", "\t", k, "th AF.fea", "\t", l, "th exon.fea", "\n" )
         comb.evid=intersect(intersect(var.evid[[i]], gene.evid[[j]]), AF.evid[[k]])
         cat(i," th of var.fea", "\t", j, "th gene.fea", "\t", k, "th AF.fea",  "\n" )
@@ -249,34 +250,34 @@ for (i in 1:length(var.fea))  # damaging
         gene.data=three.partition(cand.data)
         overlap.data=gene.data[gene.data$ID %in% comb.evid,]
         psbl.index=unique(overlap.data$group.index)
-        
-        num.var=numeric()   # each combined feature belongs to only one variant group with most number of variants 
+
+        num.var=numeric()   # each combined feature belongs to only one variant group with most number of variants
         for (ii in 1:length(psbl.index))
           num.var[ii]=sum(overlap.data$group.index==psbl.index[ii])
         keep.group.index=psbl.index[which.max(num.var)]
         overlap.data=overlap.data[overlap.data$group.index==keep.group.index,]
-        
+
         order.overlap.data=overlap.data[order(overlap.data$group.index, decreasing=F),]
         actu.num.group=length(keep.group.index)
-        
+
         delta.init=runif(1); beta.init=runif(actu.num.group)
         order.overlap.data$original.group.index=order.overlap.data$group.index
-        
+
         if (nrow(order.overlap.data)>0)
-        {  
+        {
           burden.matrix=matrix(nrow=actu.num.group, ncol=4)  # this is burden for every category split from combined feature
           colnames(burden.matrix)=c("OR", "p.value", "rate.case", "rate.contr")
         #  rownames(burden.matrix)=paste(var.fea[i], gene.fea[j], AF.cutoff[k], exon.fea[l], sep="_")
           rownames(burden.matrix)=paste(var.fea[i], gene.fea[j], AF.cutoff[k], sep="_")
-          
-          
+
+
           for (jj in 1:actu.num.group)
-          {    
+          {
             order.overlap.data$group.index[order.overlap.data$group.index==keep.group.index[jj]]=jj # re-index the group labels
             pois.test=test.func(order.overlap.data[order.overlap.data$original.group.index==keep.group.index[jj],]$ID, var.data, N1, N0)
             burden.matrix[jj,]=c(pois.test$odds.ratio, pois.test$p.value, pois.test$rate.case, pois.test$rate.contr)
           }
-          
+
           para.est=multi.group.func.for.variant(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
           #comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=c(pois.test$odds.ratio, para.est$pvalue[length(para.est$pvalue)], pois.test$rate.case, pois.test$rate.contr)
           nn=nn+1
@@ -286,16 +287,16 @@ for (i in 1:length(var.fea))  # damaging
           Burden.cate[[nn]]=burden.matrix
           PSBL.index[[nn]]=psbl.index
         }
-     #   if (nrow(order.overlap.data)==0)  
+     #   if (nrow(order.overlap.data)==0)
     #      comb.summ.MIRAGE[(i-1)*length(gene.set)+j,((k-1)*4+1):(k*4)]=NA
-        
-        
+
+
         ######################
-        
-       
-      }  # end of l 
+
+
+      }  # end of l
     } # end of k
   } # end of j
-}  # end of i  
-       
+}  # end of i
+
 #save( MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.exon.geneset.AF.partition.old.version.v2.RData")

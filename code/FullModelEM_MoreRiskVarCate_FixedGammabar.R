@@ -59,24 +59,34 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
 ##################################
 num.gene=1000
 m=100
-N0=3000; N1=3000
+N0=N1=3000
 delta=0.1
 alpha0 <- 0.1
 beta0 <- 1000
 alpha <- 0.1
 beta <- 2000
-gamma.mean <- 5
+gamma.mean <- 6
+gamma.bar=6
 sigma <- 1
 num.group=3
 split.ratio=c(0, 0.3, 0.7, 1)
 pi=numeric(num.group)
 pi[1]=0.05; pi[2]=0.2; pi[3]=0.5
-max.run=1
+max.run=100
+
 all.pi=matrix(nrow=max.run, ncol=(num.group+1))
 all.teststat=matrix(nrow=max.run, ncol=num.group)
 actu.pi=matrix(nrow=max.run, ncol=num.group)
 pvalue.fish=matrix(nrow=max.run, ncol=num.group)
 
+###################
+all.delta.est=numeric()
+all.BF.gene=matrix(nrow=max.run, ncol=num.gene)
+all.mirage.pvalue=matrix(nrow=max.run,ncol=num.gene)
+all.skat.pvalue=matrix(nrow=max.run, ncol=num.gene)
+all.fisher.pvalue=matrix(nrow=max.run, ncol=num.gene)
+all.Ui=matrix(nrow=max.run, ncol=num.gene)
+###################
 
 all.pvalue=numeric()
 all.conti.table=list()
@@ -93,7 +103,7 @@ BF.var=matrix(0,nrow=num.gene, ncol=m);
 Ui=rbinom(num.gene, 1, delta)
 stop.cond=0; iter=1
 thrshd=1e-5
-max.iter=1000
+max.iter=10000
 beta.k=matrix(nrow=max.iter, ncol=num.group)
 beta.k[1, 1]=0.7; beta.k[1, 2]=0.2; beta.k[1,3]=0.2
 delta.est=numeric(); delta.est[1]=0.8
@@ -130,7 +140,7 @@ for (i in 1:num.gene)
     for (j in 1:ncol(data$geno))
     {
       orig.var.index=data$var.index[j]
-      BF.var[i,orig.var.index]=BF.gene.inte(data$geno[,j], data$pheno, bar.gamma=4, sig=sigma)  # truth is gamma.mean
+      BF.var[i,orig.var.index]=BF.gene.inte(data$geno[,j], data$pheno, bar.gamma=gamma.bar, sig=sigma)  # truth is gamma.mean
      for (k in 1:num.group)
      {
        from=split.ratio[k]*m+1; to=split.ratio[k+1]*m
@@ -263,10 +273,21 @@ abline(h=delta, col="red")
 all.pi[run,]=c(beta.k[(iter-1),], delta.est[iter-1])
 
 TP[run,]=c(sum(mirage.pvalue<0.05), sum(fisher.pvalue<0.05), sum(skat.pvalue<0.05))/num.gene
+#######################
+BF.gene=BF.gene[complete.cases(BF.gene), ]
+all.BF.gene[run,]=BF.gene[nrow(BF.gene),]
+all.mirage.pvalue[run,]=mirage.pvalue
+all.fisher.pvalue[run,]=fisher.pvalue
+all.skat.pvalue[run,]=skat.pvalue
+all.Ui[run,]=Ui
+all.delta.est[run]=delta.est[length(delta.est)]
+######################
 } # end of run
 ######################
 end.time=date()
 cat("program ends at", date(),"\n\n")
 time.spent<-proc.time()-ptm
 time.spent
+
+#save(all.delta.est, all.BF.gene,all.fisher.pvalue, all.mirage.pvalue, all.skat.pvalue, all.Ui, file="C:/Shengtong/Research/rare-var/rare-var-project/output/BayesianFDR/Mixed_Gene_Gammamean3_useGammabar4.delta0.1_replicate100.RData")
 

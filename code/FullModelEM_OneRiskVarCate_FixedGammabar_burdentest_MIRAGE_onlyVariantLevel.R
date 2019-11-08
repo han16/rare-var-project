@@ -69,19 +69,20 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
 }
 ##################################
 num.gene=1
-m=100
-N0=N1=5000
+m=100  # m: the number of variants
+N0=N1=3000
 delta=1
 alpha0 <- 0.1
 beta0 <- 1000
 alpha <- 0.1
 beta <- 2000
-gamma.mean <- 5
+gamma.mean <- 5  # true gamma
+gamma.bar=6   # gamma to use
 sigma <- 1
 num.group=1
 split.ratio=c(0, 1)
-pi=0.1
-max.run=100
+pi=0
+max.run=1
 all.pi=matrix(nrow=max.run, ncol=1)
 all.teststat=numeric()
 pvalue.fish=numeric()
@@ -130,7 +131,7 @@ for (run in 1:max.run) {
       for (j in 1:ncol(data$geno))
       {
         orig.var.index=data$var.index[j]
-        BF.var[orig.var.index]=BF.gene.inte(data$geno[,j], data$pheno, bar.gamma=gamma.mean, sig=sigma)
+        BF.var[orig.var.index]=BF.gene.inte(data$geno[,j], data$pheno, bar.gamma=gamma.bar, sig=sigma)
 
         bb=bb*((1-beta.k[1])+beta.k[1]*BF.var[orig.var.index])
       }
