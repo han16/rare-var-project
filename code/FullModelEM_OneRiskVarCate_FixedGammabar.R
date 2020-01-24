@@ -67,7 +67,7 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
 
 }
 ##################################
-num.gene=100  # number of genes-gene level
+num.gene=1  # number of genes-gene level
 m=1000
 N0=N1=5000
 delta=1
@@ -80,7 +80,7 @@ sigma <- 1
 num.group=1
 split.ratio=c(0, 1)
 pi=0.1
-max.run=100
+max.run=1
 all.pi=matrix(nrow=max.run, ncol=(num.group+1))
 all.teststat=numeric()
 pvalue.fish=numeric()
