@@ -957,7 +957,24 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")  # multiple pane
 #dev.off()
 
 
-
+############# generate figure in research profile 
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/enrichment.pdf")
+#ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index)))+
+#  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+  # manually define shapes if more than 6 groups 
+#  geom_point()+
+#  xlab(expression(paste(hat(eta))))+
+#  ylab(expression(paste("-log" [10], "(p value)")))+
+#  ylim(c(0,y.max))+
+#  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+#  geom_hline(yintercept=-log(mirage.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
+#  ggtitle("")+
+#  theme_classic()+
+#  theme(plot.title = element_text(hjust = 0.5, size=10))+  # center the title 
+  #labs(color='variant group')+   # define legend title 
+#  theme(legend.title=element_blank())+
+#  theme(legend.text=element_text(size=7))
+#dev.off()
+#############
 
 ```
 
