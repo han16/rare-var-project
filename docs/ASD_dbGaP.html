@@ -11,7 +11,7 @@
 
 
 
-<title>Home</title>
+<title>ASD_dbGaP</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,6 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -262,6 +265,90 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -269,6 +356,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -311,19 +408,43 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Home</h1>
+<h1 class="title toc-ignore">ASD_dbGaP</h1>
 
 </div>
 
 
-<p>Below is the outline of the project.</p>
-<ul>
-<li><a href="https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf">This</a> is the project.</li>
-<li>click this <a href="simulation-study.html">link</a> to see simulation studies.</li>
-<li><a href="ASD.html">This</a> is analysis for ASD exon sequence data.</li>
-<li><a href="ASD_dbGaP.html">ASD_dbGaP</a>.</li>
-<li><a href="SCZ-analysis.html">This</a> is analysis for Schizophrenia data.</li>
-</ul>
+<p>Four cohort studies</p>
+<div id="hmb-mds-93-individuals" class="section level2">
+<h2><a href="https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000298.v4.p3">HMB-MDS</a>: 93 individuals</h2>
+<div id="phenotype-.txt-file" class="section level3">
+<h3>Phenotype: .txt file</h3>
+<pre class="r"><code># Study accession: phs000298.v4.p3
+# Table accession: pht002283.v3.p3.c4
+# Consent group: Health/Medical/Biomedical (MDS)
+# Citation instructions: The study accession (phs000298.v4.p3) is used to cite the study and its data tables and documents. The data in this file should be cited using the accession pht002283.v3.p3.c4.
+# To cite columns of data within this file, please use the variable (phv#) accessions below:
+#
+# 1) the table name and the variable (phv#) accessions below; or
+# 2) you may cite a variable as phv#.v3.p3.c4.
+
+##      phv00160418.v3.p3.c4    phv00167339.v3.p3.c4    phv00167341.v3.p3.c4    phv00167342.v3.p3.c4    phv00369219.v1.p3.c4
+dbGaP_Subject_ID        SUBJID  SEX     AGE     RACE    DIAGNOSIS
+2533851 19-952879-11    M                       CONTROL</code></pre>
+</div>
+<div id="genotype-vcf-file" class="section level3">
+<h3>Genotype: vcf file</h3>
+<pre class="r"><code>##fileformat=VCFv4.1
+##ALT=&lt;ID=NON_REF,Description=&quot;Represents any possible alternative allele at this location&quot;&gt;
+##FILTER=&lt;ID=InbreedingCoeff,Description=&quot;InbreedingCoeff &lt; -0.3&quot;&gt;
+##FILTER=&lt;ID=LowQual,Description=&quot;Low quality&quot;&gt;
+##FILTER=&lt;ID=VQSRTrancheINDEL95.00to96.00,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: 0.6951 &lt;= x &lt; 0.8703&quot;&gt;
+##FILTER=&lt;ID=VQSRTrancheINDEL96.00to97.00,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: 0.5424 &lt;= x &lt; 0.6951&quot;&gt;
+##FILTER=&lt;ID=VQSRTrancheINDEL97.00to99.00,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -0.2106 &lt;= x &lt; 0.5424&quot;&gt;
+##FILTER=&lt;ID=VQSRTrancheINDEL99.00to99.50,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -0.9744 &lt;= x &lt; -0.2106&quot;&gt;
+##FILTER=&lt;ID=VQSRTrancheINDEL99.50to99.90,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -9.6841 &lt;= x &lt; -0.9744&quot;&gt;
+##FILTER=&lt;ID=VQSRTrancheINDEL99.90to99.95,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -26.8213 &lt;= x &lt; -9.6841&quot;&gt;</code></pre>
+</div>
+</div>
 
 <hr>
 <p>
@@ -351,6 +472,8 @@ $(document).ready(function () {
 -->
 
 
+</div>
+</div>
 
 </div>
 

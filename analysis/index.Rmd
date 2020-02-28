@@ -10,6 +10,7 @@ Below is the outline of the project.
 * [This][project] is the project.
 * click this [link](simulation-study.html) to see simulation studies. 
 * [This](ASD.html) is analysis for ASD exon sequence data.
+* [ASD_dbGaP](ASD_dbGaP.html). 
 * [This](SCZ-analysis.html) is analysis for Schizophrenia data. 
 
 
