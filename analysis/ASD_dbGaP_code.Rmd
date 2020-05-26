@@ -1,0 +1,123 @@
+---
+title: "ASD_dbGaP_code"
+output: html_document
+---
+
+
+## merge data set together 
+
+```{r, echo=T}
+library(tidyverse)
+```
+
+
+
+```{r, echo=T, eval=F}
+#working directory: /project2/xinhe/Shengtong/ASD_dbGaP_032020/data_from_nick/73416-DS-ASD
+
+awk '{print $1, "\t", $2, "\t", $3, "\t", $4, "\t", $5, "\t",  $8, "\t", $23, "\t", $6}' ex1.hg19_multianno.txt > ex1.hg19_multianno.txt.polyphen.cadd.sift
+# extract polyph, cadd score and sift score.  
+
+more -5 ex1.hg19_multianno.txt.polyphen.cadd.sift
+Chr 	 Start 	 End 	 Ref 	 Alt 	 Polyphen2_HDIV_score 	 CADD_raw 	 SIFT_score
+1 	 12198 	 12198 	 G 	 C 	 . 	 . 	 .
+1 	 12266 	 12266 	 G 	 A 	 . 	 . 	 .
+1 	 12272 	 12272 	 G 	 A 	 . 	 . 	 .
+1 	 12559 	 12559 	 G 	 A 	 . 	 . 	 .
+```
+
+```{r, echo=T,eval=F}
+# put annotation features and sample together
+path="C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\"
+annotation1=readRDS(paste(path, "annotation.RDS", sep=""))
+annotation2=read.table(paste(path, "ex1.hg19_multianno.txt.polyphen.cadd.sift", sep=""))
+
+anno1=tibble(ID=paste(annotation1$locus, annotation1$ref, annotation1$alt, sep="_"), Gene=annotation1$genes,  Annotation=annotation1$category, ExacAF=annotation1$exac)
+
+ID=paste("chr", annotation2$V1[-1], ":", sep="")
+start_end=paste(annotation2$V2[-1], "_", annotation2$V3[-1], "_", annotation2$V4[-1], "_", annotation2$V5[-1], sep="")
+anno2=tibble(ID=paste(ID, start_end, sep=""), Polyphen2.HDIV=annotation2$V6[-1], CADD.raw=annotation2$V7[-1], SIFT.score=annotation2$V8[-1])
+
+annotation=full_join(anno1, anno2, by="ID") # merger two separate files by common "ID"
+
+
+counts=read.table(paste(path, "pseudo_cc.frq.counts", sep=""), header=T)
+bim=read.table(paste(path, "pseudocc.tucc.bim", sep=""))
+end=bim$V4+1
+case.control=tibble(ID=paste("chr",bim$V1, ":", bim$V4, "_", end, "_", bim$V5, "_", bim$V6, sep=""), No.case=counts$C1, No.contr=counts$C2)
+
+full.data=right_join(annotation, case.control, by="ID") # only keep locus with observed alleles 
+write.csv(full.data, file=paste(path, "73416-DS-ASD.sample.csv", sep=""))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

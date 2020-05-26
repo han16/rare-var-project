@@ -11,7 +11,7 @@
 
 
 
-<title>ASD_dbGaP</title>
+<title>ASD_dbGaP_code</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -408,94 +408,59 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">ASD_dbGaP</h1>
+<h1 class="title toc-ignore">ASD_dbGaP_code</h1>
 
 </div>
 
 
-<p>Four cohort studies</p>
-<table>
-<thead>
-<tr class="header">
-<th>Group</th>
-<th>No.subject</th>
-<th>No.var called</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>DS-ASD</td>
-<td>10008</td>
-<td>3452056 (locus with observed alleles)</td>
-</tr>
-<tr class="even">
-<td>GRU</td>
-<td>2509</td>
-</tr>
-<tr class="odd">
-<td>DS-AOND-MDS</td>
-<td>162</td>
-</tr>
-<tr class="even">
-<td>HMB-MDS</td>
-<td>93</td>
-</tr>
-<tr class="odd">
-<td>Total</td>
-<td>12772</td>
-</tr>
-</tbody>
-</table>
-<div id="ds-asd-sample" class="section level2">
-<h2>DS-ASD sample</h2>
-<p><a href="https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000298.v4.p3">Sample data</a> has 10008 individuals</p>
-</div>
-<div id="old-sample-vs-ds-asd-sample" class="section level2">
-<h2>old sample vs DS-ASD sample</h2>
-<pre class="r"><code>path1=&quot;C:\\Shengtong\\Research\\rare-var\\&quot;
-path2=&quot;C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\&quot;
-All.Anno.Data=as_tibble(read.table(paste(path1, &quot;AnnotatedTrans.txt&quot;, sep=&quot;&quot;), header=T))
-DS.ASD.sample=as_tibble(read.csv(paste(path2, &quot;73416-DS-ASD.sample.csv&quot;, sep=&quot;&quot;), header=T)[,-1])</code></pre>
-<div id="sample-decomposition-by-af" class="section level3">
-<h3>sample decomposition by AF</h3>
-<p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<pre><code>## # A tibble: 10 x 3
-##    cutoff     group   counts
-##    &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;
-##  1 All        old     730052
-##  2 AF&lt;0.1%    old     464077
-##  3 0.1%&lt;AF&lt;1% old      52143
-##  4 1%&lt;AF&lt;5%   old      11145
-##  5 AF&gt;5%      old      15379
-##  6 All        DS-ASD 3452066
-##  7 AF&lt;0.1%    DS-ASD 1706881
-##  8 0.1%&lt;AF&lt;1% DS-ASD  222404
-##  9 1%&lt;AF&lt;5%   DS-ASD   59491
-## 10 AF&gt;5%      DS-ASD   75427</code></pre>
-<p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-3-1.png" width="672" /><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
-</div>
-<div id="section" class="section level3">
-<h3></h3>
-</div>
-</div>
-<div id="hmb-mds-93-individuals" class="section level2">
-<h2><a href="https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000298.v4.p3">HMB-MDS</a>: 93 individuals</h2>
-<div id="phenotype-.txt-file" class="section level3">
-<h3>Phenotype: .txt file</h3>
-</div>
-<div id="genotype-vcf-file" class="section level3">
-<h3>Genotype: vcf file</h3>
-<pre class="r"><code>##fileformat=VCFv4.1
-##ALT=&lt;ID=NON_REF,Description=&quot;Represents any possible alternative allele at this location&quot;&gt;
-##FILTER=&lt;ID=InbreedingCoeff,Description=&quot;InbreedingCoeff &lt; -0.3&quot;&gt;
-##FILTER=&lt;ID=LowQual,Description=&quot;Low quality&quot;&gt;
-##FILTER=&lt;ID=VQSRTrancheINDEL95.00to96.00,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: 0.6951 &lt;= x &lt; 0.8703&quot;&gt;
-##FILTER=&lt;ID=VQSRTrancheINDEL96.00to97.00,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: 0.5424 &lt;= x &lt; 0.6951&quot;&gt;
-##FILTER=&lt;ID=VQSRTrancheINDEL97.00to99.00,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -0.2106 &lt;= x &lt; 0.5424&quot;&gt;
-##FILTER=&lt;ID=VQSRTrancheINDEL99.00to99.50,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -0.9744 &lt;= x &lt; -0.2106&quot;&gt;
-##FILTER=&lt;ID=VQSRTrancheINDEL99.50to99.90,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -9.6841 &lt;= x &lt; -0.9744&quot;&gt;
-##FILTER=&lt;ID=VQSRTrancheINDEL99.90to99.95,Description=&quot;Truth sensitivity tranche level for INDEL model at VQS Lod: -26.8213 &lt;= x &lt; -9.6841&quot;&gt;</code></pre>
-</div>
+<div id="merge-data-set-together" class="section level2">
+<h2>merge data set together</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggplot2&#39;:
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<pre><code>## -- Attaching packages ------------------------ tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.1.1     v purrr   0.3.2
+## v tibble  2.1.1     v dplyr   0.8.1
+## v tidyr   0.8.3     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts --------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>#working directory: /project2/xinhe/Shengtong/ASD_dbGaP_032020/data_from_nick/73416-DS-ASD
+
+awk &#39;{print $1, &quot;\t&quot;, $2, &quot;\t&quot;, $3, &quot;\t&quot;, $4, &quot;\t&quot;, $5, &quot;\t&quot;,  $8, &quot;\t&quot;, $23, &quot;\t&quot;, $6}&#39; ex1.hg19_multianno.txt &gt; ex1.hg19_multianno.txt.polyphen.cadd.sift
+# extract polyph, cadd score and sift score.  
+
+more -5 ex1.hg19_multianno.txt.polyphen.cadd.sift
+Chr      Start   End     Ref     Alt     Polyphen2_HDIV_score    CADD_raw    SIFT_score
+1    12198   12198   G   C   .   .   .
+1    12266   12266   G   A   .   .   .
+1    12272   12272   G   A   .   .   .
+1    12559   12559   G   A   .   .   .</code></pre>
+<pre class="r"><code># put annotation features and sample together
+path=&quot;C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\&quot;
+annotation1=readRDS(paste(path, &quot;annotation.RDS&quot;, sep=&quot;&quot;))
+annotation2=read.table(paste(path, &quot;ex1.hg19_multianno.txt.polyphen.cadd.sift&quot;, sep=&quot;&quot;))
+
+anno1=tibble(ID=paste(annotation$locus, annotation1$ref, annotation1$alt, sep=&quot;_&quot;), Annotation=annotation1$category, ExacAF=annotation1$exac)
+
+ID=paste(&quot;chr&quot;, annotation2$V1[-1], &quot;:&quot;, sep=&quot;&quot;)
+start_end=paste(annotation2$V2[-1], &quot;_&quot;, annotation2$V3[-1], &quot;_&quot;, annotation2$V4[-1], &quot;_&quot;, annotation2$V5[-1], sep=&quot;&quot;)
+anno2=tibble(ID=paste(ID, start_end, sep=&quot;&quot;), Polyphen2.HDIV=annotation2$V6[-1], CADD.raw=annotation2$V7[-1], SIFT.score=annotation2$V8[-1])
+
+annotation=full_join(anno1, anno2, by=&quot;ID&quot;) # merger two separate files by common &quot;ID&quot;
+
+
+counts=read.table(paste(path, &quot;pseudo_cc.frq.counts&quot;, sep=&quot;&quot;), header=T)
+bim=read.table(paste(path, &quot;pseudocc.tucc.bim&quot;, sep=&quot;&quot;))
+end=bim$V4+1
+case.control=tibble(ID=paste(&quot;chr&quot;,bim$V1, &quot;:&quot;, bim$V4, &quot;_&quot;, end, &quot;_&quot;, bim$V5, &quot;_&quot;, bim$V6, sep=&quot;&quot;), No.case=counts$C1, No.contr=counts$C2)
+
+full.data=right_join(annotation, case.control, by=&quot;ID&quot;) # only keep locus with observed alleles 
+write.csv(full.data, file=paste(path, &quot;73416-DS-ASD.sample.csv&quot;, sep=&quot;&quot;))</code></pre>
 </div>
 
 <hr>

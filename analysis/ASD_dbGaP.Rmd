@@ -5,6 +5,12 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(forcats)
+library(scales)
 ```
 
 Four cohort studies 
@@ -12,7 +18,7 @@ Four cohort studies
 
 Group | No.subject | No.var called 
 -------|-----------|----------
-DS-ASD | 10008 | 3804448
+DS-ASD | 10008 | 3452056 (locus with observed alleles)
 GRU    | 2509
 DS-AOND-MDS| 162
 HMB-MDS | 93 
@@ -20,9 +26,90 @@ Total | 12772
 
 
 
-## [DS-ASD](https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000298.v4.p3) 10008 individuals 
+## DS-ASD sample  
 
-```{r, echo=T, eval=F}
+[Sample data](https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000298.v4.p3) has 10008 individuals 
+
+
+
+
+## old sample vs DS-ASD sample
+
+
+```{r, echo=T, cache=T}
+path1="C:\\Shengtong\\Research\\rare-var\\"
+path2="C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\"
+All.Anno.Data=as_tibble(read.table(paste(path1, "AnnotatedTrans.txt", sep=""), header=T))
+DS.ASD.sample=as_tibble(read.csv(paste(path2, "73416-DS-ASD.sample.csv", sep=""), header=T)[,-1])
+
+
+```
+
+### sample decomposition  by AF 
+
+
+```{r, echo=F}
+valid.DS.ASD=DS.ASD.sample %>% filter(is.na(No.case)==F & is.na(No.contr)==F) # only keep samples with observed alleles in cases and controls 
+DS.ASD=valid.DS.ASD
+
+All.Anno.count=numeric(); DS.ASD.count=numeric()
+
+All.Anno.count[1]=nrow(All.Anno.Data); DS.ASD.count[1]=nrow(DS.ASD)
+All.Anno.count[2]=nrow(All.Anno.Data %>% filter(ExacAF<0.001)); DS.ASD.count[2]=nrow(DS.ASD %>% filter(ExacAF<0.001))
+All.Anno.count[3]=nrow(All.Anno.Data %>% filter(ExacAF>0.001 & ExacAF<0.01)); DS.ASD.count[3]=nrow(DS.ASD %>% filter(ExacAF>0.001 & ExacAF<0.01))
+All.Anno.count[4]=nrow(All.Anno.Data %>% filter(ExacAF>0.01 & ExacAF<0.05)); DS.ASD.count[4]=nrow(DS.ASD %>% filter(ExacAF>0.01 & ExacAF<0.05))
+All.Anno.count[5]=nrow(All.Anno.Data %>% filter(ExacAF>0.05))
+DS.ASD.count[5]=nrow(DS.ASD %>% filter(ExacAF>0.05))
+
+var.count=tibble(cutoff=rep(c("All", "AF<0.1%", "0.1%<AF<1%", "1%<AF<5%", "AF>5%"),2), group=rep(c("old", "DS-ASD"),each=5), counts=c(All.Anno.count, DS.ASD.count) )
+
+ggplot(data=var.count, aes(x=cutoff, y=counts, fill=group)) +
+geom_bar(stat="identity", position=position_dodge())
+var.count
+```
+
+
+
+```{r, echo=F}
+
+
+old.sample <- structure(list(Group = structure(c(3L, 1L, 2L, 4L), .Label = c("AF<0.1%", "0.1%<AF<1%", "1%<AF<5%", "AF>5%"), class = "factor"), value = c(464077, 52143, 11145, 15279)), .Names = c("Group", "value"), class = "data.frame", row.names = c("1", "2", "3", "4"))
+
+old.sample=old.sample %>% arrange(desc(value)) %>% mutate(prop = paste(round(value/sum(value),4)*100, "%", sep="")) 
+
+pie <- ggplot(old.sample, aes(x = "", y = value, fill = fct_inorder(Group))) +
+       geom_bar(width = 1, stat = "identity") +
+       coord_polar("y", start = 0) +
+       geom_label_repel(aes(label = prop), size=5, show.legend = F, nudge_x = 1) +
+       guides(fill = guide_legend(title = "Group"))+
+       ggtitle("Old sample")+
+       theme(plot.title = element_text(hjust = 0.5)) # centering ggplot title 
+
+pie
+
+
+
+DS_ASD.sample <- structure(list(Group = structure(c(3L, 1L, 2L, 4L), .Label = c("AF<0.1%", "0.1%<AF<1%", "1%<AF<5%", "AF>5%"), class = "factor"), value = c(1706881, 222404, 59491, 75427)), .Names = c("Group", "value"), class = "data.frame", row.names = c("1", "2", "3", "4"))
+
+DS_ASD.sample=DS_ASD.sample %>% arrange(desc(value)) %>% mutate(prop = paste(round(value/sum(value),4)*100, "%", sep="")) 
+
+pie <- ggplot(DS_ASD.sample, aes(x = "", y = value, fill = fct_inorder(Group))) +
+       geom_bar(width = 1, stat = "identity") +
+       coord_polar("y", start = 0) +
+       geom_label_repel(aes(label = prop), size=5, show.legend = F, nudge_x = 1) +
+       guides(fill = guide_legend(title = "Group"))+
+  ggtitle("DS-ASD sample")+
+  theme(plot.title = element_text(hjust = 0.5)) # centering ggplot title 
+
+pie
+
+```
+
+
+
+### 
+
+```{r, echo=F, eval=F}
  bcftools stats pseudocc.tucc.vcf
 # This file was produced by bcftools stats (1.9+htslib-1.9) and can be plotted using plot-vcfstats.
 # The command line was:	bcftools stats  pseudocc.tucc.vcf
@@ -208,15 +295,20 @@ ST	0	T>G	91895
 ```
 
 
-
 ## [HMB-MDS](https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000298.v4.p3):  93 individuals 
+
+
+
+
+
+
 
 
 
 
 ###  Phenotype: .txt file 
 
-```{r, echo=T, eval=F}
+```{r, echo=F, eval=F}
 # Study accession: phs000298.v4.p3
 # Table accession: pht002283.v3.p3.c4
 # Consent group: Health/Medical/Biomedical (MDS)
