@@ -72,8 +72,11 @@ var.count
 
 ```{r, echo=F}
 
+old.sample.label=var.count%>% filter(group=="old")%>% .$cutoff
+label=old.sample.label[-1]
+old.sample.value=var.count%>% filter(group=="old")%>% .$counts
 
-old.sample <- structure(list(Group = structure(c(1L, 2L, 3L, 4L), .Label = c("AF<0.1%", "0.1%<AF<1%", "1%<AF<5%", "AF>5%"), class = "factor"), value = c(464077, 52143, 11145, 15379)), .Names = c("Group", "value"), class = "data.frame", row.names = c("1", "2", "3", "4"))
+old.sample <- structure(list(Group = structure(c(1L, 2L, 3L, 4L), .Label = label, class = "factor"), value = old.sample.value[-1]), .Names = c("Group", "value"), class = "data.frame", row.names = c("1", "2", "3", "4"))
 
 old.sample=old.sample %>% arrange(desc(value)) %>% mutate(prop = paste(round(value/sum(value),4)*100, "%", sep="")) 
 
@@ -89,7 +92,8 @@ pie
 
 
 
-DS_ASD.sample <- structure(list(Group = structure(c(1L, 2L, 3L, 4L), .Label = c("AF<0.1%", "0.1%<AF<1%", "1%<AF<5%", "AF>5%"), class = "factor"), value = c(1706881, 222404, 59491, 75427)), .Names = c("Group", "value"), class = "data.frame", row.names = c("1", "2", "3", "4"))
+DS_ASD.sample.value=var.count%>% filter(group=="DS-ASD")%>% .$counts
+DS_ASD.sample <- structure(list(Group = structure(c(1L, 2L, 3L, 4L), .Label = label, class = "factor"), value = DS_ASD.sample.value[-1]), .Names = c("Group", "value"), class = "data.frame", row.names = c("1", "2", "3", "4"))
 
 DS_ASD.sample=DS_ASD.sample %>% arrange(desc(value)) %>% mutate(prop = paste(round(value/sum(value),4)*100, "%", sep="")) 
 
