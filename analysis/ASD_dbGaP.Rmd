@@ -110,6 +110,33 @@ pie
 ```
 
 
+### several genes 
+
+```{r, echo=T}
+DS.ASD.rare.var=valid.DS.ASD%>% filter(ExacAF<0.05 & Annotation!="synonymous SNV")
+All.Anno.rare.var=All.Anno.Data%>% filter(ExacAF<0.05 & Annotation!="synonymous SNV")
+
+gene.set=c("CYFIP1", "EP400", "FBN1", "SRCAP", "DYNC1H1", "ABCA2", "DOCK4", "CACNA1D", "CHD8", "TRIP12")
+DS.ASD.gene.set=matrix(nrow=length(gene.set), ncol=2)
+All.Anno.gene.set=matrix(nrow=length(gene.set), ncol=2)
+for (i in 1:length(gene.set))
+{
+DS.ASD.gene.set[i,1]=DS.ASD.rare.var%>% filter(Gene==gene.set[i])%>% summarise(count=sum(No.case))%>%as.numeric()
+DS.ASD.gene.set[i,2]=DS.ASD.rare.var%>% filter(Gene==gene.set[i])%>% summarise(count=sum(No.contr))%>%as.numeric()  
+  
+All.Anno.gene.set[i,1]=All.Anno.rare.var%>% filter(Gene==gene.set[i])%>% summarise(count=sum(No.case))%>%as.numeric()
+All.Anno.gene.set[i,2]=All.Anno.rare.var%>% filter(Gene==gene.set[i])%>% summarise(count=sum(No.contr))%>%as.numeric() 
+}
+combine=rbind(DS.ASD.gene.set, All.Anno.gene.set)
+
+combine.gene.set=tibble(Gene=rep(gene.set,4), status=c(rep(c("case", "control"), each=10), rep(c("case", "control"), each=10)), sample=rep(c("DS.ASD", "old.sample"), each=20), no.var=c(combine[1:10,1], combine[1:10,2], combine[11:20,1], combine[11:20,2]))
+ggplot(combine.gene.set, aes(x = Gene, y = no.var, fill = status)) + 
+  geom_bar(stat="identity") + 
+  facet_grid(.~sample) +
+  theme(axis.text.x = element_text(angle = 90, size = 8))
+
+```
+
 
 ### 
 

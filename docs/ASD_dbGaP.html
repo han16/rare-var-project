@@ -474,6 +474,31 @@ DS.ASD.sample=as_tibble(read.csv(paste(path2, &quot;73416-DS-ASD.sample.csv&quot
 ## 10 AF&gt;5%      DS-ASD   75427</code></pre>
 <p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-3-1.png" width="672" /><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
 </div>
+<div id="several-genes" class="section level3">
+<h3>several genes</h3>
+<pre class="r"><code>DS.ASD.rare.var=valid.DS.ASD%&gt;% filter(ExacAF&lt;0.05 &amp; Annotation!=&quot;synonymous SNV&quot;)
+All.Anno.rare.var=All.Anno.Data%&gt;% filter(ExacAF&lt;0.05 &amp; Annotation!=&quot;synonymous SNV&quot;)
+
+gene.set=c(&quot;CYFIP1&quot;, &quot;EP400&quot;, &quot;FBN1&quot;, &quot;SRCAP&quot;, &quot;DYNC1H1&quot;, &quot;ABCA2&quot;, &quot;DOCK4&quot;, &quot;CACNA1D&quot;, &quot;CHD8&quot;, &quot;TRIP12&quot;)
+DS.ASD.gene.set=matrix(nrow=length(gene.set), ncol=2)
+All.Anno.gene.set=matrix(nrow=length(gene.set), ncol=2)
+for (i in 1:length(gene.set))
+{
+DS.ASD.gene.set[i,1]=DS.ASD.rare.var%&gt;% filter(Gene==gene.set[i])%&gt;% summarise(count=sum(No.case))%&gt;%as.numeric()
+DS.ASD.gene.set[i,2]=DS.ASD.rare.var%&gt;% filter(Gene==gene.set[i])%&gt;% summarise(count=sum(No.contr))%&gt;%as.numeric()  
+  
+All.Anno.gene.set[i,1]=All.Anno.rare.var%&gt;% filter(Gene==gene.set[i])%&gt;% summarise(count=sum(No.case))%&gt;%as.numeric()
+All.Anno.gene.set[i,2]=All.Anno.rare.var%&gt;% filter(Gene==gene.set[i])%&gt;% summarise(count=sum(No.contr))%&gt;%as.numeric() 
+}
+combine=rbind(DS.ASD.gene.set, All.Anno.gene.set)
+
+combine.gene.set=tibble(Gene=rep(gene.set,4), status=c(rep(c(&quot;case&quot;, &quot;control&quot;), each=10), rep(c(&quot;case&quot;, &quot;control&quot;), each=10)), sample=rep(c(&quot;DS.ASD&quot;, &quot;old.sample&quot;), each=20), no.var=c(combine[1:10,1], combine[1:10,2], combine[11:20,1], combine[11:20,2]))
+ggplot(combine.gene.set, aes(x = Gene, y = no.var, fill = status)) + 
+  geom_bar(stat=&quot;identity&quot;) + 
+  facet_grid(.~sample) +
+  theme(axis.text.x = element_text(angle = 90, size = 8))</code></pre>
+<p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
 <div id="section" class="section level3">
 <h3></h3>
 </div>
