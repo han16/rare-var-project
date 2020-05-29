@@ -128,6 +128,9 @@ All.Anno.gene.set[i,1]=All.Anno.rare.var%>% filter(Gene==gene.set[i])%>% summari
 All.Anno.gene.set[i,2]=All.Anno.rare.var%>% filter(Gene==gene.set[i])%>% summarise(count=sum(No.contr))%>%as.numeric() 
 }
 combine=rbind(DS.ASD.gene.set, All.Anno.gene.set)
+colnames(combine)=c("No.case", "No.control")
+rownames(combine)=c(paste("DS.ASD", gene.set), paste("old.sample", gene.set))
+combine
 
 combine.gene.set=tibble(Gene=rep(gene.set,4), status=c(rep(c("case", "control"), each=10), rep(c("case", "control"), each=10)), sample=rep(c("DS.ASD", "old.sample"), each=20), no.var=c(combine[1:10,1], combine[1:10,2], combine[11:20,1], combine[11:20,2]))
 ggplot(combine.gene.set, aes(x = Gene, y = no.var, fill = status)) + 
@@ -140,7 +143,6 @@ ggplot(combine.gene.set, aes(x = Gene, y = no.var, fill = status)) +
 
 ### Gene CYFIP1
 
-at locus 15:22963816-22963816_A~
 
 ```{r, echo=T}
 All.Anno.rare.var%>%filter(Gene=="CYFIP1", ID=="15:22963816-22963816_A_G")

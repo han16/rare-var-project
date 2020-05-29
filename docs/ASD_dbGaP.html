@@ -472,11 +472,31 @@ div.tocify {
 </div>
 <div id="several-top-genes" class="section level3">
 <h3>several top genes</h3>
+<pre><code>##                    No.case No.control
+## DS.ASD CYFIP1          179        198
+## DS.ASD EP400          1082       1881
+## DS.ASD FBN1            195        234
+## DS.ASD SRCAP           339        458
+## DS.ASD DYNC1H1          80        124
+## DS.ASD ABCA2           226        246
+## DS.ASD DOCK4           503        516
+## DS.ASD CACNA1D         124        187
+## DS.ASD CHD8            136        326
+## DS.ASD TRIP12           33         34
+## old.sample CYFIP1      138        147
+## old.sample EP400        51         48
+## old.sample FBN1        271        227
+## old.sample SRCAP       182        148
+## old.sample DYNC1H1      45         45
+## old.sample ABCA2        16          3
+## old.sample DOCK4       325        340
+## old.sample CACNA1D     131        101
+## old.sample CHD8         62         52
+## old.sample TRIP12       26         19</code></pre>
 <p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="gene-cyfip1" class="section level3">
 <h3>Gene CYFIP1</h3>
-<p>at locus 15:22963816-22963816_A~</p>
 <pre class="r"><code>All.Anno.rare.var%&gt;%filter(Gene==&quot;CYFIP1&quot;, ID==&quot;15:22963816-22963816_A_G&quot;)</code></pre>
 <pre><code>## # A tibble: 1 x 11
 ##   ID    Gene  No.case No.contr Polyphen2.HDIV.~ SIFT.score CADD.raw
