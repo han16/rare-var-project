@@ -36,7 +36,7 @@ Total | 12772
 ## old sample vs DS-ASD sample
 
 
-```{r, echo=T, cache=T}
+```{r, echo=F, cache=T}
 path1="C:\\Shengtong\\Research\\rare-var\\"
 path2="C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\"
 All.Anno.Data=as_tibble(read.table(paste(path1, "AnnotatedTrans.txt", sep=""), header=T))
@@ -110,9 +110,9 @@ pie
 ```
 
 
-### several genes 
+### several top genes 
 
-```{r, echo=T}
+```{r, echo=F}
 DS.ASD.rare.var=valid.DS.ASD%>% filter(ExacAF<0.05 & Annotation!="synonymous SNV")
 All.Anno.rare.var=All.Anno.Data%>% filter(ExacAF<0.05 & Annotation!="synonymous SNV")
 
@@ -137,6 +137,21 @@ ggplot(combine.gene.set, aes(x = Gene, y = no.var, fill = status)) +
 
 ```
 
+
+### Gene CYFIP1
+
+at locus 15:22963816-22963816_A~
+
+```{r, echo=T}
+All.Anno.rare.var%>%filter(Gene=="CYFIP1", ID=="15:22963816-22963816_A_G")
+DS.ASD.rare.var%>%filter(Gene=="CYFIP1", ID=="chr15:22963816_22963817_A_G")
+```
+
+\ | No.case| No.control |
+---|----------|-------------|-
+old | 8 | 0  
+DS-ASD | 6 | 2  
+Table: chr15:22963816-22963816_A~G
 
 ### 
 

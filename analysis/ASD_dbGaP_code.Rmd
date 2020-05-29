@@ -32,22 +32,23 @@ path="C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\"
 annotation1=readRDS(paste(path, "annotation.RDS", sep=""))
 annotation2=read.table(paste(path, "ex1.hg19_multianno.txt.polyphen.cadd.sift", sep=""))
 
-anno1=tibble(ID=paste(annotation1$locus, annotation1$ref, annotation1$alt, sep="_"), Gene=annotation1$genes,  Annotation=annotation1$category, ExacAF=annotation1$exac)
+anno1=tibble(ID=paste(annotation1$locus, annotation1$ref, annotation1$alt, sep="_"), Gene=as.character(annotation1$genes),  Annotation=annotation1$category, ExacAF=annotation1$exac)
 
 ID=paste("chr", annotation2$V1[-1], ":", sep="")
-start_end=paste(annotation2$V2[-1], "_", annotation2$V3[-1], "_", annotation2$V4[-1], "_", annotation2$V5[-1], sep="")
+end=as.numeric(as.character(annotation2$V3[-1]))+1
+start_end=paste(annotation2$V2[-1], "_", end, "_", annotation2$V4[-1], "_", annotation2$V5[-1], sep="")
 anno2=tibble(ID=paste(ID, start_end, sep=""), Polyphen2.HDIV=annotation2$V6[-1], CADD.raw=annotation2$V7[-1], SIFT.score=annotation2$V8[-1])
 
 annotation=full_join(anno1, anno2, by="ID") # merger two separate files by common "ID"
 
 
-counts=read.table(paste(path, "pseudo_cc.frq.counts", sep=""), header=T)
+counts=read.table(paste(path, "pseudo_cc.frq.cc", sep=""), header=T)
 bim=read.table(paste(path, "pseudocc.tucc.bim", sep=""))
 end=bim$V4+1
-case.control=tibble(ID=paste("chr",bim$V1, ":", bim$V4, "_", end, "_", bim$V5, "_", bim$V6, sep=""), No.case=counts$C1, No.contr=counts$C2)
+case.control=tibble(ID=paste("chr",bim$V1, ":", bim$V4, "_", end, "_", bim$V6, "_", bim$V5, sep=""), No.case=round(counts$NCHROBS_A*counts$MAF_A), No.contr=round(counts$NCHROBS_U*counts$MAF_U)) # note the order of reference and alternative allele such that they must allign with that in annotation file; also note which are cases and which are control  
 
-full.data=right_join(annotation, case.control, by="ID") # only keep locus with observed alleles 
-write.csv(full.data, file=paste(path, "73416-DS-ASD.sample.csv", sep=""))
+full.data=full_join(case.control, annotation, by="ID") 
+#write.csv(full.data, file=paste(path, "73416-DS-ASD.sample.csv", sep=""))
 ```
 
 
