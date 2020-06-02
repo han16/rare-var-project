@@ -42,24 +42,21 @@ path2="C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\"
 All.Anno.Data=as_tibble(read.table(paste(path1, "AnnotatedTrans.txt", sep=""), header=T))
 DS.ASD.sample=as_tibble(read.csv(paste(path2, "73416-DS-ASD.sample.csv", sep=""), header=T)[,-1])
 
-
 ```
 
 ### sample decomposition  by AF 
 
 
 ```{r, echo=F}
-valid.DS.ASD=DS.ASD.sample %>% filter(is.na(No.case)==F & is.na(No.contr)==F) # only keep samples with observed alleles in cases and controls 
-DS.ASD=valid.DS.ASD
 
 All.Anno.count=numeric(); DS.ASD.count=numeric()
 
-All.Anno.count[1]=nrow(All.Anno.Data); DS.ASD.count[1]=nrow(DS.ASD)
-All.Anno.count[2]=nrow(All.Anno.Data %>% filter(ExacAF<0.001)); DS.ASD.count[2]=nrow(DS.ASD %>% filter(ExacAF<0.001))
-All.Anno.count[3]=nrow(All.Anno.Data %>% filter(ExacAF>0.001 & ExacAF<0.01)); DS.ASD.count[3]=nrow(DS.ASD %>% filter(ExacAF>0.001 & ExacAF<0.01))
-All.Anno.count[4]=nrow(All.Anno.Data %>% filter(ExacAF>0.01 & ExacAF<0.05)); DS.ASD.count[4]=nrow(DS.ASD %>% filter(ExacAF>0.01 & ExacAF<0.05))
+All.Anno.count[1]=nrow(All.Anno.Data); DS.ASD.count[1]=nrow(DS.ASD.sample)
+All.Anno.count[2]=nrow(All.Anno.Data %>% filter(ExacAF<0.001)); DS.ASD.count[2]=nrow(DS.ASD.sample %>% filter(ExacAF<0.001))
+All.Anno.count[3]=nrow(All.Anno.Data %>% filter(ExacAF>0.001 & ExacAF<0.01)); DS.ASD.count[3]=nrow(DS.ASD.sample %>% filter(ExacAF>0.001 & ExacAF<0.01))
+All.Anno.count[4]=nrow(All.Anno.Data %>% filter(ExacAF>0.01 & ExacAF<0.05)); DS.ASD.count[4]=nrow(DS.ASD.sample %>% filter(ExacAF>0.01 & ExacAF<0.05))
 All.Anno.count[5]=nrow(All.Anno.Data %>% filter(ExacAF>0.05))
-DS.ASD.count[5]=nrow(DS.ASD %>% filter(ExacAF>0.05))
+DS.ASD.count[5]=nrow(DS.ASD.sample %>% filter(ExacAF>0.05))
 
 var.count=tibble(cutoff=rep(c("All", "AF<0.1%", "0.1%<AF<1%", "1%<AF<5%", "AF>5%"),2), group=rep(c("old", "DS-ASD"),each=5), counts=c(All.Anno.count, DS.ASD.count) )
 
@@ -113,7 +110,7 @@ pie
 ### several top genes 
 
 ```{r, echo=F}
-DS.ASD.rare.var=valid.DS.ASD%>% filter(ExacAF<0.05 & Annotation!="synonymous SNV")
+DS.ASD.rare.var=DS.ASD.sample%>% filter(ExacAF<0.05 & Annotation!="synonymous SNV")
 All.Anno.rare.var=All.Anno.Data%>% filter(ExacAF<0.05 & Annotation!="synonymous SNV")
 
 gene.set=c("CYFIP1", "EP400", "FBN1", "SRCAP", "DYNC1H1", "ABCA2", "DOCK4", "CACNA1D", "CHD8", "TRIP12")
@@ -154,6 +151,47 @@ DS.ASD.rare.var%>%filter(Gene=="CYFIP1", ID=="chr15:22963816_22963817_A_G")
 old | 8 | 0  
 DS-ASD | 6 | 2  
 Table: chr15:22963816-22963816_A~G
+
+
+
+### QC for annotations 
+
+```{r, echo=F}
+# Data is a tibble having columns"Annotation"; 
+# N1: sample size in case: N0: sample size in control 
+missing.ratio=function(Data, N1, N0)  # check the ratio of missingness in the data
+{  
+  nosyn.data=Data %>% filter(Annotation!="synonymous SNV")
+  nonsyn.data=Data %>% filter(Annotation=="nonsynonymous SNV")
+Anno.fea=paste(rep("ratio_valid_value_", ncol(Data)), colnames(Data), sep=""); Anno.fea[1:4]=c("#{Variants}", "#{Gene}", "rate.ca", "rate.co")
+ratio.data=numeric(); ratio.nosyn=numeric(); ratio.nonsyn=numeric()
+for (i in 5:length(Anno.fea))
+{
+  ratio.data[i]=1-sum(is.na(Data[,i]))/nrow(Data)
+  ratio.nosyn[i]=1-sum(is.na(nosyn.data[,i]))/nrow(nosyn.data)
+  ratio.nonsyn[i]=1-sum(is.na(nonsyn.data[,i]))/nrow(nonsyn.data)
+}  
+ratio.data[1]=nrow(Data); ratio.data[2]=length(unique(Data$Gene))
+ratio.data[3]=sum(Data$No.case)/N1; ratio.data[4]=sum(Data$No.contr)/N0
+
+ratio.nosyn[1]=nrow(nosyn.data); ratio.nosyn[2]=length(unique(nosyn.data$Gene))
+ratio.nosyn[3]=sum(nosyn.data$No.case)/N1; ratio.nosyn[4]=sum(nosyn.data$No.contr)/N0
+
+ratio.nonsyn[1]=nrow(nonsyn.data); ratio.nonsyn[2]=length(unique(nonsyn.data$Gene))
+ratio.nonsyn[3]=sum(nonsyn.data$No.case)/N1; ratio.nonsyn[4]=sum(nonsyn.data$No.contr)/N0
+
+data.summ=data.frame(item=Anno.fea, value.AllVar=ratio.data, value.withoutsyn=ratio.nosyn, value.nonsyn=ratio.nonsyn)
+
+return(data.summ)
+}
+
+all.anno=missing.ratio(All.Anno.Data, N1=4315, N0=4315)
+ds.asd=missing.ratio(DS.ASD.sample, N1=2403, N0=2403)
+library(knitr)
+kable(all.anno, caption="Old sample")
+kable(ds.asd, caption="DS-ASD sample")
+```
+
 
 ### 
 

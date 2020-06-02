@@ -48,6 +48,7 @@ end=bim$V4+1
 case.control=tibble(ID=paste("chr",bim$V1, ":", bim$V4, "_", end, "_", bim$V6, "_", bim$V5, sep=""), No.case=round(counts$NCHROBS_A*counts$MAF_A), No.contr=round(counts$NCHROBS_U*counts$MAF_U)) # note the order of reference and alternative allele such that they must allign with that in annotation file; also note which are cases and which are control  
 
 full.data=full_join(case.control, annotation, by="ID") 
+full.data=full.data%>%filter(is.na(No.case)==F & is.na(No.contr)==F) # keep variants with observed allele only 
 #write.csv(full.data, file=paste(path, "73416-DS-ASD.sample.csv", sep=""))
 ```
 
