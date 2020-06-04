@@ -696,6 +696,10 @@ LoF.def=c(&quot;stopgain&quot;, &quot;frameshift substitution&quot;, &quot;splic
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) </code></pre>
 <div id="simple-burden-test" class="section level3">
 <h3>Simple burden test</h3>
+<pre><code>## Warning: `src_sqlite()` is deprecated as of dplyr 1.0.0.
+## Please use `tbl()` directly with a database connection
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;kableExtra&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:dplyr&#39;:
@@ -1605,6 +1609,172 @@ NA
 </tbody>
 </table>
 </div>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre><code>## 
+## Attaching package: &#39;viridis&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:scales&#39;:
+## 
+##     viridis_pal</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;magrittr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     set_names</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     extract</code></pre>
+<pre><code>## The following object is masked from &#39;package:rlang&#39;:
+## 
+##     set_names</code></pre>
+<p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+</div>
+<div id="constraint-genes" class="section level2">
+<h2>Constraint genes</h2>
+<div id="cons-simple-burden-analysis" class="section level3">
+<h3>Cons: Simple burden analysis</h3>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+The burden of 8 categories is
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+The burden of eight categories
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+OR
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+p.value
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+No.ca
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+No.co
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.2669903
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+55
+</td>
+<td style="text-align:right;">
+206
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.3651399
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+574
+</td>
+<td style="text-align:right;">
+1572
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.7118617
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+13215
+</td>
+<td style="text-align:right;">
+18564
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.6773831
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+8428
+</td>
+<td style="text-align:right;">
+12442
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.6890022
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+14190
+</td>
+<td style="text-align:right;">
+20595
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.8186472
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+43656
+</td>
+<td style="text-align:right;">
+53327
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.7567757
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+22645
+</td>
+<td style="text-align:right;">
+29923
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.7035852
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+22431
+</td>
+<td style="text-align:right;">
+31881
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="ASD_dbGaP_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 </div>
 

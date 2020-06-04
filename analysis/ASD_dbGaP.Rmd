@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(rlang)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
@@ -446,13 +447,17 @@ result.summary$Cate=result.summary$Cate %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF
 
 
 
-```{r, echo=F}
+```{r, echo=F, eval=F}
 library("devtools")
 install.packages("Rtools")
 install_github('xinhe-lab/mirage')
 library(mirage)
 gene.data=eight.partition(cand.data)
 ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
+gene.data.nogroup1=gene.data[-which(gene.data$group.index=="1"),]
+ds.asd.res=mirage(gene.data.nogroup1, n1=2403, n2=2403)
+####### for test data 
+res= mirage(mirage_toy,n1=1000,n2=1000)
 ```
 
 
