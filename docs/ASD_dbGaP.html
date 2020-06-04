@@ -25,6 +25,7 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -683,8 +684,927 @@ div.tocify {
 </tbody>
 </table>
 </div>
-<div id="section" class="section level3">
-<h3></h3>
+</div>
+<div id="gene-set-analysis" class="section level2">
+<h2>Gene set analysis</h2>
+<pre class="r"><code>N1=2403; N0=2403
+DS.ASD.sample[DS.ASD.sample ==&quot;.&quot;] &lt;- NA
+DS.ASD.sample$ExacAF[is.na(DS.ASD.sample$ExacAF)]=0 # set AF of NA to zero 
+Anno.Data=DS.ASD.sample[which(DS.ASD.sample$ExacAF&lt;0.05 &amp; DS.ASD.sample$Annotation!=&quot;synonymous SNV&quot;),] # use AF cutoff and exclude synonumous SNV
+var.data=as_tibble(data.frame(ID=Anno.Data$ID, No.case=Anno.Data$No.case, No.contr=Anno.Data$No.contr))
+LoF.def=c(&quot;stopgain&quot;, &quot;frameshift substitution&quot;, &quot;splicing&quot;, &quot;stoploss&quot;)
+LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) </code></pre>
+<div id="simple-burden-test" class="section level3">
+<h3>Simple burden test</h3>
+<pre><code>## 
+## Attaching package: &#39;kableExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     group_rows</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Burden analysis of gene set
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+OR
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+p.value
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+rate.ca
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+rate.co
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+cate1
+</td>
+<td style="text-align:right;">
+0.7709677
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.8951311
+</td>
+<td style="text-align:right;">
+1.161049
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate2
+</td>
+<td style="text-align:right;">
+0.7211256
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.7856846
+</td>
+<td style="text-align:right;">
+5.249688
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate3
+</td>
+<td style="text-align:right;">
+0.8416703
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+8.0944653
+</td>
+<td style="text-align:right;">
+9.617145
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate4
+</td>
+<td style="text-align:right;">
+0.8854299
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+20.2517686
+</td>
+<td style="text-align:right;">
+22.872243
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate5
+</td>
+<td style="text-align:right;">
+0.9326654
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6.2367873
+</td>
+<td style="text-align:right;">
+6.687058
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate6
+</td>
+<td style="text-align:right;">
+0.8429837
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.0299625
+</td>
+<td style="text-align:right;">
+1.221806
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cateS
+</td>
+<td style="text-align:right;">
+0.8387536
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5.6346234
+</td>
+<td style="text-align:right;">
+6.717853
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;5%
+</td>
+<td style="text-align:right;">
+0.7734742
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.7424053
+</td>
+<td style="text-align:right;">
+3.545568
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;20%
+</td>
+<td style="text-align:right;">
+0.8283586
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7.4490221
+</td>
+<td style="text-align:right;">
+8.992509
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;30%
+</td>
+<td style="text-align:right;">
+0.7921760
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+11.8651685
+</td>
+<td style="text-align:right;">
+14.977944
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;40%
+</td>
+<td style="text-align:right;">
+0.8030515
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+18.8805660
+</td>
+<td style="text-align:right;">
+23.511028
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;50%
+</td>
+<td style="text-align:right;">
+0.8246703
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+30.0083229
+</td>
+<td style="text-align:right;">
+36.388265
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&gt;90%
+</td>
+<td style="text-align:right;">
+0.8519021
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+773.1598002
+</td>
+<td style="text-align:right;">
+907.568872
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ID gene
+</td>
+<td style="text-align:right;">
+0.9093362
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+12.6217228
+</td>
+<td style="text-align:right;">
+13.880150
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+High conf
+</td>
+<td style="text-align:right;">
+0.7316017
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5.6966292
+</td>
+<td style="text-align:right;">
+7.786517
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mod conf
+</td>
+<td style="text-align:right;">
+0.8271188
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+18.5359967
+</td>
+<td style="text-align:right;">
+22.410320
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PSD
+</td>
+<td style="text-align:right;">
+0.8428174
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+30.9783604
+</td>
+<td style="text-align:right;">
+36.755722
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FMRP
+</td>
+<td style="text-align:right;">
+0.8319357
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+65.2721598
+</td>
+<td style="text-align:right;">
+78.458177
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AutismKB
+</td>
+<td style="text-align:right;">
+0.7948590
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+13.9492301
+</td>
+<td style="text-align:right;">
+17.549313
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+constraint gene
+</td>
+<td style="text-align:right;">
+0.7439750
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+52.2983770
+</td>
+<td style="text-align:right;">
+70.295880
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RVIS
+</td>
+<td style="text-align:right;">
+0.8444988
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+81.9662921
+</td>
+<td style="text-align:right;">
+97.059093
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Haploinsuff gene
+</td>
+<td style="text-align:right;">
+0.8815135
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+212.9300874
+</td>
+<td style="text-align:right;">
+241.550562
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCZ gene
+</td>
+<td style="text-align:right;">
+0.8249196
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+161.8160633
+</td>
+<td style="text-align:right;">
+196.159800
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Olfac.gene
+</td>
+<td style="text-align:right;">
+0.8491957
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+34.9958385
+</td>
+<td style="text-align:right;">
+41.210570
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+67SCZriskgene
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Burden analysis of LoF in different gene sets
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+OR
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+p.value
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+No.ca
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+No.co
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+cate1
+</td>
+<td style="text-align:right;">
+0.2857143
+</td>
+<td style="text-align:right;">
+0.9804688
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate2
+</td>
+<td style="text-align:right;">
+0.2706245
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+351
+</td>
+<td style="text-align:right;">
+1297
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate3
+</td>
+<td style="text-align:right;">
+0.8475000
+</td>
+<td style="text-align:right;">
+0.9887491
+</td>
+<td style="text-align:right;">
+339
+</td>
+<td style="text-align:right;">
+400
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate4
+</td>
+<td style="text-align:right;">
+0.6938202
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+494
+</td>
+<td style="text-align:right;">
+712
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate5
+</td>
+<td style="text-align:right;">
+0.7238095
+</td>
+<td style="text-align:right;">
+0.9872584
+</td>
+<td style="text-align:right;">
+76
+</td>
+<td style="text-align:right;">
+105
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cate6
+</td>
+<td style="text-align:right;">
+1.1428571
+</td>
+<td style="text-align:right;">
+0.5000000
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cateS
+</td>
+<td style="text-align:right;">
+0.7815315
+</td>
+<td style="text-align:right;">
+0.9997572
+</td>
+<td style="text-align:right;">
+347
+</td>
+<td style="text-align:right;">
+444
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;5%
+</td>
+<td style="text-align:right;">
+0.3663366
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+101
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;20%
+</td>
+<td style="text-align:right;">
+0.4980315
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+253
+</td>
+<td style="text-align:right;">
+508
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;30%
+</td>
+<td style="text-align:right;">
+0.5644372
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+346
+</td>
+<td style="text-align:right;">
+613
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;40%
+</td>
+<td style="text-align:right;">
+0.6133225
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+755
+</td>
+<td style="text-align:right;">
+1231
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;50%
+</td>
+<td style="text-align:right;">
+0.6635007
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+978
+</td>
+<td style="text-align:right;">
+1474
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TADAq&gt;90%
+</td>
+<td style="text-align:right;">
+0.7490092
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+24569
+</td>
+<td style="text-align:right;">
+32802
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ID gene
+</td>
+<td style="text-align:right;">
+0.5024272
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+207
+</td>
+<td style="text-align:right;">
+412
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+High conf
+</td>
+<td style="text-align:right;">
+0.2818387
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+374
+</td>
+<td style="text-align:right;">
+1327
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mod conf
+</td>
+<td style="text-align:right;">
+0.6680851
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+628
+</td>
+<td style="text-align:right;">
+940
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PSD
+</td>
+<td style="text-align:right;">
+0.5138785
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+685
+</td>
+<td style="text-align:right;">
+1333
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FMRP
+</td>
+<td style="text-align:right;">
+0.5527370
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+828
+</td>
+<td style="text-align:right;">
+1498
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AutismKB
+</td>
+<td style="text-align:right;">
+0.6336032
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+313
+</td>
+<td style="text-align:right;">
+494
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+constraint gene
+</td>
+<td style="text-align:right;">
+0.3537683
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+629
+</td>
+<td style="text-align:right;">
+1778
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RVIS
+</td>
+<td style="text-align:right;">
+0.6853180
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+1433
+</td>
+<td style="text-align:right;">
+2091
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Haploinsuff gene
+</td>
+<td style="text-align:right;">
+0.5026760
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+2442
+</td>
+<td style="text-align:right;">
+4858
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCZ gene
+</td>
+<td style="text-align:right;">
+0.6490760
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+3161
+</td>
+<td style="text-align:right;">
+4870
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Olfac.gene
+</td>
+<td style="text-align:right;">
+0.7984705
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+1775
+</td>
+<td style="text-align:right;">
+2223
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+67SCZriskgene
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 
