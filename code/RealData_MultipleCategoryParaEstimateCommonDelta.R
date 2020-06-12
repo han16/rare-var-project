@@ -64,6 +64,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
 
       }
     full.info.genevar[[i]]=cbind(indi.gene, var.BF)
+    bb=ifelse(bb==Inf, 3*10^300, bb) # set the upper limit when overflow
     BF.gene[1, i]=bb
     LoF.BF.gene[1,i]=bb.LoF
     nonLoF.BF.gene[1,i]=bb.nonLoF
@@ -102,6 +103,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
 
         }
       EUiZij[[i]]=UiZij
+      bb=ifelse(bb==Inf, 3*10^300, bb) # set the upper limit when overflow
       BF.gene[iter,i]=bb
       LoF.BF.gene[iter,i]=bb.LoF
       nonLoF.BF.gene[iter,i]=bb.nonLoF
@@ -277,7 +279,7 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
 #########################################
 #All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\AutismData\\AnnotatedTrans.txt", header=T)
-All.Anno.Data=read.table("..\\AnnotatedTrans.txt", header=T)
+All.Anno.Data=read.table("C:\\Shengtong\\Research\\rare-var\\AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\han\\ResearchWork\\StatGene\\SCZData\\AnnotatedSCZ.txt", header=T)
 N1=4315; N0=4315
 #N1=2536; N0=2543

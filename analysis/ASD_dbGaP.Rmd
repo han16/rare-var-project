@@ -444,7 +444,9 @@ result.summary$Cate=result.summary$Cate %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF
     #theme(legend.position="bottom")
 #dev.off()
 ```
+### Apply mirage to constraint gene set 
 
+[Here](DS-ASD-constraint-gene.html) it is. 
 
 
 ```{r, echo=F, eval=F}
@@ -454,10 +456,16 @@ install_github('xinhe-lab/mirage')
 library(mirage)
 gene.data=eight.partition(cand.data)
 ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
-gene.data.nogroup1=gene.data[-which(gene.data$group.index=="1"),]
-ds.asd.res=mirage(gene.data.nogroup1, n1=2403, n2=2403)
 ####### for test data 
 res= mirage(mirage_toy,n1=1000,n2=1000)
+
+###### run mirage on old sample 
+
+old.data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+Anno.vart.set=as.character(old.data$ID[which(old.data$Gene %in% gene.set)])
+Anno.cand.data=old.data[which(old.data$ID %in% Anno.vart.set),]
+Anno.gene.data=eight.partition(Anno.cand.data)
+old.result=mirage(Anno.gene.data, n1=4315, n2=4315)
 ```
 
 
