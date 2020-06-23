@@ -419,10 +419,10 @@ div.tocify {
 <pre><code>## WARNING: Rtools is required to build R packages, but is not currently installed.
 ## 
 ## Please download and install Rtools custom from http://cran.r-project.org/bin/windows/Rtools/.</code></pre>
-<pre><code>## Skipping install of &#39;mirage&#39; from a github remote, the SHA1 (24928e70) has not changed since last install.
+<pre><code>## Skipping install of &#39;mirage&#39; from a github remote, the SHA1 (6d5fa616) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
 <pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Attaching packages -------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages --------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
 ## v tibble  3.0.1     v dplyr   1.0.0
 ## v tidyr   1.1.0     v stringr 1.4.0
@@ -432,16 +432,23 @@ div.tocify {
 <pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Conflicts ----------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts ------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <div id="parameter-estimate" class="section level2">
 <h2>Parameter estimate</h2>
+<div id="when-af-5" class="section level3">
+<h3>when AF &lt; 5%</h3>
 <p><span class="math inline">\(\widehat{\delta}_{old}=0.18\)</span> and <span class="math inline">\(\widehat{\delta}_{DS-ASD}=0.27\)</span></p>
-<p><img src="DS-ASD-constraint-gene_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="DS-ASD-constraint-gene_files/figure-html/unnamed-chunk-8-1.png" width="672" /> ### when AF &lt; 1%</p>
+<p><span class="math inline">\(\widehat{\delta}_{old}=0.18\)</span> and <span class="math inline">\(\widehat{\delta}_{DS-ASD}=0.22\)</span></p>
+<p><img src="DS-ASD-constraint-gene_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
 </div>
 <div id="top-genes" class="section level2">
 <h2>Top genes</h2>
+<div id="when-af5" class="section level3">
+<h3>when AF&lt;5%</h3>
 <pre><code>## Warning in rm(&quot;parameter.estimate&quot;, &quot;BF.PP.gene&quot;): object &#39;BF.PP.gene&#39; not
 ## found</code></pre>
 <pre><code>## # A tibble: 887 x 3
@@ -459,8 +466,34 @@ div.tocify {
 ## 10 EP400  9.09e 80         1
 ## # ... with 877 more rows</code></pre>
 </div>
-<div id="gene-cdc27" class="section level2">
-<h2>Gene CDC27</h2>
+<div id="when-af-1" class="section level3">
+<h3>when AF &lt; 1%</h3>
+<p>There are 16 genes with posterior probability of 1.</p>
+<pre><code>## # A tibble: 887 x 3
+##    Gene         BF post.prob
+##    &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+##  1 SPEN   6.17e 45         1
+##  2 MDC1   2.36e 21         1
+##  3 ITPR3  3.56e 64         1
+##  4 EP400  1.98e 54         1
+##  5 CHD8   1.32e 26         1
+##  6 USP7   5.78e 18         1
+##  7 KAT8   1.20e 19         1
+##  8 KDM6B  4.44e 53         1
+##  9 CDC27  6.18e189         1
+## 10 PABPC1 1.35e 37         1
+## # ... with 877 more rows</code></pre>
+</div>
+</div>
+<div id="gene-spen-when-af1" class="section level2">
+<h2>Gene SPEN when AF&lt;1%</h2>
+<p>there are two variants driving the signal</p>
+<pre class="r"><code>                             ID Gene No.case No.contr category       var.BF original.index
+1321 chr1:16262483_16262484_G_C SPEN      30      204        4 2.065188e+25              7
+1322 chr1:16262484_16262485_T_C SPEN      28      191        4 2.509197e+23              7</code></pre>
+</div>
+<div id="gene-cdc27-when-af5" class="section level2">
+<h2>Gene CDC27 when AF&lt;5%</h2>
 <p>This gene has a very high BF driving by many variants with big BF, such as <code>stopgain</code> variant at <code>chr17:45234411_45234412_G_T</code> has 28/217 variants in cases and control, leading to BF of 3.638739e+20.</p>
 </div>
 

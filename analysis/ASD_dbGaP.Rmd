@@ -34,6 +34,7 @@ Total | 12772
 
 
 
+
 ## old sample vs DS-ASD sample
 
 
@@ -43,6 +44,15 @@ path2="C:\\Shengtong\\Research\\rare-var\\73416-DS-ASD\\"
 All.Anno.Data=as_tibble(read.table(paste(path1, "AnnotatedTrans.txt", sep=""), header=T))
 DS.ASD.sample=as_tibble(read.csv(paste(path2, "73416-DS-ASD.sample.csv", sep=""), header=T)[,-1])
 
+```
+
+
+### case vs control 
+
+```{r, echo=T}
+cat("there are", paste(round(nrow(DS.ASD.sample%>% filter(No.case>No.contr))/nrow(DS.ASD.sample)*100), "%", sep=""), "loci with higher mutation rate in case than control", "\n")
+
+#cat("there are ", paste(round(nrow(DS.ASD.sample%>% filter(No.case>No.contr))/nrow(DS.ASD.sample)*100), "%", sep=""))
 ```
 
 ### sample decomposition  by AF 

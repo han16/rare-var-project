@@ -69,19 +69,20 @@ eight.partition=function(cand.data) # given gene data and annotations, do varian
 N1=2403; N0=2403
 DS.ASD.sample[DS.ASD.sample =="."] <- NA
 DS.ASD.sample$ExacAF[is.na(DS.ASD.sample$ExacAF)]=0 # set AF of NA to zero 
-Anno.Data=DS.ASD.sample[which(DS.ASD.sample$ExacAF<0.05 & DS.ASD.sample$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+Anno.Data=DS.ASD.sample[which(DS.ASD.sample$ExacAF<0.01 & DS.ASD.sample$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 cand.data=as_tibble(Anno.Data[which(Anno.Data$Gene %in% gene.set),])
 cand.data=cand.data %>% rename(Polyphen2.HDIV.score=Polyphen2.HDIV)
 gene.data=eight.partition(cand.data) # partition variants into different groups 
 ds.asd.result=mirage(gene.data, n1=2403, n2=2403, gamma=c(rep(6,5), rep(3,3)))
 
-parameter.estimate=matrix(nrow=9, ncol=2)
+no.row=1+length(ds.asd.result$eta.est); no.col=2
+parameter.estimate=matrix(nrow=no.row, ncol=no.col) # it may not have all 8 variant categories 
 parameter.estimate[,1]=c(ds.asd.result$delta.est, ds.asd.result$eta.est)
 parameter.estimate[,2]=c(ds.asd.result$delta.pvalue, ds.asd.result$eta.pvalue)
-rownames(parameter.estimate)=c("delta", paste("deta", seq(1,8), sep=""))
-colnames(parameter.estimate)=c("esyimate", "pval")
+rownames(parameter.estimate)=c("delta", paste(names(ds.asd.result$eta.est), sep=""))
+colnames(parameter.estimate)=c("estimate", "pval")
 BF.PP.gene=ds.asd.result$BF.PP.gene
-#save(parameter.estimate, BF.PP.gene, file="../output/para.est.constraint.gene.estimate.delta.DS.ASD.RData")
+#save(parameter.estimate, BF.PP.gene, file="../output/para.est.constraint.gene.estimate.delta.DS.ASD.AFcutoff1%.RData")
 #############  run standalone mirage function 
 #ds.asd.processed=pre.process(gene.data)
 #actu.num.group=length(unique(ds.asd.processed$group.index))
@@ -89,6 +90,17 @@ BF.PP.gene=ds.asd.result$BF.PP.gene
 #ds.asd.result.processed=multi.group.func(ds.asd.processed, N1, N0, gamma.mean=3, #sigma=2, delta=0.2, beta.init, actu.num.group)
 #############
 ```
+
+```{r,echo=F, eval=F}
+## check variant group index consistency before and after running mirage 
+gene.id="SPEN"; var.id="chr1:16262483_16262484_G_C"
+index.before=gene.data[gene.data$ID==var.id & gene.data$Gene==gene.id,]$group.index
+gene.index=which(ds.asd.result$BF.PP.gene$Gene==gene.id)
+gene.info=ds.asd.result$BF.all[[gene.index]]
+index.after=gene.info[gene.info$ID==var.id,]$original.index
+index.before==index.after
+```
+
 
 
 
@@ -125,6 +137,8 @@ para.est=multi.group.func(order.overlap.data, N1, N0, gamma.mean=3, sigma=2, del
 
 ## Parameter estimate 
 
+### when AF < 5\%
+
 $\widehat{\delta}_{old}=0.18$ and $\widehat{\delta}_{DS-ASD}=0.27$
 
 
@@ -139,9 +153,27 @@ geom_bar(stat="identity", position=position_dodge())+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
 theme(text = element_text(size=15))
 ```
+### when AF < 1\%
+
+
+$\widehat{\delta}_{old}=0.18$ and $\widehat{\delta}_{DS-ASD}=0.22$
+
+
+```{r, echo=F}
+parameter.estimate=tibble(cate=rep(c("LoF; 1%<AF<5%", "LoF; AF<1%", "Damaging; 1%<AF<5%", "Damaging; 0.1%<AF<1%", "Damaging; AF<0.1%", "Non-damaging; 1%<AF<5%", "Non-damaging; 0.1%<AF<1%", "Non-damaging; AF<0.1%"),2), group=rep(c("old", "DS-ASD"),each=8), estimate=c(0, 0.41, 0, 0, 0.16, 0, 0, 0.17, 0, 0.08, 0, 0.03, 0.04, 0, 0.19, 0.12) )
+
+ggplot(data=parameter.estimate, aes(x=cate, y=estimate, fill=group)) +
+geom_bar(stat="identity", position=position_dodge())+
+   xlab("")+
+   ylab(expression(paste(hat(eta))))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=15))
+```
 
 
 ## Top genes 
+
+### when AF<5\%
 
 ```{r, echo=F}
 rm("parameter.estimate", "BF.PP.gene")
@@ -154,8 +186,33 @@ BF.PP.gene.sort
 
 ```
 
+### when AF < 1\%
 
-## Gene CDC27
+There are 16 genes with posterior probability of 1.
+
+```{r, echo=F}
+rm("parameter.estimate", "BF.PP.gene")
+#const.gene.BF.DS.ASD=loadRData("../output/para.est.constraint.gene.estimate.delta.DS.ASD.RData") loadRData only load one item in RData
+load("../output/para.est.constraint.gene.estimate.delta.DS.ASD.AFcutoff1%.RData") # load all items stored in RData
+BF.PP.gene=as_tibble(BF.PP.gene)
+BF.PP.gene.sort=arrange(BF.PP.gene, desc(post.prob))
+BF.PP.gene.sort
+
+```
+
+
+
+## Gene SPEN when AF<1%
+
+there are two variants driving the signal 
+```{r, echo=T, eval=F}
+                             ID Gene No.case No.contr category       var.BF original.index
+1321 chr1:16262483_16262484_G_C SPEN      30      204        4 2.065188e+25              7
+1322 chr1:16262484_16262485_T_C SPEN      28      191        4 2.509197e+23              7
+```
+
+
+## Gene CDC27 when AF<5%
 
 This gene has a very high BF driving by many variants with big BF, such as 
 `stopgain` variant at `chr17:45234411_45234412_G_T` has 28/217 variants in cases and control, leading to BF of  3.638739e+20. 

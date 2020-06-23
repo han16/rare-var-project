@@ -47,9 +47,26 @@ bim=read.table(paste(path, "pseudocc.tucc.bim", sep=""))
 end=bim$V4+1
 case.control=tibble(ID=paste("chr",bim$V1, ":", bim$V4, "_", end, "_", bim$V6, "_", bim$V5, sep=""), No.case=round(counts$NCHROBS_A*counts$MAF_A), No.contr=round(counts$NCHROBS_U*counts$MAF_U)) # note the order of reference and alternative allele such that they must allign with that in annotation file; also note which are cases and which are control  
 
+########### bionomial test at locus chr17:45234411_45234412_G_T
+#target.index=which(bim$V1==17 & bim$V4==45234411)
+#bim[target.index,]
+#counts.info=counts[target.index,]
+
+#pval=pbinom(round(counts.info$MAF_A*counts.info$NCHROBS_A+counts.info$MAF_U*counts.info$NCHROBS_U),size=counts.info$NCHROBS_A+counts.info$NCHROBS_U,prob=0.009,lower.tail=F) # 
+#pval
+
+###########
+
+
 full.data=full_join(case.control, annotation, by="ID") 
 full.data=full.data%>%filter(is.na(No.case)==F & is.na(No.contr)==F) # keep variants with observed allele only 
 #write.csv(full.data, file=paste(path, "73416-DS-ASD.sample.csv", sep=""))
+
+########### plot histogram of No.variants in case and control
+#case.control.count=tibble(count=c(full.data$No.case, full.data$No.contr), group=c(rep("case", nrow(full.data)), rep("control", nrow(full.data)))) %>% filter(count<50)
+#ggplot(case.control.count, aes(x=count, color=group, fill=group)) +
+  geom_histogram(position="identity", alpha=0.5)
+###########
 ```
 
 
