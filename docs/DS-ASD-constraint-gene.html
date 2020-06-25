@@ -422,7 +422,7 @@ div.tocify {
 <pre><code>## Skipping install of &#39;mirage&#39; from a github remote, the SHA1 (6d5fa616) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
 <pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Attaching packages --------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages -------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
 ## v tibble  3.0.1     v dplyr   1.0.0
 ## v tidyr   1.1.0     v stringr 1.4.0
@@ -432,7 +432,7 @@ div.tocify {
 <pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Conflicts ------------------------ tidyverse_conflicts() --
+<pre><code>## -- Conflicts ----------------------- tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <div id="parameter-estimate" class="section level2">
@@ -451,6 +451,16 @@ div.tocify {
 <h3>when AF &lt; 0.5%</h3>
 <p><span class="math inline">\(\widehat{\delta}_{old}=0.18\)</span> and <span class="math inline">\(\widehat{\delta}_{DS-ASD}=0.17\)</span></p>
 <p><img src="DS-ASD-constraint-gene_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="when-sample-case-or-control-af-5" class="section level3">
+<h3>when sample (case or control) AF &lt; 5%</h3>
+<p><span class="math inline">\(\widehat{\delta}_{old}=0.18\)</span> and <span class="math inline">\(\widehat{\delta}_{DS-ASD}=0.29\)</span></p>
+<p><img src="DS-ASD-constraint-gene_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="when-sample-case-or-control-af-1" class="section level3">
+<h3>when sample (case or control) AF &lt; 1%</h3>
+<p><span class="math inline">\(\widehat{\delta}_{old}=0.18\)</span> and <span class="math inline">\(\widehat{\delta}_{DS-ASD}=0.14\)</span></p>
+<p><img src="DS-ASD-constraint-gene_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 </div>
 <div id="top-genes" class="section level2">
@@ -509,6 +519,53 @@ div.tocify {
 ##  9 CDC27  9.16e137         1
 ## 10 PABPC1 1.31e 35         1
 ## # ... with 877 more rows</code></pre>
+</div>
+<div id="when-sample-af5" class="section level3">
+<h3>when sample AF&lt;5%</h3>
+<pre><code>## # A tibble: 887 x 3
+##    Gene         BF post.prob
+##    &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+##  1 CDC27  7.94e298         1
+##  2 SPEN   6.28e 74         1
+##  3 NBPF15 2.68e 31         1
+##  4 ANAPC1 7.55e 28         1
+##  5 MDC1   6.80e 19         1
+##  6 HLA-C  5.93e 17         1
+##  7 HLA-B  2.54e 27         1
+##  8 EP400  2.64e 53         1
+##  9 CHD8   1.01e 26         1
+## 10 USP7   5.07e 18         1
+## # ... with 877 more rows</code></pre>
+</div>
+<div id="when-sample-af1" class="section level3">
+<h3>when sample AF&lt;1%</h3>
+<pre><code>## # A tibble: 887 x 3
+##    Gene            BF post.prob
+##    &lt;fct&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+##  1 CDC27  353745711.      1.00 
+##  2 EP400  288055891.      1.00 
+##  3 BCR         3940.      0.998
+##  4 CEP170      1094.      0.994
+##  5 PAK2        1022.      0.994
+##  6 MGAT3        205.      0.971
+##  7 KAT8         153.      0.962
+##  8 GTPBP2       139.      0.958
+##  9 SOGA3        138.      0.958
+## 10 PABPC1        68.6     0.919
+## # ... with 877 more rows</code></pre>
+<pre><code>## # A tibble: 10 x 3
+##    Gene               BF post.prob
+##    &lt;fct&gt;           &lt;dbl&gt;     &lt;dbl&gt;
+##  1 EP400   288055891.       1.00  
+##  2 DYNC1H1         2.64     0.303 
+##  3 TRIP12          1.36     0.183 
+##  4 CYFIP1          1        0.141 
+##  5 DOCK4           0.725    0.107 
+##  6 FBN1            0.629    0.0939
+##  7 ABCA2           0.526    0.0797
+##  8 CACNA1D         0.463    0.0709
+##  9 CHD8            0.447    0.0686
+## 10 SRCAP           0.319    0.0498</code></pre>
 </div>
 </div>
 <div id="gene-spen-when-af1" class="section level2">
