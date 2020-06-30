@@ -427,6 +427,10 @@ LoF.def=c(&quot;stopgain&quot;, &quot;frameshift substitution&quot;, &quot;splic
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) </code></pre>
 <div id="simple-burden-test" class="section level2">
 <h2>Simple burden test</h2>
+<pre><code>## Warning: `src_sqlite()` is deprecated as of dplyr 1.0.0.
+## Please use `tbl()` directly with a database connection
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <ul>
 <li>Two sample one side (“greater”) test</li>
 <li>high confidence gene: TADA q&lt;0.05, <a href="https://sfari.org/">SFARI</a> cate1&amp;2</li>
@@ -1349,6 +1353,7 @@ NA
 </table>
 </div>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="variant-partitions" class="section level2">
 <h2>Variant partitions</h2>
@@ -1418,7 +1423,7 @@ NA
 <div id="cons-simple-burden-analysis" class="section level3">
 <h3>Cons: Simple burden analysis</h3>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 The burden of 8 categories is
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -1557,7 +1562,7 @@ No.co
 </tbody>
 </table>
 </div>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <ul>
 <li>The first catogry only has one common variant with 298/272.</li>
 </ul>
@@ -1566,7 +1571,7 @@ No.co
 <h3>Cons: Estimate all parameters, <span class="math inline">\(\delta, \eta\)</span></h3>
 <div id="parameter-estimate" class="section level4">
 <h4>Parameter estimate</h4>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p><span class="math inline">\(\hat{\delta}=0.18\)</span>.</p>
 </div>
 <div id="top-genes-overlapping-with-sfari-genes" class="section level4">
@@ -1601,13 +1606,11 @@ No.co
 <div id="bayesian-fdr" class="section level4">
 <h4>Bayesian FDR</h4>
 <p>Below are top risk genes with highest Bayes factor and enrichment with de novo rank.</p>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-13-1.png" width="672" /><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-1.png" width="672" /><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
 <p>** Enrichment of top MIRAGE genes with Strong ASD gene, plausible ASD gene and DNM candidate genes Strong ASD gene: SFARI score 1,2 plausible ASD gene: SFARI score 3 DNM candidate genes: top 1000 DNM genes</p>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>This is the how FDR varies as the posterior probability cutoff <span class="math inline">\(\tau\)</span> changes with <span class="math inline">\(\hat{\delta}=0.18\)</span> as prior.</p>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<pre><code>## Warning: Column `Gene` joining factors with different levels, coercing to
-## character vector</code></pre>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <pre><code>## # A tibble: 30 x 5
 ##    SKATO.pvalue.adj CMC.pvalue.adj ASUM.pvalue.adj Fisher.pvalue.a~
 ##               &lt;dbl&gt;          &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;
@@ -1626,14 +1629,14 @@ No.co
 MIRAGE_gene%&gt;%arrange(desc(post_prob))  # FDR&lt;0.2</code></pre>
 <pre><code>## # A tibble: 3 x 3
 ##   Gene      BF post_prob
-##   &lt;chr&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+##   &lt;fct&gt;  &lt;dbl&gt;     &lt;dbl&gt;
 ## 1 CYFIP1  27.4     0.858
 ## 2 EP400   15.3     0.771
 ## 3 FBN1    11.9     0.722</code></pre>
 <pre class="r"><code>const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.52)%&gt;%select(Gene, BF, post_prob, CALPHA.pvalue.adj) %&gt;% arrange(desc(post_prob)) # FDR&lt;0.3</code></pre>
 <pre><code>## # A tibble: 9 x 4
 ##   Gene       BF post_prob CALPHA.pvalue.adj
-##   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;             &lt;dbl&gt;
+##   &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;             &lt;dbl&gt;
 ## 1 CYFIP1  27.4      0.858            1     
 ## 2 EP400   15.3      0.771            1     
 ## 3 FBN1    11.9      0.722            1     
@@ -1646,7 +1649,7 @@ MIRAGE_gene%&gt;%arrange(desc(post_prob))  # FDR&lt;0.2</code></pre>
 <pre class="r"><code>const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.4)%&gt;%select(Gene, BF, post_prob) %&gt;% arrange(desc(post_prob))</code></pre>
 <pre><code>## # A tibble: 24 x 3
 ##    Gene       BF post_prob
-##    &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##    &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;
 ##  1 CYFIP1  27.4      0.858
 ##  2 EP400   15.3      0.771
 ##  3 FBN1    11.9      0.722
@@ -1662,7 +1665,7 @@ MIRAGE_gene%&gt;%arrange(desc(post_prob))  # FDR&lt;0.2</code></pre>
 CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 <pre><code>## # A tibble: 7 x 4
 ##   Gene       BF post_prob CALPHA.pvalue.adj
-##   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;             &lt;dbl&gt;
+##   &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;             &lt;dbl&gt;
 ## 1 ZNRF3   0.861     0.159          0.000222
 ## 2 FLNC    0.669     0.128          0.00257 
 ## 3 CIT     1.34      0.227          0.0231  
@@ -1671,11 +1674,9 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 ## 6 GALR2   0.755     0.142          0.111   
 ## 7 GTF3C4  1.96      0.300          0.112</code></pre>
 <pre class="r"><code>right_join(as_tibble(const.gene.BF), CALPHA_gene, by=&quot;Gene&quot;)%&gt;% select(-post_prob.y, -BF.y)%&gt;%arrange(desc(post_prob.x)) </code></pre>
-<pre><code>## Warning: Column `Gene` joining factor and character vector, coercing into
-## character vector</code></pre>
 <pre><code>## # A tibble: 7 x 6
 ##   Gene     BF.x LoF.BF nonLoF.BF post_prob.x CALPHA.pvalue.adj
-##   &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+##   &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
 ## 1 DOCK4   8.45   1         8.45        0.650          0.0649  
 ## 2 CACNA1D 6.28   1         6.28        0.579          0.0296  
 ## 3 GTF3C4  1.96   0.713     2.75        0.300          0.112   
@@ -1686,7 +1687,7 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 <pre class="r"><code>left_join(as_tibble(MIRAGE_gene), CALPHA_gene, by=&quot;Gene&quot;)%&gt;% select(-post_prob.y, -BF.y)%&gt;%arrange(desc(post_prob.x))%&gt;% print(n=29) ## ASUM: does not work for genes with one variant, resutling in NA </code></pre>
 <pre><code>## # A tibble: 3 x 4
 ##   Gene    BF.x post_prob.x CALPHA.pvalue.adj
-##   &lt;chr&gt;  &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
+##   &lt;fct&gt;  &lt;dbl&gt;       &lt;dbl&gt;             &lt;dbl&gt;
 ## 1 CYFIP1  27.4       0.858                NA
 ## 2 EP400   15.3       0.771                NA
 ## 3 FBN1    11.9       0.722                NA</code></pre>
@@ -1728,17 +1729,17 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 </div>
 <div id="highlight-genes" class="section level4">
 <h4>highlight genes</h4>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <pre><code>## [1] 28.20236</code></pre>
 <pre><code>## [1] 2.273205</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 </div>
 <div id="highlight-gene-ep400" class="section level4">
 <h4>highlight gene EP400</h4>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 </div>
 </div>
 <div id="cons-estimate-eta_i" class="section level3">
@@ -1813,13 +1814,13 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 <pre class="r"><code>para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
 x=1:8
 plot(x, para.est, type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of constraint genes with fixed delta=0.1&quot;)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <pre><code>## 
 ## Attaching package: &#39;gridExtra&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:dplyr&#39;:
 ## 
 ##     combine</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <pre class="r"><code>kable(cbind(rank.BF.const.gene.common.delta[1:20,1:2], no.case, no.contr), row.names=NA, caption =(&quot;Top 20 genes of constraint genes with fixed delta&quot;), &quot;html&quot;)%&gt;%
 kable_styling() %&gt;%
 scroll_box(height = &quot;200px&quot;)</code></pre>
@@ -2201,7 +2202,7 @@ delta=seq(0.1, 1, by=0.1)
 plot(beta.est, xaxt=&#39;n&#39;, ylab=expression(paste(hat(beta))), main=&quot;Parameter estimate for LoF category&quot;, type=&quot;o&quot;, xlab=expression(paste(delta)))
 axis.label=c(&quot;0.1&quot;, &quot;0.2&quot;, &quot;0.3&quot;, &quot;0.4&quot;, &quot;0.5&quot;, &quot;0.6&quot;, &quot;0.7&quot;, &quot;0.8&quot;, &quot;0.9&quot;, &quot;1&quot;)
 axis(1,at=1:10,labels=axis.label)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <pre class="r"><code>test.stat=c(0.6105703, 0.7301446, 0.7621092, 0.7772918, 0.7866515, 0.7931309, 0.7979188, 0.8016140, 0.8045560, 0.8069559, cex.axis=0.8)</code></pre>
 </div>
 </div>
@@ -2818,16 +2819,16 @@ ITSN1
 </div>
 <p>In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95, pvalue=0.0311.</p>
 <p>ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896.</p>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <pre class="r"><code>para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
 x=1:8
 plot(x, para.est, type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=15, col=&quot;black&quot;, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimates of constraint genes&quot;)
 points(x, para.summ[,1], type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16,col=&quot;red&quot;)
 legend(6, 0.8, c(expression(paste(&quot;common &quot;, delta, &quot;=0.1&quot;)), expression(paste(&quot;gene specific &quot;, delta[i]))), col=c(&quot;black&quot;, &quot;red&quot;), pch=c(15,16))
 abline(h=0, lty=2)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <p>Replace “damaging” with “consensus damaging”</p>
 <table>
 <caption>Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific <span class="math inline">\(\delta\)</span>.</caption>
@@ -2887,9 +2888,9 @@ abline(h=0, lty=2)</code></pre>
 <h3>QQ plot of p values by different methods</h3>
 <pre><code>## [1] 0.3069552</code></pre>
 <pre><code>## [1] 0.6547919</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
-<p>This is for LoF and damaging variants only.</p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p>This is for LoF and damaging variants only.</p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
 </div>
 <div id="empirical-distribution-of-bf-by-permutations" class="section level3">
 <h3>Empirical distribution of BF by permutations</h3>
@@ -2909,11 +2910,9 @@ abline(h=0, lty=2)</code></pre>
 ## 10 KALRN    4.79  1.29       3.72     0.513          0.00658
 ## # ... with 761 more rows</code></pre>
 <p>Histogram of empirical p values by permutations</p>
-<pre><code>## Warning: Calling `as_tibble()` on a vector is discouraged, because the behavior is likely to change in the future. Use `tibble::enframe(name = NULL)` instead.
-## This warning is displayed once per session.</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 </div>
 </div>
 <div id="constraint-genes" class="section level2">
@@ -2939,7 +2938,7 @@ betas=c(expression(paste(hat(beta)[1])),expression(paste(hat(beta)[2])), express
 expression(paste(hat(beta)[5])),expression(paste(hat(beta)[6])), expression(paste(hat(beta)[7])),expression(paste(hat(beta)[8])))
 #legend(2, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))
 legend(4, 1, betas, col=seq(1,8), lty=rep(1,8), ncol=2)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
 <p>Replace “Damaging” with “Consensus damaging”</p>
 <pre class="r"><code>beta=matrix(nrow=5, ncol=8)
 rownames(beta)=c(&quot;top10%&quot;, &quot;top10-20%&quot;, &quot;top20-30%&quot;, &quot;top30-40%&quot;, &quot;top40-50%&quot;)
@@ -2953,7 +2952,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
 <table style="width:81%;">
 <caption>Number of variants in C5 and C8 at different constrait level.</caption>
 <colgroup>
@@ -3092,7 +3091,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -3156,7 +3155,7 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <pre class="r"><code>para.est=c(0, 0.08, 0, 0, 0.06, 0, 0, 0.06)
 x=1:8
 plot(para.est, type=&quot;p&quot;, ylim=c(0,0.5), cex.lab=0.7, ylab=expression(paste(hat(beta))), pch=16, xlab=&quot;Variant Category&quot;, main=&quot;Parameter estimate of all genes in the whole genome&quot;)</code></pre>
-<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-information" class="section level2">

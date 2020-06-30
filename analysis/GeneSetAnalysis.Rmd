@@ -236,6 +236,26 @@ result.summary=tibble(Gene=Gene, OR=OR, pval=pval)
   
 
 
+```{r, echo=F}
+Gene=row.names(LoF.summy)[1:22]
+OR=LoF.summy[1:22,1]; pval=LoF.summy[1:22,2]
+result.summary=tibble(Gene=Gene, OR=OR, pval=pval)
+# pdf("../../Figure/burden_geneset.pdf")
+  ggplot(result.summary, aes(x=Gene, y=OR, fill=Gene))+
+  geom_bar(stat="identity")+
+  ylab("")+xlab("Gene")+ ggtitle("Burden analysis for LoF in different gene sets")+
+   geom_point(mapping=aes(x=Gene, y=-log(pval, base=10), size=-log(pval, base=10), fill=Gene), alpha=0.8)+ 
+    coord_flip()+
+    scale_color_viridis(discrete=T)+
+    geom_hline(yintercept=1,linetype="dashed")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+    #theme(legend.position = "none")+  # no legend at all 
+    guides(fill = FALSE)+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
+  
+#dev.off()
+```
+
 
 ## Variant partitions
 A gene usually has many variants such as missense, LoF, etc which contribute to the disease at different degree of deleteriousness. So we partition variants from all genes into different variant categories based on their annotation priors. 
