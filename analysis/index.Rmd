@@ -12,6 +12,7 @@ Below is the outline of the project.
 * [This](ASD.html) is analysis for ASD exon sequence data.
 * [ASD_dbGaP](ASD_dbGaP.html). 
 * [This](SCZ-analysis.html) is analysis for Schizophrenia data. 
+* [code for merging annotation features and sample data](ASD_dbGaP_code.html)
 
 
 [project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf

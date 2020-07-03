@@ -7,7 +7,9 @@ output: html_document
 ## merge data set together 
 
 ```{r, echo=T}
+rm(list=ls())
 library(tidyverse)
+set.seed(123)
 ```
 
 
@@ -45,7 +47,7 @@ annotation=full_join(anno1, anno2, by="ID") # merger two separate files by commo
 counts=read.table(paste(path, "pseudo_cc.frq.cc", sep=""), header=T)
 bim=read.table(paste(path, "pseudocc.tucc.bim", sep=""))
 end=bim$V4+1
-case.control=tibble(ID=paste("chr",bim$V1, ":", bim$V4, "_", end, "_", bim$V6, "_", bim$V5, sep=""), No.case=round(counts$NCHROBS_A*counts$MAF_A), No.contr=round(counts$NCHROBS_U*counts$MAF_U)) # note the order of reference and alternative allele such that they must allign with that in annotation file; also note which are cases and which are control  
+case.control=tibble(ID=paste("chr",bim$V1, ":", bim$V4, "_", end, "_", bim$V6, "_", bim$V5, sep=""), No.case=round(counts$NCHROBS_A*counts$MAF_A), No.contr=round(counts$NCHROBS_U*counts$MAF_U), case.af=counts$MAF_A, control.af=counts$MAF_U) # note the order of reference and alternative allele such that they must allign with that in annotation file; also note which are cases and which are control  
 
 ########### bionomial test at locus chr17:45234411_45234412_G_T
 #target.index=which(bim$V1==17 & bim$V4==45234411)
@@ -65,7 +67,7 @@ full.data=full.data%>%filter(is.na(No.case)==F & is.na(No.contr)==F) # keep vari
 ########### plot histogram of No.variants in case and control
 #case.control.count=tibble(count=c(full.data$No.case, full.data$No.contr), group=c(rep("case", nrow(full.data)), rep("control", nrow(full.data)))) %>% filter(count<50)
 #ggplot(case.control.count, aes(x=count, color=group, fill=group)) +
-  geom_histogram(position="identity", alpha=0.5)
+#  geom_histogram(position="identity", alpha=0.5)
 ###########
 ```
 
