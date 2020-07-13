@@ -24,9 +24,10 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-1.1/highlight.js"></script>
-<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -35,10 +36,12 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -72,9 +75,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -93,8 +94,14 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -110,7 +117,6 @@ body {
   padding-top: 56px;
   margin-top: -56px;
 }
-
 .section h2 {
   padding-top: 56px;
   margin-top: -56px;
@@ -130,6 +136,43 @@ body {
 .section h6 {
   padding-top: 56px;
   margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -151,18 +194,75 @@ $(document).ready(function () {
 });
 </script>
 
-
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -240,8 +340,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -250,6 +348,16 @@ div.tocify {
 
 
 </style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
@@ -302,20 +410,14 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Gene set analysis for SCZ data</h1>
-<h4 class="author"><em>Shengtong Han</em></h4>
-<h4 class="date"><em>YYYY-MM-DD</em></h4>
+<h4 class="author">Shengtong Han</h4>
+<h4 class="date">YYYY-MM-DD</h4>
 
 </div>
 
 
 <!-- The file analysis/chunks.R contains chunks that define default settings
 shared across the workflowr files. -->
-<!-- Update knitr chunk options -->
-<!-- Insert the date the file was last updated -->
-<p><strong>Last updated:</strong> 2017-11-17</p>
-<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed -->
-<p><strong>Code version:</strong> c0a7f90</p>
 <pre class="r"><code>N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data ==&quot;.&quot;] &lt;- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
@@ -325,6 +427,10 @@ LoF.def=c(&quot;stopgain&quot;, &quot;frameshift substitution&quot;, &quot;splic
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) </code></pre>
 <div id="simple-burden-test" class="section level2">
 <h2>Simple burden test</h2>
+<pre><code>## Warning: `src_sqlite()` is deprecated as of dplyr 1.0.0.
+## Please use `tbl()` directly with a database connection
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <ul>
 <li>Two sample one side (“greater”) test</li>
 <li>high confidence gene: TADA q&lt;0.05, <a href="https://sfari.org/">SFARI</a> cate1&amp;2</li>
@@ -844,6 +950,137 @@ kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></
 </tbody>
 </table>
 </div>
+<div id="cons-run-mirage" class="section level3">
+<h3>Cons: run mirage</h3>
+<div id="parameter-estimate-when-af-5" class="section level4">
+<h4>parameter estimate when AF &lt; 5%</h4>
+<p><span class="math inline">\(\widehat{\delta}=0.09\)</span></p>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3</code></pre>
+<pre><code>## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
+## v tibble  3.0.1     v stringr 1.4.0
+## v tidyr   1.1.0     v forcats 0.4.0
+## v readr   1.3.1</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.6.3</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.6.3</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.3</code></pre>
+<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.3</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="top-genes" class="section level4">
+<h4>Top genes</h4>
+<pre><code>## Warning in rm(&quot;parameter.estimate&quot;, &quot;BF.PP.gene&quot;): object &#39;BF.PP.gene&#39; not
+## found</code></pre>
+<pre><code>## # A tibble: 777 x 3
+##    Gene        BF post.prob
+##    &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+##  1 DNMT3A   73.8      0.882
+##  2 MACF1    19.4      0.664
+##  3 TMEM102  13.1      0.571
+##  4 NOTCH2   10.2      0.509
+##  5 ARHGAP35  8.28     0.457
+##  6 CSMD2     7.80     0.442
+##  7 UBR5      4.45     0.312
+##  8 SRRT      4.32     0.305
+##  9 GRIK5     3.67     0.272
+## 10 RAPGEF2   3.54     0.265
+## # ... with 767 more rows</code></pre>
+</div>
+<div id="highlight-gene-dnmt3a" class="section level4">
+<h4>highlight gene DNMT3A</h4>
+<pre class="r"><code>Gene: DNMT3A              
+             ID   Gene No.case No.contr category      var.BF original.index
+949 chr2:25523096-25523096_T_G DNMT3A      39       13        3 566.1746060              4
+943 chr2:25457243-25457243_G_A DNMT3A       1        0        4   1.4530292              5
+944 chr2:25467078-25467078_C_A DNMT3A       0        1        7   0.5482178              8
+945 chr2:25468174-25468174_T_C DNMT3A       1        0        7   1.4530292              8
+946 chr2:25469073-25469073_G_A DNMT3A      10        8        7   0.3861151              8
+947 chr2:25469142-25469142_A_G DNMT3A       0        1        7   0.5482178              8
+948 chr2:25469614-25469614_G_A DNMT3A       1        0        7   1.4530292              8</code></pre>
+<pre class="r"><code>Gene: MACF1, signal driven by rare damaing and non-damaging variants 
+
+                            ID  Gene No.case No.contr category      var.BF original.index
+379 chr1:39847730-39847730_G_A MACF1      45       47        2  0.04355588              3
+353 chr1:39775303-39775303_A_G MACF1      19       13        3  0.58277783              4
+359 chr1:39783013-39783013_G_T MACF1      90       74        3  0.15193265              4
+362 chr1:39788295-39788295_C_A MACF1       2        4        3  0.23939249              4
+367 chr1:39816547-39816547_C_G MACF1      19        7        3 13.10494586              4
+386 chr1:39853640-39853640_A_C MACF1      45       25        3  6.09805554              4
+387 chr1:39853641-39853641_G_T MACF1      90       74        3  0.15193265              4
+394 chr1:39853959-39853959_G_A MACF1      19       12        3  0.87925645              4
+403 chr1:39900230-39900230_C_T MACF1       2        3        3  0.36622226              4
+420 chr1:39951304-39951304_T_G MACF1      24       23        3  0.10043482              4
+345 chr1:39549925-39549925_G_A MACF1       1        1        4  0.76755484              5
+346 chr1:39549942-39549942_C_T MACF1       0        2        4  0.32948455              5
+348 chr1:39752993-39752993_G_A MACF1       1        0        4  1.45302921              5
+349 chr1:39753145-39753145_C_T MACF1       0        1        4  0.54821782              5
+356 chr1:39776562-39776562_C_T MACF1       1        2        4  0.44240738              5
+357 chr1:39781210-39781210_T_G MACF1       1        1        4  0.76755484              5
+358 chr1:39781321-39781321_A_G MACF1       1        2        4  0.44240738              5
+360 chr1:39784189-39784189_A_T MACF1       1        0        4  1.45302921              5
+361 chr1:39785384-39785384_C_G MACF1       1        2        4  0.44240738              5
+363 chr1:39788346-39788346_C_T MACF1       0        1        4  0.54821782              5
+364 chr1:39788635-39788635_C_G MACF1       1        0        4  1.45302921              5
+375 chr1:39827287-39827287_C_T MACF1       0        1        4  0.54821782              5
+376 chr1:39835745-39835745_C_G MACF1       1        1        4  0.76755484              5
+377 chr1:39835746-39835746_G_A MACF1       0        1        4  0.54821782              5
+380 chr1:39851427-39851427_G_A MACF1       2        1        4  1.09359980              5
+381 chr1:39851451-39851451_G_C MACF1       1        0        4  1.45302921              5
+382 chr1:39851518-39851518_T_C MACF1       0        1        4  0.54821782              5
+383 chr1:39851554-39851554_G_A MACF1       1        0        4  1.45302921              5
+384 chr1:39851563-39851563_C_T MACF1       0        2        4  0.32948455              5
+389 chr1:39853740-39853740_C_G MACF1       0        5        4  0.12191241              5
+391 chr1:39853818-39853818_G_A MACF1       0        1        4  0.54821782              5
+392 chr1:39853893-39853893_C_T MACF1       0        1        4  0.54821782              5
+393 chr1:39853900-39853900_G_A MACF1       1        0        4  1.45302921              5
+396 chr1:39854170-39854170_G_A MACF1       0        1        4  0.54821782              5
+397 chr1:39889792-39889792_T_G MACF1       0        3        4  0.21687257              5
+398 chr1:39893177-39893177_C_T MACF1       0        1        4  0.54821782              5
+399 chr1:39893669-39893669_G_A MACF1       0        2        4  0.32948455              5
+401 chr1:39895535-39895535_G_A MACF1       0        1        4  0.54821782              5
+402 chr1:39896485-39896485_C_T MACF1       0        1        4  0.54821782              5
+404 chr1:39903464-39903464_G_A MACF1       3        9        4  0.08613987              5
+405 chr1:39904981-39904981_T_A MACF1       0        1        4  0.54821782              5
+406 chr1:39908490-39908490_A_C MACF1       3        3        4  0.49340212              5
+408 chr1:39910413-39910413_G_A MACF1       1        2        4  0.44240738              5
+409 chr1:39910418-39910418_G_A MACF1       5        5        4  0.34806276              5
+410 chr1:39913252-39913252_A_T MACF1       1        0        4  1.45302921              5
+412 chr1:39916854-39916854_C_A MACF1       0        1        4  0.54821782              5
+413 chr1:39917864-39917864_G_A MACF1       1        0        4  1.45302921              5
+414 chr1:39917931-39917931_A_C MACF1       0        1        4  0.54821782              5
+418 chr1:39951230-39951230_C_T MACF1       1        0        4  1.45302921              5
+419 chr1:39951243-39951243_G_A MACF1       5        5        4  0.34806276              5
+350 chr1:39757595-39757595_G_A MACF1      14       16        6  0.09148606              7
+351 chr1:39763365-39763365_G_T MACF1      54       44        6  0.16436446              7
+378 chr1:39838200-39838200_A_G MACF1       6       10        6  0.09719669              7
+347 chr1:39715702-39715702_A_G MACF1       2        0        7  2.14039567              8
+352 chr1:39765991-39765991_A_G MACF1       1        1        7  0.76755484              8
+354 chr1:39775999-39775999_G_A MACF1       1        0        7  1.45302921              8
+355 chr1:39776527-39776527_A_G MACF1       4        0        7  4.80333231              8
+365 chr1:39790337-39790337_C_T MACF1       0        1        7  0.54821782              8
+366 chr1:39790348-39790348_G_C MACF1       0        1        7  0.54821782              8
+368 chr1:39823159-39823159_T_C MACF1      12        3        7 13.43065361              8
+369 chr1:39823306-39823306_G_A MACF1       0        1        7  0.54821782              8
+370 chr1:39823349-39823349_C_A MACF1       1        0        7  1.45302921              8
+371 chr1:39823363-39823363_C_T MACF1       0        1        7  0.54821782              8
+372 chr1:39823365-39823365_T_C MACF1       1        3        7  0.27799691              8
+373 chr1:39824468-39824468_G_A MACF1       0        3        7  0.21687257              8
+374 chr1:39826587-39826587_A_G MACF1       2        2        7  0.60727166              8
+385 chr1:39853356-39853356_A_G MACF1       1        1        7  0.76755484              8
+388 chr1:39853687-39853687_T_A MACF1       4        9        7  0.09258787              8
+390 chr1:39853797-39853797_G_T MACF1       1        0        7  1.45302921              8
+395 chr1:39854002-39854002_G_A MACF1       7        2        7  3.71945900              8
+400 chr1:39893676-39893676_A_G MACF1       6        5        7  0.46235530              8
+407 chr1:39908511-39908511_G_T MACF1       2        1        7  1.09359980              8
+411 chr1:39914356-39914356_G_A MACF1       1        1        7  0.76755484              8
+415 chr1:39919407-39919407_G_A MACF1       4        1        7  2.31557551              8
+416 chr1:39920758-39920758_G_A MACF1       2        1        7  1.09359980              8
+417 chr1:39924788-39924788_C_T MACF1       1        0        7  1.45302921              8</code></pre>
+</div>
+</div>
 <div id="cons-estimate-beta_i-asd-gene-specific-delta_i" class="section level3">
 <h3>Cons: Estimate <span class="math inline">\(\beta_i\)</span>, ASD gene specific <span class="math inline">\(\delta_i\)</span></h3>
 <div id="eight-categories" class="section level4">
@@ -919,7 +1156,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="figure/Geneset-SCZ.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 </div>
 <div id="constraint-genes" class="section level2">
@@ -942,7 +1179,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.8, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="figure/Geneset-SCZ.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -1180,29 +1417,43 @@ legend(4, 0.8, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <h2>Session information</h2>
 <!-- Insert the session information into the document -->
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.2.2 (2015-08-14)
-Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 7 x64 (build 7601) Service Pack 1
-
-locale:
-[1] LC_COLLATE=English_United States.1252 
-[2] LC_CTYPE=English_United States.1252   
-[3] LC_MONETARY=English_United States.1252
-[4] LC_NUMERIC=C                          
-[5] LC_TIME=English_United States.1252    
-
-attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
-
-other attached packages:
-[1] knitr_1.17    dplyr_0.5.0   RSQLite_1.1-2
-
-loaded via a namespace (and not attached):
- [1] Rcpp_0.12.10     assertthat_0.2.0 digest_0.6.12    rprojroot_1.2   
- [5] R6_2.2.2         DBI_0.7          backports_1.0.5  git2r_0.18.0    
- [9] magrittr_1.5     evaluate_0.10    highr_0.6        stringi_1.1.5   
-[13] rmarkdown_1.6    tools_3.2.2      stringr_1.2.0    yaml_2.1.14     
-[17] memoise_1.1.0    htmltools_0.3.5  tibble_1.3.0    </code></pre>
+<pre><code>## R version 3.6.0 (2019-04-26)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 18362)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United States.1252 
+## [2] LC_CTYPE=English_United States.1252   
+## [3] LC_MONETARY=English_United States.1252
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] forcats_0.4.0   stringr_1.4.0   purrr_0.3.4     readr_1.3.1    
+##  [5] tidyr_1.1.0     tibble_3.0.1    ggplot2_3.3.1   tidyverse_1.3.0
+##  [9] knitr_1.23      dplyr_1.0.0     RSQLite_2.1.1  
+## 
+## loaded via a namespace (and not attached):
+##  [1] tidyselect_1.1.0 xfun_0.7         haven_2.3.1      lattice_0.20-38 
+##  [5] colorspace_1.4-1 vctrs_0.3.0      generics_0.0.2   htmltools_0.3.6 
+##  [9] yaml_2.2.0       utf8_1.1.4       blob_1.2.1       rlang_0.4.6     
+## [13] pillar_1.4.4     withr_2.1.2      glue_1.4.1       DBI_1.0.0       
+## [17] bit64_0.9-7      dbplyr_1.4.4     modelr_0.1.8     readxl_1.3.1    
+## [21] lifecycle_0.2.0  munsell_0.5.0    gtable_0.3.0     cellranger_1.1.0
+## [25] rvest_0.3.5      memoise_1.1.0    evaluate_0.13    labeling_0.3    
+## [29] fansi_0.4.0      highr_0.8        broom_0.5.2      Rcpp_1.0.1      
+## [33] backports_1.1.4  scales_1.0.0     jsonlite_1.6     fs_1.3.1        
+## [37] bit_1.1-14       hms_0.5.3        digest_0.6.19    stringi_1.4.3   
+## [41] grid_3.6.0       cli_1.1.0        tools_3.6.0      magrittr_1.5    
+## [45] crayon_1.3.4     pkgconfig_2.0.3  ellipsis_0.3.0   xml2_1.3.2      
+## [49] reprex_0.3.0     lubridate_1.7.4  assertthat_0.2.1 rmarkdown_1.13  
+## [53] httr_1.4.1       rstudioapi_0.10  R6_2.4.1         nlme_3.1-139    
+## [57] compiler_3.6.0</code></pre>
 </div>
 
 <hr>

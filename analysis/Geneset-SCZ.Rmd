@@ -11,23 +11,13 @@ shared across the workflowr files. -->
 knitr::read_chunk("chunks.R")
 ```
 
-<!-- Update knitr chunk options -->
-```{r knitr-opts-chunk, include=FALSE}
-```
-
-<!-- Insert the date the file was last updated -->
-```{r last-updated, echo=FALSE, results='asis'}
-```
-
-<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
- package git2r is installed -->
-```{r code-version, echo=FALSE, results='asis'}
-```
 
 ```{r load packages, results='hide', include=FALSE}
+rm(list=ls())
 library(RSQLite)
 library(dplyr)
 library(knitr)
+set.seed(123)
 ```
 
 ```{r defined function, echo=F, results='hide'}
@@ -42,7 +32,7 @@ return(result=list(odds.ratio=pois.test$estimate, p.value=pois.test$p.value, rat
 ```
 
 ```{r read into data, echo=F, results='hide', cache=T}
-All.Anno.Data=read.table("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\AnnotatedSCZ.txt", header=T)
+All.Anno.Data=read.table("../../AnnotatedSCZ.txt", header=T)
 colnames(All.Anno.Data)[10]="Exon.Exac.Cons"
 ```
 
@@ -60,7 +50,7 @@ LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)])
 ## Simple burden test 
 
 ```{r burdern analysis-gene level, results='hide', echo=F}
-GeneDB=src_sqlite(path="D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\gene.list.db", create=F)
+GeneDB=src_sqlite(path="../../gene.list.db", create=F)
 gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
 gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
 gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
@@ -115,7 +105,7 @@ gene.evid[[22]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% haploinsuff.
 gene.evid[[23]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% purcell.genelist$Gene_symbol )])
 olfac.gene=data.frame(collect(tbl(GeneDB, "Olfac_gene")))
 gene.evid[[24]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% olfac.gene$GeneID )])
-sczgene=as.character(read.table("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\SCZData\\GeneList\\SCZ.67gene.q0.3.txt", header=T)[[1]])
+sczgene=as.character(read.table("../../SCZ.67gene.q0.3.txt", header=T)[[1]])
 gene.evid[[25]]=as.character(Anno.Data$ID[which(Anno.Data$Gene %in% sczgene )])
 
 colnames(gene.summy)=c("OR", "p.value", "rate.ca", "rate.co")
@@ -209,8 +199,8 @@ Constraint gene set is from [this paper].
 
 ```{r, echo=F, results='hide'}
 #gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\Rare-variant-project\\rare-var-project\\data\\GeneSet\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
-gene.set=as.character(read.csv("D:\\ResearchWork\\StatisticalGenetics\\NumericAnalysis\\RealData\\GeneSet\\Samocha_2014NG\\Samocha_2014NG_contraintgene.csv", header=T)$gene)
-cand.data=Anno.Data[which(Anno.Data$Gene %in% gene.set),]
+gene.set=as.character(read.csv("../../GeneSet/Samocha_2014NG/Samocha_2014NG_contraintgene.csv", header=T)$gene)
+cand.data=as_tibble(Anno.Data[which(Anno.Data$Gene %in% gene.set),])
 par.evid=list()
 par.evid[[1]]=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.05 & cand.data$ExacAF>=0.01)
 par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==T &  cand.data$ExacAF<0.01)
@@ -235,6 +225,182 @@ The burden of 8 categories is
 ```{r, echo=T}
 colnames(burden.summy)=c("OR", "p.value", "No.ca", "No.co")
 kable(burden.summy, caption="The burden of eight categories")
+```
+
+
+### Cons: run mirage
+
+#### parameter estimate  when AF < 5\%
+
+$\widehat{\delta}=0.09$
+
+```{r, echo=F}
+eight.partition=function(cand.data) # given gene data and annotations, do variant partitions
+{
+  par.evid=list()
+  LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+  par.evid[[1]]=which(cand.data$Annotation %in% LoF.def==T & cand.data$ExacAF<0.05 & cand.data$ExacAF>=0.01 )
+  par.evid[[2]]=which(cand.data$Annotation %in% LoF.def==T &  cand.data$ExacAF<0.01)
+
+  par.evid[[3]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid[[4]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[5]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))>=0.957 &  cand.data$ExacAF<0.001)
+
+  par.evid[[6]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.01 & cand.data$ExacAF<0.05)
+  par.evid[[7]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF>=0.001 & cand.data$ExacAF<0.01)
+  par.evid[[8]]=which(cand.data$Annotation %in% LoF.def==F & as.numeric(as.character(cand.data$Polyphen2.HDIV.score))<0.957 & cand.data$ExacAF<0.001)
+
+  group.index=rep(NA, nrow(cand.data))
+  for (i in 1:length(par.evid))
+    group.index[par.evid[[i]]]=i
+  gene.data=data.frame(ID=cand.data$ID, Gene=cand.data$Gene, No.case=cand.data$No.case, No.contr=cand.data$No.contr, group.index=group.index)
+  gene.data=gene.data[complete.cases(gene.data),]
+  return(gene.data)
+}
+```
+
+
+```{r, echo=F, eval=F}
+#library("devtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+gene.data=eight.partition(cand.data)
+#N1=2536; N0=2543
+#scz.result=mirage(gene.data, n1=2536, n2=2543)
+
+no.row=1+length(scz.result$eta.est); no.col=2
+parameter.estimate=matrix(nrow=no.row, ncol=no.col) # it may not have all 8 variant categories 
+parameter.estimate[,1]=c(scz.result$delta.est, scz.result$eta.est)
+parameter.estimate[,2]=c(scz.result$delta.pvalue, scz.result$eta.pvalue)
+rownames(parameter.estimate)=c("delta", paste(names(scz.result$eta.est), sep=""))
+colnames(parameter.estimate)=c("estimate", "pval")
+BF.PP.gene=scz.result$BF.PP.gene
+#save(parameter.estimate, BF.PP.gene, file="../output/para.est.constraint.gene.estimate.delta.SCZ.AFcutoff5%.RData")
+```
+
+```{r, echo=F}
+library(dplyr)
+library(tidyverse)
+parameter.estimate=tibble(cate=c("LoF; 1%<AF<5%", "LoF; AF<1%", "Damaging; 1%<AF<5%", "Damaging; 0.1%<AF<1%", "Damaging; AF<0.1%", "Non-damaging; 1%<AF<5%", "Non-damaging; 0.1%<AF<1%", "Non-damaging; AF<0.1%"), estimate=c(0, 0, 0, 0.16, 0, 0, 0, 0.26))
+
+ggplot(data=parameter.estimate, aes(x=cate, y=estimate)) +
+geom_bar(stat="identity", position=position_dodge(), fill="blue")+
+   xlab("")+
+   ylab(expression(paste(hat(eta))))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=15))
+```
+
+#### Top genes 
+
+```{r, echo=F}
+rm("parameter.estimate", "BF.PP.gene")
+#const.gene.BF.DS.ASD=loadRData("../output/para.est.constraint.gene.estimate.delta.DS.ASD.RData") loadRData only load one item in RData
+load("../output/para.est.constraint.gene.estimate.delta.SCZ.AFcutoff5%.RData") # load all items stored in RData
+BF.PP.gene=as_tibble(BF.PP.gene)
+BF.PP.gene.sort=arrange(BF.PP.gene, desc(post.prob))
+BF.PP.gene.sort
+
+```
+
+#### highlight gene DNMT3A 
+
+
+```{r, echo=T, eval=F}
+Gene: DNMT3A              
+             ID   Gene No.case No.contr category      var.BF original.index
+949 chr2:25523096-25523096_T_G DNMT3A      39       13        3 566.1746060              4
+943 chr2:25457243-25457243_G_A DNMT3A       1        0        4   1.4530292              5
+944 chr2:25467078-25467078_C_A DNMT3A       0        1        7   0.5482178              8
+945 chr2:25468174-25468174_T_C DNMT3A       1        0        7   1.4530292              8
+946 chr2:25469073-25469073_G_A DNMT3A      10        8        7   0.3861151              8
+947 chr2:25469142-25469142_A_G DNMT3A       0        1        7   0.5482178              8
+948 chr2:25469614-25469614_G_A DNMT3A       1        0        7   1.4530292              8
+```
+
+
+```{r, echo=T, eval=F}
+
+Gene: MACF1, signal driven by rare damaing and non-damaging variants 
+
+                            ID  Gene No.case No.contr category      var.BF original.index
+379 chr1:39847730-39847730_G_A MACF1      45       47        2  0.04355588              3
+353 chr1:39775303-39775303_A_G MACF1      19       13        3  0.58277783              4
+359 chr1:39783013-39783013_G_T MACF1      90       74        3  0.15193265              4
+362 chr1:39788295-39788295_C_A MACF1       2        4        3  0.23939249              4
+367 chr1:39816547-39816547_C_G MACF1      19        7        3 13.10494586              4
+386 chr1:39853640-39853640_A_C MACF1      45       25        3  6.09805554              4
+387 chr1:39853641-39853641_G_T MACF1      90       74        3  0.15193265              4
+394 chr1:39853959-39853959_G_A MACF1      19       12        3  0.87925645              4
+403 chr1:39900230-39900230_C_T MACF1       2        3        3  0.36622226              4
+420 chr1:39951304-39951304_T_G MACF1      24       23        3  0.10043482              4
+345 chr1:39549925-39549925_G_A MACF1       1        1        4  0.76755484              5
+346 chr1:39549942-39549942_C_T MACF1       0        2        4  0.32948455              5
+348 chr1:39752993-39752993_G_A MACF1       1        0        4  1.45302921              5
+349 chr1:39753145-39753145_C_T MACF1       0        1        4  0.54821782              5
+356 chr1:39776562-39776562_C_T MACF1       1        2        4  0.44240738              5
+357 chr1:39781210-39781210_T_G MACF1       1        1        4  0.76755484              5
+358 chr1:39781321-39781321_A_G MACF1       1        2        4  0.44240738              5
+360 chr1:39784189-39784189_A_T MACF1       1        0        4  1.45302921              5
+361 chr1:39785384-39785384_C_G MACF1       1        2        4  0.44240738              5
+363 chr1:39788346-39788346_C_T MACF1       0        1        4  0.54821782              5
+364 chr1:39788635-39788635_C_G MACF1       1        0        4  1.45302921              5
+375 chr1:39827287-39827287_C_T MACF1       0        1        4  0.54821782              5
+376 chr1:39835745-39835745_C_G MACF1       1        1        4  0.76755484              5
+377 chr1:39835746-39835746_G_A MACF1       0        1        4  0.54821782              5
+380 chr1:39851427-39851427_G_A MACF1       2        1        4  1.09359980              5
+381 chr1:39851451-39851451_G_C MACF1       1        0        4  1.45302921              5
+382 chr1:39851518-39851518_T_C MACF1       0        1        4  0.54821782              5
+383 chr1:39851554-39851554_G_A MACF1       1        0        4  1.45302921              5
+384 chr1:39851563-39851563_C_T MACF1       0        2        4  0.32948455              5
+389 chr1:39853740-39853740_C_G MACF1       0        5        4  0.12191241              5
+391 chr1:39853818-39853818_G_A MACF1       0        1        4  0.54821782              5
+392 chr1:39853893-39853893_C_T MACF1       0        1        4  0.54821782              5
+393 chr1:39853900-39853900_G_A MACF1       1        0        4  1.45302921              5
+396 chr1:39854170-39854170_G_A MACF1       0        1        4  0.54821782              5
+397 chr1:39889792-39889792_T_G MACF1       0        3        4  0.21687257              5
+398 chr1:39893177-39893177_C_T MACF1       0        1        4  0.54821782              5
+399 chr1:39893669-39893669_G_A MACF1       0        2        4  0.32948455              5
+401 chr1:39895535-39895535_G_A MACF1       0        1        4  0.54821782              5
+402 chr1:39896485-39896485_C_T MACF1       0        1        4  0.54821782              5
+404 chr1:39903464-39903464_G_A MACF1       3        9        4  0.08613987              5
+405 chr1:39904981-39904981_T_A MACF1       0        1        4  0.54821782              5
+406 chr1:39908490-39908490_A_C MACF1       3        3        4  0.49340212              5
+408 chr1:39910413-39910413_G_A MACF1       1        2        4  0.44240738              5
+409 chr1:39910418-39910418_G_A MACF1       5        5        4  0.34806276              5
+410 chr1:39913252-39913252_A_T MACF1       1        0        4  1.45302921              5
+412 chr1:39916854-39916854_C_A MACF1       0        1        4  0.54821782              5
+413 chr1:39917864-39917864_G_A MACF1       1        0        4  1.45302921              5
+414 chr1:39917931-39917931_A_C MACF1       0        1        4  0.54821782              5
+418 chr1:39951230-39951230_C_T MACF1       1        0        4  1.45302921              5
+419 chr1:39951243-39951243_G_A MACF1       5        5        4  0.34806276              5
+350 chr1:39757595-39757595_G_A MACF1      14       16        6  0.09148606              7
+351 chr1:39763365-39763365_G_T MACF1      54       44        6  0.16436446              7
+378 chr1:39838200-39838200_A_G MACF1       6       10        6  0.09719669              7
+347 chr1:39715702-39715702_A_G MACF1       2        0        7  2.14039567              8
+352 chr1:39765991-39765991_A_G MACF1       1        1        7  0.76755484              8
+354 chr1:39775999-39775999_G_A MACF1       1        0        7  1.45302921              8
+355 chr1:39776527-39776527_A_G MACF1       4        0        7  4.80333231              8
+365 chr1:39790337-39790337_C_T MACF1       0        1        7  0.54821782              8
+366 chr1:39790348-39790348_G_C MACF1       0        1        7  0.54821782              8
+368 chr1:39823159-39823159_T_C MACF1      12        3        7 13.43065361              8
+369 chr1:39823306-39823306_G_A MACF1       0        1        7  0.54821782              8
+370 chr1:39823349-39823349_C_A MACF1       1        0        7  1.45302921              8
+371 chr1:39823363-39823363_C_T MACF1       0        1        7  0.54821782              8
+372 chr1:39823365-39823365_T_C MACF1       1        3        7  0.27799691              8
+373 chr1:39824468-39824468_G_A MACF1       0        3        7  0.21687257              8
+374 chr1:39826587-39826587_A_G MACF1       2        2        7  0.60727166              8
+385 chr1:39853356-39853356_A_G MACF1       1        1        7  0.76755484              8
+388 chr1:39853687-39853687_T_A MACF1       4        9        7  0.09258787              8
+390 chr1:39853797-39853797_G_T MACF1       1        0        7  1.45302921              8
+395 chr1:39854002-39854002_G_A MACF1       7        2        7  3.71945900              8
+400 chr1:39893676-39893676_A_G MACF1       6        5        7  0.46235530              8
+407 chr1:39908511-39908511_G_T MACF1       2        1        7  1.09359980              8
+411 chr1:39914356-39914356_G_A MACF1       1        1        7  0.76755484              8
+415 chr1:39919407-39919407_G_A MACF1       4        1        7  2.31557551              8
+416 chr1:39920758-39920758_G_A MACF1       2        1        7  1.09359980              8
+417 chr1:39924788-39924788_C_T MACF1       1        0        7  1.45302921              8
+
 ```
 
 

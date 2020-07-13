@@ -5,14 +5,19 @@ output:
     toc: false
 ---
 
-Below is the outline of the project. 
 
-* [This][project] is the project.
-* click this [link](simulation-study.html) to see simulation studies. 
-* [This](ASD.html) is analysis for ASD exon sequence data.
-* [ASD_dbGaP](ASD_dbGaP.html). 
-* [This](SCZ-analysis.html) is analysis for Schizophrenia data. 
-* [code for merging annotation features and sample data](ASD_dbGaP_code.html)
+ [This is the project][project]
+ 
+[numerical simulation studies](simulation-study.html) 
+
+
+[analysis for ASD whole exome sequence data](ASD.html)
+
+[analysis for ASD dowloaded from dbGaP](ASD_dbGaP.html) 
+ 
+[analysis for Schizophrenia data](SCZ-analysis.html) 
+
+[code for merging annotation features and sample data from dbGap](ASD_dbGaP_code.html)
 
 
 [project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf
