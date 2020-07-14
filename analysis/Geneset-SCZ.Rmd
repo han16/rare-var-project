@@ -232,7 +232,7 @@ kable(burden.summy, caption="The burden of eight categories")
 
 #### parameter estimate  when AF < 5\%
 
-$\widehat{\delta}=0.09$
+$\widehat{\delta}=0.09$ with p value of 0.56. 
 
 ```{r, echo=F}
 eight.partition=function(cand.data) # given gene data and annotations, do variant partitions
@@ -278,7 +278,7 @@ BF.PP.gene=scz.result$BF.PP.gene
 #save(parameter.estimate, BF.PP.gene, file="../output/para.est.constraint.gene.estimate.delta.SCZ.AFcutoff5%.RData")
 ```
 
-```{r, echo=F}
+```{r, echo=F, warning=F}
 library(dplyr)
 library(tidyverse)
 parameter.estimate=tibble(cate=c("LoF; 1%<AF<5%", "LoF; AF<1%", "Damaging; 1%<AF<5%", "Damaging; 0.1%<AF<1%", "Damaging; AF<0.1%", "Non-damaging; 1%<AF<5%", "Non-damaging; 0.1%<AF<1%", "Non-damaging; AF<0.1%"), estimate=c(0, 0, 0, 0.16, 0, 0, 0, 0.26))
@@ -290,6 +290,20 @@ geom_bar(stat="identity", position=position_dodge(), fill="blue")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
 theme(text = element_text(size=15))
 ```
+
+
+Category | AF                       | eta.est             | p value
+---------|--------------------------|---------------------|----------
+C1:LoF|   $0.01 \leq AF < 0.05$     | NA |NA
+C2:LoF|  $AF < 0.01$                | 0  | 1
+C3:Damaging| $0.01 \leq AF < 0.05$  |0 | 1
+C4:Damaging|  $0.001 \leq  AF < 0.01$ | 0.16 | 0.14  
+C5:Damaging|  $AF < 0.001$          | 0 | 1
+C6:Non-Damaging| $0.01 \leq  AF < 0.05$ | 0 | 1   
+C7:Non-Damaging| $0.001 \leq AF < 0.01$ | 0 | 1
+C8:Non-Damaging|  $AF < 0.001$          | 0.26 | 0.12 
+Table: parameter estimates and p values in variant groups. 0's estimates are not exactly estimated as 0 but  they are extremely close to 0, like $e^{-10}$. 
+
 
 #### Top genes 
 
@@ -307,7 +321,7 @@ BF.PP.gene.sort
 
 
 ```{r, echo=T, eval=F}
-Gene: DNMT3A              
+Gene: DNMT3A briven by damaging variants              
              ID   Gene No.case No.contr category      var.BF original.index
 949 chr2:25523096-25523096_T_G DNMT3A      39       13        3 566.1746060              4
 943 chr2:25457243-25457243_G_A DNMT3A       1        0        4   1.4530292              5

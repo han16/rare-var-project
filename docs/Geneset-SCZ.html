@@ -954,21 +954,77 @@ kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></
 <h3>Cons: run mirage</h3>
 <div id="parameter-estimate-when-af-5" class="section level4">
 <h4>parameter estimate when AF &lt; 5%</h4>
-<p><span class="math inline">\(\widehat{\delta}=0.09\)</span></p>
-<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<p><span class="math inline">\(\widehat{\delta}=0.09\)</span> with p value of 0.56.</p>
+<pre><code>## -- Attaching packages -- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
 ## v tibble  3.0.1     v stringr 1.4.0
 ## v tidyr   1.1.0     v forcats 0.4.0
 ## v readr   1.3.1</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts ----- tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<table>
+<caption>parameter estimates and p values in variant groups. 0’s estimates are not exactly estimated as 0 but they are extremely close to 0, like <span class="math inline">\(e^{-10}\)</span>.</caption>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>AF</th>
+<th>eta.est</th>
+<th>p value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>C1:LoF</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>C2:LoF</td>
+<td><span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>C3:Damaging</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>C4:Damaging</td>
+<td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.16</td>
+<td>0.14</td>
+</tr>
+<tr class="odd">
+<td>C5:Damaging</td>
+<td><span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>C6:Non-Damaging</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>C7:Non-Damaging</td>
+<td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>C8:Non-Damaging</td>
+<td><span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.26</td>
+<td>0.12</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="top-genes" class="section level4">
 <h4>Top genes</h4>
@@ -991,7 +1047,7 @@ kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></
 </div>
 <div id="highlight-gene-dnmt3a" class="section level4">
 <h4>highlight gene DNMT3A</h4>
-<pre class="r"><code>Gene: DNMT3A              
+<pre class="r"><code>Gene: DNMT3A briven by damaging variants              
              ID   Gene No.case No.contr category      var.BF original.index
 949 chr2:25523096-25523096_T_G DNMT3A      39       13        3 566.1746060              4
 943 chr2:25457243-25457243_G_A DNMT3A       1        0        4   1.4530292              5
@@ -1419,7 +1475,7 @@ legend(4, 0.8, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 18362)
+## Running under: Windows 10 x64 (build 18363)
 ## 
 ## Matrix products: default
 ## 
