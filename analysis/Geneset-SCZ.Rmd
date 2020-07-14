@@ -307,7 +307,7 @@ Table: parameter estimates and p values in variant groups. 0's estimates are not
 
 #### Top genes 
 
-```{r, echo=F}
+```{r, echo=F, warning=F}
 rm("parameter.estimate", "BF.PP.gene")
 #const.gene.BF.DS.ASD=loadRData("../output/para.est.constraint.gene.estimate.delta.DS.ASD.RData") loadRData only load one item in RData
 load("../output/para.est.constraint.gene.estimate.delta.SCZ.AFcutoff5%.RData") # load all items stored in RData
