@@ -17,6 +17,12 @@ rm(list=ls())
 library(RSQLite)
 library(dplyr)
 library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(tidyverse)
+library(viridis)
+library(ggsignif)
+library(ggpubr)
 set.seed(123)
 ```
 
@@ -157,8 +163,59 @@ for (gene in 1:(max.gene+1))
 
 
 ```{r gene level, echo=F}
-kable(gene.summy, caption="Burden analysis of gene set")
-kable(LoF.summy, caption="Burden analysis of LoF in different gene sets")
+
+kable(gene.summy, caption="Burden analysis of gene set", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+
+kable(LoF.summy, caption="Burden analysis of LoF in different gene sets", "html")%>%
+kable_styling() %>%
+scroll_box(height = "200px")
+```
+
+
+
+
+
+```{r, echo=F}
+Gene=row.names(gene.summy)[1:22]
+OR=gene.summy[1:22,1]; pval=gene.summy[1:22,2]
+result.summary=tibble(Gene=Gene, OR=OR, pval=pval)
+# pdf("../../Figure/burden_geneset.pdf")
+  ggplot(result.summary, aes(x=Gene, y=OR, fill=Gene))+
+  geom_bar(stat="identity")+
+  ylab("")+xlab("Gene")+ ggtitle("Burden analysis for gene sets")+
+   geom_point(mapping=aes(x=Gene, y=-log(pval, base=10), size=-log(pval, base=10), fill=Gene), alpha=0.8)+ 
+    coord_flip()+
+    scale_color_viridis(discrete=T)+
+    geom_hline(yintercept=1,linetype="dashed")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+    #theme(legend.position = "none")+  # no legend at all 
+    guides(fill = FALSE)+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
+  
+#dev.off()
+```
+
+
+```{r, echo=F}
+Gene=row.names(LoF.summy)[1:22]
+OR=LoF.summy[1:22,1]; pval=LoF.summy[1:22,2]
+result.summary=tibble(Gene=Gene, OR=OR, pval=pval)
+# pdf("../../Figure/burden_geneset.pdf")
+  ggplot(result.summary, aes(x=Gene, y=OR, fill=Gene))+
+  geom_bar(stat="identity")+
+  ylab("")+xlab("Gene")+ ggtitle("Burden analysis for LoF in different gene sets")+
+   geom_point(mapping=aes(x=Gene, y=-log(pval, base=10), size=-log(pval, base=10), fill=Gene), alpha=0.8)+ 
+    coord_flip()+
+    scale_color_viridis(discrete=T)+
+    geom_hline(yintercept=1,linetype="dashed")+
+  geom_hline(yintercept=-log(0.05, base=10), linetype="dashed", color = "red")+
+    #theme(legend.position = "none")+  # no legend at all 
+    guides(fill = FALSE)+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) #center the title 
+  
+#dev.off()
 ```
 
 
@@ -221,11 +278,19 @@ for (i in 1:length(par.evid))
 ```
 
 
-The burden of 8 categories is 
-```{r, echo=T}
-colnames(burden.summy)=c("OR", "p.value", "No.ca", "No.co")
-kable(burden.summy, caption="The burden of eight categories")
-```
+
+
+Category | AF                       | OR | pval | No.case | No.control
+---------|--------------------------|----|-------|--------|------------
+C1:LoF|   $0.01 \leq AF < 0.05$     | NaN | 1.00000000    | 0 |    0
+C2:LoF|  $AF < 0.01$                |0.8736921| 0.84119952|    88 |  101
+C3:Damaging| $0.01 \leq AF < 0.05$  | 1.0269332 | 0.07253966|  6160 | 6015
+C4:Damaging|  $0.001 \leq  AF < 0.01$|1.0381518 | 0.03470484 | 4840 | 4675  
+C5:Damaging|  $AF < 0.001$           | 0.9724785| 0.87835050 | 3372  |3477
+C6:Non-Damaging| $0.01 \leq  AF < 0.05$| 1.0110971 | 0.13713984| 19890| 19726  
+C7:Non-Damaging| $0.001 \leq AF < 0.01$|0.9916250| 0.74314422| 11755 |11887   
+C8:Non-Damaging|  $AF < 0.001$ | 0.9978114| 0.56347097 | 9678 | 9726 
+Table: Burden of 8 variant categories  
 
 
 ### Cons: run mirage

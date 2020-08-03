@@ -26,6 +26,7 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -448,384 +449,912 @@ LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
 <li>Constraint gene set: use Exac Constraint data ConstraintMat.RDS, look at the last column lof.Z, the smaller value the less constraint</li>
 <li>ASD prior list: ASD_Priors, look at the column-post, the larger, the more likely to be risk.</li>
 </ul>
-<table>
-<caption>Burden analysis of gene set</caption>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Burden analysis of gene set
+</caption>
 <thead>
-<tr class="header">
-<th></th>
-<th align="right">OR</th>
-<th align="right">p.value</th>
-<th align="right">rate.ca</th>
-<th align="right">rate.co</th>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+OR
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+p.value
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+rate.ca
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+rate.co
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>cate1</td>
-<td align="right">1.0695491</td>
-<td align="right">0.0585134</td>
-<td align="right">0.4546530</td>
-<td align="right">0.4250885</td>
+<tr>
+<td style="text-align:left;">
+cate1
+</td>
+<td style="text-align:right;">
+1.0695491
+</td>
+<td style="text-align:right;">
+0.0585134
+</td>
+<td style="text-align:right;">
+0.4546530
+</td>
+<td style="text-align:right;">
+0.4250885
+</td>
 </tr>
-<tr class="even">
-<td>cate2</td>
-<td align="right">0.9985422</td>
-<td align="right">0.5292488</td>
-<td align="right">1.4002366</td>
-<td align="right">1.4022808</td>
+<tr>
+<td style="text-align:left;">
+cate2
+</td>
+<td style="text-align:right;">
+0.9985422
+</td>
+<td style="text-align:right;">
+0.5292488
+</td>
+<td style="text-align:right;">
+1.4002366
+</td>
+<td style="text-align:right;">
+1.4022808
+</td>
 </tr>
-<tr class="odd">
-<td>cate3</td>
-<td align="right">1.0266947</td>
-<td align="right">0.0331565</td>
-<td align="right">3.9073344</td>
-<td align="right">3.8057413</td>
+<tr>
+<td style="text-align:left;">
+cate3
+</td>
+<td style="text-align:right;">
+1.0266947
+</td>
+<td style="text-align:right;">
+0.0331565
+</td>
+<td style="text-align:right;">
+3.9073344
+</td>
+<td style="text-align:right;">
+3.8057413
+</td>
 </tr>
-<tr class="even">
-<td>cate4</td>
-<td align="right">0.9844201</td>
-<td align="right">0.9638093</td>
-<td align="right">10.1805994</td>
-<td align="right">10.3417224</td>
+<tr>
+<td style="text-align:left;">
+cate4
+</td>
+<td style="text-align:right;">
+0.9844201
+</td>
+<td style="text-align:right;">
+0.9638093
+</td>
+<td style="text-align:right;">
+10.1805994
+</td>
+<td style="text-align:right;">
+10.3417224
+</td>
 </tr>
-<tr class="odd">
-<td>cate5</td>
-<td align="right">0.9875734</td>
-<td align="right">0.7719781</td>
-<td align="right">2.7180599</td>
-<td align="right">2.7522611</td>
+<tr>
+<td style="text-align:left;">
+cate5
+</td>
+<td style="text-align:right;">
+0.9875734
+</td>
+<td style="text-align:right;">
+0.7719781
+</td>
+<td style="text-align:right;">
+2.7180599
+</td>
+<td style="text-align:right;">
+2.7522611
+</td>
 </tr>
-<tr class="even">
-<td>cate6</td>
-<td align="right">1.0364296</td>
-<td align="right">0.2608020</td>
-<td align="right">0.2791798</td>
-<td align="right">0.2693669</td>
+<tr>
+<td style="text-align:left;">
+cate6
+</td>
+<td style="text-align:right;">
+1.0364296
+</td>
+<td style="text-align:right;">
+0.2608020
+</td>
+<td style="text-align:right;">
+0.2791798
+</td>
+<td style="text-align:right;">
+0.2693669
+</td>
 </tr>
-<tr class="odd">
-<td>cateS</td>
-<td align="right">1.0388224</td>
-<td align="right">0.0122912</td>
-<td align="right">2.8170347</td>
-<td align="right">2.7117578</td>
+<tr>
+<td style="text-align:left;">
+cateS
+</td>
+<td style="text-align:right;">
+1.0388224
+</td>
+<td style="text-align:right;">
+0.0122912
+</td>
+<td style="text-align:right;">
+2.8170347
+</td>
+<td style="text-align:right;">
+2.7117578
+</td>
 </tr>
-<tr class="even">
-<td>TADAq&lt;5%</td>
-<td align="right">1.0439491</td>
-<td align="right">0.0574849</td>
-<td align="right">1.0993691</td>
-<td align="right">1.0530869</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;5%
+</td>
+<td style="text-align:right;">
+1.0439491
+</td>
+<td style="text-align:right;">
+0.0574849
+</td>
+<td style="text-align:right;">
+1.0993691
+</td>
+<td style="text-align:right;">
+1.0530869
+</td>
 </tr>
-<tr class="odd">
-<td>TADAq&lt;20%</td>
-<td align="right">1.0136952</td>
-<td align="right">0.2008975</td>
-<td align="right">3.0705836</td>
-<td align="right">3.0290995</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;20%
+</td>
+<td style="text-align:right;">
+1.0136952
+</td>
+<td style="text-align:right;">
+0.2008975
+</td>
+<td style="text-align:right;">
+3.0705836
+</td>
+<td style="text-align:right;">
+3.0290995
+</td>
 </tr>
-<tr class="even">
-<td>TADAq&lt;30%</td>
-<td align="right">1.0157384</td>
-<td align="right">0.1059530</td>
-<td align="right">5.1230284</td>
-<td align="right">5.0436492</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;30%
+</td>
+<td style="text-align:right;">
+1.0157384
+</td>
+<td style="text-align:right;">
+0.1059530
+</td>
+<td style="text-align:right;">
+5.1230284
+</td>
+<td style="text-align:right;">
+5.0436492
+</td>
 </tr>
-<tr class="odd">
-<td>TADAq&lt;40%</td>
-<td align="right">1.0097134</td>
-<td align="right">0.1674085</td>
-<td align="right">7.9593849</td>
-<td align="right">7.8828156</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;40%
+</td>
+<td style="text-align:right;">
+1.0097134
+</td>
+<td style="text-align:right;">
+0.1674085
+</td>
+<td style="text-align:right;">
+7.9593849
+</td>
+<td style="text-align:right;">
+7.8828156
+</td>
 </tr>
-<tr class="even">
-<td>TADAq&lt;50%</td>
-<td align="right">1.0058483</td>
-<td align="right">0.2274969</td>
-<td align="right">13.1009464</td>
-<td align="right">13.0247739</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;50%
+</td>
+<td style="text-align:right;">
+1.0058483
+</td>
+<td style="text-align:right;">
+0.2274969
+</td>
+<td style="text-align:right;">
+13.1009464
+</td>
+<td style="text-align:right;">
+13.0247739
+</td>
 </tr>
-<tr class="odd">
-<td>TADAq&gt;90%</td>
-<td align="right">1.0000912</td>
-<td align="right">0.4759251</td>
-<td align="right">354.1565457</td>
-<td align="right">354.1242627</td>
+<tr>
+<td style="text-align:left;">
+TADAq&gt;90%
+</td>
+<td style="text-align:right;">
+1.0000912
+</td>
+<td style="text-align:right;">
+0.4759251
+</td>
+<td style="text-align:right;">
+354.1565457
+</td>
+<td style="text-align:right;">
+354.1242627
+</td>
 </tr>
-<tr class="even">
-<td>ID gene</td>
-<td align="right">1.0340983</td>
-<td align="right">0.0008008</td>
-<td align="right">7.1175079</td>
-<td align="right">6.8828156</td>
+<tr>
+<td style="text-align:left;">
+ID gene
+</td>
+<td style="text-align:right;">
+1.0340983
+</td>
+<td style="text-align:right;">
+0.0008008
+</td>
+<td style="text-align:right;">
+7.1175079
+</td>
+<td style="text-align:right;">
+6.8828156
+</td>
 </tr>
-<tr class="odd">
-<td>High</td>
-<td align="right">1.0301681</td>
-<td align="right">0.0596191</td>
-<td align="right">2.2231861</td>
-<td align="right">2.1580810</td>
+<tr>
+<td style="text-align:left;">
+High
+</td>
+<td style="text-align:right;">
+1.0301681
+</td>
+<td style="text-align:right;">
+0.0596191
+</td>
+<td style="text-align:right;">
+2.2231861
+</td>
+<td style="text-align:right;">
+2.1580810
+</td>
 </tr>
-<tr class="even">
-<td>Mod</td>
-<td align="right">1.0200271</td>
-<td align="right">0.0188176</td>
-<td align="right">8.7819401</td>
-<td align="right">8.6095163</td>
+<tr>
+<td style="text-align:left;">
+Mod
+</td>
+<td style="text-align:right;">
+1.0200271
+</td>
+<td style="text-align:right;">
+0.0188176
+</td>
+<td style="text-align:right;">
+8.7819401
+</td>
+<td style="text-align:right;">
+8.6095163
+</td>
 </tr>
-<tr class="odd">
-<td>PSD</td>
-<td align="right">1.0106383</td>
-<td align="right">0.0683577</td>
-<td align="right">15.7322555</td>
-<td align="right">15.5666536</td>
+<tr>
+<td style="text-align:left;">
+PSD
+</td>
+<td style="text-align:right;">
+1.0106383
+</td>
+<td style="text-align:right;">
+0.0683577
+</td>
+<td style="text-align:right;">
+15.7322555
+</td>
+<td style="text-align:right;">
+15.5666536
+</td>
 </tr>
-<tr class="even">
-<td>FMRP</td>
-<td align="right">1.0099078</td>
-<td align="right">0.0241821</td>
-<td align="right">31.8134858</td>
-<td align="right">31.5013763</td>
+<tr>
+<td style="text-align:left;">
+FMRP
+</td>
+<td style="text-align:right;">
+1.0099078
+</td>
+<td style="text-align:right;">
+0.0241821
+</td>
+<td style="text-align:right;">
+31.8134858
+</td>
+<td style="text-align:right;">
+31.5013763
+</td>
 </tr>
-<tr class="odd">
-<td>AutismKB</td>
-<td align="right">1.0017832</td>
-<td align="right">0.4360438</td>
-<td align="right">6.8730284</td>
-<td align="right">6.8607943</td>
+<tr>
+<td style="text-align:left;">
+AutismKB
+</td>
+<td style="text-align:right;">
+1.0017832
+</td>
+<td style="text-align:right;">
+0.4360438
+</td>
+<td style="text-align:right;">
+6.8730284
+</td>
+<td style="text-align:right;">
+6.8607943
+</td>
 </tr>
-<tr class="even">
-<td>constraint gene</td>
-<td align="right">1.0060751</td>
-<td align="right">0.1560072</td>
-<td align="right">22.1403785</td>
-<td align="right">22.0066850</td>
+<tr>
+<td style="text-align:left;">
+constraint gene
+</td>
+<td style="text-align:right;">
+1.0060751
+</td>
+<td style="text-align:right;">
+0.1560072
+</td>
+<td style="text-align:right;">
+22.1403785
+</td>
+<td style="text-align:right;">
+22.0066850
+</td>
 </tr>
-<tr class="odd">
-<td>RVIS</td>
-<td align="right">1.0081863</td>
-<td align="right">0.0328905</td>
-<td align="right">40.3702681</td>
-<td align="right">40.0424695</td>
+<tr>
+<td style="text-align:left;">
+RVIS
+</td>
+<td style="text-align:right;">
+1.0081863
+</td>
+<td style="text-align:right;">
+0.0328905
+</td>
+<td style="text-align:right;">
+40.3702681
+</td>
+<td style="text-align:right;">
+40.0424695
+</td>
 </tr>
-<tr class="even">
-<td>Haploinsuff gene</td>
-<td align="right">1.0004430</td>
-<td align="right">0.4345452</td>
-<td align="right">110.8304416</td>
-<td align="right">110.7813606</td>
+<tr>
+<td style="text-align:left;">
+Haploinsuff gene
+</td>
+<td style="text-align:right;">
+1.0004430
+</td>
+<td style="text-align:right;">
+0.4345452
+</td>
+<td style="text-align:right;">
+110.8304416
+</td>
+<td style="text-align:right;">
+110.7813606
+</td>
 </tr>
-<tr class="odd">
-<td>SCZ gene</td>
-<td align="right">1.0058876</td>
-<td align="right">0.0367401</td>
-<td align="right">73.5611199</td>
-<td align="right">73.1305545</td>
+<tr>
+<td style="text-align:left;">
+SCZ gene
+</td>
+<td style="text-align:right;">
+1.0058876
+</td>
+<td style="text-align:right;">
+0.0367401
+</td>
+<td style="text-align:right;">
+73.5611199
+</td>
+<td style="text-align:right;">
+73.1305545
+</td>
 </tr>
-<tr class="even">
-<td>Olfac.gene</td>
-<td align="right">0.9833342</td>
-<td align="right">0.9884215</td>
-<td align="right">14.2117508</td>
-<td align="right">14.4526150</td>
+<tr>
+<td style="text-align:left;">
+Olfac.gene
+</td>
+<td style="text-align:right;">
+0.9833342
+</td>
+<td style="text-align:right;">
+0.9884215
+</td>
+<td style="text-align:right;">
+14.2117508
+</td>
+<td style="text-align:right;">
+14.4526150
+</td>
 </tr>
-<tr class="odd">
-<td>67SCZriskgene</td>
-<td align="right">1.0247803</td>
-<td align="right">0.0410306</td>
-<td align="right">4.0555994</td>
-<td align="right">3.9575305</td>
+<tr>
+<td style="text-align:left;">
+67SCZriskgene
+</td>
+<td style="text-align:right;">
+1.0247803
+</td>
+<td style="text-align:right;">
+0.0410306
+</td>
+<td style="text-align:right;">
+4.0555994
+</td>
+<td style="text-align:right;">
+3.9575305
+</td>
 </tr>
 </tbody>
 </table>
-<table>
-<caption>Burden analysis of LoF in different gene sets</caption>
+</div>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Burden analysis of LoF in different gene sets
+</caption>
 <thead>
-<tr class="header">
-<th></th>
-<th align="right">OR</th>
-<th align="right">p.value</th>
-<th align="right">No.ca</th>
-<th align="right">No.co</th>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+OR
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+p.value
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+No.ca
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+No.co
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>cate1</td>
-<td align="right">0.0000000</td>
-<td align="right">1.0000000</td>
-<td align="right">0</td>
-<td align="right">2</td>
+<tr>
+<td style="text-align:left;">
+cate1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
 </tr>
-<tr class="even">
-<td>cate2</td>
-<td align="right">1.5041404</td>
-<td align="right">0.4987079</td>
-<td align="right">3</td>
-<td align="right">2</td>
+<tr>
+<td style="text-align:left;">
+cate2
+</td>
+<td style="text-align:right;">
+1.5041404
+</td>
+<td style="text-align:right;">
+0.4987079
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
 </tr>
-<tr class="odd">
-<td>cate3</td>
-<td align="right">1.0027603</td>
-<td align="right">0.5078977</td>
-<td align="right">214</td>
-<td align="right">214</td>
+<tr>
+<td style="text-align:left;">
+cate3
+</td>
+<td style="text-align:right;">
+1.0027603
+</td>
+<td style="text-align:right;">
+0.5078977
+</td>
+<td style="text-align:right;">
+214
+</td>
+<td style="text-align:right;">
+214
+</td>
 </tr>
-<tr class="even">
-<td>cate4</td>
-<td align="right">1.0402466</td>
-<td align="right">0.4115798</td>
-<td align="right">111</td>
-<td align="right">107</td>
+<tr>
+<td style="text-align:left;">
+cate4
+</td>
+<td style="text-align:right;">
+1.0402466
+</td>
+<td style="text-align:right;">
+0.4115798
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+107
+</td>
 </tr>
-<tr class="odd">
-<td>cate5</td>
-<td align="right">1.4728041</td>
-<td align="right">0.0559349</td>
-<td align="right">47</td>
-<td align="right">32</td>
+<tr>
+<td style="text-align:left;">
+cate5
+</td>
+<td style="text-align:right;">
+1.4728041
+</td>
+<td style="text-align:right;">
+0.0559349
+</td>
+<td style="text-align:right;">
+47
+</td>
+<td style="text-align:right;">
+32
+</td>
 </tr>
-<tr class="even">
-<td>cate6</td>
-<td align="right">0.5013801</td>
-<td align="right">0.8744825</td>
-<td align="right">1</td>
-<td align="right">2</td>
+<tr>
+<td style="text-align:left;">
+cate6
+</td>
+<td style="text-align:right;">
+0.5013801
+</td>
+<td style="text-align:right;">
+0.8744825
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
 </tr>
-<tr class="odd">
-<td>cateS</td>
-<td align="right">1.0027603</td>
-<td align="right">0.5118616</td>
-<td align="right">166</td>
-<td align="right">166</td>
+<tr>
+<td style="text-align:left;">
+cateS
+</td>
+<td style="text-align:right;">
+1.0027603
+</td>
+<td style="text-align:right;">
+0.5118616
+</td>
+<td style="text-align:right;">
+166
+</td>
+<td style="text-align:right;">
+166
+</td>
 </tr>
-<tr class="even">
-<td>TADAq&lt;5%</td>
-<td align="right">1.0027603</td>
-<td align="right">0.5960236</td>
-<td align="right">8</td>
-<td align="right">8</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;5%
+</td>
+<td style="text-align:right;">
+1.0027603
+</td>
+<td style="text-align:right;">
+0.5960236
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+8
+</td>
 </tr>
-<tr class="odd">
-<td>TADAq&lt;20%</td>
-<td align="right">1.0197562</td>
-<td align="right">0.4939897</td>
-<td align="right">60</td>
-<td align="right">59</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;20%
+</td>
+<td style="text-align:right;">
+1.0197562
+</td>
+<td style="text-align:right;">
+0.4939897
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:right;">
+59
+</td>
 </tr>
-<tr class="even">
-<td>TADAq&lt;30%</td>
-<td align="right">1.0116342</td>
-<td align="right">0.4917074</td>
-<td align="right">114</td>
-<td align="right">113</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;30%
+</td>
+<td style="text-align:right;">
+1.0116342
+</td>
+<td style="text-align:right;">
+0.4917074
+</td>
+<td style="text-align:right;">
+114
+</td>
+<td style="text-align:right;">
+113
+</td>
 </tr>
-<tr class="odd">
-<td>TADAq&lt;40%</td>
-<td align="right">0.9750979</td>
-<td align="right">0.6343082</td>
-<td align="right">282</td>
-<td align="right">290</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;40%
+</td>
+<td style="text-align:right;">
+0.9750979
+</td>
+<td style="text-align:right;">
+0.6343082
+</td>
+<td style="text-align:right;">
+282
+</td>
+<td style="text-align:right;">
+290
+</td>
 </tr>
-<tr class="even">
-<td>TADAq&lt;50%</td>
-<td align="right">1.1126518</td>
-<td align="right">0.0743893</td>
-<td align="right">405</td>
-<td align="right">365</td>
+<tr>
+<td style="text-align:left;">
+TADAq&lt;50%
+</td>
+<td style="text-align:right;">
+1.1126518
+</td>
+<td style="text-align:right;">
+0.0743893
+</td>
+<td style="text-align:right;">
+405
+</td>
+<td style="text-align:right;">
+365
+</td>
 </tr>
-<tr class="odd">
-<td>TADAq&gt;90%</td>
-<td align="right">1.0048765</td>
-<td align="right">0.3592773</td>
-<td align="right">11396</td>
-<td align="right">11372</td>
+<tr>
+<td style="text-align:left;">
+TADAq&gt;90%
+</td>
+<td style="text-align:right;">
+1.0048765
+</td>
+<td style="text-align:right;">
+0.3592773
+</td>
+<td style="text-align:right;">
+11396
+</td>
+<td style="text-align:right;">
+11372
+</td>
 </tr>
-<tr class="even">
-<td>ID gene</td>
-<td align="right">0.8508269</td>
-<td align="right">0.7754651</td>
-<td align="right">28</td>
-<td align="right">33</td>
+<tr>
+<td style="text-align:left;">
+ID gene
+</td>
+<td style="text-align:right;">
+0.8508269
+</td>
+<td style="text-align:right;">
+0.7754651
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:right;">
+33
+</td>
 </tr>
-<tr class="odd">
-<td>High</td>
-<td align="right">1.0027603</td>
-<td align="right">0.5960236</td>
-<td align="right">8</td>
-<td align="right">8</td>
+<tr>
+<td style="text-align:left;">
+High
+</td>
+<td style="text-align:right;">
+1.0027603
+</td>
+<td style="text-align:right;">
+0.5960236
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+8
+</td>
 </tr>
-<tr class="even">
-<td>Mod</td>
-<td align="right">0.9919000</td>
-<td align="right">0.5548855</td>
-<td align="right">274</td>
-<td align="right">277</td>
+<tr>
+<td style="text-align:left;">
+Mod
+</td>
+<td style="text-align:right;">
+0.9919000
+</td>
+<td style="text-align:right;">
+0.5548855
+</td>
+<td style="text-align:right;">
+274
+</td>
+<td style="text-align:right;">
+277
+</td>
 </tr>
-<tr class="odd">
-<td>PSD</td>
-<td align="right">1.3787953</td>
-<td align="right">0.1422610</td>
-<td align="right">33</td>
-<td align="right">24</td>
+<tr>
+<td style="text-align:left;">
+PSD
+</td>
+<td style="text-align:right;">
+1.3787953
+</td>
+<td style="text-align:right;">
+0.1422610
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:right;">
+24
+</td>
 </tr>
-<tr class="even">
-<td>FMRP</td>
-<td align="right">0.9830983</td>
-<td align="right">0.5733708</td>
-<td align="right">50</td>
-<td align="right">51</td>
+<tr>
+<td style="text-align:left;">
+FMRP
+</td>
+<td style="text-align:right;">
+0.9830983
+</td>
+<td style="text-align:right;">
+0.5733708
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+51
+</td>
 </tr>
-<tr class="odd">
-<td>AutismKB</td>
-<td align="right">1.0027603</td>
-<td align="right">0.5747118</td>
-<td align="right">13</td>
-<td align="right">13</td>
+<tr>
+<td style="text-align:left;">
+AutismKB
+</td>
+<td style="text-align:right;">
+1.0027603
+</td>
+<td style="text-align:right;">
+0.5747118
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+13
+</td>
 </tr>
-<tr class="even">
-<td>constraint gene</td>
-<td align="right">0.8736921</td>
-<td align="right">0.8411995</td>
-<td align="right">88</td>
-<td align="right">101</td>
+<tr>
+<td style="text-align:left;">
+constraint gene
+</td>
+<td style="text-align:right;">
+0.8736921
+</td>
+<td style="text-align:right;">
+0.8411995
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:right;">
+101
+</td>
 </tr>
-<tr class="odd">
-<td>RVIS</td>
-<td align="right">1.0545460</td>
-<td align="right">0.3060351</td>
-<td align="right">224</td>
-<td align="right">213</td>
+<tr>
+<td style="text-align:left;">
+RVIS
+</td>
+<td style="text-align:right;">
+1.0545460
+</td>
+<td style="text-align:right;">
+0.3060351
+</td>
+<td style="text-align:right;">
+224
+</td>
+<td style="text-align:right;">
+213
+</td>
 </tr>
-<tr class="even">
-<td>Haploinsuff gene</td>
-<td align="right">0.9892094</td>
-<td align="right">0.5685699</td>
-<td align="right">292</td>
-<td align="right">296</td>
+<tr>
+<td style="text-align:left;">
+Haploinsuff gene
+</td>
+<td style="text-align:right;">
+0.9892094
+</td>
+<td style="text-align:right;">
+0.5685699
+</td>
+<td style="text-align:right;">
+292
+</td>
+<td style="text-align:right;">
+296
+</td>
 </tr>
-<tr class="odd">
-<td>SCZ gene</td>
-<td align="right">1.0214535</td>
-<td align="right">0.3491793</td>
-<td align="right">765</td>
-<td align="right">751</td>
+<tr>
+<td style="text-align:left;">
+SCZ gene
+</td>
+<td style="text-align:right;">
+1.0214535
+</td>
+<td style="text-align:right;">
+0.3491793
+</td>
+<td style="text-align:right;">
+765
+</td>
+<td style="text-align:right;">
+751
+</td>
 </tr>
-<tr class="even">
-<td>Olfac.gene</td>
-<td align="right">1.0662467</td>
-<td align="right">0.1324173</td>
-<td align="right">655</td>
-<td align="right">616</td>
+<tr>
+<td style="text-align:left;">
+Olfac.gene
+</td>
+<td style="text-align:right;">
+1.0662467
+</td>
+<td style="text-align:right;">
+0.1324173
+</td>
+<td style="text-align:right;">
+655
+</td>
+<td style="text-align:right;">
+616
+</td>
 </tr>
-<tr class="odd">
-<td>67SCZriskgene</td>
-<td align="right">1.2074052</td>
-<td align="right">0.0945265</td>
-<td align="right">118</td>
-<td align="right">98</td>
+<tr>
+<td style="text-align:left;">
+67SCZriskgene
+</td>
+<td style="text-align:right;">
+1.2074052
+</td>
+<td style="text-align:right;">
+0.0945265
+</td>
+<td style="text-align:right;">
+118
+</td>
+<td style="text-align:right;">
+98
+</td>
 </tr>
 </tbody>
 </table>
+</div>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="variant-partitions" class="section level2">
 <h2>Variant partitions</h2>
@@ -885,67 +1414,82 @@ LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) 
 <p>Constraint gene set is from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4222185/">this paper</a>.</p>
 <div id="cons-simple-burden-analysis" class="section level3">
 <h3>Cons: Simple burden analysis</h3>
-<p>The burden of 8 categories is</p>
-<pre class="r"><code>colnames(burden.summy)=c(&quot;OR&quot;, &quot;p.value&quot;, &quot;No.ca&quot;, &quot;No.co&quot;)
-kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></pre>
 <table>
-<caption>The burden of eight categories</caption>
+<caption>Burden of 8 variant categories</caption>
 <thead>
 <tr class="header">
-<th align="right">OR</th>
-<th align="right">p.value</th>
-<th align="right">No.ca</th>
-<th align="right">No.co</th>
+<th>Category</th>
+<th>AF</th>
+<th>OR</th>
+<th>pval</th>
+<th>No.case</th>
+<th>No.control</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">NaN</td>
-<td align="right">1.0000000</td>
-<td align="right">0</td>
-<td align="right">0</td>
+<td>C1:LoF</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>NaN</td>
+<td>1.00000000</td>
+<td>0</td>
+<td>0</td>
 </tr>
 <tr class="even">
-<td align="right">0.8736921</td>
-<td align="right">0.8411995</td>
-<td align="right">88</td>
-<td align="right">101</td>
+<td>C2:LoF</td>
+<td><span class="math inline">\(AF &lt; 0.01\)</span></td>
+<td>0.8736921</td>
+<td>0.84119952</td>
+<td>88</td>
+<td>101</td>
 </tr>
 <tr class="odd">
-<td align="right">1.0269332</td>
-<td align="right">0.0725397</td>
-<td align="right">6160</td>
-<td align="right">6015</td>
+<td>C3:Damaging</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>1.0269332</td>
+<td>0.07253966</td>
+<td>6160</td>
+<td>6015</td>
 </tr>
 <tr class="even">
-<td align="right">1.0381518</td>
-<td align="right">0.0347048</td>
-<td align="right">4840</td>
-<td align="right">4675</td>
+<td>C4:Damaging</td>
+<td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>1.0381518</td>
+<td>0.03470484</td>
+<td>4840</td>
+<td>4675</td>
 </tr>
 <tr class="odd">
-<td align="right">0.9724785</td>
-<td align="right">0.8783505</td>
-<td align="right">3372</td>
-<td align="right">3477</td>
+<td>C5:Damaging</td>
+<td><span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.9724785</td>
+<td>0.87835050</td>
+<td>3372</td>
+<td>3477</td>
 </tr>
 <tr class="even">
-<td align="right">1.0110971</td>
-<td align="right">0.1371398</td>
-<td align="right">19890</td>
-<td align="right">19726</td>
+<td>C6:Non-Damaging</td>
+<td><span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>1.0110971</td>
+<td>0.13713984</td>
+<td>19890</td>
+<td>19726</td>
 </tr>
 <tr class="odd">
-<td align="right">0.9916250</td>
-<td align="right">0.7431442</td>
-<td align="right">11755</td>
-<td align="right">11887</td>
+<td>C7:Non-Damaging</td>
+<td><span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>0.9916250</td>
+<td>0.74314422</td>
+<td>11755</td>
+<td>11887</td>
 </tr>
 <tr class="even">
-<td align="right">0.9978114</td>
-<td align="right">0.5634710</td>
-<td align="right">9678</td>
-<td align="right">9726</td>
+<td>C8:Non-Damaging</td>
+<td><span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>0.9978114</td>
+<td>0.56347097</td>
+<td>9678</td>
+<td>9726</td>
 </tr>
 </tbody>
 </table>
@@ -955,15 +1499,7 @@ kable(burden.summy, caption=&quot;The burden of eight categories&quot;)</code></
 <div id="parameter-estimate-when-af-5" class="section level4">
 <h4>parameter estimate when AF &lt; 5%</h4>
 <p><span class="math inline">\(\widehat{\delta}=0.09\)</span> with p value of 0.56.</p>
-<pre><code>## -- Attaching packages -- tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
-## v tibble  3.0.1     v stringr 1.4.0
-## v tidyr   1.1.0     v forcats 0.4.0
-## v readr   1.3.1</code></pre>
-<pre><code>## -- Conflicts ----- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <table>
 <caption>parameter estimates and p values in variant groups. 0’s estimates are not exactly estimated as 0 but they are extremely close to 0, like <span class="math inline">\(e^{-10}\)</span>.</caption>
 <thead>
@@ -1210,7 +1746,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div id="constraint-genes" class="section level2">
@@ -1233,7 +1769,7 @@ axis(side=1, at=1:5, labels=rownames(beta),cex.axis=0.7)
 for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 0.8, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
-<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="Geneset-SCZ_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -1488,26 +2024,29 @@ legend(4, 0.8, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] forcats_0.4.0   stringr_1.4.0   purrr_0.3.4     readr_1.3.1    
-##  [5] tidyr_1.1.0     tibble_3.0.1    ggplot2_3.3.1   tidyverse_1.3.0
-##  [9] knitr_1.23      dplyr_1.0.0     RSQLite_2.1.1  
+##  [1] ggpubr_0.2.1      magrittr_1.5      ggsignif_0.5.0   
+##  [4] viridis_0.5.1     viridisLite_0.3.0 forcats_0.4.0    
+##  [7] stringr_1.4.0     purrr_0.3.4       readr_1.3.1      
+## [10] tidyr_1.1.0       tibble_3.0.1      tidyverse_1.3.0  
+## [13] ggplot2_3.3.1     kableExtra_1.1.0  knitr_1.23       
+## [16] dplyr_1.0.0       RSQLite_2.1.1    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_1.1.0 xfun_0.7         haven_2.3.1      lattice_0.20-38 
-##  [5] colorspace_1.4-1 vctrs_0.3.0      generics_0.0.2   htmltools_0.3.6 
-##  [9] yaml_2.2.0       utf8_1.1.4       blob_1.2.1       rlang_0.4.6     
-## [13] pillar_1.4.4     withr_2.1.2      glue_1.4.1       DBI_1.0.0       
-## [17] bit64_0.9-7      dbplyr_1.4.4     modelr_0.1.8     readxl_1.3.1    
-## [21] lifecycle_0.2.0  munsell_0.5.0    gtable_0.3.0     cellranger_1.1.0
-## [25] rvest_0.3.5      memoise_1.1.0    evaluate_0.13    labeling_0.3    
-## [29] fansi_0.4.0      highr_0.8        broom_0.5.2      Rcpp_1.0.1      
-## [33] backports_1.1.4  scales_1.0.0     jsonlite_1.6     fs_1.3.1        
-## [37] bit_1.1-14       hms_0.5.3        digest_0.6.19    stringi_1.4.3   
-## [41] grid_3.6.0       cli_1.1.0        tools_3.6.0      magrittr_1.5    
-## [45] crayon_1.3.4     pkgconfig_2.0.3  ellipsis_0.3.0   xml2_1.3.2      
-## [49] reprex_0.3.0     lubridate_1.7.4  assertthat_0.2.1 rmarkdown_1.13  
-## [53] httr_1.4.1       rstudioapi_0.10  R6_2.4.1         nlme_3.1-139    
-## [57] compiler_3.6.0</code></pre>
+##  [1] Rcpp_1.0.1       lubridate_1.7.4  lattice_0.20-38  utf8_1.1.4      
+##  [5] assertthat_0.2.1 digest_0.6.19    R6_2.4.1         cellranger_1.1.0
+##  [9] backports_1.1.4  reprex_0.3.0     evaluate_0.13    httr_1.4.1      
+## [13] highr_0.8        pillar_1.4.4     rlang_0.4.6      readxl_1.3.1    
+## [17] rstudioapi_0.10  blob_1.2.1       rmarkdown_1.13   labeling_0.3    
+## [21] webshot_0.5.1    bit_1.1-14       munsell_0.5.0    broom_0.5.2     
+## [25] compiler_3.6.0   modelr_0.1.8     xfun_0.7         pkgconfig_2.0.3 
+## [29] htmltools_0.3.6  tidyselect_1.1.0 gridExtra_2.3    fansi_0.4.0     
+## [33] crayon_1.3.4     dbplyr_1.4.4     withr_2.1.2      grid_3.6.0      
+## [37] nlme_3.1-139     jsonlite_1.6     gtable_0.3.0     lifecycle_0.2.0 
+## [41] DBI_1.0.0        scales_1.0.0     cli_1.1.0        stringi_1.4.3   
+## [45] fs_1.3.1         xml2_1.3.2       ellipsis_0.3.0   generics_0.0.2  
+## [49] vctrs_0.3.0      tools_3.6.0      bit64_0.9-7      glue_1.4.1      
+## [53] hms_0.5.3        yaml_2.2.0       colorspace_1.4-1 rvest_0.3.5     
+## [57] memoise_1.1.0    haven_2.3.1</code></pre>
 </div>
 
 <hr>
