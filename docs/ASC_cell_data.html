@@ -414,7 +414,7 @@ div.tocify {
 
 
 <pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Attaching packages ------------------------------------------ tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages --------------------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
 ## v tibble  3.0.1     v dplyr   1.0.0
 ## v tidyr   1.1.0     v stringr 1.4.0
@@ -424,10 +424,13 @@ div.tocify {
 <pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Conflicts --------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts ------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre><code>## # A tibble: 54 x 32
+<p>This is the transmitted data from <a href="https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984">cell paper</a></p>
+<pre><code>## Joining, by = c(&quot;Variant&quot;, &quot;FILTER&quot;, &quot;VQSLOD&quot;, &quot;GENE_NAME&quot;, &quot;Consequence&quot;, &quot;PCC_MAC&quot;, &quot;MAC&quot;, &quot;AN&quot;, &quot;exac_AC&quot;, &quot;exac_AN&quot;, &quot;gnomad_AC&quot;, &quot;gnomad_AN&quot;, &quot;Transmitted_proband&quot;, &quot;Untransmitted_proband&quot;, &quot;Transmitted_sibling&quot;, &quot;Untransmitted_sibling&quot;, &quot;Transmitted_proband_male&quot;, &quot;Untransmitted_proband_male&quot;, &quot;Transmitted_proband_female&quot;, &quot;Untransmitted_proband_female&quot;, &quot;Transmitted_male_sibling&quot;, &quot;Untransmitted_male_sibling&quot;, &quot;Transmitted_female_sibling&quot;, &quot;Untransmitted_female_sibling&quot;, &quot;Missense&quot;, &quot;PTV&quot;, &quot;Inframe&quot;, &quot;Indel&quot;, &quot;pLI&quot;, &quot;loftee&quot;, &quot;loftee_flag&quot;, &quot;MPC&quot;)</code></pre>
+<pre class="r"><code>cell_trans_data</code></pre>
+<pre><code>## # A tibble: 994,532 x 32
 ##    Variant FILTER  VQSLOD GENE_NAME Consequence PCC_MAC   MAC    AN exac_AC
 ##    &lt;fct&gt;   &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
 ##  1 1:8612~ [PASS]  1.23   AL645608~ [missense_~       1     2 52584       4
@@ -440,52 +443,8 @@ div.tocify {
 ##  8 1:8656~ [PASS] -0.287  SAMD11    [missense_~       1     2 50314       1
 ##  9 1:8656~ [PASS]  0.203  SAMD11    [missense_~       2     2 50628       3
 ## 10 1:8656~ [PASS] -0.0374 SAMD11    [missense_~       1     2 50456       1
-## 11 1:8656~ [PASS] -1.77   SAMD11    [missense_~       1     2 49976      NA
-## 12 1:8657~ [PASS] -0.339  SAMD11    [missense_~       2     5 49142      NA
-## 13 1:8664~ [PASS]  0.122  SAMD11    [missense_~       1     3 52570       2
-## 14 1:8664~ [PASS] -0.584  SAMD11    [missense_~       1     2 52580      NA
-## 15 1:8664~ [PASS] -0.0867 SAMD11    [missense_~       1     1 52542       1
-## 16 1:8711~ [PASS]  0.554  SAMD11    [missense_~       1     2 52648       2
-## 17 1:8711~ [PASS] -1.91   SAMD11    [missense_~       1     2 52636      NA
-## 18 1:8711~ [PASS]  0.637  SAMD11    [missense_~       4     5 52624       1
-## 19 1:8711~ [PASS]  0.274  SAMD11    [missense_~       1     1 52614       2
-## 20 1:8711~ [PASS]  0.274  SAMD11    [missense_~       1     2 52614      NA
-## 21 1:8712~ [PASS]  3.53   SAMD11    [missense_~       1     1 52382       1
-## 22 1:8712~ [PASS]  1.04   SAMD11    [missense_~       1     2 51802       1
-## 23 1:8712~ [PASS] -1.86   SAMD11    [missense_~       1     1 51588      NA
-## 24 1:8712~ [PASS] -1.88   SAMD11    [missense_~       1     2 50094       1
-## 25 1:8744~ [PASS] -0.0731 SAMD11    [missense_~       1     1 48356      NA
-## 26 1:8744~ [PASS]  2.46   SAMD11    [missense_~       1     2 49442       2
-## 27 1:8744~ [PASS] -1.63   SAMD11    [missense_~       1     2 49140      NA
-## 28 1:8744~ [PASS]  0.899  SAMD11    [missense_~       1     2 49320      NA
-## 29 1:8744~ [PASS] -1.49   SAMD11    [missense_~       1     3 49292      NA
-## 30 1:8744~ [PASS] -1.77   SAMD11    [missense_~       1     1 49138       3
-## 31 1:8744~ [PASS]  0.593  SAMD11    [missense_~       2     2 47738       5
-## 32 1:8746~ [PASS]  0.281  SAMD11    [missense_~       1     3 47808       1
-## 33 1:8747~ [PASS] -1.70   SAMD11    [missense_~       1     2 48422      NA
-## 34 1:8747~ [PASS] -1.80   SAMD11    [missense_~       1     1 49008      NA
-## 35 1:8747~ [PASS] -0.637  SAMD11    [missense_~       1     2 49510       2
-## 36 1:8747~ [PASS] -0.757  SAMD11    [missense_~       1     1 49634      NA
-## 37 1:8747~ [PASS]  0.24   SAMD11    [missense_~       1     1 50144      NA
-## 38 1:8747~ [PASS] -0.309  SAMD11    [stop_gain~       2     3 49906      NA
-## 39 1:8747~ [PASS] -0.992  SAMD11    [missense_~       1     2 47558      NA
-## 40 1:8786~ [PASS] -1.77   SAMD11    [missense_~       1     1 49904      NA
-## 41 1:8786~ [PASS] -1.40   SAMD11    [missense_~       3     4 49826       2
-## 42 1:8786~ [PASS] -0.264  SAMD11    [missense_~       1     2 50114       1
-## 43 1:8786~ [PASS] -1.46   SAMD11    [missense_~       1     1 50034       2
-## 44 1:8786~ [PASS] -0.589  SAMD11    [missense_~       1     2 49868       1
-## 45 1:8787~ [PASS] -1.82   SAMD11    [missense_~       1     2 49474      NA
-## 46 1:8787~ [PASS]  0.374  SAMD11    [missense_~       1     2 48166       5
-## 47 1:8793~ [PASS] -1.28   SAMD11    [missense_~       1     1 47614       1
-## 48 1:8794~ [PASS] -1.38   SAMD11    [missense_~       1     2 48334      NA
-## 49 1:8794~ [PASS]  2.88   SAMD11    [frameshif~       1     2 47660      NA
-## 50 1:8794~ [PASS]  0.646  SAMD11    [missense_~       1     2 48054      NA
-## 51 1:8794~ [PASS]  1.77   SAMD11    [missense_~       2     4 48046       1
-## 52 1:8794~ [PASS] -0.131  SAMD11    [missense_~       1     1 48334       5
-## 53 1:8794~ [PASS]  1.45   SAMD11    [frameshif~       1     1 48390      NA
-## 54 1:8794~ [PASS]  1.45   SAMD11    [frameshif~       1     1 48392      NA
-## # ... with 23 more variables: exac_AN &lt;int&gt;, gnomad_AC &lt;int&gt;,
-## #   gnomad_AN &lt;int&gt;, Transmitted_proband &lt;int&gt;,
+## # ... with 994,522 more rows, and 23 more variables: exac_AN &lt;int&gt;,
+## #   gnomad_AC &lt;int&gt;, gnomad_AN &lt;int&gt;, Transmitted_proband &lt;int&gt;,
 ## #   Untransmitted_proband &lt;int&gt;, Transmitted_sibling &lt;int&gt;,
 ## #   Untransmitted_sibling &lt;int&gt;, Transmitted_proband_male &lt;int&gt;,
 ## #   Untransmitted_proband_male &lt;int&gt;, Transmitted_proband_female &lt;int&gt;,
@@ -493,7 +452,33 @@ div.tocify {
 ## #   Untransmitted_male_sibling &lt;int&gt;, Transmitted_female_sibling &lt;int&gt;,
 ## #   Untransmitted_female_sibling &lt;int&gt;, Missense &lt;lgl&gt;, PTV &lt;lgl&gt;,
 ## #   Inframe &lt;lgl&gt;, Indel &lt;lgl&gt;, pLI &lt;dbl&gt;, loftee &lt;fct&gt;,
-## #   loftee_flag &lt;lgl&gt;, MPC &lt;dbl&gt;</code></pre>
+## #   loftee_flag &lt;fct&gt;, MPC &lt;dbl&gt;</code></pre>
+<pre class="r"><code>colnames(cell_trans_data)</code></pre>
+<pre><code>##  [1] &quot;Variant&quot;                      &quot;FILTER&quot;                      
+##  [3] &quot;VQSLOD&quot;                       &quot;GENE_NAME&quot;                   
+##  [5] &quot;Consequence&quot;                  &quot;PCC_MAC&quot;                     
+##  [7] &quot;MAC&quot;                          &quot;AN&quot;                          
+##  [9] &quot;exac_AC&quot;                      &quot;exac_AN&quot;                     
+## [11] &quot;gnomad_AC&quot;                    &quot;gnomad_AN&quot;                   
+## [13] &quot;Transmitted_proband&quot;          &quot;Untransmitted_proband&quot;       
+## [15] &quot;Transmitted_sibling&quot;          &quot;Untransmitted_sibling&quot;       
+## [17] &quot;Transmitted_proband_male&quot;     &quot;Untransmitted_proband_male&quot;  
+## [19] &quot;Transmitted_proband_female&quot;   &quot;Untransmitted_proband_female&quot;
+## [21] &quot;Transmitted_male_sibling&quot;     &quot;Untransmitted_male_sibling&quot;  
+## [23] &quot;Transmitted_female_sibling&quot;   &quot;Untransmitted_female_sibling&quot;
+## [25] &quot;Missense&quot;                     &quot;PTV&quot;                         
+## [27] &quot;Inframe&quot;                      &quot;Indel&quot;                       
+## [29] &quot;pLI&quot;                          &quot;loftee&quot;                      
+## [31] &quot;loftee_flag&quot;                  &quot;MPC&quot;</code></pre>
+<div id="annotations-in-the-data" class="section level2">
+<h2>Annotations in the data</h2>
+<ul>
+<li>PTV: protein-truncating variants including nonsense, frameshift, and essential splice sites variants</li>
+<li>Missense</li>
+<li>pLI: probability of loss of function intolerance</li>
+<li>MPC: missense badness, PolyPhen-2, constraint score</li>
+</ul>
+</div>
 
 <hr>
 <p>

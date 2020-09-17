@@ -12,9 +12,23 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
+This is the transmitted data from [cell paper](https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984)
 
-```{r, echo=F}
-cell.data=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/ASC_v15_TDT_GQPL25.hAB30.results.2018-04-01.tsv",sep = '\t', header = TRUE, fill = TRUE))
-
-cell.data %>% print(n=54)
+```{r, echo=F, cache=T}
+part1=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/ASC_v15_TDT_GQPL25.hAB30.results.2018-04-01.part1.tsv.gz",sep = '\t', header = TRUE, fill = TRUE))
+part2=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/ASC_v15_TDT_GQPL25.hAB30.results.2018-04-01.part2.tsv.gz",sep = '\t', header = TRUE, fill = TRUE))
+cell_trans_data=full_join(part1, part2)
 ```
+
+```{r, echo=T}
+cell_trans_data
+colnames(cell_trans_data)
+```
+
+## Annotations in the data
+
+* PTV: protein-truncating variants including nonsense, frameshift, and essential splice sites variants
+* Missense 
+* pLI: probability of loss of function intolerance 
+* MPC: missense badness, PolyPhen-2, constraint score 
+
