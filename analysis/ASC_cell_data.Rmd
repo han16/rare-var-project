@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, echo=F}
 library(tidyverse)
+library(knitr)
 ```
 
 This is the transmitted data from [cell paper](https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984)
@@ -32,3 +33,48 @@ colnames(cell_trans_data)
 * pLI: probability of loss of function intolerance 
 * MPC: missense badness, PolyPhen-2, constraint score 
 
+## Replicate Burden analysis for transmitted variants in Figure 1B 
+
+```{r, echo=F}
+trans_count=matrix(nrow=2, ncol=3)
+rownames(trans_count)=c("transmitted", "untransmitted")
+colnames(trans_count)=c("pLI>=0.995", "0.5<pLI<0.995", "MPC>=2")
+###### pLI>=0.995
+trans_count[1,1]=#cell_trans_data %>% filter(pLI>=0.995) %>% summarise(Transmitted_sibling) %>% sum(na.rm=T)+
+cell_trans_data %>% filter(pLI>=0.995) %>% filter(PTV==T) %>% summarise(Transmitted_proband)%>%sum(na.rm=T) ### sum silbing and proband
+trans_count[2,1]=#cell_trans_data %>% filter(pLI>=0.995) %>% summarise(Untransmitted_sibling) %>% sum(na.rm=T)+
+cell_trans_data %>% filter(pLI>=0.995) %>% filter(PTV==T) %>% summarise(Untransmitted_proband)%>%sum(na.rm=T)
+##### 0.5<pLI<0.95
+trans_count[1,2]=#cell_trans_data %>% filter(pLI<0.995 & pLI>0.5) %>% summarise(Transmitted_sibling) %>% sum(na.rm=T)+
+  cell_trans_data %>% filter(pLI<0.995 & pLI>0.5) %>% filter(PTV==T) %>% summarise(Transmitted_proband)%>%sum(na.rm=T)
+trans_count[2,2]=#cell_trans_data %>% filter(pLI<0.995 & pLI>0.5) %>% summarise(Untransmitted_sibling) %>% sum(na.rm=T)+
+  cell_trans_data %>% filter(pLI<0.995 & pLI>0.5) %>% filter(PTV==T) %>% summarise(Untransmitted_proband)%>%sum(na.rm=T)
+###### MPC>=2
+trans_count[1,3]=#cell_trans_data %>% filter(MPC>=2) %>% summarise(Transmitted_sibling) %>% sum(na.rm=T)+
+  cell_trans_data %>% filter(MPC>=2) %>% summarise(Transmitted_proband)%>%sum(na.rm=T)
+trans_count[2,3]=#cell_trans_data %>% filter(MPC>=2) %>% summarise(Untransmitted_sibling) %>% sum(na.rm=T)+
+  cell_trans_data %>% filter(MPC>=2) %>% summarise(Untransmitted_proband)%>%sum(na.rm=T)
+no.prob=5869; no.silb=1993
+
+########## burden test
+burden=matrix(nrow=3, ncol=3)
+rownames(burden)=c("OR", "RR", "p.value")
+colnames(burden)=c("pLI>=0.995", "0.5<pLI<0.995", "MPC>=2")
+for (i in 1:ncol(trans_count))
+  { 
+  test=binom.test(trans_count[,i],alternative="greater")
+  burden[1,i]=trans_count[1,i]/(no.prob-trans_count[1,i])/(trans_count[2,i]/(no.prob-trans_count[2,i]))
+  burden[2,i]=trans_count[1,i]/trans_count[2,i]
+  burden[3,i]=test$p.value
+}
+kable(trans_count, caption="variant count of transmitted PTV and MPC")
+kable(burden, caption="Enrichment of transmited PTV and MPC in proband using binomial exact test")
+```
+
+In the paper, when $pLI>=0.995$ for PTV, there are 695 transmitted vs 557 untransmitted from 5869 parents, leading to RR 1.2 and p value 0.02?, and  these numbers are close to that in the above table. 
+
+```{r, echo=F, eval=F}
+# in Figure1 B. for PTV with pLI>=0.995, there are 695 transmitted vs 557 untransmitted in 5869 parents, thus 
+RR=round(695/5869/(557/5869),1)
+# how come the p value is 0.07? 
+```
