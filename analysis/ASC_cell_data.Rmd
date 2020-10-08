@@ -9,6 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, echo=F}
+rm(list=ls())
+set.seed(123)
 library(tidyverse)
 library(knitr)
 ```
@@ -71,10 +73,83 @@ kable(trans_count, caption="variant count of transmitted PTV and MPC")
 kable(burden, caption="Enrichment of transmited PTV and MPC in proband using binomial exact test")
 ```
 
-In the paper, when $pLI>=0.995$ for PTV, there are 695 transmitted vs 557 untransmitted from 5869 parents, leading to RR 1.2 and p value 0.02?, and  these numbers are close to that in the above table. 
+In the paper, when $pLI>=0.995$ for PTV, there are 695 transmitted vs 557 untransmitted from 5869 parents, leading to RR 1.2 and p value 0.07?, and  these numbers are close to that in the above table. 
 
 ```{r, echo=F, eval=F}
 # in Figure1 B. for PTV with pLI>=0.995, there are 695 transmitted vs 557 untransmitted in 5869 parents, thus 
 RR=round(695/5869/(557/5869),1)
 # how come the p value is 0.07? 
 ```
+
+## Annotate the data by ANNOVAR
+
+Since the data doesn't have allele frequency, use ANNOVAR to annotate it 
+
+```{r, echo=T}
+head(cell_trans_data)
+```
+
+### prepare the data in the appropriate format  for annovar 
+
+To run annovar, the simplist format has 5 columns chr, star, end, ref, alt and each row is one variant. 
+
+1.  use R to extract 5 required columns 
+
+```{r, echo=T, eval=F}
+
+cell_data=read.table("cell_trans_data.txt", header=T, fill=T) # note "fill" some lines with less than 38 elements
+locus=matrix(cell_data$Variant)
+split_locus=strsplit(locus, ":") # ":"  separates chr, start and end 
+avinput=matrix(nrow=length(split_locus), ncol=5)  # format of avinput; chr, start, end, ref, alt
+for (i in 1:length(split_locus))
+  { 
+   avinput[i,1:2]=split_locus[[i]][1:2]
+   avinput[i,3]=split_locus[[i]][2]
+   avinput[i,4:5]=split_locus[[i]][3:4]
+}
+
+#write.table(avinput, file="avinput.txt",row.names=F, col.names=F, quote=F)
+
+```
+
+2.  then transfer into tab-delimited columns
+
+```{r, echo=T, eval=F}
+head avinput.txt
+1 861283 861283 G C
+1 861287 861287 C T
+1 861289 861289 G A
+1 861341 861341 A G
+1 861389 861389 C T
+1 861398 861398 G A
+1 865635 865635 G A
+1 865645 865645 T G
+1 865655 865655 T G
+1 865686 865686 A G
+```
+
+
+```{r, echo=T, eval=F}
+awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",$NF);}else {printf("%s\t",$i)}}}'
+input.data > output.bed
+```
+
+3.  download relevant database 
+
+```{r, echo=T, eval=F}
+perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/
+```
+
+
+4.  run annovar function 
+
+```{r, echo=T, eval=F}
+perl annotate_variation.pl -filter -build hg19 -dbtype exac03 avinput humandb/
+```
+
+
+## Refine annotations 
+
+Stratify six variant groups PTV (PLI>=0.995, 0.5-0.995, <0.5) and missense (MPC>=2, 1-2, 0-1) by AF (0.01-0.05, 0.001-0.01, <0.001), resulting in 18 categories. 
+
+
