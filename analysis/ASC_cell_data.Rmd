@@ -3,16 +3,16 @@ title: "Cell data"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-```
 
 ```{r, echo=F}
 rm(list=ls())
 set.seed(123)
 library(tidyverse)
 library(knitr)
+#library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
 ```
 
 This is the transmitted data from [cell paper](https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984)
@@ -138,6 +138,7 @@ input.data > output.bed
 
 ```{r, echo=T, eval=F}
 perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/
+
 ```
 
 
@@ -145,6 +146,7 @@ perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humand
 
 ```{r, echo=T, eval=F}
 perl annotate_variation.pl -filter -build hg19 -dbtype exac03 avinput humandb/
+  # the output file with AF annotated is avinput.hg19_exac03_dropped
 ```
 
 
@@ -152,4 +154,152 @@ perl annotate_variation.pl -filter -build hg19 -dbtype exac03 avinput humandb/
 
 Stratify six variant groups PTV (PLI>=0.995, 0.5-0.995, <0.5) and missense (MPC>=2, 1-2, 0-1) by AF (0.01-0.05, 0.001-0.01, <0.001), resulting in 18 categories. 
 
+```{r, echo=F, cache=T}
+## add Exac Allele frequency to the data
+avinput.hg19_exac03_dropped=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/avinput.hg19_exac03_dropped"))
+ASC_ExacAF=tibble(Variant=paste(avinput.hg19_exac03_dropped$V3, avinput.hg19_exac03_dropped$V4, avinput.hg19_exac03_dropped$V6, avinput.hg19_exac03_dropped$V7, sep=":"), ExacAF=avinput.hg19_exac03_dropped$V2)
+cell_trans_data_AF=left_join(cell_trans_data, ASC_ExacAF)
+cell_trans_data_AF$ExacAF[is.na(cell_trans_data_AF$ExacAF)==T]=0 # fill NA AF with 0
+hist(cell_trans_data_AF$ExacAF)
+summary(cell_trans_data_AF$ExacAF)
+```
+
+```{r, echo=F}
+## partition vriants into disjoint groups 
+
+variant_groups=list()
+variant_groups[[1]]=cell_trans_data_AF %>% filter(pLI>=0.995) %>% filter(PTV==T)%>% filter(ExacAF>0.01 & ExacAF<=0.05)
+variant_groups[[2]]=cell_trans_data_AF %>% filter(pLI>=0.995) %>% filter(PTV==T)%>% filter(ExacAF>0.001 & ExacAF<=0.01)
+variant_groups[[3]]=cell_trans_data_AF %>% filter(pLI>=0.995) %>% filter(PTV==T)%>% filter( ExacAF<=0.001)
+
+variant_groups[[4]]=cell_trans_data_AF %>% filter(pLI>=0.5 & pLI<0.995) %>% filter(PTV==T)%>% filter(ExacAF>0.01 & ExacAF<=0.05)
+variant_groups[[5]]=cell_trans_data_AF %>% filter(pLI>=0.5 & pLI<0.995) %>% filter(PTV==T)%>% filter(ExacAF>0.001 & ExacAF<=0.01)
+variant_groups[[6]]=cell_trans_data_AF %>% filter(pLI>=0.5 & pLI<0.995) %>% filter(PTV==T)%>% filter( ExacAF<=0.001)
+
+variant_groups[[7]]=cell_trans_data_AF %>% filter(pLI<0.5) %>% filter(PTV==T)%>% filter(ExacAF>0.01 & ExacAF<=0.05)
+variant_groups[[8]]=cell_trans_data_AF %>% filter(pLI<0.5) %>% filter(PTV==T)%>% filter(ExacAF>0.001 & ExacAF<=0.01)
+variant_groups[[9]]=cell_trans_data_AF %>% filter(pLI<0.5) %>% filter(PTV==T)%>% filter( ExacAF<=0.001)
+
+variant_groups[[10]]=cell_trans_data_AF %>%filter(MPC>=2)%>% filter(ExacAF>0.01 & ExacAF<=0.05)
+variant_groups[[11]]=cell_trans_data_AF %>%filter(MPC>=2)%>% filter(ExacAF>0.001 & ExacAF<=0.01)
+variant_groups[[12]]=cell_trans_data_AF %>%filter(MPC>=2)%>% filter( ExacAF<=0.001)
+
+variant_groups[[13]]=cell_trans_data_AF %>% filter(MPC<2 & MPC>=1)%>% filter(ExacAF>0.01 & ExacAF<=0.05)
+variant_groups[[14]]=cell_trans_data_AF %>% filter(MPC<2 & MPC>=1)%>% filter(ExacAF>0.001 & ExacAF<=0.01)
+variant_groups[[15]]=cell_trans_data_AF %>% filter(MPC<2 & MPC>=1)%>% filter( ExacAF<=0.001)
+
+variant_groups[[16]]=cell_trans_data_AF %>% filter(MPC<1)%>% filter(ExacAF>0.01 & ExacAF<=0.05)
+variant_groups[[17]]=cell_trans_data_AF %>% filter(MPC<1)%>% filter(ExacAF>0.001 & ExacAF<=0.01)
+variant_groups[[18]]=cell_trans_data_AF %>% filter(MPC<1)%>% filter( ExacAF<=0.001)
+
+count_variant_groups=matrix(nrow=18, ncol=2)
+colnames(count_variant_groups)=c("transmitted", "untransmitted")
+rownames(count_variant_groups)=paste(rep(c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1"),each=3), c("0.01<AF<=0.05", "0.001<AF<=0.01", "AF<=0.001"), sep="&")
+for (i in 1:length(variant_groups))
+  if (nrow(variant_groups[[i]])>0)
+    count_variant_groups[i,]=c(variant_groups[[i]]%>% summarise(Transmitted_proband)%>%sum(na.rm=T), variant_groups[[i]]%>% summarise(Untransmitted_proband)%>%sum(na.rm=T))
+count_variant_groups=count_variant_groups[complete.cases(count_variant_groups), ]
+count_variant_groups
+```
+It looks like all variants in the data are filtered with cutoff, like $0.1%$. 
+
+## Variant set (VS) analysis
+
+
+
+```{r, echo=F}
+# add one column of variant group index 
+cell_trans_data_AF_GI=cell_trans_data_AF %>% add_column(Group_Index=NA)
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$pLI>=0.995 & cell_trans_data_AF_GI$PTV==T)]=1
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$pLI>=0.5 & cell_trans_data_AF_GI$pLI<0.995 &  cell_trans_data_AF_GI$PTV==T)]=2
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$pLI<0.5 &  cell_trans_data_AF_GI$PTV==T)]=3
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$MPC>=2)]=4
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$MPC>=1 & cell_trans_data_AF_GI$MPC<2)]=5
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$MPC<1)]=6
+#cell_trans_data_AF_GI=cell_trans_data_AF_GI %>% drop_na()
+```
+
+### Run mirage-vs on 6 variant groups in cell paper 
+
+Use mirage-vs to test if there are signals in six variant groups  
+
+```{r, echo=F, eval=F}
+####### test the toy example 
+#data(mirage_vs_toy)
+#res_vs = mirage_vs(mirage_vs_toy,n1=1000,n2=1000)
+#########
+para_est=matrix(nrow=6, ncol=6)
+rownames(para_est)=c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1")
+colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
+for (i in 1:6)
+{ 
+#i=1  
+ cat(i, "is running", "\n")
+ variant_set=cell_trans_data_AF_GI %>% filter(Group_Index==i) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+ para_est[i,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+ pois.test=poisson.test(para_est[i,1:2], c(5869, 5869), r=1, alternative="greater")
+ para_est[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+ if (i<=3) # for LoF variants
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=5869,n2=5869, gamma=6)
+ if (i>3)  # for missense variants 
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=5869,n2=5869, gamma=3)
+ para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+  
+}
+as_tibble(para_est)
+#write.csv(para_est, file="../output/CellDataASC/para.est.var.group.proband.csv")
+#gene.data=eight.partition(cand.data)
+#ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
+```
+
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. 
+
+```{r, echo=F}
+proband_para_est=read.csv("../output/CellDataASC/para.est.var.group.proband.csv")
+as_tibble(proband_para_est)
+
+
+var_group=c(rep(c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1"), 2))
+method=c(rep("Burden", 6), rep("mirage-vs", 6))
+pvalue=c(round(-log(proband_para_est$pval, base=10), 2), round(-log(proband_para_est$eta_pval, base=10), 2))
+summary=data.frame(var.group=var_group, pvalue=pvalue, method=method)
+ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) + 
+   geom_bar(stat="identity", 
+           position=position_dodge())+
+  ylab(expression(-log[10](pvalue)))+
+  theme(legend.title=element_blank())+
+  xlab(" variant groups")+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title 
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+### Run mirage on ASD genes in cell paper
+
+```{r, echo=F}
+ASD_Gene_Cell=as_tibble(read.csv("../../AutismDatafromASC_Cellpaper/1-s2.0-S0092867419313984-mmc2.csv", header = TRUE))
+ASD_102_Gene=ASD_Gene_Cell[1:102,] %>% pull(ï..gene)
+#########
+para_est=matrix(nrow=6, ncol=6)
+rownames(para_est)=c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1")
+colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
+for (i in 1:6)
+{ 
+#i=2  
+cat(i, "is running", "\n")
+variant_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% ASD_102_Gene)%>% filter(Group_Index==i) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+para_est[i,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+pois.test=poisson.test(para_est[i,1:2], c(5869, 5869), r=1, alternative="greater")
+para_est[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+vs.mirage=mirage_vs(variant_set,n1=5869,n2=5869, gamma=6)
+para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+}
+as_tibble(para_est)
+#gene.data=eight.partition(cand.data)
+#ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
+```
+```
 

@@ -414,7 +414,7 @@ div.tocify {
 
 
 <pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Attaching packages --------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages --------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
 ## v tibble  3.0.1     v dplyr   1.0.0
 ## v tidyr   1.1.0     v stringr 1.4.0
@@ -424,7 +424,7 @@ div.tocify {
 <pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Conflicts ------------------------------------ tidyverse_conflicts() --
+<pre><code>## -- Conflicts ------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <p>This is the transmitted data from <a href="https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984">cell paper</a></p>
@@ -603,12 +603,75 @@ input.data &gt; output.bed</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>run annovar function</li>
 </ol>
-<pre class="r"><code>perl annotate_variation.pl -filter -build hg19 -dbtype exac03 avinput humandb/</code></pre>
+<pre class="r"><code>perl annotate_variation.pl -filter -build hg19 -dbtype exac03 avinput humandb/
+  # the output file with AF annotated is avinput.hg19_exac03_dropped</code></pre>
 </div>
 </div>
 <div id="refine-annotations" class="section level2">
 <h2>Refine annotations</h2>
 <p>Stratify six variant groups PTV (PLI&gt;=0.995, 0.5-0.995, &lt;0.5) and missense (MPC&gt;=2, 1-2, 0-1) by AF (0.01-0.05, 0.001-0.01, &lt;0.001), resulting in 18 categories.</p>
+<pre><code>## Joining, by = &quot;Variant&quot;</code></pre>
+<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## 0.000e+00 0.000e+00 8.245e-06 1.294e-05 1.696e-05 1.200e-03</code></pre>
+<pre><code>##                          transmitted untransmitted
+## PLI&gt;=0.995&amp;AF&lt;=0.001             704           564
+## 0.5&lt;=pLI&lt;0.995&amp;AF&lt;=0.001        1273          1191
+## pLI&lt;0.5&amp;AF&lt;=0.001              18959         18591
+## MPC&gt;=2&amp;AF&lt;=0.001                6341          6159
+## 1&lt;=MPC&lt;2&amp;AF&lt;=0.001             50355         50369
+## 0&lt;=MPC&lt;1&amp;0.001&lt;AF&lt;=0.01            0             0
+## 0&lt;=MPC&lt;1&amp;AF&lt;=0.001            339394        340489</code></pre>
+<p>It looks like all variants in the data are filtered with cutoff, like <span class="math inline">\(0.1%\)</span>.</p>
+</div>
+<div id="variant-set-vs-analysis" class="section level2">
+<h2>Variant set (VS) analysis</h2>
+<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper" class="section level3">
+<h3>Run mirage-vs on 6 variant groups in cell paper</h3>
+<p>Use mirage-vs to test if there are signals in six variant groups</p>
+<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups.</p>
+<pre><code>## # A tibble: 6 x 7
+##   X              No_case No_contr    OR      pval eta_est  eta_pval
+##   &lt;fct&gt;            &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 PLI&gt;=0.995         704      564 1.25  0.0000467 0.161   0.0000663
+## 2 0.5&lt;=pLI&lt;0.995    1273     1191 1.07  0.0514    0.0519  0.0698   
+## 3 pLI&lt;0.5          18956    18589 1.02  0.0295    0.0186  0.0126   
+## 4 MPC&gt;=2            6341     6159 1.03  0.0527    0.0391  0.0483   
+## 5 1&lt;=MPC&lt;2         50355    50369 1.00  0.519     0.0107  0.794    
+## 6 0&lt;=MPC&lt;1        339394   340489 0.997 0.908     0.00602 1</code></pre>
+<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="run-mirage-on-asd-genes-in-cell-paper" class="section level3">
+<h3>Run mirage on ASD genes in cell paper</h3>
+<pre><code>## 1 is running 
+## Computing LRT statistics and p-value for every variant and all as a whole ...
+## Computing LRT statistics and p-values by categories ...
+## 2 is running 
+## Computing LRT statistics and p-value for every variant and all as a whole ...
+## Computing LRT statistics and p-values by categories ...
+## 3 is running 
+## Computing LRT statistics and p-value for every variant and all as a whole ...
+## Computing LRT statistics and p-values by categories ...
+## 4 is running 
+## Computing LRT statistics and p-value for every variant and all as a whole ...
+## Computing LRT statistics and p-values by categories ...
+## 5 is running 
+## Computing LRT statistics and p-value for every variant and all as a whole ...
+## Computing LRT statistics and p-values by categories ...
+## 6 is running 
+## Computing LRT statistics and p-value for every variant and all as a whole ...
+## Computing LRT statistics and p-values by categories ...</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   No_case No_contr    OR    pval eta_est eta_pval
+##     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+## 1      20       14  1.43 0.196         0        1
+## 2      17        5  3.4  0.00845       0        1
+## 3      21        7  3    0.00627       0        1
+## 4     267      232  1.15 0.0640        0        1
+## 5     934      920  1.02 0.381         0        1
+## 6    2697     2640  1.02 0.222         0        1</code></pre>
+<p>```</p>
+</div>
 </div>
 
 <hr>
