@@ -414,7 +414,7 @@ div.tocify {
 
 
 <pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Attaching packages ------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages --------------------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
 ## v tibble  3.0.1     v dplyr   1.0.0
 ## v tidyr   1.1.0     v stringr 1.4.0
@@ -424,7 +424,7 @@ div.tocify {
 <pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.3</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.3</code></pre>
-<pre><code>## -- Conflicts ---------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts ------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <p>This is the transmitted data from <a href="https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984">cell paper</a></p>
@@ -691,6 +691,20 @@ input.data &gt; output.bed</code></pre>
 </tr>
 </tbody>
 </table>
+<pre><code>## # A tibble: 17,653 x 4
+##        X Gene      BF post.prob
+##    &lt;int&gt; &lt;fct&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+##  1    98 LYST   34.5      0.859
+##  2   608 FGD6   23.9      0.808
+##  3   484 SVIL   11.6      0.672
+##  4   285 AP3B1   8.33     0.596
+##  5   887 BRWD1   7.86     0.582
+##  6   390 RELN    7.58     0.573
+##  7   163 SPEG    6.54     0.537
+##  8    10 ZBTB17  5.91     0.511
+##  9  2640 ATXN10  5.59     0.497
+## 10  2326 OR3A2   5.57     0.496
+## # ... with 17,643 more rows</code></pre>
 </div>
 </div>
 <div id="run-mirage-on-102-asd-genes-in-cell-paper" class="section level2">
@@ -707,7 +721,7 @@ input.data &gt; output.bed</code></pre>
 ## 4 MPC&gt;=2             267      232  1.15 0.0640  0.105    0.101  
 ## 5 1&lt;=MPC&lt;2           934      920  1.02 0.381   0.0214   0.517  
 ## 6 0&lt;=MPC&lt;1          2697     2640  1.02 0.222   0.00618  1</code></pre>
-<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="gene-set-analysis-1" class="section level3">
 <h3>gene set analysis</h3>

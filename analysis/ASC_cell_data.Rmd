@@ -305,6 +305,13 @@ $\hat{\eta}_5$ | 0.02    | 0.46
 $\hat{\eta}_6$ | 0.0014    | 1
 
 
+```{r, echo=F}
+BF_proband_AllGene=as_tibble(read.csv("../output/CellDataASC/BF.proband.AllGene.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+BF_proband_AllGene_sorted
+#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
 
 ## Run mirage on 102 ASD genes in cell paper
 
