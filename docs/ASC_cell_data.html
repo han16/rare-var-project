@@ -624,8 +624,10 @@ input.data &gt; output.bed</code></pre>
 ## 0&lt;=MPC&lt;1&amp;AF&lt;=0.001            339394        340489</code></pre>
 <p>It looks like all variants in the data are filtered with cutoff, like <span class="math inline">\(0.1%\)</span>.</p>
 </div>
-<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper" class="section level2">
-<h2>Run mirage-vs on 6 variant groups in cell paper</h2>
+<div id="genome-wide-analysis" class="section level2">
+<h2>Genome-wide analysis</h2>
+<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper" class="section level3">
+<h3>Run mirage-vs on 6 variant groups in cell paper</h3>
 <p>Use mirage-vs to test if there are signals in six variant groups</p>
 <p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
 <pre><code>## # A tibble: 6 x 7
@@ -638,6 +640,58 @@ input.data &gt; output.bed</code></pre>
 ## 5 1&lt;=MPC&lt;2         50355    50369 1.00  0.519     0.0107  0.794    
 ## 6 0&lt;=MPC&lt;1        339394   340489 0.997 0.908     0.00602 1</code></pre>
 <p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="gene-set-analysis" class="section level3">
+<h3>gene set analysis</h3>
+<p>Run mirage on all 17653 genes and <span class="math inline">\(\gamma=6\)</span> for LoF variants and <span class="math inline">\(\gamma=3\)</span> for missense.</p>
+<table>
+<thead>
+<tr class="header">
+<th>parameter</th>
+<th>estimate</th>
+<th>p value</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\hat{\delta}\)</span></td>
+<td>0.15</td>
+<td><span class="math inline">\(1.64\times 10^{-8}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\hat{\eta}_1\)</span></td>
+<td>1</td>
+<td><span class="math inline">\(3.52\times 10^{-6}\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\hat{\eta}_2\)</span></td>
+<td>0.48</td>
+<td>0.03</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\hat{\eta}_3\)</span></td>
+<td>0.12</td>
+<td>0.01</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\hat{\eta}_4\)</span></td>
+<td>0.20</td>
+<td>0.05</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\hat{\eta}_5\)</span></td>
+<td>0.02</td>
+<td>0.46</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\hat{\eta}_6\)</span></td>
+<td>0.0014</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div id="run-mirage-on-102-asd-genes-in-cell-paper" class="section level2">
 <h2>Run mirage on 102 ASD genes in cell paper</h2>
@@ -653,9 +707,9 @@ input.data &gt; output.bed</code></pre>
 ## 4 MPC&gt;=2             267      232  1.15 0.0640  0.105    0.101  
 ## 5 1&lt;=MPC&lt;2           934      920  1.02 0.381   0.0214   0.517  
 ## 6 0&lt;=MPC&lt;1          2697     2640  1.02 0.222   0.00618  1</code></pre>
-<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
-<div id="gene-set-analysis" class="section level3">
+<div id="gene-set-analysis-1" class="section level3">
 <h3>gene set analysis</h3>
 </div>
 </div>
