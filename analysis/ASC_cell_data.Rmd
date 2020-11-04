@@ -372,12 +372,22 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 
 ### gene set analysis
 
+$\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+
 ```{r,echo=F, eval=F}
 ############  gene set 
 gene_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% ASD_102_Gene) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
-mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869) # input data must be dataframe
+mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3)) # input data must be dataframe
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
-
+#write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.102Gene.csv")
 ```
 
+
+```{r, echo=F}
+BF_proband_AllGene=as_tibble(read.csv("../output/CellDataASC/BF.proband.102Gene.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+BF_proband_AllGene_sorted
+#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
 
