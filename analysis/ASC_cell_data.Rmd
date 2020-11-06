@@ -285,6 +285,7 @@ Run mirage on all 17653 genes and $\gamma=6$ for LoF variants and $\gamma=3$ for
 
 
 ```{r, echo=F, eval=F}
+##!!!!!!!!!!!!!!!!! Do not run !!!!!!!!!!!!!!!!!!!
 ############  gene set 
 gene_set=cell_trans_data_AF_GI %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
 mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3)) # input data must be dataframe 
@@ -381,6 +382,19 @@ mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3)
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
 #write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.102Gene.csv")
 ```
+
+parameter | estimate |  p value |
+-----|-----|------|--------
+$\hat{\delta}$ | 0.68 | $9.48\times 10^{-5}$
+$\hat{\eta}_1$ | 0.3964    | 0.2339
+$\hat{\eta}_2$ | 1  | 0.0136
+$\hat{\eta}_3$ | 0.9578    | 0.0065
+$\hat{\eta}_4$ | 0.2720    | 0.0829
+$\hat{\eta}_5$ | 0.0201    | 0.6281
+$\hat{\eta}_6$ | 0.0096    | 0.7367
+
+
+
 
 
 ```{r, echo=F}

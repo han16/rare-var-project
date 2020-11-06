@@ -68,6 +68,7 @@ N1=N0=4315 trios.
 
 ```{r read into data, echo=F, results='hide', cache=T}
 All.Anno.Data=as_tibble(read.table("../../AnnotatedTrans.txt", header=T))
+write.csv(head(All.Anno.Data),file="../../AnnotatedTransHead.csv") 
 #All.Anno.Data=read.table("../../AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\Shengtong\\Research\\rare-var\\AnnotatedTrans.txt", header=T)
 
@@ -911,7 +912,7 @@ Burden.MIRAGE.combine=tibble(Burden.OR=Burden.OR, Burden.pvalue=Burden.pvalue, M
 Burden.MIRAGE.combine <- drop_na(Burden.MIRAGE.combine) # remove rows with NA
 #Burden.MIRAGE.combine.clear <- as_tibble(data.matrix(Burden.MIRAGE.combine)[is.finite(rowSums(data.matrix(Burden.MIRAGE.combine))),])
 Burden.MIRAGE.combine.clear=Burden.MIRAGE.combine
-Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<FA<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
+Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="LoF; 1%<AF<5%", "2"="LoF; AF<1%", "3" = "Damaging; 1%<AF<5%","4"= "Damaging; 0.1%<AF<1%", "5" ="Damaging; AF<0.1%", "6" ="Non-damaging; 1%<AF<5%", "7" ="Non-damaging; 0.1%<AF<1%", "8" ="Non-damaging; AF<0.1%")
 
 
 

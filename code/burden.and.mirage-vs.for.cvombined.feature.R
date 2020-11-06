@@ -1,4 +1,5 @@
 ##### suppose the current folder is C:\Shengtong\Research\rare-var\rare-var-project\code
+rm(list=ls())
 library(RSQLite)
 library(dplyr)
 library(knitr)
@@ -23,13 +24,15 @@ test.func=function(evid, Data, N1, N0) # given evid, and sample size, perform th
 
 ### read into the data
 
-All.Anno.Data=as_tibble(read.table("../../AnnotatedTrans.txt", header=T))
+#All.Anno.Data=as_tibble(read.table("../../AnnotatedTrans.txt", header=T))
+All.Anno.Data=as_tibble(read.table("../../AnnotatedSCZ.txt", header=T))
 #All.Anno.Data=read.table("../../AnnotatedTrans.txt", header=T)
 #All.Anno.Data=read.table("C:\\Shengtong\\Research\\rare-var\\AnnotatedTrans.txt", header=T)
 
 
 ##### pre-process the data
-N1=4315; N0=4315
+#N1=4315; N0=4315
+N1=2536; N0=2543
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
@@ -107,6 +110,7 @@ exon.summ=matrix(nrow=(1+length(exon.cutoff)), ncol=4)
 evid.exon=list()
 colnames(exon.summ)=c("OR", "p.value", "rate.ca", "rate.co")
 rownames(exon.summ)=c(paste("Top", exon.cutoff*100, "%", sep=""), "critical exon")
+Anno.Data=Anno.Data %>% rename(Exon.Exac.Cons=Exon.Cons.Score) # rename one column
 for (i in 1:length(exon.cutoff))
 {
   threshold=quantile(Anno.Data$Exon.Exac.Cons, prob=exon.cutoff[i], na.rm=T)
@@ -180,4 +184,4 @@ for (i in 1:length(exon.fea))
 
 }  ############# end of i
 
-#save(MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.exon.geneset.partition.RData")
+#save(MIRAGE.cate.index, MIRAGE.para.est, MIRAGE.pvalue, Burden.cate, file="..\\output\\CombinedFeature\\Burden.MIRAGE.for.Combined.exon.geneset.partition.SCZ.RData")
