@@ -20,7 +20,14 @@ output:
 [code for merging annotation features and sample data from dbGap](ASD_dbGaP_code.html)
 
 
-[Cell data from ASC](ASC_cell_data.html)
+## Analysis for transmitted variants from ASC cell paper 
+
+* [Quality control (QC) and annotate variants in Cell data](ASC_cell_data.html)
+
+* [Variant set (VS) analysis for transmitted variants in ASC cell paper](VS-ASC.html)
+
+
+
 
 
 [project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf

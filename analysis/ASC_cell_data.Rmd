@@ -1,10 +1,10 @@
 ---
-title: "Cell data"
+title: "Quality control (QC) and annotate variants in Cell data"
 output: html_document
 ---
 
 
-```{r, echo=F}
+```{r, echo=F, warning=F}
 rm(list=ls())
 set.seed(123)
 library(tidyverse)
@@ -17,7 +17,7 @@ library(mirage)
 
 This is the transmitted data from [cell paper](https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984)
 
-```{r, echo=F, cache=T}
+```{r, echo=F, cache=T, warning=F}
 part1=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/ASC_v15_TDT_GQPL25.hAB30.results.2018-04-01.part1.tsv.gz",sep = '\t', header = TRUE, fill = TRUE))
 part2=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/ASC_v15_TDT_GQPL25.hAB30.results.2018-04-01.part2.tsv.gz",sep = '\t', header = TRUE, fill = TRUE))
 cell_trans_data=full_join(part1, part2)
@@ -378,7 +378,8 @@ $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
 ```{r,echo=F, eval=F}
 ############  gene set 
 gene_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% ASD_102_Gene) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
-mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3)) # input data must be dataframe
+#mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
+mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869)# input data must be dataframe
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
 #write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.102Gene.csv")
 ```
