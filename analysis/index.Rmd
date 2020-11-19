@@ -1,5 +1,5 @@
 ---
-title: "Home"
+title: "Statistical rare variant analysis for autism"
 output:
   html_document:
     toc: false
@@ -8,10 +8,19 @@ output:
 
  [This is the project][project]
  
-[numerical simulation studies](simulation-study.html) 
+## Simulation studies  
+ 
+* [numerical simulation studies](simulation-study.html) 
 
+
+## Whole exome sequencing (WES) data analysis for old sample  
 
 [analysis for ASD whole exome sequence data](ASD.html)
+
+[Variant Set (VS) analysis](variant_set_analysis.html)
+
+## Cell data downloaded from dbGaP 
+
 
 [analysis for ASD data dowloaded from dbGaP](ASD_dbGaP.html) 
  
