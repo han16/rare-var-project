@@ -66,6 +66,11 @@ We create a number of variant sets by combining gene sets and exon information s
 
 
 ```{r, results='hide', echo=F, eval=F, warning=F, message=F}
+###############################################################
+# (1) this chunk is used for variant set analysis by burden and mirage-VS
+# (2) definitions of var.fea; exon.fea and gene.set are in ASD.Rmd
+# (3) to run function multi.group.func.for.variant, first need to load  # source("..\\code\\MIRAGE_burden_only_variant_level.R")
+###############################################################
 
 comb.exon.cutoff=exon.cutoff;
 #sub.com=c(exon.fea, "LoF", "Prby Damaging", "CriticalExon", "Consensus")

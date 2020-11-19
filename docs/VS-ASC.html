@@ -413,55 +413,18 @@ div.tocify {
 </div>
 
 
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre><code>## 
-## Attaching package: &#39;kableExtra&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     group_rows</code></pre>
-<pre><code>## 
-## Attaching package: &#39;gplots&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:stats&#39;:
-## 
-##     lowess</code></pre>
-<pre><code>## -- Attaching packages ---------------- tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
-## v tibble  3.0.1     v stringr 1.4.0
-## v tidyr   1.1.0     v forcats 0.4.0
-## v readr   1.3.1</code></pre>
-<pre><code>## -- Conflicts ------------------- tidyverse_conflicts() --
-## x dplyr::filter()          masks stats::filter()
-## x kableExtra::group_rows() masks dplyr::group_rows()
-## x dplyr::lag()             masks stats::lag()</code></pre>
-<pre><code>## 
-## Attaching package: &#39;gridExtra&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     combine</code></pre>
-<pre><code>## Loading required package: magrittr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;magrittr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     set_names</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
-<pre><code>## Joining, by = c(&quot;Variant&quot;, &quot;FILTER&quot;, &quot;VQSLOD&quot;, &quot;GENE_NAME&quot;, &quot;Consequence&quot;, &quot;PCC_MAC&quot;, &quot;MAC&quot;, &quot;AN&quot;, &quot;exac_AC&quot;, &quot;exac_AN&quot;, &quot;gnomad_AC&quot;, &quot;gnomad_AN&quot;, &quot;Transmitted_proband&quot;, &quot;Untransmitted_proband&quot;, &quot;Transmitted_sibling&quot;, &quot;Untransmitted_sibling&quot;, &quot;Transmitted_proband_male&quot;, &quot;Untransmitted_proband_male&quot;, &quot;Transmitted_proband_female&quot;, &quot;Untransmitted_proband_female&quot;, &quot;Transmitted_male_sibling&quot;, &quot;Untransmitted_male_sibling&quot;, &quot;Transmitted_female_sibling&quot;, &quot;Untransmitted_female_sibling&quot;, &quot;Missense&quot;, &quot;PTV&quot;, &quot;Inframe&quot;, &quot;Indel&quot;, &quot;pLI&quot;, &quot;loftee&quot;, &quot;loftee_flag&quot;, &quot;MPC&quot;)</code></pre>
-<div id="variant-set-formulation" class="section level2">
-<h2>Variant set formulation</h2>
-<p>Use same 6 variants groups in cell paper, stratify each variant group with AF cutoff, <span class="math inline">\(AF&gt;10^{-4}, 10^{-4}&gt;AF&gt;10^{-5}, AF&lt;10^{-5}\)</span> (it seems the data is already filtered with <span class="math inline">\(AF&gt;10^{-3}\)</span>).</p>
-<pre><code>## Joining, by = &quot;Variant&quot;</code></pre>
+<div id="allele-frequency-distribution" class="section level2">
+<h2>Allele frequency distribution</h2>
+<p>it seems the data is already filtered with <span class="math inline">\(AF&gt;10^{-3}\)</span>.</p>
 <p><img src="VS-ASC_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 ## 0.000e+00 0.000e+00 8.245e-06 1.294e-05 1.696e-05 1.200e-03</code></pre>
+</div>
+<div id="use-3-af-bins" class="section level2">
+<h2>Use 3 AF bins</h2>
+<div id="variant-counts-in-each-variant-group" class="section level3">
+<h3>variant counts in each variant group</h3>
+<p>Use same 6 variants groups in cell paper, stratify each variant group with AF cutoff, <span class="math inline">\(AF&gt;10^{-4}, 10^{-4}&gt;AF&gt;10^{-5}, AF&lt;10^{-5}\)</span>.</p>
 <pre><code>## [1] 18  2</code></pre>
 <pre><code>##                                   transmitted untransmitted
 ## PLI&gt;=0.995&amp;0.0001&lt;AF                        0             0
@@ -482,87 +445,36 @@ div.tocify {
 ## 0&lt;=MPC&lt;1&amp;0.0001&lt;AF                        150           158
 ## 0&lt;=MPC&lt;1&amp;0.00001&lt;AF&lt;=0.0001            139594        140220
 ## 0&lt;=MPC&lt;1&amp;AF&lt;=0.00001                   199650        200111</code></pre>
-<pre><code>## Warning: `src_sqlite()` is deprecated as of dplyr 1.0.0.
-## Please use `tbl()` directly with a database connection
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 </div>
-<div id="burden-vs-mirage-vs" class="section level2">
-<h2>Burden vs MIRAGE-VS</h2>
-<pre><code>## $shape
-## $title
-## list()
-## attr(,&quot;class&quot;)
-## [1] &quot;waiver&quot;
-## 
-## $title.position
-## NULL
-## 
-## $title.theme
-## NULL
-## 
-## $title.hjust
-## NULL
-## 
-## $title.vjust
-## NULL
-## 
-## $label
-## [1] TRUE
-## 
-## $label.position
-## NULL
-## 
-## $label.theme
-## NULL
-## 
-## $label.hjust
-## NULL
-## 
-## $label.vjust
-## NULL
-## 
-## $keywidth
-## NULL
-## 
-## $keyheight
-## NULL
-## 
-## $direction
-## NULL
-## 
-## $override.aes
-## $override.aes$size
-## [1] 5
-## 
-## 
-## $nrow
-## NULL
-## 
-## $ncol
-## NULL
-## 
-## $byrow
-## [1] FALSE
-## 
-## $reverse
-## [1] FALSE
-## 
-## $order
-## [1] 0
-## 
-## $available_aes
-## [1] &quot;any&quot;
-## 
-## $name
-## [1] &quot;legend&quot;
-## 
-## attr(,&quot;class&quot;)
-## [1] &quot;guide&quot;  &quot;legend&quot;
-## 
-## attr(,&quot;class&quot;)
-## [1] &quot;guides&quot;</code></pre>
+<div id="burden-vs-mirage-vs" class="section level3">
+<h3>Burden vs MIRAGE-VS</h3>
 <p><img src="VS-ASC_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
+<div id="use-2-af-bins" class="section level2">
+<h2>Use 2 AF bins</h2>
+<div id="variant-counts-in-each-variant-group-1" class="section level3">
+<h3>variant counts in each variant group</h3>
+<p>Use same 6 variants groups in cell paper, stratify each variant group with AF cutoff, <span class="math inline">\(AF&gt;10^{-4}, AF&lt; 10^{-4}\)</span>.</p>
+<pre><code>## [1] 12  2</code></pre>
+<pre><code>##                           transmitted untransmitted
+## PLI&gt;=0.995&amp;AF&gt;0.0001                0             0
+## PLI&gt;=0.995&amp;AF&lt;=0.0001             704           564
+## 0.5&lt;=pLI&lt;0.995&amp;AF&gt;0.0001           NA            NA
+## 0.5&lt;=pLI&lt;0.995&amp;AF&lt;=0.0001        1273          1191
+## pLI&lt;0.5&amp;AF&gt;0.0001                   6            10
+## pLI&lt;0.5&amp;AF&lt;=0.0001              18953         18581
+## MPC&gt;=2&amp;AF&gt;0.0001                    1             5
+## MPC&gt;=2&amp;AF&lt;=0.0001                6340          6154
+## 1&lt;=MPC&lt;2&amp;AF&gt;0.0001                 18            28
+## 1&lt;=MPC&lt;2&amp;AF&lt;=0.0001             50337         50341
+## 0&lt;=MPC&lt;1&amp;AF&gt;0.0001                150           158
+## 0&lt;=MPC&lt;1&amp;AF&lt;=0.0001            339244        340331</code></pre>
+</div>
+<div id="burden-vs-mirage-vs-1" class="section level3">
+<h3>Burden vs MIRAGE-VS</h3>
+<p><img src="VS-ASC_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
 </div>
 
 <hr>

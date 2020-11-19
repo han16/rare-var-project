@@ -369,7 +369,7 @@ kable(exon.summ, caption="Burden analysis of exons")
 
 ## Gene level analysis
 
-See [here](GeneSetAnalysis.html)
+
 
 ### seizure-related genes in flies
 
