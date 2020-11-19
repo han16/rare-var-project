@@ -1,5 +1,5 @@
 ---
-title: "ASD WES data"
+title: "Quality control of ASD WES data"
 author: "Shengtong Han"
 date: YYYY-MM-DD
 #output: html_document
