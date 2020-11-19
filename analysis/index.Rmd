@@ -39,7 +39,7 @@ output:
 
 * [Variant set (VS) analysis for transmitted variants in ASC cell paper](VS-ASC.html)
 
-
+* [Gene set analysis for transmitted variants in ASC cell paper](gene_set_analysis_cell_data.html)
 
 
 

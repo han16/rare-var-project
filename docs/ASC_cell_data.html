@@ -413,16 +413,7 @@ div.tocify {
 </div>
 
 
-<pre><code>## -- Attaching packages --------------------------------- tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.3.1     v purrr   0.3.4
-## v tibble  3.0.1     v dplyr   1.0.0
-## v tidyr   1.1.0     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.4.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
 <p>This is the transmitted data from <a href="https://www.sciencedirect.com/science/article/abs/pii/S0092867419313984">cell paper</a></p>
-<pre><code>## Joining, by = c(&quot;Variant&quot;, &quot;FILTER&quot;, &quot;VQSLOD&quot;, &quot;GENE_NAME&quot;, &quot;Consequence&quot;, &quot;PCC_MAC&quot;, &quot;MAC&quot;, &quot;AN&quot;, &quot;exac_AC&quot;, &quot;exac_AN&quot;, &quot;gnomad_AC&quot;, &quot;gnomad_AN&quot;, &quot;Transmitted_proband&quot;, &quot;Untransmitted_proband&quot;, &quot;Transmitted_sibling&quot;, &quot;Untransmitted_sibling&quot;, &quot;Transmitted_proband_male&quot;, &quot;Untransmitted_proband_male&quot;, &quot;Transmitted_proband_female&quot;, &quot;Untransmitted_proband_female&quot;, &quot;Transmitted_male_sibling&quot;, &quot;Untransmitted_male_sibling&quot;, &quot;Transmitted_female_sibling&quot;, &quot;Untransmitted_female_sibling&quot;, &quot;Missense&quot;, &quot;PTV&quot;, &quot;Inframe&quot;, &quot;Indel&quot;, &quot;pLI&quot;, &quot;loftee&quot;, &quot;loftee_flag&quot;, &quot;MPC&quot;)</code></pre>
 <pre class="r"><code>cell_trans_data</code></pre>
 <pre><code>## # A tibble: 994,532 x 32
 ##    Variant FILTER  VQSLOD GENE_NAME Consequence PCC_MAC   MAC    AN exac_AC
@@ -464,8 +455,8 @@ div.tocify {
 ## [27] &quot;Inframe&quot;                      &quot;Indel&quot;                       
 ## [29] &quot;pLI&quot;                          &quot;loftee&quot;                      
 ## [31] &quot;loftee_flag&quot;                  &quot;MPC&quot;</code></pre>
-<div id="annotations-in-the-data" class="section level2">
-<h2>Annotations in the data</h2>
+<div id="existing-annotations-in-the-data" class="section level2">
+<h2>Existing Annotations in the data</h2>
 <ul>
 <li>PTV: protein-truncating variants including nonsense, frameshift, and essential splice sites variants</li>
 <li>Missense</li>
@@ -604,7 +595,6 @@ input.data &gt; output.bed</code></pre>
 <div id="refine-annotations" class="section level2">
 <h2>Refine annotations</h2>
 <p>Stratify six variant groups PTV (PLI&gt;=0.995, 0.5-0.995, &lt;0.5) and missense (MPC&gt;=2, 1-2, 0-1) by AF (0.01-0.05, 0.001-0.01, &lt;0.001), resulting in 18 categories.</p>
-<pre><code>## Joining, by = &quot;Variant&quot;</code></pre>
 <p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 ## 0.000e+00 0.000e+00 8.245e-06 1.294e-05 1.696e-05 1.200e-03</code></pre>
@@ -617,171 +607,6 @@ input.data &gt; output.bed</code></pre>
 ## 0&lt;=MPC&lt;1&amp;0.001&lt;AF&lt;=0.01            0             0
 ## 0&lt;=MPC&lt;1&amp;AF&lt;=0.001            339394        340489</code></pre>
 <p>It looks like all variants in the data are filtered with cutoff, like <span class="math inline">\(0.1%\)</span>.</p>
-</div>
-<div id="genome-wide-analysis" class="section level2">
-<h2>Genome-wide analysis</h2>
-<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper" class="section level3">
-<h3>Run mirage-vs on 6 variant groups in cell paper</h3>
-<p>Use mirage-vs to test if there are signals in six variant groups</p>
-<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
-<pre><code>## # A tibble: 6 x 7
-##   X              No_case No_contr    OR      pval eta_est  eta_pval
-##   &lt;fct&gt;            &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-## 1 PLI&gt;=0.995         704      564 1.25  0.0000467 0.161   0.0000663
-## 2 0.5&lt;=pLI&lt;0.995    1273     1191 1.07  0.0514    0.0519  0.0698   
-## 3 pLI&lt;0.5          18956    18589 1.02  0.0295    0.0186  0.0126   
-## 4 MPC&gt;=2            6341     6159 1.03  0.0527    0.0391  0.0483   
-## 5 1&lt;=MPC&lt;2         50355    50369 1.00  0.519     0.0107  0.794    
-## 6 0&lt;=MPC&lt;1        339394   340489 0.997 0.908     0.00602 1</code></pre>
-<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-</div>
-<div id="gene-set-analysis" class="section level3">
-<h3>gene set analysis</h3>
-<p>Run mirage on all 17653 genes and <span class="math inline">\(\gamma=6\)</span> for LoF variants and <span class="math inline">\(\gamma=3\)</span> for missense.</p>
-<table>
-<thead>
-<tr class="header">
-<th>parameter</th>
-<th>estimate</th>
-<th>p value</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\delta}\)</span></td>
-<td>0.15</td>
-<td><span class="math inline">\(1.64\times 10^{-8}\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\hat{\eta}_1\)</span></td>
-<td>1</td>
-<td><span class="math inline">\(3.52\times 10^{-6}\)</span></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\eta}_2\)</span></td>
-<td>0.48</td>
-<td>0.03</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\hat{\eta}_3\)</span></td>
-<td>0.12</td>
-<td>0.01</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\eta}_4\)</span></td>
-<td>0.20</td>
-<td>0.05</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\hat{\eta}_5\)</span></td>
-<td>0.02</td>
-<td>0.46</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\eta}_6\)</span></td>
-<td>0.0014</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-<pre><code>## # A tibble: 17,653 x 4
-##        X Gene      BF post.prob
-##    &lt;int&gt; &lt;fct&gt;  &lt;dbl&gt;     &lt;dbl&gt;
-##  1    98 LYST   34.5      0.859
-##  2   608 FGD6   23.9      0.808
-##  3   484 SVIL   11.6      0.672
-##  4   285 AP3B1   8.33     0.596
-##  5   887 BRWD1   7.86     0.582
-##  6   390 RELN    7.58     0.573
-##  7   163 SPEG    6.54     0.537
-##  8    10 ZBTB17  5.91     0.511
-##  9  2640 ATXN10  5.59     0.497
-## 10  2326 OR3A2   5.57     0.496
-## # ... with 17,643 more rows</code></pre>
-</div>
-</div>
-<div id="run-mirage-on-102-asd-genes-in-cell-paper" class="section level2">
-<h2>Run mirage on 102 ASD genes in cell paper</h2>
-<div id="vs-analysis" class="section level3">
-<h3>VS analysis</h3>
-<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
-<pre><code>## # A tibble: 6 x 7
-##   X              No_case No_contr    OR    pval eta_est eta_pval
-##   &lt;fct&gt;            &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
-## 1 PLI&gt;=0.995          20       14  1.43 0.196   0.278    0.243  
-## 2 0.5&lt;=pLI&lt;0.995      17        5  3.4  0.00845 0.819    0.0109 
-## 3 pLI&lt;0.5             21        7  3    0.00627 0.732    0.00896
-## 4 MPC&gt;=2             267      232  1.15 0.0640  0.105    0.101  
-## 5 1&lt;=MPC&lt;2           934      920  1.02 0.381   0.0214   0.517  
-## 6 0&lt;=MPC&lt;1          2697     2640  1.02 0.222   0.00618  1</code></pre>
-<p><img src="ASC_cell_data_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-</div>
-<div id="gene-set-analysis-1" class="section level3">
-<h3>gene set analysis</h3>
-<p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
-<table>
-<thead>
-<tr class="header">
-<th>parameter</th>
-<th>estimate</th>
-<th>p value</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\delta}\)</span></td>
-<td>0.68</td>
-<td><span class="math inline">\(9.48\times 10^{-5}\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\hat{\eta}_1\)</span></td>
-<td>0.3964</td>
-<td>0.2339</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\eta}_2\)</span></td>
-<td>1</td>
-<td>0.0136</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\hat{\eta}_3\)</span></td>
-<td>0.9578</td>
-<td>0.0065</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\eta}_4\)</span></td>
-<td>0.2720</td>
-<td>0.0829</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\hat{\eta}_5\)</span></td>
-<td>0.0201</td>
-<td>0.6281</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\eta}_6\)</span></td>
-<td>0.0096</td>
-<td>0.7367</td>
-</tr>
-</tbody>
-</table>
-<pre><code>## # A tibble: 100 x 4
-##        X Gene       BF post.prob
-##    &lt;int&gt; &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-##  1    74 KDM5B   35.1      0.987
-##  2    78 UBR1     7.82     0.943
-##  3    73 DIP2A    5.87     0.926
-##  4    68 TCF7L2   4.28     0.901
-##  5    67 PTEN     4.05     0.896
-##  6    47 TAOK1    3.10     0.868
-##  7    81 SCN1A    2.57     0.845
-##  8    38 DYNC1H1  2.48     0.841
-##  9    65 KCNQ3    2.34     0.833
-## 10    60 NR3C2    2.14     0.820
-## # ... with 90 more rows</code></pre>
-</div>
 </div>
 
 <hr>

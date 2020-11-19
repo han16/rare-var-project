@@ -1,0 +1,234 @@
+---
+title: "Gene set analysis"
+output: html_document
+---
+
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(tidyverse)
+library(knitr)
+#library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+```
+
+```{r, echo=F, cache=T, warning=F, message=F}
+part1=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/ASC_v15_TDT_GQPL25.hAB30.results.2018-04-01.part1.tsv.gz",sep = '\t', header = TRUE, fill = TRUE))
+part2=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/ASC_v15_TDT_GQPL25.hAB30.results.2018-04-01.part2.tsv.gz",sep = '\t', header = TRUE, fill = TRUE))
+cell_trans_data=full_join(part1, part2)
+```
+
+
+```{r, echo=F, cache=T, warning=F, message=F}
+## add Exac Allele frequency to the data
+avinput.hg19_exac03_dropped=as_tibble(read.table("../../AutismDatafromASC_Cellpaper/avinput.hg19_exac03_dropped"))
+ASC_ExacAF=tibble(Variant=paste(avinput.hg19_exac03_dropped$V3, avinput.hg19_exac03_dropped$V4, avinput.hg19_exac03_dropped$V6, avinput.hg19_exac03_dropped$V7, sep=":"), ExacAF=avinput.hg19_exac03_dropped$V2)
+cell_trans_data_AF=left_join(cell_trans_data, ASC_ExacAF)
+cell_trans_data_AF$ExacAF[is.na(cell_trans_data_AF$ExacAF)==T]=0 # fill NA AF with 0
+```
+
+## Genome-wide analysis
+
+### Run mirage-vs on 6 variant groups in cell paper 
+
+
+
+```{r, echo=F, warning=F, message=F}
+# add one column of variant group index 
+cell_trans_data_AF_GI=cell_trans_data_AF %>% add_column(Group_Index=NA)
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$pLI>=0.995 & cell_trans_data_AF_GI$PTV==T)]=1
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$pLI>=0.5 & cell_trans_data_AF_GI$pLI<0.995 &  cell_trans_data_AF_GI$PTV==T)]=2
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$pLI<0.5 &  cell_trans_data_AF_GI$PTV==T)]=3
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$MPC>=2)]=4
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$MPC>=1 & cell_trans_data_AF_GI$MPC<2)]=5
+cell_trans_data_AF_GI$Group_Index[which(cell_trans_data_AF_GI$MPC<1)]=6
+#cell_trans_data_AF_GI=cell_trans_data_AF_GI %>% drop_na()
+```
+
+ 
+
+Use mirage-vs to test if there are signals in six variant groups  
+
+```{r, echo=F, eval=F}
+####### test the toy example 
+#data(mirage_vs_toy)
+#res_vs = mirage_vs(mirage_vs_toy,n1=1000,n2=1000)
+#########
+para_est=matrix(nrow=6, ncol=6)
+rownames(para_est)=c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1")
+colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
+for (i in 1:6)
+{ 
+#i=1  
+ cat(i, "is running", "\n")
+ variant_set=cell_trans_data_AF_GI %>% filter(Group_Index==i) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+ para_est[i,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+ pois.test=poisson.test(para_est[i,1:2], c(5869, 5869), r=1, alternative="greater")
+ para_est[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+ if (i<=3) # for LoF variants
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=5869,n2=5869, gamma=6)
+ if (i>3)  # for missense variants 
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=5869,n2=5869, gamma=3)
+ para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+  
+}
+as_tibble(para_est)
+#write.csv(para_est, file="../output/CellDataASC/para.est.var.group.proband.csv")
+#gene.data=eight.partition(cand.data)
+#ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
+```
+
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.  
+
+```{r, echo=F, warning=F, message=F}
+proband_para_est=read.csv("../output/CellDataASC/para.est.var.group.proband.csv")
+as_tibble(proband_para_est)
+
+
+var_group=c(rep(c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1"), 2))
+method=c(rep("Burden", 6), rep("mirage-vs", 6))
+pvalue=c(round(-log(proband_para_est$pval, base=10), 2), round(-log(proband_para_est$eta_pval, base=10), 2))
+summary=data.frame(var.group=var_group, pvalue=pvalue, method=method)
+ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) + 
+   geom_bar(stat="identity", 
+           position=position_dodge())+
+  ylab(expression(-log[10](pvalue)))+
+  theme(legend.title=element_blank())+
+  xlab(" variant groups")+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title 
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+### gene set analysis 
+
+Run mirage on all 17653 genes and $\gamma=6$ for LoF variants and $\gamma=3$ for missense. 
+
+
+```{r, echo=F, eval=F}
+##!!!!!!!!!!!!!!!!! Do not run !!!!!!!!!!!!!!!!!!!
+############  gene set 
+gene_set=cell_trans_data_AF_GI %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3)) # input data must be dataframe 
+######### It takes about one day to finish running mirage function 
+
+#res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
+#write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.AllGene.csv")
+```
+
+parameter | estimate |  p value |
+-----|-----|------|--------
+$\hat{\delta}$ | 0.15 | $1.64\times 10^{-8}$
+$\hat{\eta}_1$ | 1    | $3.52\times 10^{-6}$
+$\hat{\eta}_2$ | 0.48    | 0.03
+$\hat{\eta}_3$ | 0.12    | 0.01
+$\hat{\eta}_4$ | 0.20    | 0.05
+$\hat{\eta}_5$ | 0.02    | 0.46
+$\hat{\eta}_6$ | 0.0014    | 1
+
+
+```{r, echo=F}
+BF_proband_AllGene=as_tibble(read.csv("../output/CellDataASC/BF.proband.AllGene.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+BF_proband_AllGene_sorted
+#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
+
+## Run mirage on 102 ASD genes in cell paper
+
+```{r, echo=F}
+ASD_Gene_Cell=as_tibble(read.csv("../../AutismDatafromASC_Cellpaper/1-s2.0-S0092867419313984-mmc2.csv", header = TRUE))
+ASD_102_Gene=ASD_Gene_Cell[1:102,] %>% pull(ï..gene)
+```
+
+```{r, echo=F, eval=F}
+#########
+para_est=matrix(nrow=6, ncol=6)
+rownames(para_est)=c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1")
+colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
+for (i in 1:6)
+{ 
+#i=2  
+#cat(i, "is running", "\n")
+############  variant set 
+variant_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% ASD_102_Gene)%>% filter(Group_Index==i) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+para_est[i,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+pois.test=poisson.test(para_est[i,1:2], c(5869, 5869), r=1, alternative="greater")
+para_est[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+vs.mirage=mirage_vs(variant_set[,2:4],n1=5869,n2=5869, gamma=6)
+para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+}
+as_tibble(para_est)
+#write.csv(para_est, file="../output/CellDataASC/para.est.var.group.proband.102ASDGene.csv")
+#gene.data=eight.partition(cand.data)
+#ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
+```
+
+### VS analysis
+
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+
+```{r, echo=F}
+proband_para_est=read.csv("../output/CellDataASC/para.est.var.group.proband.102ASDGene.csv")
+as_tibble(proband_para_est)
+
+
+var_group=c(rep(c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1"), 2))
+method=c(rep("Burden", 6), rep("mirage-vs", 6))
+pvalue=c(round(-log(proband_para_est$pval, base=10), 2), round(-log(proband_para_est$eta_pval, base=10), 2))
+summary=data.frame(var.group=var_group, pvalue=pvalue, method=method)
+ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) + 
+   geom_bar(stat="identity", 
+           position=position_dodge())+
+  ylab(expression(-log[10](pvalue)))+
+  theme(legend.title=element_blank())+
+  xlab(" variant groups")+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title 
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+### gene set analysis
+
+$\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+
+```{r,echo=F, eval=F}
+############  gene set 
+gene_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% ASD_102_Gene) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+#mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
+mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869)# input data must be dataframe
+#res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
+#write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.102Gene.csv")
+```
+
+parameter | estimate |  p value |
+-----|-----|------|--------
+$\hat{\delta}$ | 0.68 | $9.48\times 10^{-5}$
+$\hat{\eta}_1$ | 0.3964    | 0.2339
+$\hat{\eta}_2$ | 1  | 0.0136
+$\hat{\eta}_3$ | 0.9578    | 0.0065
+$\hat{\eta}_4$ | 0.2720    | 0.0829
+$\hat{\eta}_5$ | 0.0201    | 0.6281
+$\hat{\eta}_6$ | 0.0096    | 0.7367
+
+
+
+
+
+```{r, echo=F}
+BF_proband_AllGene=as_tibble(read.csv("../output/CellDataASC/BF.proband.102Gene.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+BF_proband_AllGene_sorted
+#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
