@@ -547,12 +547,11 @@ div.tocify {
 ## #   Untransmitted_female_sibling &lt;int&gt;, Missense &lt;lgl&gt;, PTV &lt;lgl&gt;,
 ## #   Inframe &lt;lgl&gt;, Indel &lt;lgl&gt;, pLI &lt;dbl&gt;, loftee &lt;fct&gt;,
 ## #   loftee_flag &lt;fct&gt;, MPC &lt;dbl&gt;</code></pre>
-<div id="prepare-the-data-in-the-appropriate-format-for-annovar" class="section level3">
-<h3>prepare the data in the appropriate format for annovar</h3>
+<div id="step-1-prepare-the-data-in-the-appropriate-format-for-annovar" class="section level3">
+<h3>step 1: prepare the data in the appropriate format for annovar</h3>
 <p>To run annovar, the simplist format has 5 columns chr, star, end, ref, alt and each row is one variant.</p>
-<ol style="list-style-type: decimal">
-<li>use R to extract 5 required columns</li>
-</ol>
+<div id="use-r-to-extract-5-required-columns" class="section level4">
+<h4>1. use R to extract 5 required columns</h4>
 <pre class="r"><code>cell_data=read.table(&quot;cell_trans_data.txt&quot;, header=T, fill=T) # note &quot;fill&quot; some lines with less than 38 elements
 locus=matrix(cell_data$Variant)
 split_locus=strsplit(locus, &quot;:&quot;) # &quot;:&quot;  separates chr, start and end 
@@ -565,9 +564,9 @@ for (i in 1:length(split_locus))
 }
 
 #write.table(avinput, file=&quot;avinput.txt&quot;,row.names=F, col.names=F, quote=F)</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>then transfer into tab-delimited columns</li>
-</ol>
+</div>
+<div id="then-transfer-into-tab-delimited-columns" class="section level4">
+<h4>2. then transfer into tab-delimited columns</h4>
 <pre class="r"><code>head avinput.txt
 1 861283 861283 G C
 1 861287 861287 C T
@@ -581,13 +580,14 @@ for (i in 1:length(split_locus))
 1 865686 865686 A G</code></pre>
 <pre class="r"><code>awk &#39;{ for(i=1;i&lt;=NF;i++){if(i==NF){printf(&quot;%s\n&quot;,$NF);}else {printf(&quot;%s\t&quot;,$i)}}}&#39;
 input.data &gt; output.bed</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>download relevant database</li>
-</ol>
+</div>
+</div>
+<div id="step-2-download-relevant-database" class="section level3">
+<h3>step 2: download relevant database</h3>
 <pre class="r"><code>perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>run annovar function</li>
-</ol>
+</div>
+<div id="step-3-run-annovar-function" class="section level3">
+<h3>step 3: run annovar function</h3>
 <pre class="r"><code>perl annotate_variation.pl -filter -build hg19 -dbtype exac03 avinput humandb/
   # the output file with AF annotated is avinput.hg19_exac03_dropped</code></pre>
 </div>

@@ -89,11 +89,11 @@ Since the data doesn't have allele frequency, use ANNOVAR to annotate it
 head(cell_trans_data)
 ```
 
-### prepare the data in the appropriate format  for annovar 
+### step 1: prepare the data in the appropriate format  for annovar 
 
 To run annovar, the simplist format has 5 columns chr, star, end, ref, alt and each row is one variant. 
 
-1.  use R to extract 5 required columns 
+#### 1.  use R to extract 5 required columns 
 
 ```{r, echo=T, eval=F}
 
@@ -112,7 +112,7 @@ for (i in 1:length(split_locus))
 
 ```
 
-2.  then transfer into tab-delimited columns
+#### 2.  then transfer into tab-delimited columns
 
 ```{r, echo=T, eval=F}
 head avinput.txt
@@ -134,7 +134,7 @@ awk '{ for(i=1;i<=NF;i++){if(i==NF){printf("%s\n",$NF);}else {printf("%s\t",$i)}
 input.data > output.bed
 ```
 
-3.  download relevant database 
+###   step 2: download relevant database 
 
 ```{r, echo=T, eval=F}
 perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/
@@ -142,7 +142,7 @@ perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humand
 ```
 
 
-4.  run annovar function 
+###   step 3: run annovar function 
 
 ```{r, echo=T, eval=F}
 perl annotate_variation.pl -filter -build hg19 -dbtype exac03 avinput humandb/
