@@ -476,11 +476,16 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="right")
 
 ## Old sample vs Cell data 
 
+
 To compare old sample and cell data, look at LoF +AF<1E-4+10 gene set and how they compare with each other. 
 
 Old sample: LoF: the union of  "stopgain", "frameshift substitution", "splicing", "stoploss" 
 
 cell sample: LoF: protein truncating variants (PTV) with pLI>=0.5
+
+
+### LoF variants in different gene set 
+
 
 
 ```{r, echo=F, cache=T, warning=F, message=F}
@@ -557,4 +562,56 @@ ggarrange( g_old_sample, g_cell_sample, common.legend = TRUE, legend="right")
 ```
 
 
+### LoF variants in different FMRP genes 
+
+LoF variants in 50 FMRP genes. 
+
+```{r, echo=F}
+### display LoF variant distribution between two samples for specific gene set 
+######################################################
+## Gene_Set[7]: FMRP gene 
+variant_gene_old_sample=old_variant_set %>% filter(Gene %in% Gene_Set_List[[7]])%>% rename(GENE_NAME=Gene) 
+variant_gene_cell_sample=cell_variant_set %>% filter(GENE_NAME %in% Gene_Set_List[[7]])
+variant_gene_old_new_sample_combine=full_join(variant_gene_old_sample, variant_gene_cell_sample, by="GENE_NAME") %>% select(GENE_NAME, No.case, No.contr, Transmitted_proband, Untransmitted_proband)
+####### fill NA with 0
+variant_gene_old_new_sample_combine$No.case=variant_gene_old_new_sample_combine$No.case%>%replace_na(0)
+variant_gene_old_new_sample_combine$No.contr=variant_gene_old_new_sample_combine$No.contr%>%replace_na(0)
+variant_gene_old_new_sample_combine$Transmitted_proband=variant_gene_old_new_sample_combine$Transmitted_proband%>%replace_na(0)
+variant_gene_old_new_sample_combine$Untransmitted_proband=variant_gene_old_new_sample_combine$Untransmitted_proband%>%replace_na(0)
+########### count variants for every gene 
+unique_gene=unique(variant_gene_old_new_sample_combine$GENE_NAME)[1:50]
+unique_gene_case=numeric()
+unique_gene_control=numeric()
+unique_gene_transmitted_proband=numeric()
+unique_gene_untransmitted_proband=numeric()
+for (i in 1:length(unique_gene))
+{
+ unique_gene_case[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(No.case)%>%sum()
+ unique_gene_control[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(No.contr)%>%sum()
+unique_gene_transmitted_proband[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(Transmitted_proband)%>%sum()  
+unique_gene_untransmitted_proband[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(Untransmitted_proband)%>%sum()
+}
+unique_gene_variant_count=tibble(Gene=unique_gene, No.case=unique_gene_case, No.control=unique_gene_control, Transmitted_proband=unique_gene_transmitted_proband, Untransmitted_proband=unique_gene_untransmitted_proband)
+###########################
+transmitted_variant=tibble(Gene=c(as.character(unique_gene), as.character(unique_gene)), count=c(unique_gene_variant_count$No.case, unique_gene_variant_count$Transmitted_proband), sample=c(rep("old", nrow(unique_gene_variant_count)), rep("cell", nrow(unique_gene_variant_count))))
+
+
+g1=ggplot(transmitted_variant, aes(x=Gene, y=count, shape=sample, color=sample))+ 
+ geom_point()+
+  ylab("Transmitted variant counts")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, size=7))
+g1
+
+untransmitted_variant=tibble(Gene=c(as.character(unique_gene), as.character(unique_gene)), count=c(unique_gene_variant_count$No.control, unique_gene_variant_count$Untransmitted_proband), sample=c(rep("old", nrow(unique_gene_variant_count)), rep("cell", nrow(unique_gene_variant_count))))
+
+
+g2=ggplot(untransmitted_variant, aes(x=Gene, y=count, shape=sample, color=sample))+ 
+ geom_point()+
+  ylab("Untransmitted variant counts")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, size=7))
+g2
+
+```
 
