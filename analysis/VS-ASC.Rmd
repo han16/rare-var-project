@@ -34,7 +34,7 @@ cell_trans_data=full_join(part1, part2)
 ## Allele frequency distribution
 
 
-it seems the data is already filtered with $AF>10^{-3}$. 
+It seems the data is already filtered with $AF>10^{-3}$. 
 
 ```{r, echo=F, cache=T, warning=F, message=F}
 ## add Exac Allele frequency to the data
@@ -476,18 +476,6 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="right")
 
 ## Old sample vs Cell data 
 
-
-To compare old sample and cell data, look at LoF +AF<1E-4+10 gene set and how they compare with each other. 
-
-Old sample: LoF: the union of  "stopgain", "frameshift substitution", "splicing", "stoploss" 
-
-cell sample: LoF: protein truncating variants (PTV) with pLI>=0.5
-
-
-### LoF variants in different gene set 
-
-
-
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### old sample
 ########## read into data
@@ -498,6 +486,90 @@ All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
 Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
 ```
+
+### Missense variants in different gene set
+
+To compare old sample and cell data, look at missense variant (regardless of categories) +AF<1E-4+10 gene set and how they compare with each other. 
+
+Old sample: missense: Non-LoF variants  
+
+cell sample: : [missense_variant]
+
+```{r, echo=F, warning=F, message=F}
+######### obtain missense variants with AF<1-E4+10 gene set in old sample
+LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+#old_variant_set=Anno.Data%>%filter(as.character(Polyphen2.HDIV.score)>0 & ExacAF<0.0001)%>%select(ID, Gene, No.case, No.contr) %>% drop_na() # missense variant with AF<1E-4 in old sample
+old_variant_set=Anno.Data%>%filter(Annotation %in% LoF.def==F & ExacAF<0.0001)%>%select(ID, Gene, No.case, No.contr) %>% drop_na() # missense variant with AF<1E-4 in old sample
+transmitted_old_sample=numeric()
+nontransmitted_old_sample=numeric()
+for ( i in 1:10)
+ {
+  Feature_Data=old_variant_set%>%filter(Gene %in% Gene_Set_List[[i]])
+  if (nrow(Feature_Data)>0)
+  { 
+    transmitted_old_sample[i]=Feature_Data%>%select(No.case)%>%sum()
+    nontransmitted_old_sample[i]=Feature_Data%>%select(No.contr)%>%sum()
+  }
+  }
+
+missense_old_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_old_sample, nontransmitted_old_sample))
+
+g_old_sample=ggplot(missense_old_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = "dodge")+
+  theme_classic()+
+  ylim(c(0,100000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("old sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+
+
+```
+
+
+```{r, echo=F, warning=F, message=F}
+######### obtain missense variants with AF<1-E4+10 gene set in cell data
+cell_variant_set=cell_trans_data_AF %>% filter(Consequence=="[missense_variant]")%>% filter(ExacAF<0.0001) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband)  # LoF variant in cell data with AF<1-10-4
+transmitted_cell_sample=numeric()
+nontransmitted_cell_sample=numeric()
+for ( i in 1:10)
+ {
+  Feature_Data=cell_variant_set%>%filter(GENE_NAME %in% Gene_Set_List[[i]])
+  if (nrow(Feature_Data)>0)
+  { 
+    transmitted_cell_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
+    nontransmitted_cell_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
+  }
+  }
+
+missense_cell_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_cell_sample, nontransmitted_cell_sample))
+
+g_cell_sample=ggplot(missense_cell_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = position_dodge())+
+  #geom_bar(stat="identity")+
+  theme_classic()+
+  ylim(c(0,100000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("cell sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+
+ggarrange( g_old_sample, g_cell_sample, common.legend = TRUE, legend="right") 
+```
+
+
+### LoF variants in different gene set 
+
+
+
+To compare old sample and cell data, look at LoF +AF<1E-4+10 gene set and how they compare with each other. 
+
+Old sample: LoF: the union of  "stopgain", "frameshift substitution", "splicing", "stoploss" 
+
+cell sample: LoF: protein truncating variants (PTV) (nonsense, frame-shift, and essential splice site variants) with pLI>=0.5
+
 
 ```{r, echo=F, warning=F, message=F}
 ######### obtain LOF variants with AF<1-E4+10 gene set in old sample
@@ -560,6 +632,14 @@ ggtitle("cell sample")+
 
 ggarrange( g_old_sample, g_cell_sample, common.legend = TRUE, legend="right") 
 ```
+
+
+
+### Run MIRAGE-VS on LoF variants of gene set 
+
+Apply mirage on LoF variants in different gene set from old sample and cell data and see how they differ. 
+
+
 
 
 ### LoF variants in different FMRP genes 

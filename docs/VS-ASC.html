@@ -415,7 +415,7 @@ div.tocify {
 
 <div id="allele-frequency-distribution" class="section level2">
 <h2>Allele frequency distribution</h2>
-<p>it seems the data is already filtered with <span class="math inline">\(AF&gt;10^{-3}\)</span>.</p>
+<p>It seems the data is already filtered with <span class="math inline">\(AF&gt;10^{-3}\)</span>.</p>
 <p><img src="VS-ASC_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 ## 0.000e+00 0.000e+00 8.245e-06 1.294e-05 1.696e-05 1.200e-03</code></pre>
@@ -478,17 +478,28 @@ div.tocify {
 </div>
 <div id="old-sample-vs-cell-data" class="section level2">
 <h2>Old sample vs Cell data</h2>
-<p>To compare old sample and cell data, look at LoF +AF&lt;1E-4+10 gene set and how they compare with each other.</p>
-<p>Old sample: LoF: the union of “stopgain”, “frameshift substitution”, “splicing”, “stoploss”</p>
-<p>cell sample: LoF: protein truncating variants (PTV) with pLI&gt;=0.5</p>
+<div id="missense-variants-in-different-gene-set" class="section level3">
+<h3>Missense variants in different gene set</h3>
+<p>To compare old sample and cell data, look at missense variant (regardless of categories) +AF&lt;1E-4+10 gene set and how they compare with each other.</p>
+<p>Old sample: missense: Non-LoF variants</p>
+<p>cell sample: : [missense_variant]</p>
+<p><img src="VS-ASC_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
 <div id="lof-variants-in-different-gene-set" class="section level3">
 <h3>LoF variants in different gene set</h3>
-<p><img src="VS-ASC_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>To compare old sample and cell data, look at LoF +AF&lt;1E-4+10 gene set and how they compare with each other.</p>
+<p>Old sample: LoF: the union of “stopgain”, “frameshift substitution”, “splicing”, “stoploss”</p>
+<p>cell sample: LoF: protein truncating variants (PTV) (nonsense, frame-shift, and essential splice site variants) with pLI&gt;=0.5</p>
+<p><img src="VS-ASC_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+<div id="run-mirage-vs-on-lof-variants-of-gene-set" class="section level3">
+<h3>Run MIRAGE-VS on LoF variants of gene set</h3>
+<p>Apply mirage on LoF variants in different gene set from old sample and cell data and see how they differ.</p>
 </div>
 <div id="lof-variants-in-different-fmrp-genes" class="section level3">
 <h3>LoF variants in different FMRP genes</h3>
 <p>LoF variants in 50 FMRP genes.</p>
-<p><img src="VS-ASC_files/figure-html/unnamed-chunk-13-1.png" width="672" /><img src="VS-ASC_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<p><img src="VS-ASC_files/figure-html/unnamed-chunk-15-1.png" width="672" /><img src="VS-ASC_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
 </div>
 </div>
 
