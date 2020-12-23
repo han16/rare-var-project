@@ -489,13 +489,14 @@ Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # us
 
 ### Missense variants in different gene set
 
-#### Variant counts 
-
 To compare old sample and cell data, look at missense variant (regardless of categories) +AF<1E-4+10 gene set and how they compare with each other. 
 
 Old sample: missense: Non-LoF variants  
 
 cell sample: : [missense_variant]
+
+#### Variant counts comparison
+
 
 ```{r, echo=F, warning=F, message=F, cache=T}
 ######### obtain missense variants with AF<1-E4+10 gene set in old sample
@@ -601,7 +602,7 @@ ggtitle("cell sample")+
 ggarrange( g_old_sample, g_cell_sample, common.legend = TRUE, legend="right") 
 ```
 
-#### Burden vs MIRAGE-VS 
+#### Burden vs MIRAGE-VS for old sample and cell sample  
 
 
 ```{r, echo=F, warning=F, message=F}
@@ -619,7 +620,7 @@ scale_shape_manual(values=1:nlevels(as.factor(Burden_MIRAGE_VS$X)))+
    theme(legend.position = "none")+  # no legend 
 theme(plot.title = element_text(hjust = 0.5)) +# center the title 
 theme(legend.title=element_blank())+
-#theme(legend.text=element_text(size=30))+
+#theme(legend.text=element_text(size=30))+ # text size in legend 
 #theme(text = element_text(size=35))+
 guides(size=FALSE)+   # suppress size legend 
 guides(shape = guide_legend(override.aes = list(size = 5))) # symbol size in legend 
