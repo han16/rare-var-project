@@ -9,6 +9,7 @@ rm(list=ls())
 set.seed(123)
 library(tidyverse)
 library(knitr)
+library(kableExtra)
 #library("devtools")
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
@@ -32,7 +33,7 @@ cell_trans_data_AF$ExacAF[is.na(cell_trans_data_AF$ExacAF)==T]=0 # fill NA AF wi
 
 ## Genome-wide analysis
 
-### Run mirage-vs on 6 variant groups in cell paper 
+### Run mirage-vs on 6 variant groups in cell paper without gene level information 
 
 
 
@@ -58,7 +59,7 @@ Use mirage-vs to test if there are signals in six variant groups
 #res_vs = mirage_vs(mirage_vs_toy,n1=1000,n2=1000)
 #########
 para_est=matrix(nrow=6, ncol=6)
-rownames(para_est)=c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1")
+rownames(para_est)=c("PLI>=0.995", "pLI within (0.5,0.995)", "pLI<0.5", "MPC>=2", "MPC within (1,2)", "MPC<1")
 colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
 for (i in 1:6)
 { 
@@ -88,7 +89,7 @@ proband_para_est=read.csv("../output/CellDataASC/para.est.var.group.proband.csv"
 as_tibble(proband_para_est)
 
 
-var_group=c(rep(c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1"), 2))
+var_group=c(rep(c("PLI>=0.995", "pLI>=0.5&pLI<0.995", "pLI<0.5", "MPC>=2", "MPC>=1&MPC<2", "MPC<1"), 2))
 method=c(rep("Burden", 6), rep("mirage-vs", 6))
 pvalue=c(round(-log(proband_para_est$pval, base=10), 2), round(-log(proband_para_est$eta_pval, base=10), 2))
 summary=data.frame(var.group=var_group, pvalue=pvalue, method=method)
@@ -97,16 +98,17 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
            position=position_dodge())+
   ylab(expression(-log[10](pvalue)))+
   theme(legend.title=element_blank())+
-  xlab(" variant groups")+
+  xlab("variant groups")+
   ggtitle("")+
-  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title 
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
   #ylab(expression(paste(hat(eta))))+ 
   #guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
 ```
 
-### gene set analysis 
+### gene set analysis taking into account gene level information
 
 Run mirage on all 17653 genes and $\gamma=6$ for LoF variants and $\gamma=3$ for missense. 
 
@@ -122,17 +124,19 @@ mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3)
 #write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.AllGene.csv")
 ```
 
-parameter | estimate |  p value |
------|-----|------|--------
-$\hat{\delta}$ | 0.15 | $1.64\times 10^{-8}$
-$\hat{\eta}_1$ | 1    | $3.52\times 10^{-6}$
-$\hat{\eta}_2$ | 0.48    | 0.03
-$\hat{\eta}_3$ | 0.12    | 0.01
-$\hat{\eta}_4$ | 0.20    | 0.05
-$\hat{\eta}_5$ | 0.02    | 0.46
-$\hat{\eta}_6$ | 0.0014    | 1
+variant category |parameter | estimate |  p value |
+-----------------|-----|-----|------|--------
+\ |$\hat{\delta}$ | 0.15 | $1.64\times 10^{-8}$
+PLI>=0.995|$\hat{\eta}_1$ | 1    | $3.52\times 10^{-6}$
+0.5<=pLI<0.995|$\hat{\eta}_2$ | 0.48    | 0.03
+pLI<0.5|$\hat{\eta}_3$ | 0.12    | 0.01
+ MPC>=2|$\hat{\eta}_4$ | 0.20    | 0.05
+1<=MPC<2| $\hat{\eta}_5$ | 0.02    | 0.46
+0<=MPC<1| $\hat{\eta}_6$ | 0.0014    | 1
 
 
+
+Below are top ranked genes. 
 ```{r, echo=F}
 BF_proband_AllGene=as_tibble(read.csv("../output/CellDataASC/BF.proband.AllGene.csv"))
 BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
@@ -151,7 +155,7 @@ ASD_102_Gene=ASD_Gene_Cell[1:102,] %>% pull(ï..gene)
 ```{r, echo=F, eval=F}
 #########
 para_est=matrix(nrow=6, ncol=6)
-rownames(para_est)=c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1")
+rownames(para_est)=c("PLI>=0.995", "pLI>=0.5&pLI<0.995", "pLI<0.5", "MPC>=2", "MPC>=1&MPC<2", "MPC<1")
 colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
 for (i in 1:6)
 { 
@@ -171,7 +175,7 @@ as_tibble(para_est)
 #ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
 ```
 
-### VS analysis
+### variant set (VS) analysis
 
 This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
 
@@ -180,7 +184,7 @@ proband_para_est=read.csv("../output/CellDataASC/para.est.var.group.proband.102A
 as_tibble(proband_para_est)
 
 
-var_group=c(rep(c("PLI>=0.995", "0.5<=pLI<0.995", "pLI<0.5", "MPC>=2", "1<=MPC<2", "0<=MPC<1"), 2))
+var_group=c(rep(c("PLI>=0.995", "pLI>=0.5&pLI<0.995", "pLI<0.5", "MPC>=2", "MPC>=1&MPC<2", "MPC<1"), 2))
 method=c(rep("Burden", 6), rep("mirage-vs", 6))
 pvalue=c(round(-log(proband_para_est$pval, base=10), 2), round(-log(proband_para_est$eta_pval, base=10), 2))
 summary=data.frame(var.group=var_group, pvalue=pvalue, method=method)
@@ -190,8 +194,9 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
   ylab(expression(-log[10](pvalue)))+
   theme(legend.title=element_blank())+
   xlab(" variant groups")+
-  ggtitle("")+
-  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title 
+  ggtitle(" p value comparison between Burden and MIRAGE-VS")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
   #ylab(expression(paste(hat(eta))))+ 
   #guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
@@ -211,20 +216,21 @@ mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869)# input data must be 
 #write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.102Gene.csv")
 ```
 
-parameter | estimate |  p value |
------|-----|------|--------
-$\hat{\delta}$ | 0.68 | $9.48\times 10^{-5}$
-$\hat{\eta}_1$ | 0.3964    | 0.2339
-$\hat{\eta}_2$ | 1  | 0.0136
-$\hat{\eta}_3$ | 0.9578    | 0.0065
-$\hat{\eta}_4$ | 0.2720    | 0.0829
-$\hat{\eta}_5$ | 0.0201    | 0.6281
-$\hat{\eta}_6$ | 0.0096    | 0.7367
+variant categories |parameter | estimate |  p value |
+-------------------|-----|-----|------|--------
+\ |$\hat{\delta}$ | 0.68 | $9.48\times 10^{-5}$
+PLI>=0.995| $\hat{\eta}_1$ | 0.3964    | 0.2339
+0.5<=pLI<0.995 | $\hat{\eta}_2$ | 1  | 0.0136
+pLI<0.5 | $\hat{\eta}_3$ | 0.9578    | 0.0065
+MPC>=2 | $\hat{\eta}_4$ | 0.2720    | 0.0829
+1<=MPC<2 | $\hat{\eta}_5$ | 0.0201    | 0.6281
+0<=MPC<1 | $\hat{\eta}_6$ | 0.0096    | 0.7367
+Table: Parameter estimate by MIRAGE for 102 ASD genes. 
 
 
 
-
-
+Below are top ranked genes. 
+ 
 ```{r, echo=F}
 BF_proband_AllGene=as_tibble(read.csv("../output/CellDataASC/BF.proband.102Gene.csv"))
 BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
@@ -232,3 +238,54 @@ BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
 BF_proband_AllGene_sorted
 #BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
 ```
+
+
+## Top 5% constraint genes 
+
+
+### Burden analysis 
+
+#### Look at all variants with AF<10E-4 
+
+In old sample, we observe signal in constraint genes with $AF<10^{-4}$. 
+
+```{r, echo=F, warning=F, message=F, cache=T}
+Constraint_Gene=as.character(read.csv("../data/GeneSet/Samocha_2014NG_contraintgene.csv", header=T)$gene)
+cell_trans_data_Consraint_Gene=cell_trans_data_AF%>% filter(GENE_NAME %in% Constraint_Gene & ExacAF<0.0001)%>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband)%>%drop_na()
+```
+
+There are 26467 transmitted variants in proband and 26272 untransmitted variants. 
+
+```{r, echo=T}
+poisson.test(c(26467, 26272), c(5869, 5869), r=1, alternative="greater")
+```
+
+### Run MIRAGE-VS for all variants together
+
+Put all variants with AF<10E-4 in one category and run MIRAGE-VS. $\widehat{\eta}=0.016$, p value is 0.2022.  
+
+```{r, echo=F, eval=F}
+Consraint_Gene_for_VS=cell_trans_data_Consraint_Gene%>% select(Transmitted_proband, Untransmitted_proband)%>%add_column(Group_Index=1)%>% drop_na()
+########### here it takes about 5 mins to run mirage-VS 
+vs.mirage=mirage_vs(data.frame(Consraint_Gene_for_VS),n1=5869,n2=5869)
+```
+
+## Top genes/variants in old sample 
+
+Look at top genes/variants  in old sample 
+
+### Gene CYFIP1
+
+#### Transmitted and untransmitted variants in gene CYFIP1
+
+59/65 (transmitted/untransmitted). No 8/0 patterns as observed in old sample. 
+
+```{r, echo=F}
+cell_data_gene_CYFIP1=cell_trans_data_AF%>% filter(GENE_NAME=="CYFIP1")%>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband)%>%drop_na()
+kable(cell_data_gene_CYFIP1, caption = "Transmitted vs Untransmitted variants in gene CYFIP1")%>%
+kable_styling() %>%
+scroll_box(height = "500px")
+```
+
+In old sample, there is one variant has 8/0 at '15:22963816-22963816_A_G' which doesn't show up in cell sample. In stead, the new sample has a close one '15:22963814:G:A'
+ with 1/0 pattern. 

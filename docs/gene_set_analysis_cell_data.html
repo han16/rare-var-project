@@ -25,6 +25,7 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -415,8 +416,8 @@ div.tocify {
 
 <div id="genome-wide-analysis" class="section level2">
 <h2>Genome-wide analysis</h2>
-<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper" class="section level3">
-<h3>Run mirage-vs on 6 variant groups in cell paper</h3>
+<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper-without-gene-level-information" class="section level3">
+<h3>Run mirage-vs on 6 variant groups in cell paper without gene level information</h3>
 <p>Use mirage-vs to test if there are signals in six variant groups</p>
 <p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
 <pre><code>## # A tibble: 6 x 7
@@ -430,12 +431,13 @@ div.tocify {
 ## 6 0&lt;=MPC&lt;1        339394   340489 0.997 0.908     0.00602 1</code></pre>
 <p><img src="gene_set_analysis_cell_data_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
-<div id="gene-set-analysis" class="section level3">
-<h3>gene set analysis</h3>
+<div id="gene-set-analysis-taking-into-account-gene-level-information" class="section level3">
+<h3>gene set analysis taking into account gene level information</h3>
 <p>Run mirage on all 17653 genes and <span class="math inline">\(\gamma=6\)</span> for LoF variants and <span class="math inline">\(\gamma=3\)</span> for missense.</p>
 <table>
 <thead>
 <tr class="header">
+<th>variant category</th>
 <th>parameter</th>
 <th>estimate</th>
 <th>p value</th>
@@ -444,42 +446,50 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td><span class="math inline">\(\hat{\delta}\)</span></td>
 <td>0.15</td>
 <td><span class="math inline">\(1.64\times 10^{-8}\)</span></td>
 </tr>
 <tr class="even">
+<td>PLI&gt;=0.995</td>
 <td><span class="math inline">\(\hat{\eta}_1\)</span></td>
 <td>1</td>
 <td><span class="math inline">\(3.52\times 10^{-6}\)</span></td>
 </tr>
 <tr class="odd">
+<td>0.5&lt;=pLI&lt;0.995</td>
 <td><span class="math inline">\(\hat{\eta}_2\)</span></td>
 <td>0.48</td>
 <td>0.03</td>
 </tr>
 <tr class="even">
+<td>pLI&lt;0.5</td>
 <td><span class="math inline">\(\hat{\eta}_3\)</span></td>
 <td>0.12</td>
 <td>0.01</td>
 </tr>
 <tr class="odd">
+<td>MPC&gt;=2</td>
 <td><span class="math inline">\(\hat{\eta}_4\)</span></td>
 <td>0.20</td>
 <td>0.05</td>
 </tr>
 <tr class="even">
+<td>1&lt;=MPC&lt;2</td>
 <td><span class="math inline">\(\hat{\eta}_5\)</span></td>
 <td>0.02</td>
 <td>0.46</td>
 </tr>
 <tr class="odd">
+<td>0&lt;=MPC&lt;1</td>
 <td><span class="math inline">\(\hat{\eta}_6\)</span></td>
 <td>0.0014</td>
 <td>1</td>
 </tr>
 </tbody>
 </table>
+<p>Below are top ranked genes.</p>
 <pre><code>## # A tibble: 17,653 x 4
 ##        X Gene      BF post.prob
 ##    &lt;int&gt; &lt;fct&gt;  &lt;dbl&gt;     &lt;dbl&gt;
@@ -498,8 +508,8 @@ div.tocify {
 </div>
 <div id="run-mirage-on-102-asd-genes-in-cell-paper" class="section level2">
 <h2>Run mirage on 102 ASD genes in cell paper</h2>
-<div id="vs-analysis" class="section level3">
-<h3>VS analysis</h3>
+<div id="variant-set-vs-analysis" class="section level3">
+<h3>variant set (VS) analysis</h3>
 <p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
 <pre><code>## # A tibble: 6 x 7
 ##   X              No_case No_contr    OR    pval eta_est eta_pval
@@ -512,12 +522,14 @@ div.tocify {
 ## 6 0&lt;=MPC&lt;1          2697     2640  1.02 0.222   0.00618  1</code></pre>
 <p><img src="gene_set_analysis_cell_data_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
-<div id="gene-set-analysis-1" class="section level3">
+<div id="gene-set-analysis" class="section level3">
 <h3>gene set analysis</h3>
 <p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
 <table>
+<caption>Parameter estimate by MIRAGE for 102 ASD genes.</caption>
 <thead>
 <tr class="header">
+<th>variant categories</th>
 <th>parameter</th>
 <th>estimate</th>
 <th>p value</th>
@@ -526,42 +538,50 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td><span class="math inline">\(\hat{\delta}\)</span></td>
 <td>0.68</td>
 <td><span class="math inline">\(9.48\times 10^{-5}\)</span></td>
 </tr>
 <tr class="even">
+<td>PLI&gt;=0.995</td>
 <td><span class="math inline">\(\hat{\eta}_1\)</span></td>
 <td>0.3964</td>
 <td>0.2339</td>
 </tr>
 <tr class="odd">
+<td>0.5&lt;=pLI&lt;0.995</td>
 <td><span class="math inline">\(\hat{\eta}_2\)</span></td>
 <td>1</td>
 <td>0.0136</td>
 </tr>
 <tr class="even">
+<td>pLI&lt;0.5</td>
 <td><span class="math inline">\(\hat{\eta}_3\)</span></td>
 <td>0.9578</td>
 <td>0.0065</td>
 </tr>
 <tr class="odd">
+<td>MPC&gt;=2</td>
 <td><span class="math inline">\(\hat{\eta}_4\)</span></td>
 <td>0.2720</td>
 <td>0.0829</td>
 </tr>
 <tr class="even">
+<td>1&lt;=MPC&lt;2</td>
 <td><span class="math inline">\(\hat{\eta}_5\)</span></td>
 <td>0.0201</td>
 <td>0.6281</td>
 </tr>
 <tr class="odd">
+<td>0&lt;=MPC&lt;1</td>
 <td><span class="math inline">\(\hat{\eta}_6\)</span></td>
 <td>0.0096</td>
 <td>0.7367</td>
 </tr>
 </tbody>
 </table>
+<p>Below are top ranked genes.</p>
 <pre><code>## # A tibble: 100 x 4
 ##        X Gene       BF post.prob
 ##    &lt;int&gt; &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;
@@ -576,6 +596,1932 @@ div.tocify {
 ##  9    65 KCNQ3    2.34     0.833
 ## 10    60 NR3C2    2.14     0.820
 ## # ... with 90 more rows</code></pre>
+</div>
+</div>
+<div id="top-5-constraint-genes" class="section level2">
+<h2>Top 5% constraint genes</h2>
+<div id="burden-analysis" class="section level3">
+<h3>Burden analysis</h3>
+<div id="look-at-all-variants-with-af10e-4" class="section level4">
+<h4>Look at all variants with AF&lt;10E-4</h4>
+<p>In old sample, we observe signal in constraint genes with <span class="math inline">\(AF&lt;10^{-4}\)</span>.</p>
+<p>There are 26467 transmitted variants in proband and 26272 untransmitted variants.</p>
+<pre class="r"><code>poisson.test(c(26467, 26272), c(5869, 5869), r=1, alternative=&quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  Comparison of Poisson rates
+## 
+## data:  c(26467, 26272) time base: c(5869, 5869)
+## count1 = 26467, expected count1 = 26370, p-value = 0.1991
+## alternative hypothesis: true rate ratio is greater than 1
+## 95 percent confidence interval:
+##  0.9930563       Inf
+## sample estimates:
+## rate ratio 
+##   1.007422</code></pre>
+</div>
+</div>
+<div id="run-mirage-vs-for-all-variants-together" class="section level3">
+<h3>Run MIRAGE-VS for all variants together</h3>
+<p>Put all variants with AF&lt;10E-4 in one category and run MIRAGE-VS. <span class="math inline">\(\widehat{\eta}=0.016\)</span>, p value is 0.2022.</p>
+</div>
+</div>
+<div id="top-genesvariants-in-old-sample" class="section level2">
+<h2>Top genes/variants in old sample</h2>
+<p>Look at top genes/variants in old sample</p>
+<div id="gene-cyfip1" class="section level3">
+<h3>Gene CYFIP1</h3>
+<div id="transmitted-and-untransmitted-variants-in-gene-cyfip1" class="section level4">
+<h4>Transmitted and untransmitted variants in gene CYFIP1</h4>
+<p>59/65 (transmitted/untransmitted). No 8/0 patterns as observed in old sample.</p>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Transmitted vs Untransmitted variants in gene CYFIP1
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variant
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+GENE_NAME
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Transmitted_proband
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Untransmitted_proband
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+15:22925787:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22925873:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22925877:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22925883:C:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22925886:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22925976:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22928198:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22928448:G:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22928492:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22928499:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22928507:C:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22929717:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22929783:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22929823:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22929831:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22929855:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933577:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933578:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933611:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933649:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933766:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933770:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933853:A:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933871:C:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22935899:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22935909:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22935912:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22939241:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22940731:G:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22940732:A:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22940793:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22940807:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22940826:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22940828:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22940843:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22946970:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22946990:C:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947019:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947036:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947037:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947045:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22954234:C:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22954261:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22954279:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22954289:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22954294:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22954300:C:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22954308:C:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22955174:C:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22955174:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22955210:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22955219:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22955238:C:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956446:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956472:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956481:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956486:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956528:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956553:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956565:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22956567:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22958188:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22958213:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22958303:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22960843:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22960872:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962304:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962456:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962457:G:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962487:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962505:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962514:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962523:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962535:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963761:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963771:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963798:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963814:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963830:C:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969191:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969217:T:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969224:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969241:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969245:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969250:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969256:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969348:C:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969361:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22990102:T:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22990123:C:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22990136:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22991157:T:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22991168:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22991173:G:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22991178:T:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22991186:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22991204:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22991213:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22997798:C:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22997852:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22997857:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22998454:G:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22998463:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22998471:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22999352:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22999430:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22999441:G:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22999450:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22999459:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22999541:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000098:A:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000149:T:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000151:G:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000163:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000164:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000172:G:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000212:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000213:T:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000217:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000228:G:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002886:A:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002888:A:G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002903:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002904:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002918:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002936:A:C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002969:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002975:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002976:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002981:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002984:G:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23002996:C:T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23003029:G:A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In old sample, there is one variant has 8/0 at ‘15:22963816-22963816_A_G’ which doesn’t show up in cell sample. In stead, the new sample has a close one ‘15:22963814:G:A’ with 1/0 pattern.</p>
+</div>
 </div>
 </div>
 
