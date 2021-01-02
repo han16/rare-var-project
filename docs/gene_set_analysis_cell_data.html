@@ -508,8 +508,8 @@ div.tocify {
 </div>
 <div id="run-mirage-on-102-asd-genes-in-cell-paper" class="section level2">
 <h2>Run mirage on 102 ASD genes in cell paper</h2>
-<div id="variant-set-vs-analysis" class="section level3">
-<h3>variant set (VS) analysis</h3>
+<div id="variant-set-vs-analysis-without-gene-level-information" class="section level3">
+<h3>variant set (VS) analysis without gene level information</h3>
 <p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
 <pre><code>## # A tibble: 6 x 7
 ##   X              No_case No_contr    OR    pval eta_est eta_pval
@@ -522,8 +522,8 @@ div.tocify {
 ## 6 0&lt;=MPC&lt;1          2697     2640  1.02 0.222   0.00618  1</code></pre>
 <p><img src="gene_set_analysis_cell_data_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
-<div id="gene-set-analysis" class="section level3">
-<h3>gene set analysis</h3>
+<div id="gene-set-analysis-taking-into-account-gene-level-information-1" class="section level3">
+<h3>gene set analysis taking into account gene level information</h3>
 <p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
 <table>
 <caption>Parameter estimate by MIRAGE for 102 ASD genes.</caption>
@@ -2520,7 +2520,7 @@ CYFIP1
 </tbody>
 </table>
 </div>
-<p>In old sample, there is one variant has 8/0 at ‘15:22963816-22963816_A_G’ which doesn’t show up in cell sample. In stead, the new sample has a close one ‘15:22963814:G:A’ with 1/0 pattern.</p>
+<p>In old sample, there is one variant having 8/0 at ‘15:22963816-22963816_A_G’ which doesn’t show up in cell sample. In stead, the new sample has a close one ‘15:22963814:G:A’ with 1/0 pattern.</p>
 </div>
 </div>
 </div>

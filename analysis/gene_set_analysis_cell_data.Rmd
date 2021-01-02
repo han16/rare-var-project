@@ -175,7 +175,7 @@ as_tibble(para_est)
 #ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
 ```
 
-### variant set (VS) analysis
+### variant set (VS) analysis without gene level information
 
 This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
 
@@ -203,7 +203,7 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
 ```
 
-### gene set analysis
+### gene set analysis taking into account gene level information
 
 $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
 
@@ -287,5 +287,5 @@ kable_styling() %>%
 scroll_box(height = "500px")
 ```
 
-In old sample, there is one variant has 8/0 at '15:22963816-22963816_A_G' which doesn't show up in cell sample. In stead, the new sample has a close one '15:22963814:G:A'
+In old sample, there is one variant having 8/0 at '15:22963816-22963816_A_G' which doesn't show up in cell sample. In stead, the new sample has a close one '15:22963814:G:A'
  with 1/0 pattern. 
