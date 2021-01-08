@@ -506,8 +506,8 @@ div.tocify {
 ## # ... with 17,643 more rows</code></pre>
 </div>
 </div>
-<div id="run-mirage-on-102-asd-genes-in-cell-paper" class="section level2">
-<h2>Run mirage on 102 ASD genes in cell paper</h2>
+<div id="asd-genes-in-cell-paper" class="section level2">
+<h2>102 ASD genes in cell paper</h2>
 <div id="variant-set-vs-analysis-without-gene-level-information" class="section level3">
 <h3>variant set (VS) analysis without gene level information</h3>
 <p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
@@ -623,6 +623,95 @@ div.tocify {
 <div id="run-mirage-vs-for-all-variants-together" class="section level3">
 <h3>Run MIRAGE-VS for all variants together</h3>
 <p>Put all variants with AF&lt;10E-4 in one category and run MIRAGE-VS. <span class="math inline">\(\widehat{\eta}=0.016\)</span>, p value is 0.2022.</p>
+</div>
+<div id="run-mirage-vs-on-constraint-genes-with-6-variant-groups-in-cell-paper-without-gene-level-information" class="section level3">
+<h3>Run MIRAGE-VS on constraint genes with 6 variant groups in cell paper without gene level information</h3>
+<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
+<pre><code>## # A tibble: 6 x 7
+##   X                  No_case No_contr    OR     pval  eta_est eta_pval
+##   &lt;fct&gt;                &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 PLI&gt;=0.995             190      131 1.45  0.000587 0.270    0.000806
+## 2 pLI&gt;=0.5&amp;pLI&lt;0.995      66       77 0.857 0.842    0.000217 1       
+## 3 pLI&lt;0.5                212      178 1.19  0.0473   0.147    0.0399  
+## 4 MPC&gt;=2                2187     2149 1.02  0.287    0.0155   0.506   
+## 5 MPC&gt;=1&amp;MPC&lt;2          9118     9048 1.01  0.304    0.0114   0.351   
+## 6 MPC&lt;1                13193    13173 1.00  0.453    0.00761  0.600</code></pre>
+<p><img src="gene_set_analysis_cell_data_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="gene-set-analysis-using-mirage-taking-into-account-gene-level-information" class="section level3">
+<h3>gene set analysis using mirage taking into account gene level information</h3>
+<p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
+<table>
+<caption>Parameter estimate by MIRAGE for top 5% constraint genes.</caption>
+<thead>
+<tr class="header">
+<th>variant categories</th>
+<th>parameter</th>
+<th>estimate</th>
+<th>p value</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><span class="math inline">\(\hat{\delta}\)</span></td>
+<td>0.97</td>
+<td><span class="math inline">\(2.79\times 10^{-4}\)</span></td>
+</tr>
+<tr class="even">
+<td>PLI&gt;=0.995</td>
+<td><span class="math inline">\(\hat{\eta}_1\)</span></td>
+<td>0.4243</td>
+<td><span class="math inline">\(8.7\times 10^{-4}\)</span></td>
+</tr>
+<tr class="odd">
+<td>0.5&lt;=pLI&lt;0.995</td>
+<td><span class="math inline">\(\hat{\eta}_2\)</span></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>pLI&lt;0.5</td>
+<td><span class="math inline">\(\hat{\eta}_3\)</span></td>
+<td>0.2245</td>
+<td>0.0476</td>
+</tr>
+<tr class="odd">
+<td>MPC&gt;=2</td>
+<td><span class="math inline">\(\hat{\eta}_4\)</span></td>
+<td>0.0221</td>
+<td>0.5086</td>
+</tr>
+<tr class="even">
+<td>1&lt;=MPC&lt;2</td>
+<td><span class="math inline">\(\hat{\eta}_5\)</span></td>
+<td>0.0139</td>
+<td>0.3919</td>
+</tr>
+<tr class="odd">
+<td>0&lt;=MPC&lt;1</td>
+<td><span class="math inline">\(\hat{\eta}_6\)</span></td>
+<td>0.0062</td>
+<td>0.6398</td>
+</tr>
+</tbody>
+</table>
+<p>Below are top ranked genes.</p>
+<pre><code>## # A tibble: 851 x 4
+##        X Gene       BF post.prob
+##    &lt;int&gt; &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1   447 LPA      2.58     0.989
+##  2    44 SPEG     1.79     0.984
+##  3   209 MYH10    1.73     0.984
+##  4   102 CUX1     1.71     0.984
+##  5   145 LTBP3    1.69     0.984
+##  6   140 CAPRIN1  1.69     0.983
+##  7   500 MIB1     1.67     0.983
+##  8   118 TLN1     1.65     0.983
+##  9   207 EIF4A1   1.63     0.983
+## 10    94 DOPEY1   1.62     0.983
+## # ... with 841 more rows</code></pre>
 </div>
 </div>
 <div id="top-genesvariants-in-old-sample" class="section level2">

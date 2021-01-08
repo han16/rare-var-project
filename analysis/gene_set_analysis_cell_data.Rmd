@@ -145,7 +145,7 @@ BF_proband_AllGene_sorted
 #BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
 ```
 
-## Run mirage on 102 ASD genes in cell paper
+## 102 ASD genes in cell paper
 
 ```{r, echo=F}
 ASD_Gene_Cell=as_tibble(read.csv("../../AutismDatafromASC_Cellpaper/1-s2.0-S0092867419313984-mmc2.csv", header = TRUE))
@@ -269,6 +269,101 @@ Consraint_Gene_for_VS=cell_trans_data_Consraint_Gene%>% select(Transmitted_proba
 ########### here it takes about 5 mins to run mirage-VS 
 vs.mirage=mirage_vs(data.frame(Consraint_Gene_for_VS),n1=5869,n2=5869)
 ```
+
+
+### Run MIRAGE-VS on constraint genes with   6 variant groups in cell paper  without gene level information
+
+```{r, echo=F, eval=F}
+#########
+Constraint_Gene=as.character(read.csv("../data/GeneSet/Samocha_2014NG_contraintgene.csv", header=T)$gene)
+para_est=matrix(nrow=6, ncol=6)
+rownames(para_est)=c("PLI>=0.995", "pLI>=0.5&pLI<0.995", "pLI<0.5", "MPC>=2", "MPC>=1&MPC<2", "MPC<1")
+colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
+for (i in 1:6)
+{ 
+#i=2  
+#cat(i, "is running", "\n")
+############  variant set 
+variant_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% Constraint_Gene)%>% filter(Group_Index==i) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+para_est[i,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+pois.test=poisson.test(para_est[i,1:2], c(5869, 5869), r=1, alternative="greater")
+para_est[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+vs.mirage=mirage_vs(variant_set[,2:4],n1=5869,n2=5869, gamma=6)
+para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+}
+as_tibble(para_est)
+#write.csv(para_est, file="../output/CellDataASC/para.est.var.group.proband.Constraint.Gene.csv")
+#gene.data=eight.partition(cand.data)
+#ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
+```
+
+
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+
+```{r, echo=F}
+proband_para_est=read.csv("../output/CellDataASC/para.est.var.group.proband.Constraint.Gene.csv")
+as_tibble(proband_para_est)
+
+
+var_group=c(rep(c("PLI>=0.995", "pLI>=0.5&pLI<0.995", "pLI<0.5", "MPC>=2", "MPC>=1&MPC<2", "MPC<1"), 2))
+method=c(rep("Burden", 6), rep("mirage-vs", 6))
+pvalue=c(round(-log(proband_para_est$pval, base=10), 2), round(-log(proband_para_est$eta_pval, base=10), 2))
+summary=data.frame(var.group=var_group, pvalue=pvalue, method=method)
+ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) + 
+   geom_bar(stat="identity", 
+           position=position_dodge())+
+  ylab(expression(-log[10](pvalue)))+
+  theme(legend.title=element_blank())+
+  xlab(" variant groups")+
+  ggtitle(" p value comparison between Burden and MIRAGE-VS")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+
+
+### gene set analysis using mirage taking into account gene level information
+
+$\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+
+```{r,echo=F, eval=F}
+############  gene set 
+gene_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% Constraint_Gene) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+#mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
+mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869)# input data must be dataframe
+#res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
+#write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.Constraint.Gene.csv")
+```
+
+
+variant categories |parameter | estimate |  p value |
+-------------------|-----|-----|------|--------
+\ |$\hat{\delta}$ | 0.97 | $2.79\times 10^{-4}$
+PLI>=0.995| $\hat{\eta}_1$ | 0.4243    | $8.7\times 10^{-4}$
+0.5<=pLI<0.995 | $\hat{\eta}_2$ | 0  | 1
+pLI<0.5 | $\hat{\eta}_3$ | 0.2245    | 0.0476
+MPC>=2 | $\hat{\eta}_4$ | 0.0221    | 0.5086
+1<=MPC<2 | $\hat{\eta}_5$ | 0.0139    | 0.3919
+0<=MPC<1 | $\hat{\eta}_6$ | 0.0062    | 0.6398
+Table: Parameter estimate by MIRAGE for top 5% constraint genes. 
+
+
+
+Below are top ranked genes. 
+ 
+```{r, echo=F}
+BF_proband_AllGene=as_tibble(read.csv("../output/CellDataASC/BF.proband.Constraint.Gene.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+BF_proband_AllGene_sorted
+#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
+
+
 
 ## Top genes/variants in old sample 
 
