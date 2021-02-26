@@ -6,11 +6,11 @@ output: html_document
 
 ```{r, echo=F, warning=F, message=F}
 rm(list=ls())
-set.seed(123)
+#set.seed(123)
 library(tidyverse)
 library(knitr)
 library(kableExtra)
-#library("devtools")
+library("devtools")
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
 library(mirage)
@@ -331,10 +331,89 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
 
 ```{r,echo=F, eval=F}
+### !!!!!!!!!!!!!!!!! DO NOT RUN: it takes about 2 hours to run; not really, heavily depends on the seeds  ####### 
 ############  gene set 
 gene_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% Constraint_Gene) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
 #mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
-mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869)# input data must be dataframe
+######## this case takes about 2 hours to finish running 
+#set.seed(Sys.time()) # set a unique random seed 
+mirage_result1=mirage(data.frame(gene_set),n1=5869, n2=5869)# input data must be dataframe
+
+
+####### this case takes close to 2 hours to finish running 
+#set.seed(Sys.time()) # set a unique random seed 
+mirage_result2=mirage(data.frame(gene_set),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.01, delta.init=0.01)
+
+#############  this case takes a couple of minutes 
+#set.seed(Sys.time()) # set a unique random seed 
+mirage_result3=mirage(data.frame(gene_set),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.0001, delta.init=0.0001)
+
+
+
+############# this case takes about 1.5 hour
+#set.seed(Sys.time()) # set a unique random seed 
+mirage_result4=mirage(data.frame(gene_set),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.5, delta.init=0.5)
+```
+
+#### Sample a subset of constraint genes 
+
+
+
+
+No. Genes| $\hat{\delta}$
+---------|--------------
+500      |  0.77
+500      | 0.98
+500     | 0.55
+500     | 0.99
+500 | 0.05 
+100 | 0.07 
+200 | 0.50
+Table: Parameter estimate of $\delta$ by MIRAGE for a subset gene sampled from  top 5% constraint genes.
+
+
+
+```{r, echo=F,eval=F}
+####### sample a fixed number of genes and run mirage 
+subset_gene=as.character(sample(unique(gene_set$GENE_NAME),500)) 
+subset_gene_set=gene_set[which(gene_set$GENE_NAME%in%subset_gene),]
+############# this case takes less than 1 minutes 
+#set.seed(Sys.time()) # set a unique random seed 
+mirage_result5=mirage(data.frame(subset_gene_set),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.001, delta.init=0.001)
+
+############# this case takes a couple of minutes   
+#set.seed(Sys.time()) # set a unique random seed 
+subset_gene6=as.character(sample(unique(gene_set$GENE_NAME),500)) 
+subset_gene_set6=gene_set[which(gene_set$GENE_NAME%in%subset_gene6),]
+mirage_result6=mirage(data.frame(subset_gene_set6),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.01, delta.init=0.01)
+
+############# this case takes one minu
+#set.seed(Sys.time()) # set a unique random seed 
+subset_gene7=as.character(sample(unique(gene_set$GENE_NAME),500)) 
+subset_gene_set7=gene_set[which(gene_set$GENE_NAME%in%subset_gene7),]
+mirage_result7=mirage(data.frame(subset_gene_set7),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.1, delta.init=0.1)
+
+############# this case takes more than 2 hours 
+#set.seed(Sys.time()) # set a unique random seed 
+subset_gene8=as.character(sample(unique(gene_set$GENE_NAME),500)) 
+subset_gene_set8=gene_set[which(gene_set$GENE_NAME%in%subset_gene8),]
+mirage_result8=mirage(data.frame(subset_gene_set8),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.3, delta.init=0.3)
+
+#set.seed(Sys.time()) # set a unique random seed 
+subset_gene9=as.character(sample(unique(gene_set$GENE_NAME),500)) 
+subset_gene_set9=gene_set[which(gene_set$GENE_NAME%in%subset_gene9),]
+mirage_result9=mirage(data.frame(subset_gene_set9),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.5, delta.init=0.5)
+
+############## this case takes more than one hour 
+#set.seed(Sys.time()) # set a unique random seed 
+subset_gene10=as.character(sample(unique(gene_set$GENE_NAME),100)) 
+subset_gene_set10=gene_set[which(gene_set$GENE_NAME%in%subset_gene10),]
+mirage_result10=mirage(data.frame(subset_gene_set10),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.5, delta.init=0.5)
+
+subset_gene11=as.character(sample(unique(gene_set$GENE_NAME),200)) 
+subset_gene_set11=gene_set[which(gene_set$GENE_NAME%in%subset_gene11),]
+mirage_result11=mirage(data.frame(subset_gene_set11),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.5, delta.init=0.5)
+
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
 #write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.Constraint.Gene.csv")
 ```
@@ -364,6 +443,34 @@ BF_proband_AllGene_sorted
 ```
 
 
+
+## Top 10% constraint genes 
+
+
+For top 10% constraint genes, $\widehat{\delta}=0.18$. 
+
+
+```{r, echo=F}
+######## pick 10% constraint genes 
+all_constraint_gene=readRDS("../../GeneSet/ExacConstraintScore/ConstraintMat.RDS")
+all_constraint_gene_sort=all_constraint_gene[order(all_constraint_gene[,16], decreasing = T),] # sort lof_z, the higher, the more constraint
+num_gene=dim(all_constraint_gene)[1]*0.1
+top_10per_constraint_gene=row.names(all_constraint_gene_sort)[1:num_gene]
+
+```
+
+```{r, echo=F, eval=F}
+gene_set=cell_trans_data_AF_GI %>% filter(GENE_NAME %in% top_10per_constraint_gene) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+#mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
+######## this case takes about  to finish running 
+#set.seed(Sys.time()) # set a unique random seed 
+mirage_result1=mirage(data.frame(gene_set),n1=5869, n2=5869)# input data must be dataframe
+
+mirage_result2_top10per=mirage(data.frame(gene_set),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.01, delta.init=0.01)
+
+
+mirage_result3_top10per=mirage(data.frame(gene_set),n1=5869, n2=5869,gamma=c(6,6,6,3,3,3), sigma=2, eta.init=0.1, delta.init=0.1)
+```
 
 ## Top genes/variants in old sample 
 
