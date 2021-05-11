@@ -1,0 +1,65 @@
+---
+title: "ASC new sample"
+output: html_document
+---
+
+```{r, echo=F, message=F, warning=F}
+library(tidyverse)
+library(ggplot2)
+```
+
+
+## Quality control (QC)
+
+```{r, echo=F, cache=T}
+ASC_new_sample1=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_B15_B16_raw_TDT_by_parent_2021-04-19.txt", header=T, fill=T))
+ASC_new_sample2=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", header=T, fill=T))
+```
+
+
+```{r, echo=T}
+## this is ASC v17
+## sample information 
+# ASC v17:
+#  6026 male probands
+#  1265 female probands
+#  1158 male siblings
+#  1190 female siblings
+ASC_new_sample2 
+```
+
+
+### Variant partition by Gnomad AF 
+
+
+### Summary of AF 
+```{r, echo=F}
+summary(ASC_new_sample2$Gnomad_non_neuro_AF)
+```
+
+```{r, echo=F}
+a=ASC_new_sample2 %>% filter(Gnomad_non_neuro_AF<0.0001) %>% nrow() #%>%pull() 
+b=ASC_new_sample2 %>% filter(0.0001<Gnomad_non_neuro_AF & Gnomad_non_neuro_AF<0.001) %>% nrow() 
+c=ASC_new_sample2 %>% filter(0.001<Gnomad_non_neuro_AF & Gnomad_non_neuro_AF<0.01) %>% nrow() 
+d=ASC_new_sample2 %>% filter(Gnomad_non_neuro_AF>0.01) %>% nrow() 
+
+var_count_by_AF=tibble(count=c(a,b,c,d), cate=c("AF<1e-4", "1e-4<AF<1e-3", "1e-3<AF<0.01", "AF>0.01"))
+ggplot(data=var_count_by_AF, aes(x=cate, y=count)) +
+  geom_bar(stat="identity", width=0.5, fill="blue")+
+  ggtitle("Variant count in every category by AF")
+
+```
+
+
+#### Variant partition by percentage 
+
+
+```{r, echo=F}
+slices <- c(a, b, c, d) 
+lbls <- c("AF<1e-4", "1e-4<AF<1e-3", "1e-3<AF<0.01", "AF>0.01")
+pct <- round(slices/sum(slices)*100)
+lbls <- paste(lbls, pct, sep=";") # add percents to labels 
+lbls <- paste(lbls,"%",sep="") # ad % to labels 
+pie(slices,labels = lbls, col=rainbow(length(lbls)),
+  	main="variant partition by Gnomad_non_neuro_AF")
+```

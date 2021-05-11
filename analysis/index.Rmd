@@ -42,6 +42,12 @@ output:
 * [Gene set analysis for transmitted variants in ASC cell paper](gene_set_analysis_cell_data.html)
 
 
+## Analysis for transmitted variant from new (unpublished) sample 
+
+* [Quality control (QC) for new sample](ASC_new_sample.html)
+
+
+
 
 [project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf
 [rmarkdown]: http://rmarkdown.rstudio.com/rmarkdown_websites.htm
