@@ -35,6 +35,7 @@ ASC_new_sample2
 ### Summary of AF 
 ```{r, echo=F}
 summary(ASC_new_sample2$Gnomad_non_neuro_AF)
+hist(ASC_new_sample2$Gnomad_non_neuro_AF)
 ```
 
 ```{r, echo=F}
