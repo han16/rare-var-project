@@ -104,11 +104,15 @@ ASC_new_sample2=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\AS
 
 ### Missense variants in different gene set
 
-To compare old sample and cell data, look at missense variant (regardless of categories) +AF<1E-4+10 gene set and how they compare with each other. 
 
-Old sample: missense: Non-LoF variants  
+To compare old sample and new sample
 
-new sample: : there are 2 labels related to "missense". one is `missense_variant` in column `Consequence` and the other is column `isMis`. All 100201 `missense_variant` are with `isMis=TRUE`, but not all 870738 `isMis==TRUE`  are `missense_variant`. Use `missense_variant` as missense variants 
+
+*  look at missense variant with AF<1E-4 in 10 gene sets
+
+* Old sample: missense: Non-LoF variants  
+
+* new sample:  there are 2 labels related to "missense". one is `missense_variant` in column `Consequence` and the other is column `isMis`. All 100201 `missense_variant` are with `isMis=TRUE`, but not all 870738 `isMis==TRUE`  are `missense_variant`. Use `missense_variant` as missense variants 
 
 ```{r, echo=F, eval=F}
 sum(ASC_new_sample2%>% select(Consequence, isMis) %>% filter(Consequence=="missense_variant") %>%select(isMis)%>%pull() # how many TRUE isMis in misense_variant
@@ -160,7 +164,7 @@ missense_old_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "no
 g_old_sample=ggplot(missense_old_sample, aes(x = Gene, y = variant_count, fill = status)) +
   geom_col(position = "dodge")+
   theme_classic()+
-  ylim(c(0,100000))+
+  ylim(c(0,50000))+
   ylab("Variant count")+xlab("Gene set")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
 theme(text = element_text(size=10))+
@@ -170,18 +174,25 @@ ggtitle("old sample")+
 
 ```
 
+
 ```{r, echo=F, eval=T}
 ## identify transmitted and non-transmitted variants 
-transmitted_variant=ASC_new_sample2%>%select(starts_with(c("t", "u")))
-kable(transmitted_variant[1:10,])%>%
-kable_styling() %>%
-scroll_box(height = "500px")
+#transmitted_variant=ASC_new_sample2%>%select(starts_with(c("t", "u")), "Gnomad_non_neuro_AF")
+#kable(transmitted_variant[1:10,])%>%
+#kable_styling() %>%
+#scroll_box(height = "500px")
 #write.csv(transmitted_variant, file="C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10_transmitted_variant.csv")
+##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
+Transmitted_proband=ASC_new_sample2%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
+Untransmitted_proband=ASC_new_sample2%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
+
+ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband)
+
 ```
 
 
 
-```{r, echo=F, warning=F, message=F, eval=F}
+```{r, echo=F, warning=F, message=F, eval=T}
 ######### obtain missense variants with AF<1-E4+10 gene set in new sample data
 ############## to save burden and mirage-vs result 
 Burden_MIRAGE_VS=matrix(nrow=length(Gene_Set_List), ncol=6)
@@ -189,16 +200,17 @@ rownames(Burden_MIRAGE_VS)=Gene_Set
 colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
 ##############
 
-rare_missense_variant_new_sample=ASC_new_sample2 %>% filter(Consequence=="missense_variant")%>% filter(Gnomad_non_neuro_AF<0.0001) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # missense variant in new sample data with AF<1-10-4
-transmitted_cell_sample=numeric()
-nontransmitted_cell_sample=numeric()
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence=="missense_variant")%>% filter(Gnomad_non_neuro_AF<0.0001) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # missense variant in new sample data with AF<1-10-4
+
+transmitted_new_sample=numeric()
+nontransmitted_new_sample=numeric()
 for ( i in 1:length(Gene_Set_List))
  {
-  Feature_Data=rare_missense_variant_cell%>%filter(GENE_NAME %in% Gene_Set_List[[i]])%>% drop_na()
+  Feature_Data=rare_missense_variant_new_sample%>%filter(Gene %in% Gene_Set_List[[i]])%>% drop_na()
   if (nrow(Feature_Data)>0)
   { 
-    transmitted_cell_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
-    nontransmitted_cell_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
+    transmitted_new_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
+    nontransmitted_new_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
     
      ##############  run mirage-vs on every variant set, takes several minutes to run
 #  Feature_Data_VS=cell_variant_set%>% filter(GENE_NAME %in% Gene_Set_List[[i]])%>% select(Transmitted_proband,Untransmitted_proband) %>% add_column(Group_Index=1)%>% drop_na()
@@ -216,18 +228,18 @@ for ( i in 1:length(Gene_Set_List))
 
 #write.csv(Burden_MIRAGE_VS, file="../output/CellDataASC/Variant_Set_missense_10Geneset.csv")
 
-missense_cell_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_cell_sample, nontransmitted_cell_sample))
+missense_new_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_new_sample, nontransmitted_new_sample))
 
-g_cell_sample=ggplot(missense_cell_sample, aes(x = Gene, y = variant_count, fill = status)) +
+g_new_sample=ggplot(missense_new_sample, aes(x = Gene, y = variant_count, fill = status)) +
   geom_col(position = position_dodge())+
   #geom_bar(stat="identity")+
   theme_classic()+
-  ylim(c(0,100000))+
+  ylim(c(0,50000))+
   ylab("Variant count")+xlab("Gene set")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
 theme(text = element_text(size=10))+
-ggtitle("cell sample")+
+ggtitle("new sample")+
   theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
 
-ggarrange( g_old_sample, g_cell_sample, common.legend = TRUE, legend="right") 
+ggarrange( g_old_sample, g_new_sample, common.legend = TRUE, legend="right") 
 ```
