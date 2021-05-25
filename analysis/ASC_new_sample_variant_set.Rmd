@@ -200,7 +200,7 @@ rownames(Burden_MIRAGE_VS)=Gene_Set
 colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
 ##############
 
-rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence=="missense_variant")%>% filter(Gnomad_non_neuro_AF<0.0001) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # missense variant in new sample data with AF<1-10-4
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence %in% c("missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant")==T )%>% filter(Gnomad_non_neuro_AF<0.0001) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF<1-10-4
 
 transmitted_new_sample=numeric()
 nontransmitted_new_sample=numeric()
@@ -241,5 +241,332 @@ theme(text = element_text(size=10))+
 ggtitle("new sample")+
   theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
 
+figure=ggarrange( g_old_sample, g_new_sample, common.legend = TRUE, legend="right") 
+annotate_figure(figure,
+                top = text_grob("missense variants; AF<0.0001", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Data source: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+```
+
+
+#### 10^{-4}< AF<10^{-3}
+
+
+```{r, echo=F, warning=F, message=F, cache=T}
+######### obtain missense variants with AF<1-E4+10 gene set in old sample
+LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+############## to save burden and mirage-vs result 
+Burden_MIRAGE_VS=matrix(nrow=length(Gene_Set_List), ncol=6)
+rownames(Burden_MIRAGE_VS)=Gene_Set
+colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
+##############
+#old_variant_set=Anno.Data%>%filter(as.character(Polyphen2.HDIV.score)>0 & ExacAF<0.0001)%>%select(ID, Gene, No.case, No.contr) %>% drop_na() # missense variant with AF<1E-4 in old sample 
+rare_missense_variant_old=Anno.Data%>%filter(Annotation %in% LoF.def==F & ExacAF<0.001 & ExacAF>0.0001 )%>%select(ID, Gene, No.case, No.contr) %>% drop_na() # missense variant with AF<1E-4 in old sample
+transmitted_old_sample=numeric()
+nontransmitted_old_sample=numeric()
+for ( i in 1:length(Gene_Set_List))
+ {  #i=1
+  Feature_Data=rare_missense_variant_old%>%filter(Gene %in% Gene_Set_List[[i]])
+  if (nrow(Feature_Data)>0)
+  { 
+    transmitted_old_sample[i]=Feature_Data%>%select(No.case)%>%sum()
+    nontransmitted_old_sample[i]=Feature_Data%>%select(No.contr)%>%sum()
+  }
+  ##############  run mirage-vs on every variant set, takes several minutes to run
+#  Feature_Data_VS=old_variant_set%>% filter(Gene %in% Gene_Set_List[[i]])%>% select(No.case,No.contr) %>% add_column(Group_Index=1)%>% drop_na()
+#  Burden_MIRAGE_VS[i,1:2]=c(transmitted_old_sample[i], nontransmitted_old_sample[i])
+#  pois.test=poisson.test(Burden_MIRAGE_VS[i,1:2], c(4315, 4315), r=1, alternative="greater")
+# Burden_MIRAGE_VS[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+ 
+#  vs.mirage=mirage_vs(data.frame(Feature_Data_VS),n1=4315,n2=4315)
+#  Burden_MIRAGE_VS[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+  
+  ##############
+  }  # end of i
+
+#write.csv(Burden_MIRAGE_VS, file="../output/OldSample/Variant_Set_missense_10Geneset.csv")
+
+
+missense_old_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_old_sample, nontransmitted_old_sample))
+
+g_old_sample=ggplot(missense_old_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = "dodge")+
+  theme_classic()+
+  ylim(c(0,35000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("old sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+
+
+```
+
+
+```{r, echo=F, warning=F, message=F, eval=T}
+######### obtain missense variants with AF<1-E4+10 gene set in new sample data
+############## to save burden and mirage-vs result 
+Burden_MIRAGE_VS=matrix(nrow=length(Gene_Set_List), ncol=6)
+rownames(Burden_MIRAGE_VS)=Gene_Set
+colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
+##############
+
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence %in% c("missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant")==T )%>% filter(Gnomad_non_neuro_AF<0.001 & Gnomad_non_neuro_AF>0.0001) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF<1-10-4
+
+transmitted_new_sample=numeric()
+nontransmitted_new_sample=numeric()
+for ( i in 1:length(Gene_Set_List))
+ {
+  Feature_Data=rare_missense_variant_new_sample%>%filter(Gene %in% Gene_Set_List[[i]])%>% drop_na()
+  if (nrow(Feature_Data)>0)
+  { 
+    transmitted_new_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
+    nontransmitted_new_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
+    
+     ##############  run mirage-vs on every variant set, takes several minutes to run
+#  Feature_Data_VS=cell_variant_set%>% filter(GENE_NAME %in% Gene_Set_List[[i]])%>% select(Transmitted_proband,Untransmitted_proband) %>% add_column(Group_Index=1)%>% drop_na()
+#  Burden_MIRAGE_VS[i,1:2]=c(transmitted_cell_sample[i], nontransmitted_cell_sample[i])
+#  pois.test=poisson.test(Burden_MIRAGE_VS[i,1:2], c(5869, 5869), r=1, alternative="greater")
+# Burden_MIRAGE_VS[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+ 
+#  vs.mirage=mirage_vs(data.frame(Feature_Data_VS),n1=5869,n2=5869)
+#  Burden_MIRAGE_VS[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+  
+  ##############
+    
+  }
+  }  ### end of i
+
+#write.csv(Burden_MIRAGE_VS, file="../output/CellDataASC/Variant_Set_missense_10Geneset.csv")
+
+missense_new_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_new_sample, nontransmitted_new_sample))
+
+g_new_sample=ggplot(missense_new_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = position_dodge())+
+  #geom_bar(stat="identity")+
+  theme_classic()+
+  ylim(c(0,35000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("new sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+
+figure=ggarrange(g_old_sample, g_new_sample, common.legend = TRUE, legend="right") 
+annotate_figure(figure,
+                top = text_grob("missense variants; 0.0001<AF<0.001", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Data source: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+```
+
+
+#### Missense: isMis==TRUE
+
+
+This definition of missense variant is very likely not correct! 
+
+
+```{r, echo=F, warning=F, message=F, eval=F}
+######### obtain missense variants with AF<1-E4+10 gene set in new sample data
+############## to save burden and mirage-vs result 
+Burden_MIRAGE_VS=matrix(nrow=length(Gene_Set_List), ncol=6)
+rownames(Burden_MIRAGE_VS)=Gene_Set
+colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
+##############
+
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(isMis==TRUE)%>% filter(Gnomad_non_neuro_AF<0.0001) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # missense variant in new sample data with AF<1-10-4, define missense as isMis=TRUE
+
+transmitted_new_sample=numeric()
+nontransmitted_new_sample=numeric()
+for ( i in 1:length(Gene_Set_List))
+ {
+  Feature_Data=rare_missense_variant_new_sample%>%filter(Gene %in% Gene_Set_List[[i]])%>% drop_na()
+  if (nrow(Feature_Data)>0)
+  { 
+    transmitted_new_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
+    nontransmitted_new_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
+    
+     ##############  run mirage-vs on every variant set, takes several minutes to run
+#  Feature_Data_VS=cell_variant_set%>% filter(GENE_NAME %in% Gene_Set_List[[i]])%>% select(Transmitted_proband,Untransmitted_proband) %>% add_column(Group_Index=1)%>% drop_na()
+#  Burden_MIRAGE_VS[i,1:2]=c(transmitted_cell_sample[i], nontransmitted_cell_sample[i])
+#  pois.test=poisson.test(Burden_MIRAGE_VS[i,1:2], c(5869, 5869), r=1, alternative="greater")
+# Burden_MIRAGE_VS[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+ 
+#  vs.mirage=mirage_vs(data.frame(Feature_Data_VS),n1=5869,n2=5869)
+#  Burden_MIRAGE_VS[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+  
+  ##############
+    
+  }
+  }  ### end of i
+
+#write.csv(Burden_MIRAGE_VS, file="../output/CellDataASC/Variant_Set_missense_10Geneset.csv")
+
+missense_new_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_new_sample, nontransmitted_new_sample))
+
+g_new_sample=ggplot(missense_new_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = position_dodge())+
+  #geom_bar(stat="identity")+
+  theme_classic()+
+  ylim(c(0,2300000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("new sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+
+#####################  this is from old sample 
+g_old_sample=ggplot(missense_old_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = "dodge")+
+  theme_classic()+
+  ylim(c(0,2300000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("old sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+#####################
+
 ggarrange( g_old_sample, g_new_sample, common.legend = TRUE, legend="right") 
 ```
+
+
+###  Missense variants in individual constraint gene 
+
+consider missense variants with AF<10-E4 in top 10 genes from old sample and new sample and see how they compare 
+
+```{r, echo=F}
+Top_10_gene=c("CYFIP1", "EP400", "FBN1", "SRCAP", "DYNC1H1", "ABCA2", "DOCK4", "CACNA1D", "CHD8", "TRIP12")
+### display  rare missense variants in individual top genes  
+######################################################
+## Gene_Set[7]: constraint gene 
+# find rare missense variants in old sample and new sample 
+variant_gene_old_sample=rare_missense_variant_old %>% filter(Gene %in% Gene_Set_List[[7]])%>% rename(GENE_NAME=Gene) 
+variant_gene_new_sample=rare_missense_variant_new_sample %>% filter(Gene %in% Gene_Set_List[[7]])
+variant_gene_new_sample=variant_gene_new_sample %>%rename(GENE_NAME=Gene) # rename a column for merge 
+variant_gene_old_new_sample_combine=full_join(variant_gene_old_sample, variant_gene_new_sample, by="GENE_NAME") %>% select(GENE_NAME, No.case, No.contr, Transmitted_proband, Untransmitted_proband) # merge two data by common GENE_NAME 
+
+####### fill NA with 0
+variant_gene_old_new_sample_combine$No.case=variant_gene_old_new_sample_combine$No.case%>%replace_na(0)
+variant_gene_old_new_sample_combine$No.contr=variant_gene_old_new_sample_combine$No.contr%>%replace_na(0)
+variant_gene_old_new_sample_combine$Transmitted_proband=variant_gene_old_new_sample_combine$Transmitted_proband%>%replace_na(0)
+variant_gene_old_new_sample_combine$Untransmitted_proband=variant_gene_old_new_sample_combine$Untransmitted_proband%>%replace_na(0)
+########### count variants for every gene 
+#unique_gene=unique(variant_gene_old_new_sample_combine$GENE_NAME)[1:50]
+unique_gene=Top_10_gene
+unique_gene_case=numeric()
+unique_gene_control=numeric()
+unique_gene_transmitted_proband=numeric()
+unique_gene_untransmitted_proband=numeric()
+for (i in 1:length(unique_gene))
+{
+ unique_gene_case[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(No.case)%>%sum()
+ unique_gene_control[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(No.contr)%>%sum()
+unique_gene_transmitted_proband[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(Transmitted_proband)%>%sum()  
+unique_gene_untransmitted_proband[i]=variant_gene_old_new_sample_combine %>% filter(GENE_NAME %in% unique_gene[i]) %>% select(Untransmitted_proband)%>%sum()
+}
+unique_gene_variant_count=tibble(Gene=unique_gene, No.case=unique_gene_case, No.control=unique_gene_control, Transmitted_proband=unique_gene_transmitted_proband, Untransmitted_proband=unique_gene_untransmitted_proband)
+###########################
+transmitted_variant=tibble(Gene=c(as.character(unique_gene), as.character(unique_gene)), count=c(unique_gene_variant_count$No.case, unique_gene_variant_count$Transmitted_proband), sample=c(rep("old", nrow(unique_gene_variant_count)), rep("new", nrow(unique_gene_variant_count))))
+
+
+g1=ggplot(transmitted_variant, aes(x=Gene, y=count, shape=sample, color=sample))+ 
+ geom_point()+
+  ylab("Transmitted variant counts")+
+  #theme_classic()+
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, size=7))
+g1
+
+untransmitted_variant=tibble(Gene=c(as.character(unique_gene), as.character(unique_gene)), count=c(unique_gene_variant_count$No.control, unique_gene_variant_count$Untransmitted_proband), sample=c(rep("old", nrow(unique_gene_variant_count)), rep("new", nrow(unique_gene_variant_count))))
+
+
+g2=ggplot(untransmitted_variant, aes(x=Gene, y=count, shape=sample, color=sample))+ 
+ geom_point()+
+  ylab("Untransmitted variant counts")+
+  #theme_classic()+
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, size=7))
+g2
+```
+
+
+### LoF variants in different gene set 
+
+
+
+To compare old sample and new data, look at LoF +AF<1E-4+10 gene set and how they compare with each other. 
+
+Old sample: LoF: the union of  "stopgain", "frameshift substitution", "splicing", "stoploss" 
+
+new sample: LoF: 
+
+
+```{r, echo=F, warning=F, message=F, eval=F}
+######### obtain LOF variants with AF<1-E4+10 gene set in old sample
+LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
+old_variant_set=Anno.Data%>%filter(Annotation %in% LoF.def & ExacAF<0.0001)%>%select(ID, Gene, No.case, No.contr) %>% drop_na() # LoF variant with AF<1E-4 in old sample
+transmitted_old_sample=numeric()
+nontransmitted_old_sample=numeric()
+for ( i in 1:10)
+ {
+  Feature_Data=old_variant_set%>%filter(Gene %in% Gene_Set_List[[i]])
+  if (nrow(Feature_Data)>0)
+  { 
+    transmitted_old_sample[i]=Feature_Data%>%select(No.case)%>%sum()
+    nontransmitted_old_sample[i]=Feature_Data%>%select(No.contr)%>%sum()
+  }
+  }
+
+LoF_old_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_old_sample, nontransmitted_old_sample))
+
+g_old_sample=ggplot(LoF_old_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = "dodge")+
+  theme_classic()+
+  ylim(c(0,1000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("old sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+
+
+```
+
+```{r, echo=F, warning=F, message=F, eval=F}
+######### obtain LOF variants with AF<1-E4+10 gene set in new data
+cell_variant_set=cell_trans_data_AF %>% filter(pLI>=0.5) %>% filter(PTV==T)%>% filter(ExacAF<0.0001) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband)  # LoF variant in cell data with AF<1-10-4
+transmitted_cell_sample=numeric()
+nontransmitted_cell_sample=numeric()
+for ( i in 1:10)
+ {
+  Feature_Data=cell_variant_set%>%filter(GENE_NAME %in% Gene_Set_List[[i]])
+  if (nrow(Feature_Data)>0)
+  { 
+    transmitted_cell_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
+    nontransmitted_cell_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
+  }
+  }
+
+LoF_cell_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_cell_sample, nontransmitted_cell_sample))
+
+g_cell_sample=ggplot(LoF_cell_sample, aes(x = Gene, y = variant_count, fill = status)) +
+  geom_col(position = position_dodge())+
+  #geom_bar(stat="identity")+
+  theme_classic()+
+  ylim(c(0,1000))+
+  ylab("Variant count")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+theme(text = element_text(size=10))+
+ggtitle("cell sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
+
+ggarrange( g_old_sample, g_cell_sample, common.legend = TRUE, legend="right") 
+```
+
