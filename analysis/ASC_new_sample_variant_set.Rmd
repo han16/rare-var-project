@@ -253,7 +253,7 @@ annotate_figure(figure,
 ```
 
 
-#### 10^{-4}< AF<10^{-3}
+#### $10^{-4}< AF<10^{-3}$
 
 
 ```{r, echo=F, warning=F, message=F, cache=T}
@@ -495,6 +495,35 @@ g2=ggplot(untransmitted_variant, aes(x=Gene, y=count, shape=sample, color=sample
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5, size=7))
 g2
 ```
+
+## Gene-CYFIP1
+
+
+* AF<0.05 by setting `Gnomad_non_neuro_AF<0.05`
+* exclude synonymous variants by setting `pLI=synonymous_variant`
+
+```{r, echo=F}
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & pLI!="synonymous_variant"& Gnomad_non_neuro_AF<0.05) %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+
+kable(CYFIP1, caption = "Variant (AF<0.05) in gene CYFIP1")%>%
+kable_styling() %>%
+scroll_box(height = "500px")
+```
+
+In old sample, there is one variant having 8/0 at '15:22963816-22963816_A_G' which doesn’t show up in new sample.
+
+
+* if no any constraint 
+* all variants don't go beyond `2295xxxx`.
+
+```{r, echo=F}
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+
+kable(CYFIP1, caption = "Variant  in gene CYFIP1")%>%
+kable_styling() %>%
+scroll_box(height = "500px")
+```
+
 
 
 ### LoF variants in different gene set 
