@@ -414,6 +414,33 @@ div.tocify {
 </div>
 
 
+<div id="burden-analysis-for-new-sample" class="section level2">
+<h2>Burden analysis for new sample</h2>
+<div id="synonymous-variants" class="section level3">
+<h3>Synonymous variants</h3>
+<div id="syn-variants-in-different-gene-sets" class="section level4">
+<h4>syn variants in different gene sets</h4>
+<ul>
+<li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+<li><code>Consequence=="synonymous_variant"</code></li>
+<li>after applying the above two filters, maximum of <code>VQSLOD</code> is 1.91, thus no need to use <code>cutoff of 3.75, but then brought it up to 5.13</code> suggested by Kyle.</li>
+</ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<ul>
+<li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+<li><code>Consequence=="synonymous_variant"</code></li>
+<li><code>QD&gt;=3  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-8</code>, filter used for indel by Kyle</li>
+</ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<ul>
+<li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+<li><code>Consequence=="synonymous_variant"</code></li>
+<li><code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code>, filter used for SNP by Kyle</li>
+</ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+</div>
+</div>
 <div id="old-sample-vs-new-sample" class="section level2">
 <h2>Old sample vs new sample</h2>
 <div id="missense-variants-in-different-gene-set" class="section level3">
@@ -422,15 +449,15 @@ div.tocify {
 <ul>
 <li><p>look at missense variant with AF&lt;1E-4 in 10 gene sets</p></li>
 <li><p>Old sample: missense: Non-LoF variants</p></li>
-<li><p>new sample: there are 2 labels related to “missense”. one is <code>missense_variant</code> in column <code>Consequence</code> and the other is column <code>isMis</code>. All 100201 <code>missense_variant</code> are with <code>isMis=TRUE</code>, but not all 870738 <code>isMis==TRUE</code> are <code>missense_variant</code>. Use <code>missense_variant</code> as missense variants</p></li>
+<li><p>new sample: there are 2 labels related to “missense”. one is <code>missense_variant</code> in column <code>Consequence</code> and the other is column <code>isMis</code>. All 100201 <code>missense_variant</code> are with <code>isMis=TRUE</code>, but not all 870738 <code>isMis==TRUE</code> are <code>missense_variant</code>. Use <code>missense_variant</code> as missense variants and the filter <code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></p></li>
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="missense-ismistrue" class="section level4">
 <h4>Missense: isMis==TRUE</h4>
@@ -440,18 +467,7 @@ div.tocify {
 <div id="missense-variants-in-individual-constraint-gene" class="section level3">
 <h3>Missense variants in individual constraint gene</h3>
 <p>consider missense variants with AF&lt;10-E4 in top 10 genes from old sample and new sample and see how they compare</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
-</div>
-<div id="synonymous-variants" class="section level3">
-<h3>Synonymous variants</h3>
-<div id="syn-variants-in-different-gene-sets" class="section level4">
-<h4>syn variants in different gene sets</h4>
-<ul>
-<li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
-<li><code>Consequence=="synonymous_variant"</code></li>
-</ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-</div>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
 </div>
 </div>
 <div id="gene-cyfip1" class="section level2">
