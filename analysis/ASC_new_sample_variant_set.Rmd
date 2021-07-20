@@ -118,10 +118,10 @@ ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$
 ## Burden analysis for new sample 
 
 
-### Synonymous variants 
+### Synonymous variants in different gene sets 
 
 
-#### syn variants in different gene sets 
+#### filter `VQSLOD`
 
 * `Gnomad_non_neuro_AF<0.05`
 * `Consequence=="synonymous_variant"`
@@ -182,9 +182,32 @@ g_new_sample
 #                right = "I'm done, thanks :-)!",
 #                fig.lab = "Figure 1", fig.lab.face = "bold"
 #)
-
 ```
 
+
+* fisher exact test is used 
+* lower, upper indicate 95% confidence interval 
+
+```{r, echo=F, message=F, warning=F}
+#################### print out summary statistics in a  table 
+syn_new_sample_summary=tibble()
+p.value=numeric(); lower_bound=numeric(); upper_bound=numeric()
+num_proband=6026+1265 # male proband+female proband 
+for (i in 1:length(transmitted_new_sample))
+{
+  fisher_test=fisher.test(matrix(c(transmitted_new_sample[i], num_proband, nontransmitted_new_sample[i], num_proband), nrow=2))
+  p.value[i]=fisher_test$p.val
+  lower_bound[i]=fisher_test$conf.int[1]
+  upper_bound[i]=fisher_test$conf.int[2]
+}
+syn_new_sample_summary=tibble(gene=Gene_Set,transmitted=transmitted_new_sample, nontransmitted=nontransmitted_new_sample, pvalue=p.value, lower=lower_bound, upper=upper_bound)
+kable(syn_new_sample_summary, caption = "")%>%
+kable_styling() %>%
+scroll_box(height = "500px")
+```
+
+
+#### filter QD and AS_SOR
 
 * `Gnomad_non_neuro_AF<0.05`
 * `Consequence=="synonymous_variant"`
@@ -247,6 +270,31 @@ g_new_sample
 
 ```
 
+
+* fisher exact test is used 
+* lower, upper indicate 95% confidence interval 
+
+```{r, echo=F, message=F, warning=F}
+#################### print out summary statistics in a  table 
+syn_new_sample_summary=tibble()
+p.value=numeric(); lower_bound=numeric(); upper_bound=numeric()
+num_proband=6026+1265 # male proband+female proband 
+for (i in 1:length(transmitted_new_sample))
+{
+  fisher_test=fisher.test(matrix(c(transmitted_new_sample[i], num_proband, nontransmitted_new_sample[i], num_proband), nrow=2))
+  p.value[i]=fisher_test$p.val
+  lower_bound[i]=fisher_test$conf.int[1]
+  upper_bound[i]=fisher_test$conf.int[2]
+}
+syn_new_sample_summary=tibble(gene=Gene_Set,transmitted=transmitted_new_sample, nontransmitted=nontransmitted_new_sample, pvalue=p.value, lower=lower_bound, upper=upper_bound)
+kable(syn_new_sample_summary, caption = "")%>%
+kable_styling() %>%
+scroll_box(height = "500px")
+```
+
+#### filter QD and AS_SOR 
+
+
 * `Gnomad_non_neuro_AF<0.05`
 * `Consequence=="synonymous_variant"`
 * `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`, filter used for SNP by Kyle
@@ -307,6 +355,28 @@ g_new_sample
 #                fig.lab = "Figure 1", fig.lab.face = "bold"
 #)
 
+```
+
+
+* fisher exact test is used 
+* lower, upper indicate 95% confidence interval 
+
+```{r, echo=F, message=F, warning=F}
+#################### print out summary statistics in a  table 
+syn_new_sample_summary=tibble()
+p.value=numeric(); lower_bound=numeric(); upper_bound=numeric()
+num_proband=6026+1265 # male proband+female proband 
+for (i in 1:length(transmitted_new_sample))
+{
+  fisher_test=fisher.test(matrix(c(transmitted_new_sample[i], num_proband, nontransmitted_new_sample[i], num_proband), nrow=2))
+  p.value[i]=fisher_test$p.val
+  lower_bound[i]=fisher_test$conf.int[1]
+  upper_bound[i]=fisher_test$conf.int[2]
+}
+syn_new_sample_summary=tibble(gene=Gene_Set,transmitted=transmitted_new_sample, nontransmitted=nontransmitted_new_sample, pvalue=p.value, lower=lower_bound, upper=upper_bound)
+kable(syn_new_sample_summary, caption = "")%>%
+kable_styling() %>%
+scroll_box(height = "500px")
 ```
 
 

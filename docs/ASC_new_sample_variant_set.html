@@ -416,10 +416,10 @@ div.tocify {
 
 <div id="burden-analysis-for-new-sample" class="section level2">
 <h2>Burden analysis for new sample</h2>
-<div id="synonymous-variants" class="section level3">
-<h3>Synonymous variants</h3>
-<div id="syn-variants-in-different-gene-sets" class="section level4">
-<h4>syn variants in different gene sets</h4>
+<div id="synonymous-variants-in-different-gene-sets" class="section level3">
+<h3>Synonymous variants in different gene sets</h3>
+<div id="filter-vqslod" class="section level4">
+<h4>filter <code>VQSLOD</code></h4>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li><code>Consequence=="synonymous_variant"</code></li>
@@ -427,17 +427,725 @@ div.tocify {
 </ul>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <ul>
+<li>fisher exact test is used</li>
+<li>lower, upper indicate 95% confidence interval</li>
+</ul>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+gene
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+transmitted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+nontransmitted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+pvalue
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+lower
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+upper
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID gene
+</td>
+<td style="text-align:right;">
+999
+</td>
+<td style="text-align:right;">
+1308
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.6983101
+</td>
+<td style="text-align:right;">
+0.8352275
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+High
+</td>
+<td style="text-align:right;">
+368
+</td>
+<td style="text-align:right;">
+528
+</td>
+<td style="text-align:right;">
+2e-07
+</td>
+<td style="text-align:right;">
+0.6060095
+</td>
+<td style="text-align:right;">
+0.8009612
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mod
+</td>
+<td style="text-align:right;">
+1250
+</td>
+<td style="text-align:right;">
+2115
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.5466683
+</td>
+<td style="text-align:right;">
+0.6388126
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PSD
+</td>
+<td style="text-align:right;">
+3944
+</td>
+<td style="text-align:right;">
+5575
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.6712822
+</td>
+<td style="text-align:right;">
+0.7455475
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FMRP
+</td>
+<td style="text-align:right;">
+6294
+</td>
+<td style="text-align:right;">
+8779
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.6846063
+</td>
+<td style="text-align:right;">
+0.7507580
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AutismKB
+</td>
+<td style="text-align:right;">
+1197
+</td>
+<td style="text-align:right;">
+1848
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.5975968
+</td>
+<td style="text-align:right;">
+0.7019107
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+constraint gene
+</td>
+<td style="text-align:right;">
+8227
+</td>
+<td style="text-align:right;">
+11819
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.6666542
+</td>
+<td style="text-align:right;">
+0.7268138
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RVIS
+</td>
+<td style="text-align:right;">
+4785
+</td>
+<td style="text-align:right;">
+7347
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.6200774
+</td>
+<td style="text-align:right;">
+0.6840434
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Haploinsuff
+</td>
+<td style="text-align:right;">
+18299
+</td>
+<td style="text-align:right;">
+24848
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.7090861
+</td>
+<td style="text-align:right;">
+0.7648510
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCZ gene
+</td>
+<td style="text-align:right;">
+25370
+</td>
+<td style="text-align:right;">
+32157
+</td>
+<td style="text-align:right;">
+0e+00
+</td>
+<td style="text-align:right;">
+0.7606181
+</td>
+<td style="text-align:right;">
+0.8183343
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="filter-qd-and-as_sor" class="section level4">
+<h4>filter QD and AS_SOR</h4>
+<ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=3  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-8</code>, filter used for indel by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<ul>
+<li>fisher exact test is used</li>
+<li>lower, upper indicate 95% confidence interval</li>
+</ul>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+gene
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+transmitted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+nontransmitted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+pvalue
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+lower
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+upper
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID gene
+</td>
+<td style="text-align:right;">
+796
+</td>
+<td style="text-align:right;">
+893
+</td>
+<td style="text-align:right;">
+0.0270473
+</td>
+<td style="text-align:right;">
+0.8047138
+</td>
+<td style="text-align:right;">
+0.9872741
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+High
+</td>
+<td style="text-align:right;">
+167
+</td>
+<td style="text-align:right;">
+193
+</td>
+<td style="text-align:right;">
+0.1824449
+</td>
+<td style="text-align:right;">
+0.6973203
+</td>
+<td style="text-align:right;">
+1.0728805
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mod
+</td>
+<td style="text-align:right;">
+1027
+</td>
+<td style="text-align:right;">
+1400
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.6718481
+</td>
+<td style="text-align:right;">
+0.8008275
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PSD
+</td>
+<td style="text-align:right;">
+3425
+</td>
+<td style="text-align:right;">
+4122
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.7855211
+</td>
+<td style="text-align:right;">
+0.8788766
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FMRP
+</td>
+<td style="text-align:right;">
+4917
+</td>
+<td style="text-align:right;">
+5513
+</td>
+<td style="text-align:right;">
+0.0000085
+</td>
+<td style="text-align:right;">
+0.8478538
+</td>
+<td style="text-align:right;">
+0.9382224
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AutismKB
+</td>
+<td style="text-align:right;">
+599
+</td>
+<td style="text-align:right;">
+857
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.6254676
+</td>
+<td style="text-align:right;">
+0.7807427
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+constraint gene
+</td>
+<td style="text-align:right;">
+6660
+</td>
+<td style="text-align:right;">
+8055
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.7894745
+</td>
+<td style="text-align:right;">
+0.8658926
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RVIS
+</td>
+<td style="text-align:right;">
+3085
+</td>
+<td style="text-align:right;">
+3453
+</td>
+<td style="text-align:right;">
+0.0001562
+</td>
+<td style="text-align:right;">
+0.8423566
+</td>
+<td style="text-align:right;">
+0.9475780
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Haploinsuff
+</td>
+<td style="text-align:right;">
+13965
+</td>
+<td style="text-align:right;">
+15737
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.8527240
+</td>
+<td style="text-align:right;">
+0.9234933
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCZ gene
+</td>
+<td style="text-align:right;">
+22054
+</td>
+<td style="text-align:right;">
+24922
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.8524824
+</td>
+<td style="text-align:right;">
+0.9185963
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="filter-qd-and-as_sor-1" class="section level4">
+<h4>filter QD and AS_SOR</h4>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code>, filter used for SNP by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<ul>
+<li>fisher exact test is used</li>
+<li>lower, upper indicate 95% confidence interval</li>
+</ul>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+gene
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+transmitted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+nontransmitted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+pvalue
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+lower
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+upper
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID gene
+</td>
+<td style="text-align:right;">
+721
+</td>
+<td style="text-align:right;">
+799
+</td>
+<td style="text-align:right;">
+0.0591778
+</td>
+<td style="text-align:right;">
+0.8106017
+</td>
+<td style="text-align:right;">
+1.0044674
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+High
+</td>
+<td style="text-align:right;">
+131
+</td>
+<td style="text-align:right;">
+136
+</td>
+<td style="text-align:right;">
+0.8049446
+</td>
+<td style="text-align:right;">
+0.7501932
+</td>
+<td style="text-align:right;">
+1.2364545
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mod
+</td>
+<td style="text-align:right;">
+374
+</td>
+<td style="text-align:right;">
+542
+</td>
+<td style="text-align:right;">
+0.0000001
+</td>
+<td style="text-align:right;">
+0.6007840
+</td>
+<td style="text-align:right;">
+0.7919343
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PSD
+</td>
+<td style="text-align:right;">
+2558
+</td>
+<td style="text-align:right;">
+2779
+</td>
+<td style="text-align:right;">
+0.0099946
+</td>
+<td style="text-align:right;">
+0.8640423
+</td>
+<td style="text-align:right;">
+0.9805908
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FMRP
+</td>
+<td style="text-align:right;">
+3010
+</td>
+<td style="text-align:right;">
+3369
+</td>
+<td style="text-align:right;">
+0.0001850
+</td>
+<td style="text-align:right;">
+0.8419388
+</td>
+<td style="text-align:right;">
+0.9480778
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AutismKB
+</td>
+<td style="text-align:right;">
+351
+</td>
+<td style="text-align:right;">
+575
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.5309104
+</td>
+<td style="text-align:right;">
+0.7012079
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+constraint gene
+</td>
+<td style="text-align:right;">
+4531
+</td>
+<td style="text-align:right;">
+5417
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.7945131
+</td>
+<td style="text-align:right;">
+0.8805838
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RVIS
+</td>
+<td style="text-align:right;">
+2094
+</td>
+<td style="text-align:right;">
+2327
+</td>
+<td style="text-align:right;">
+0.0022389
+</td>
+<td style="text-align:right;">
+0.8407084
+</td>
+<td style="text-align:right;">
+0.9631353
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Haploinsuff
+</td>
+<td style="text-align:right;">
+10639
+</td>
+<td style="text-align:right;">
+11773
+</td>
+<td style="text-align:right;">
+0.0000021
+</td>
+<td style="text-align:right;">
+0.8665408
+</td>
+<td style="text-align:right;">
+0.9424161
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCZ gene
+</td>
+<td style="text-align:right;">
+15553
+</td>
+<td style="text-align:right;">
+17145
+</td>
+<td style="text-align:right;">
+0.0000010
+</td>
+<td style="text-align:right;">
+0.8722299
+</td>
+<td style="text-align:right;">
+0.9434269
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -453,11 +1161,11 @@ div.tocify {
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="missense-ismistrue" class="section level4">
 <h4>Missense: isMis==TRUE</h4>
@@ -467,7 +1175,7 @@ div.tocify {
 <div id="missense-variants-in-individual-constraint-gene" class="section level3">
 <h3>Missense variants in individual constraint gene</h3>
 <p>consider missense variants with AF&lt;10-E4 in top 10 genes from old sample and new sample and see how they compare</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
 </div>
 </div>
 <div id="gene-cyfip1" class="section level2">
