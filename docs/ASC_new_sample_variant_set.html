@@ -416,6 +416,13 @@ div.tocify {
 
 <div id="burden-analysis-for-new-sample" class="section level2">
 <h2>Burden analysis for new sample</h2>
+<div id="all-rare-variants" class="section level3">
+<h3>All rare variants</h3>
+<ul>
+<li>use filter <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+</ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
 <div id="synonymous-variants-in-different-gene-sets" class="section level3">
 <h3>Synonymous variants in different gene sets</h3>
 <div id="filter-vqslod" class="section level4">
@@ -425,7 +432,7 @@ div.tocify {
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li>after applying the above two filters, maximum of <code>VQSLOD</code> is 1.91, thus no need to use <code>cutoff of 3.75, but then brought it up to 5.13</code> suggested by Kyle.</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -668,7 +675,7 @@ SCZ gene
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=3  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-8</code>, filter used for indel by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -911,7 +918,8 @@ SCZ gene
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code>, filter used for SNP by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -1161,11 +1169,18 @@ SCZ gene
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<ul>
+<li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+<li>missense variants include <code>"missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant"</code></li>
+<li>use filter <code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
+</ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="missense-ismistrue" class="section level4">
 <h4>Missense: isMis==TRUE</h4>
@@ -1175,14 +1190,14 @@ SCZ gene
 <div id="missense-variants-in-individual-constraint-gene" class="section level3">
 <h3>Missense variants in individual constraint gene</h3>
 <p>consider missense variants with AF&lt;10-E4 in top 10 genes from old sample and new sample and see how they compare</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-21-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
 </div>
 </div>
 <div id="gene-cyfip1" class="section level2">
 <h2>Gene-CYFIP1</h2>
 <ul>
 <li>AF&lt;0.05 by setting <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
-<li>exclude synonymous variants by setting <code>pLI=synonymous_variant</code></li>
+<li>exclude synonymous variants by setting <code>pLI!=synonymous_variant</code></li>
 </ul>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">

@@ -83,6 +83,7 @@ Gene_Set_List[[10]]=SCZ_Gene
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### old sample
 ########## read into data
+#setwd("C:\\Shengtong\\Research\\rare-var\\rare-var-project\\analysis\\")
 All.Anno.Data=as_tibble(read.table("../../AnnotatedTrans.txt", header=T))
 N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA
@@ -116,6 +117,23 @@ ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$
 
 
 ## Burden analysis for new sample 
+
+### All rare variants 
+
+* use filter `Gnomad_non_neuro_AF<0.05`
+
+```{r, echo=F, message=F, warning=F}
+num_proband=6026+1265 # male proband+female proband 
+rare_variant_new_sample=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
+
+fisher_test=fisher.test(matrix(c(sum(rare_variant_new_sample$Transmitted_proband), num_proband, sum(rare_variant_new_sample$Untransmitted_proband), num_proband), nrow=2))
+fisher_test_result_all=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="all")
+ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
+```
 
 
 ### Synonymous variants in different gene sets 
@@ -298,6 +316,20 @@ scroll_box(height = "500px")
 * `Gnomad_non_neuro_AF<0.05`
 * `Consequence=="synonymous_variant"`
 * `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`, filter used for SNP by Kyle
+
+
+```{r, echo=F, message=F, warning=F}
+rare_syn_variant_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
+
+
+fisher_test=fisher.test(matrix(c(sum(rare_syn_variant_new_sample$Transmitted_proband), num_proband, sum(rare_syn_variant_new_sample$Untransmitted_proband), num_proband), nrow=2))
+fisher_test_result_syn=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="syn")
+ggplot(fisher_test_result_syn, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
+```
 
 
 ```{r, echo=F, warning=F, message=F, eval=T}
@@ -517,6 +549,35 @@ annotate_figure(figure,
 #                right = "I'm done, thanks :-)!",
 #                fig.lab = "Figure 1", fig.lab.face = "bold"
 )
+```
+
+
+* `Gnomad_non_neuro_AF<0.05`
+*  missense variants include `"missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant"`
+* use filter `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
+
+```{r, echo=F, message=F, warning=F}
+## burden for missense variants 
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence %in% c("missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant")==T )%>% filter(Gnomad_non_neuro_AF<0.05 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF filter 
+
+fisher_test=fisher.test(matrix(c(sum(rare_missense_variant_new_sample$Transmitted_proband), num_proband, sum(rare_missense_variant_new_sample$Untransmitted_proband), num_proband), nrow=2))
+fisher_test_result_mis=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="mis")
+ggplot(fisher_test_result_mis, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
+
+```
+
+```{r, echo=F, message=F, warning=F}
+# combine burden for all variants, syn and missense 
+fisher_test_result=rbind(fisher_test_result_all, fisher_test_result_syn, fisher_test_result_mis)
+ggplot(fisher_test_result, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
 ```
 
 
@@ -768,7 +829,7 @@ g2
 
 
 * AF<0.05 by setting `Gnomad_non_neuro_AF<0.05`
-* exclude synonymous variants by setting `pLI=synonymous_variant`
+* exclude synonymous variants by setting `pLI!=synonymous_variant`
 
 ```{r, echo=F}
 CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & pLI!="synonymous_variant"& Gnomad_non_neuro_AF<0.05) %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
