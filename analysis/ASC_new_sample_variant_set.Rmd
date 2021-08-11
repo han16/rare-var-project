@@ -89,7 +89,7 @@ N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
-Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonumous SNV
+Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
 ```
 
 
@@ -107,11 +107,18 @@ ASC_new_sample2=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\AS
 #kable_styling() %>%
 #scroll_box(height = "500px")
 #write.csv(transmitted_variant, file="C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10_transmitted_variant.csv")
+
 ##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
 Transmitted_proband=ASC_new_sample2%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
 Untransmitted_proband=ASC_new_sample2%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
 
-ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband)
+##### count transmitted variants and untransmitted in proband from parents  by summing over male, female, dad, mom  
+Transmitted_proband_parents=ASC_new_sample2%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband_parents = select(., t_proband_male_dad, t_proband_male_mom, t_proband_female_dad, t_proband_female_mom) %>% rowSums())%>% select(Transmitted_proband_parents) 
+Untransmitted_proband_parents=ASC_new_sample2%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband_parents= select(., u_proband_male_dad, u_proband_male_mom, u_proband_female_dad, u_proband_female_mom) %>% rowSums())%>% select(Untransmitted_proband_parents) 
+
+
+##### add new columns of total transmitted and non-transmitted variants 
+ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_proband_parents=Transmitted_proband_parents, Untransmitted_proband_parents=Untransmitted_proband_parents)
 
 ```
 
@@ -136,7 +143,59 @@ ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ```
 
 
-### Synonymous variants in different gene sets 
+### Synonymous variants 
+
+
+#### Private variants stratified by AF 
+
+* `Gnomad_non_neuro_AF<0.05`
+
+* Private variants are defined as variants with total allele  count equal to  1 in parents calculated as `Transmitted_proband_parents+Untransmitted_proband_parents=1`
+
+
+```{r, echo=F}
+rare_syn_variants_new_sample_private=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05 & (Transmitted_proband_parents+Untransmitted_proband_parents)==1) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband)
+OR=numeric(); pvalue=numeric(); CI_lower=numeric(); CI_upper=numeric()
+
+######## category 1 
+Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.01)%>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.01)%>%select(Untransmitted_proband)%>%pull
+fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
+OR[1]=fisher_test$estimate; pvalue[1]=fisher_test$p.value; CI_lower[1]=fisher_test$conf.int[1]; CI_upper[1]=fisher_test$conf.int[2]
+
+
+######## category 2 
+Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.005 & Gnomad_non_neuro_AF<0.01)%>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.005 & Gnomad_non_neuro_AF<0.01)%>%select(Untransmitted_proband)%>%pull
+fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
+OR[2]=fisher_test$estimate; pvalue[2]=fisher_test$p.value; CI_lower[2]=fisher_test$conf.int[1]; CI_upper[2]=fisher_test$conf.int[2]
+
+
+######## category 3 
+Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.005)%>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.005)%>%select(Untransmitted_proband)%>%pull
+fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
+OR[3]=fisher_test$estimate; pvalue[3]=fisher_test$p.value; CI_lower[3]=fisher_test$conf.int[1]; CI_upper[3]=fisher_test$conf.int[2]
+
+######## category 4 
+Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF<0.005)%>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF<0.005)%>%select(Untransmitted_proband)%>%pull
+fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
+OR[4]=fisher_test$estimate; pvalue[4]=fisher_test$p.value; CI_lower[4]=fisher_test$conf.int[1]; CI_upper[4]=fisher_test$conf.int[2]
+
+syn_varint_private_burden=tibble(OR=OR, var=c("(1): 1%<AF<5%", "(2): 0.5%<AF<1%", "(3): 0.1%<AF<0.5%", "(4): AF<0.1%"), lower=CI_lower, upper=CI_upper)
+
+ggplot(syn_varint_private_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  ggtitle("Burden of private variants stratified by AF")+
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9))+
+  theme(plot.title = element_text(hjust = 0.5))+ # center the title
+  theme(legend.position="none")
+
+```
+
 
 
 #### filter `VQSLOD`
