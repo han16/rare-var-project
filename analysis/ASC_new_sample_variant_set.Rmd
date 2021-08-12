@@ -118,7 +118,7 @@ Untransmitted_proband_parents=ASC_new_sample2%>% select(starts_with("u_proband")
 
 
 ##### add new columns of total transmitted and non-transmitted variants 
-ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_proband_parents=Transmitted_proband_parents, Untransmitted_proband_parents=Untransmitted_proband_parents)
+ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_proband_parents=Transmitted_proband_parents$Transmitted_proband_parents, Untransmitted_proband_parents=Untransmitted_proband_parents$Untransmitted_proband_parents)
 
 ```
 
@@ -146,7 +146,7 @@ ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ### Synonymous variants 
 
 
-#### Private variants stratified by AF 
+#### syn variants stratified by AF 
 
 * `Gnomad_non_neuro_AF<0.05`
 
@@ -154,41 +154,42 @@ ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 
 
 ```{r, echo=F}
-rare_syn_variants_new_sample_private=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05 & (Transmitted_proband_parents+Untransmitted_proband_parents)==1) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband)
+rare_syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
 OR=numeric(); pvalue=numeric(); CI_lower=numeric(); CI_upper=numeric()
 
-######## category 1 
-Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.01)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.01)%>%select(Untransmitted_proband)%>%pull
+######## category 1; private variants: total allele in parents equal to 1   
+Trans_variant=rare_syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1) %>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample%>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1)%>%select(Untransmitted_proband)%>%pull
 fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
 OR[1]=fisher_test$estimate; pvalue[1]=fisher_test$p.value; CI_lower[1]=fisher_test$conf.int[1]; CI_upper[1]=fisher_test$conf.int[2]
 
 
-######## category 2 
-Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.005 & Gnomad_non_neuro_AF<0.01)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.005 & Gnomad_non_neuro_AF<0.01)%>%select(Untransmitted_proband)%>%pull
+######## category 2 1%<AF<5%
+Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.01)%>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.01)%>%select(Untransmitted_proband)%>%pull
 fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
 OR[2]=fisher_test$estimate; pvalue[2]=fisher_test$p.value; CI_lower[2]=fisher_test$conf.int[1]; CI_upper[2]=fisher_test$conf.int[2]
 
 
 ######## category 3 
-Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.005)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.005)%>%select(Untransmitted_proband)%>%pull
+Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.01)%>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.01)%>%select(Untransmitted_proband)%>%pull
 fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
 OR[3]=fisher_test$estimate; pvalue[3]=fisher_test$p.value; CI_lower[3]=fisher_test$conf.int[1]; CI_upper[3]=fisher_test$conf.int[2]
 
 ######## category 4 
-Trans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF<0.005)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample_private %>% filter(Gnomad_non_neuro_AF<0.005)%>%select(Untransmitted_proband)%>%pull
+Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF<0.001)%>%select(Transmitted_proband)%>%pull
+Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF<0.001)%>%select(Untransmitted_proband)%>%pull
 fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
 OR[4]=fisher_test$estimate; pvalue[4]=fisher_test$p.value; CI_lower[4]=fisher_test$conf.int[1]; CI_upper[4]=fisher_test$conf.int[2]
 
-syn_varint_private_burden=tibble(OR=OR, var=c("(1): 1%<AF<5%", "(2): 0.5%<AF<1%", "(3): 0.1%<AF<0.5%", "(4): AF<0.1%"), lower=CI_lower, upper=CI_upper)
+syn_varint_burden=tibble(OR=c(OR[2:4], OR[1]), var=c("(1): 1%<AF<5%", "(2): 0.1%<AF<1%", "(3): AF<0.1%", "(4): private"), lower=c(CI_lower[2:4], CI_lower[1]), upper=c(CI_upper[2:4], CI_upper[1]))
 
-ggplot(syn_varint_private_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
-  ggtitle("Burden of private variants stratified by AF")+
+  ylim(c(0,1))+
+  ggtitle("Burden of syn variants")+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9))+
   theme(plot.title = element_text(hjust = 0.5))+ # center the title
