@@ -425,23 +425,34 @@ div.tocify {
 </div>
 <div id="synonymous-variants" class="section level3">
 <h3>Synonymous variants</h3>
-<div id="syn-variants-stratified-by-af" class="section level4">
-<h4>syn variants stratified by AF</h4>
 <ul>
-<li><p><code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
+<li>filter <code>Consequence=="synonymous_variant</code></li>
+<li>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</li>
+</ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<ul>
+<li><p>filter <code>Consequence=="synonymous_variant</code></p></li>
 <li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
 <li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-</div>
-<div id="filter-vqslod" class="section level4">
-<h4>filter <code>VQSLOD</code></h4>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><strong>Use <code>VQSLOD</code> filter</strong></p>
+<ul>
+<li><p><a href="https://gatk.broadinstitute.org/hc/en-us/articles/360035531612-Variant-Quality-Score-Recalibration-VQSR-">VQSLOD</a> is short for variant quality score log-odds.</p></li>
+<li><p>at each VQSLOD cutoff, variants with VQSLOD score less than cutoff is chosen.</p></li>
+<li><p>filter <code>Consequence=="synonymous_variant</code></p></li>
+<li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
+<li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
+</ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<div id="filter-vqslod-in-different-gene-sets" class="section level4">
+<h4>filter <code>VQSLOD</code> in different gene sets</h4>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li>after applying the above two filters, maximum of <code>VQSLOD</code> is 1.91, thus no need to use <code>cutoff of 3.75, but then brought it up to 5.13</code> suggested by Kyle.</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -684,7 +695,7 @@ SCZ gene
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=3  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-8</code>, filter used for indel by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -927,8 +938,8 @@ SCZ gene
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code>, filter used for SNP by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -1178,18 +1189,18 @@ SCZ gene
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li>missense variants include <code>"missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant"</code></li>
 <li>use filter <code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 <div id="missense-ismistrue" class="section level4">
 <h4>Missense: isMis==TRUE</h4>
@@ -1199,7 +1210,7 @@ SCZ gene
 <div id="missense-variants-in-individual-constraint-gene" class="section level3">
 <h3>Missense variants in individual constraint gene</h3>
 <p>consider missense variants with AF&lt;10-E4 in top 10 genes from old sample and new sample and see how they compare</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-22-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-24-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-24-2.png" width="672" /></p>
 </div>
 </div>
 <div id="gene-cyfip1" class="section level2">
