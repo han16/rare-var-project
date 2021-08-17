@@ -64,3 +64,8 @@ lbls <- paste(lbls,"%",sep="") # ad % to labels
 pie(slices,labels = lbls, col=rainbow(length(lbls)),
   	main="variant partition by Gnomad_non_neuro_AF")
 ```
+
+
+##  Synonymous variants 
+
+This is [Synonymous variant analysis](ASC_new_sample_syn_var.html)
