@@ -46,6 +46,8 @@ output:
 
 * [Quality control (QC) for new sample](ASC_new_sample.html)
 
+* [Synonymous variants](ASC_new_sample_syn_var.html)
+
 * [Variant set (VS) analysis](ASC_new_sample_variant_set.html)
 
 
