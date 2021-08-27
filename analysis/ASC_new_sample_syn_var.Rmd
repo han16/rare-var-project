@@ -364,6 +364,13 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 ```
 
 
+
+
+ 
+
+
+```{r, echo=F, warning=F, message=F, eval=F}
+
 ## Burden of syn var in different gene sets 
 
 
@@ -372,9 +379,6 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 * `Gnomad_non_neuro_AF<0.05`
 * `Consequence=="synonymous_variant"`
 * after applying the above two filters, maximum of `VQSLOD` is 1.91, thus no need to use `cutoff of 3.75, but then brought it up to 5.13 ` suggested by Kyle. 
-
-
-```{r, echo=F, warning=F, message=F, eval=T}
 ######### obtain syn missense variants in new sample data
 
 rare_syn_variant_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
@@ -430,11 +434,11 @@ g_new_sample
 #)
 ```
 
+ 
 
+```{r, echo=F, message=F, warning=F, eval=F}
 * fisher exact test is used 
-* lower, upper indicate 95% confidence interval 
-
-```{r, echo=F, message=F, warning=F}
+* lower, upper indicate 95% confidence interval
 #################### print out summary statistics in a  table 
 syn_new_sample_summary=tibble()
 p.value=numeric(); lower_bound=numeric(); upper_bound=numeric(); OR=numeric()
@@ -453,6 +457,9 @@ kable_styling() %>%
 scroll_box(height = "200px")
 ```
 
+ 
+
+```{r, echo=F, warning=F, message=F, eval=F}
 
 ### filter QD and AS_SOR
 
@@ -460,7 +467,7 @@ scroll_box(height = "200px")
 * `Consequence=="synonymous_variant"`
 * `QD>=3  & AS_SOR <=3 & AS_ReadPosRankSum>-8`, filter used for indel by Kyle 
 
-```{r, echo=F, warning=F, message=F, eval=T}
+
 ######### obtain syn missense variants in new sample data
 
 rare_syn_variant_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05 & QD>=3  & AS_SOR <=3 & AS_ReadPosRankSum>-8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
@@ -518,10 +525,13 @@ g_new_sample
 ```
 
 
-* fisher exact test is used 
-* lower, upper indicate 95% confidence interval 
+ 
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=F, message=F, warning=F, eval=F}
+
+* fisher exact test is used 
+* lower, upper indicate 95% confidence interval
+
 #################### print out summary statistics in a  table 
 syn_new_sample_summary=tibble()
 p.value=numeric(); lower_bound=numeric(); upper_bound=numeric(); OR=numeric()
@@ -540,6 +550,8 @@ kable_styling() %>%
 scroll_box(height = "200px")
 ```
 
+```{r, echo=F, message=F, warning=F, eval=F}
+
 ### filter QD and AS_SOR 
 
 
@@ -547,8 +559,9 @@ scroll_box(height = "200px")
 * `Consequence=="synonymous_variant"`
 * `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`, filter used for SNP by Kyle
 
+```
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=F, message=F, warning=F, eval=F}
 rare_syn_variant_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
 
 
@@ -563,7 +576,7 @@ ggplot(fisher_test_result_syn, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ```
 
 
-```{r, echo=F, warning=F, message=F, eval=T}
+```{r, echo=F, warning=F, message=F, eval=F}
 ######### obtain syn variants in new sample data
 
 rare_syn_variant_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
@@ -621,10 +634,12 @@ g_new_sample
 ```
 
 
+
+```{r, echo=F, message=F, warning=F, eval=F}
+
 * fisher exact test is used 
 * lower, upper indicate 95% confidence interval 
 
-```{r, echo=F, message=F, warning=F}
 #################### print out summary statistics in a  table 
 syn_new_sample_summary=tibble()
 p.value=numeric(); lower_bound=numeric(); upper_bound=numeric()
@@ -643,3 +658,4 @@ kable(syn_new_sample_summary, caption = "")%>%
 kable_styling() %>%
 scroll_box(height = "200px")
 ```
+
