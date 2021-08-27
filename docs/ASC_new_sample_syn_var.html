@@ -419,25 +419,54 @@ div.tocify {
 <ul>
 <li>filter <code>Consequence=="synonymous_variant</code></li>
 <li>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</li>
+<li>When use AF cutoff, be aware of 15614 variants with zero AF going to which category</li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <ul>
 <li><p>filter <code>Consequence=="synonymous_variant</code></p></li>
 <li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
 <li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="burden-of-syn-var-with-vqslod-filter" class="section level2">
 <h2>Burden of syn var with <code>VQSLOD</code> filter</h2>
 <ul>
 <li><p><a href="https://gatk.broadinstitute.org/hc/en-us/articles/360035531612-Variant-Quality-Score-Recalibration-VQSR-">VQSLOD</a> is short for variant quality score log-odds.</p></li>
 <li><p>at each VQSLOD cutoff, variants with VQSLOD score less than cutoff is chosen.</p></li>
+</ul>
+<pre><code>&gt; summary(ASC_new_sample %&gt;% filter(Consequence==&quot;synonymous_variant&quot;) %&gt;% select(VQSLOD)%&gt;%pull())
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-39450.00     -5.49     -2.65    -40.90     -1.93      1.91</code></pre>
+<pre><code>Kyle looked at using a VQSLOD cutoff of 3.75, but then brought it up to 5.13 after trying a similar calibration procedure with non-coding indels.</code></pre>
+<ul>
 <li><p>filter <code>Consequence=="synonymous_variant</code></p></li>
 <li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
 <li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="burden-of-syn-var-with-qdreadposranksumsor-filter" class="section level2">
+<h2>Burden of syn var with <code>QD/ReadPosRankSum/SOR</code> filter</h2>
+<p>Consider <a href="https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants"><code>QD, ReadPosRankSum, SOR</code></a> combined filters.</p>
+<ul>
+<li><p>fix <code>QD &gt;= 3 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
+<li><p><code>QD &gt;= 3 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -8</code> for indels suggested by Kyle</p></li>
+<li><p>vertical line is <code>AS_ReadPosRankSum = -8</code></p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<ul>
+<li><p>fix <code>QD &gt;= 1 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
+<li><p><code>QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> for SNPs suggested by Kyle</p></li>
+<li><p>vertical line is <code>AS_ReadPosRankSum = -0.8</code></p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<ul>
+<li><p>fix <code>AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> and vary <code>QD</code> and variants with score larger than threshold are chosen</p></li>
+<li><p><code>QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> for SNPs suggested by Kyle</p></li>
+<li><p>vertical line is <code>QD=1</code></p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="burden-of-syn-var-in-different-gene-sets" class="section level2">
 <h2>Burden of syn var in different gene sets</h2>
@@ -448,7 +477,7 @@ div.tocify {
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li>after applying the above two filters, maximum of <code>VQSLOD</code> is 1.91, thus no need to use <code>cutoff of 3.75, but then brought it up to 5.13</code> suggested by Kyle.</li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -724,7 +753,7 @@ SCZ gene
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=3  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-8</code>, filter used for indel by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>
@@ -1000,8 +1029,8 @@ SCZ gene
 <li><code>Consequence=="synonymous_variant"</code></li>
 <li><code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code>, filter used for SNP by Kyle</li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <ul>
 <li>fisher exact test is used</li>
 <li>lower, upper indicate 95% confidence interval</li>

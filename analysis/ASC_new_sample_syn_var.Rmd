@@ -25,56 +25,7 @@ library(mirage)
 
 ```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
 # read into gene set 
-GeneDB=src_sqlite(path="C:\\Shengtong\\Research\\rare-var\\gene.list.db", create=F)
-#GeneDB=src_sqlite(path="../../gene.list.db", create=F)
-gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
-gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
-gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
-gene_cate4=data.frame(collect(tbl(GeneDB, "SFARI_cate4_gene")))
-gene_cate5=data.frame(collect(tbl(GeneDB, "SFARI_cate5_gene")))
-gene_cate6=data.frame(collect(tbl(GeneDB, "SFARI_cate6_gene")))
-gene_cateS=data.frame(collect(tbl(GeneDB, "SFARI_cateS_gene")))
-TADAGene=data.frame(collect(tbl(GeneDB, "TADAGenelist")))
-Qlessthan5percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.05]
-Qlessthan20percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.2]
-Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
-Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
-Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
-Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
-###### ID gene ######
-ID_Gene=as.character(data.frame(collect(tbl(GeneDB, "Pinto14AJHG_IDgene")))$GeneID)
-#### high confidence gene 
-High_Confidence_Gene=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
-#### moderate confidence gene 
-Moderate_Confidence_Gene=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
-#### psd gene 
-purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
-PSD_Gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
-#### FMRP gene 
-FMRP_Gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
-#### Autism KB gene 
-ASD_KB_Gene=as.character(data.frame(collect(tbl(GeneDB, "AutismKB_gene")))$GeneID)
-#### constraint gene 
-Constraint_Gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
-### RVIS gene 
-RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
-RVIS_Gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene
-#### Haplo insufficient gene 
-Haploinsufficient_Gene=as.character(data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))$GeneID)
-#### SCZ data 
-SCZ_Gene=purcell.genelist$Gene_symbol
-Gene_Set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff", "SCZ gene")
-Gene_Set_List=list()
-Gene_Set_List[[1]]=ID_Gene
-Gene_Set_List[[2]]=High_Confidence_Gene
-Gene_Set_List[[3]]=Moderate_Confidence_Gene
-Gene_Set_List[[4]]=PSD_Gene
-Gene_Set_List[[5]]=FMRP_Gene
-Gene_Set_List[[6]]=ASD_KB_Gene
-Gene_Set_List[[7]]=Constraint_Gene
-Gene_Set_List[[8]]=RVIS_Gene
-Gene_Set_List[[9]]=Haploinsufficient_Gene
-Gene_Set_List[[10]]=SCZ_Gene
+source("Read.into.Gene.set.R")
 ```
 
 
@@ -103,46 +54,48 @@ Transmitted_proband_parents=ASC_new_sample2%>% select(starts_with("t_proband"))%
 Untransmitted_proband_parents=ASC_new_sample2%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband_parents= select(., u_proband_male_dad, u_proband_male_mom, u_proband_female_dad, u_proband_female_mom) %>% rowSums())%>% select(Untransmitted_proband_parents) 
 
 
-##### add new columns of total transmitted and non-transmitted variants 
+##### add new columns of total transmitted and non-transmitted variants  
 ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_proband_parents=Transmitted_proband_parents$Transmitted_proband_parents, Untransmitted_proband_parents=Untransmitted_proband_parents$Untransmitted_proband_parents)
 
 num_proband=6026+1265 # male proband+female proband 
 ```
 
+```{r, echo=F, warning=F, warning=F}
+# input must have column Gnomad_non_neuro_AF; Transmitted_proband;  Untransmitted_proband
+fisher_test=function(input.data, sample_size, AF_lower, AF_upper)
+{
+input.data.filter=input.data %>%filter(Gnomad_non_neuro_AF>=AF_lower & Gnomad_non_neuro_AF<AF_upper)  
+Trans_variant=input.data.filter%>%select(Transmitted_proband)%>%pull
+Untrans_variant=input.data.filter%>%select(Untransmitted_proband)%>%pull
+burden_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
+result=list(OR=burden_test$estimate, CI_lower=burden_test$conf.int[1], CI_upper=burden_test$conf.int[2], pvalue=burden_test$p.value, Trans_variant=sum(Trans_variant), Untrans_variant=sum(Untrans_variant))
+return(result)  
+}
+```
+
+
+
 ## Burden of syn var partitioned by AF 
 
 * filter `Consequence=="synonymous_variant`
 * AF from `Gnomad_non_neuro_AF` is used to define other categories. 
+* When use AF cutoff, be aware of 15614 variants with zero AF going to which category 
 
 ```{r, echo=F, message=F, warning=F}
-rare_syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" ) %>% select(Variant, Gene, Gnomad_non_neuro_AF,  Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" ) %>% select(Variant, Gene, Gnomad_non_neuro_AF,  Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
 
-#rare_syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant") %>% select(Variant, Gene, Gnomad_non_neuro_AF,  Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
-
+AF_cutoff=c(0, 0.05, 1) # define AF cutoffs 
 OR=numeric(); pvalue=numeric(); CI_lower=numeric(); CI_upper=numeric()
-
-######## category 1; private variants: total allele in parents equal to 1   
-Trans_variant=rare_syn_variants_new_sample %>%filter(Gnomad_non_neuro_AF>0.05 )%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample%>% filter(Gnomad_non_neuro_AF>0.05)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[1]=fisher_test$estimate; pvalue[1]=fisher_test$p.value; CI_lower[1]=fisher_test$conf.int[1]; CI_upper[1]=fisher_test$conf.int[2]
-
-
-######## category 2 AF<5%
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF<0.05 )%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter( Gnomad_non_neuro_AF<0.05)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[2]=fisher_test$estimate; pvalue[2]=fisher_test$p.value; CI_lower[2]=fisher_test$conf.int[1]; CI_upper[2]=fisher_test$conf.int[2]
-
-
-######## category 3 all syn
-Trans_variant=rare_syn_variants_new_sample%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[3]=fisher_test$estimate; pvalue[3]=fisher_test$p.value; CI_lower[3]=fisher_test$conf.int[1]; CI_upper[3]=fisher_test$conf.int[2]
-
-
-syn_varint_burden=tibble(OR=c(OR[3], OR[1:2]), var=c( "(1): all", "(2): AF>5%", "(3): AF<5%"), lower=c(CI_lower[3], CI_lower[1:2]), upper=c(CI_upper[3], CI_upper[1:2]))
+for (i in 1:(length(AF_cutoff)-1))
+{
+  burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[i], AF_cutoff[i+1])
+  OR[i]=burden_test$OR; pvalue[i]=burden_test$pvalue; CI_lower[i]=burden_test$CI_lower; CI_upper[i]=burden_test$CI_upper
+}
+burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[1], AF_cutoff[3])
+  OR[i+1]=burden_test$OR; pvalue[i+1]=burden_test$pvalue; CI_lower[i+1]=burden_test$CI_lower; CI_upper[i+1]=burden_test$CI_upper
+# 3 categories; (1) AF<5% (2) AF>5% (3) all 
+  
+syn_varint_burden=tibble(OR=OR, var=c( "(1): AF<5%", "(2): AF>5%", "(3): all"), lower=CI_lower, upper=CI_upper)
 
 ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
   geom_bar(stat="identity", color="black", 
@@ -169,46 +122,20 @@ ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 
 
 ```{r, echo=F}
-rare_syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" ) %>% select(Variant, Gene, Gnomad_non_neuro_AF,  Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
-
-#rare_syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant") %>% select(Variant, Gene, Gnomad_non_neuro_AF,  Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+AF_cutoff=c(0, 0.001, 0.01, 0.05, 1)
 
 OR=numeric(); pvalue=numeric(); CI_lower=numeric(); CI_upper=numeric()
 
-######## category 1; private variants: total allele in parents equal to 1   
-Trans_variant=rare_syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1) %>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample%>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[1]=fisher_test$estimate; pvalue[1]=fisher_test$p.value; CI_lower[1]=fisher_test$conf.int[1]; CI_upper[1]=fisher_test$conf.int[2]
-
-
-######## category 2 1%<AF<5%
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.01 &Gnomad_non_neuro_AF<0.05 )%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.01 & Gnomad_non_neuro_AF<0.05)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[2]=fisher_test$estimate; pvalue[2]=fisher_test$p.value; CI_lower[2]=fisher_test$conf.int[1]; CI_upper[2]=fisher_test$conf.int[2]
-
-
-######## category 3 
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.01)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.01)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[3]=fisher_test$estimate; pvalue[3]=fisher_test$p.value; CI_lower[3]=fisher_test$conf.int[1]; CI_upper[3]=fisher_test$conf.int[2]
-
-######## category 4 
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF<0.001)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF<0.001)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[4]=fisher_test$estimate; pvalue[4]=fisher_test$p.value; CI_lower[4]=fisher_test$conf.int[1]; CI_upper[4]=fisher_test$conf.int[2]
-
-######## category 5 
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.05)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.05)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[5]=fisher_test$estimate; pvalue[5]=fisher_test$p.value; CI_lower[5]=fisher_test$conf.int[1]; CI_upper[5]=fisher_test$conf.int[2]
-
-
-syn_varint_burden=tibble(OR=c(OR[5], OR[2:4], OR[1]), var=c( "(1): AF>5%", "(2): 1%<AF<5%", "(3): 0.1%<AF<1%", "(4): AF<0.1%", "(5): private"), lower=c(CI_lower[5], CI_lower[2:4], CI_lower[1]), upper=c(CI_upper[5], CI_upper[2:4], CI_upper[1]))
+for (i in 1:(length(AF_cutoff)-1))
+{
+  burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[i], AF_cutoff[i+1])
+  OR[i]=burden_test$OR; pvalue[i]=burden_test$pvalue; CI_lower[i]=burden_test$CI_lower; CI_upper[i]=burden_test$CI_upper
+}
+burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1), num_proband, AF_cutoff[1], AF_cutoff[5]) # private var  
+  OR[i+1]=burden_test$OR; pvalue[i+1]=burden_test$pvalue; CI_lower[i+1]=burden_test$CI_lower; CI_upper[i+1]=burden_test$CI_upper
+# 5 categories; (1) private (2) AF<0.1% (3) 0.1%=<AF<1% (4) 1%=<AF<5% (5) 5%=<AF
+  
+syn_varint_burden=tibble(OR=c(OR[5], OR[1:4]), var=c( "(1): private", "(2): AF<0.1%", "(3): 0.1%<AF<1%", "(4): 1%<AF<5%", "(5): AF>5%"), lower=c(CI_lower[5], CI_lower[1:4]), upper=c(CI_upper[5], CI_upper[1:4]))
 
 ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
   geom_bar(stat="identity", color="black", 
@@ -221,8 +148,11 @@ ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
                 color = "red", size=1)+
   theme(plot.title = element_text(hjust = 0.5))+ # center the title
   theme(legend.position="none")
-
+  
+  
 ```
+  
+
 
 
 
@@ -232,6 +162,18 @@ ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 * [VQSLOD](https://gatk.broadinstitute.org/hc/en-us/articles/360035531612-Variant-Quality-Score-Recalibration-VQSR-) is short for variant quality score log-odds.  
 
 * at each VQSLOD cutoff, variants with VQSLOD score less than cutoff is chosen. 
+
+```
+> summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant") %>% select(VQSLOD)%>%pull())
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-39450.00     -5.49     -2.65    -40.90     -1.93      1.91
+```
+
+```
+Kyle looked at using a VQSLOD cutoff of 3.75, but then brought it up to 5.13 after trying a similar calibration procedure with non-coding indels.
+```
+
+
 *  filter `Consequence=="synonymous_variant`
 * Private variants are defined as variants with total allele  count equal to  1 in parents calculated as `Transmitted_proband_parents+Untransmitted_proband_parents=1`
 
@@ -239,53 +181,29 @@ ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 
 ```{r, echo=F, message=F, warning=F}
 num.cutoff=100
+AF_cutoff=c(0, 0.001, 0.01, 0.05, 1)
 #summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05)%>%select(VQSLOD)%>%pull)
 vqslod.cutoff=seq(-40,1.91,length.out=num.cutoff)
 odds.ratio=matrix(nrow=num.cutoff, ncol=5)
 for (i in 1:num.cutoff)
 {
-rare_syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant"  & VQSLOD<vqslod.cutoff[i]) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant"  & VQSLOD<vqslod.cutoff[i]) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
 
- # rare_syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & VQSLOD<vqslod.cutoff[i]) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
-OR=numeric(); pvalue=numeric(); CI_lower=numeric(); CI_upper=numeric()
-
-######## category 1; private variants: total allele in parents equal to 1   
-Trans_variant=rare_syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1) %>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample%>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[1]=fisher_test$estimate; pvalue[1]=fisher_test$p.value; CI_lower[1]=fisher_test$conf.int[1]; CI_upper[1]=fisher_test$conf.int[2]
-
-
-######## category 2 1%<AF<5%
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.01 & Gnomad_non_neuro_AF<0.05 )%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.01 & Gnomad_non_neuro_AF<0.05)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[2]=fisher_test$estimate; pvalue[2]=fisher_test$p.value; CI_lower[2]=fisher_test$conf.int[1]; CI_upper[2]=fisher_test$conf.int[2]
-
-
-######## category 3 
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.01)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.01)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[3]=fisher_test$estimate; pvalue[3]=fisher_test$p.value; CI_lower[3]=fisher_test$conf.int[1]; CI_upper[3]=fisher_test$conf.int[2]
-
-######## category 4 
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF<0.001)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF<0.001)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[4]=fisher_test$estimate; pvalue[4]=fisher_test$p.value; CI_lower[4]=fisher_test$conf.int[1]; CI_upper[4]=fisher_test$conf.int[2]
-
-######## category 5 
-Trans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.05)%>%select(Transmitted_proband)%>%pull
-Untrans_variant=rare_syn_variants_new_sample %>% filter(Gnomad_non_neuro_AF>0.05)%>%select(Untransmitted_proband)%>%pull
-fisher_test=fisher.test(matrix(c(sum(Trans_variant), num_proband, sum(Untrans_variant), num_proband), nrow=2))
-OR[5]=fisher_test$estimate; pvalue[5]=fisher_test$p.value; CI_lower[5]=fisher_test$conf.int[1]; CI_upper[5]=fisher_test$conf.int[2]
-
-#cat("odds ratio is ", OR, "\n")
-odds.ratio[i,]=OR
+for (j in 1:(length(AF_cutoff)-1)) # at every VQSLOD cutoff, consider 5 variant categories 
+{
+  burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[j], AF_cutoff[j+1])
+  odds.ratio[i,j]=burden_test$OR;
+  #pvalue[i]=burden_test$pvalue; #CI_lower[i]=burden_test$CI_lower; CI_upper[i]=burden_test$CI_upper
+}  # end of for (j in 1:(length(AF_cutoff)-1))
+burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1), num_proband, AF_cutoff[1], AF_cutoff[5]) # private var  
+  odds.ratio[i,j+1]=burden_test$OR; 
+  #pvalue[i+1]=burden_test$pvalue; CI_lower[i+1]=burden_test$CI_lower; CI_upper[i+1]=burden_test$CI_upper
+# 5 categories; (1) private (2) AF<0.1% (3) 0.1%=<AF<1% (4) 1%=<AF<5% (5) 5%=<AF
+  
+  
 } # end of for (i in 1:num.cutoff)
 
-odds.ratio.summary=tibble(vqslod=rep(vqslod.cutoff, 5), OR=c( odds.ratio[,5], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4], odds.ratio[,1]), var=c(rep("(1): AF>5%", num.cutoff), rep("(2): 1%<AF<5%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): AF<0.1%", num.cutoff), rep("(5): private", num.cutoff)))
+odds.ratio.summary=tibble(vqslod=rep(vqslod.cutoff, 5), OR=c( odds.ratio[,5], odds.ratio[,1], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4]), var=c(rep("(1): private", num.cutoff), rep("(2): AF<0.1%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): 1%<AF<5%", num.cutoff), rep("(5): 5%<AF", num.cutoff)))
 
 ggplot(odds.ratio.summary, aes(x=vqslod, y=OR, group=var)) +
   geom_line(aes(color=var))+
@@ -301,6 +219,149 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 
 
+
+## Burden of syn var with  `QD/ReadPosRankSum/SOR` filter
+
+
+Consider [`QD, ReadPosRankSum, SOR`](https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants) combined filters.
+
+* fix `QD >= 3 & AS_SOR <= 3` and vary `AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
+
+* `QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8` for indels suggested by Kyle 
+
+* vertical line is ` AS_ReadPosRankSum = -8`
+
+```{r, echo=F, message=F, warning=F}
+num.cutoff=20
+#summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(AS_ReadPosRankSum)%>%pull)
+ReadPosRankSum.cutoff=seq(-18,11,length.out=num.cutoff) # AS_ReadPosRankSum >= -8 by Kyle 
+odds.ratio=matrix(nrow=num.cutoff, ncol=5)
+for (i in 1:num.cutoff)
+{
+syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant"  & QD >= 3 & AS_SOR <= 3  & AS_ReadPosRankSum>ReadPosRankSum.cutoff[i]) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+
+for (j in 1:(length(AF_cutoff)-1)) # at every VQSLOD cutoff, consider 5 variant categories 
+{
+  burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[j], AF_cutoff[j+1])
+  odds.ratio[i,j]=burden_test$OR;
+  #pvalue[i]=burden_test$pvalue; #CI_lower[i]=burden_test$CI_lower; CI_upper[i]=burden_test$CI_upper
+}  # end of for (j in 1:(length(AF_cutoff)-1))
+burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1), num_proband, AF_cutoff[1], AF_cutoff[5]) # private var  
+  odds.ratio[i,j+1]=burden_test$OR; 
+  #pvalue[i+1]=burden_test$pvalue; CI_lower[i+1]=burden_test$CI_lower; CI_upper[i+1]=burden_test$CI_upper
+# 5 categories; (1) private (2) AF<0.1% (3) 0.1%=<AF<1% (4) 1%=<AF<5% (5) 5%=<AF
+  
+  
+} # end of for (i in 1:num.cutoff)
+
+odds.ratio.summary=tibble(ReadPosRankSum=rep(ReadPosRankSum.cutoff, 5), OR=c(odds.ratio[,5], odds.ratio[,1], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4]), var=c(rep("(1): private", num.cutoff), rep("(2): AF<0.1%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): 1%<AF<5%", num.cutoff), rep("(5): 5%<AF", num.cutoff)))
+
+ggplot(odds.ratio.summary, aes(x=ReadPosRankSum, y=OR, group=var)) +
+  geom_line(aes(color=var))+
+  ylim(c(0,1))+
+  geom_vline(xintercept = -8, linetype="solid", 
+                color = "blue", size=1.5)+
+  geom_point(aes(color=var))+
+  ggtitle("odds ratio of syn variants with varying AS_ReadPosRankSum cutoff")+
+  geom_hline(yintercept=1, linetype="dashed", 
+                color = "red", size=1)+
+theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size controls font size in title 
+
+
+```
+
+* fix `QD >= 1 & AS_SOR <= 3` and vary `AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
+
+* `QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` for SNPs suggested by Kyle 
+
+* vertical line is ` AS_ReadPosRankSum = -0.8`
+
+
+```{r, echo=F, message=F, warning=F}
+num.cutoff=20
+#summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(AS_ReadPosRankSum)%>%pull)
+ReadPosRankSum.cutoff=seq(-18,11,length.out=num.cutoff) # AS_ReadPosRankSum >= -8 by Kyle 
+odds.ratio=matrix(nrow=num.cutoff, ncol=5)
+for (i in 1:num.cutoff)
+{
+syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant"  & QD >= 1 & AS_SOR <= 3  & AS_ReadPosRankSum>ReadPosRankSum.cutoff[i]) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+
+for (j in 1:(length(AF_cutoff)-1)) # at every VQSLOD cutoff, consider 5 variant categories 
+{
+  burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[j], AF_cutoff[j+1])
+  odds.ratio[i,j]=burden_test$OR;
+  #pvalue[i]=burden_test$pvalue; #CI_lower[i]=burden_test$CI_lower; CI_upper[i]=burden_test$CI_upper
+}  # end of for (j in 1:(length(AF_cutoff)-1))
+burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1), num_proband, AF_cutoff[1], AF_cutoff[5]) # private var  
+  odds.ratio[i,j+1]=burden_test$OR; 
+  #pvalue[i+1]=burden_test$pvalue; CI_lower[i+1]=burden_test$CI_lower; CI_upper[i+1]=burden_test$CI_upper
+# 5 categories; (1) private (2) AF<0.1% (3) 0.1%=<AF<1% (4) 1%=<AF<5% (5) 5%=<AF
+  
+  
+} # end of for (i in 1:num.cutoff)
+
+odds.ratio.summary=tibble(ReadPosRankSum=rep(ReadPosRankSum.cutoff, 5), OR=c(odds.ratio[,5], odds.ratio[,1], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4]), var=c(rep("(1): private", num.cutoff), rep("(2): AF<0.1%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): 1%<AF<5%", num.cutoff), rep("(5): 5%<AF", num.cutoff)))
+
+ggplot(odds.ratio.summary, aes(x=ReadPosRankSum, y=OR, group=var)) +
+  geom_line(aes(color=var))+
+  ylim(c(0,1))+
+  geom_vline(xintercept = -0.8, linetype="solid", 
+                color = "blue", size=1.5)+
+  geom_point(aes(color=var))+
+  ggtitle("odds ratio of syn variants with varying AS_ReadPosRankSum cutoff")+
+  geom_hline(yintercept=1, linetype="dashed", 
+                color = "red", size=1)+
+theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size controls font size in title 
+
+
+```
+
+
+* fix `AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` and vary `QD` and variants with score larger than threshold are chosen 
+
+* `QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` for SNPs suggested by Kyle 
+
+* vertical line is ` QD=1`
+
+
+```{r, echo=F, message=F, warning=F}
+num.cutoff=20
+#summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(QD)%>%pull)
+QD.cutoff=seq(0,70,length.out=num.cutoff) # AS_ReadPosRankSum >= -8 by Kyle 
+odds.ratio=matrix(nrow=num.cutoff, ncol=5)
+for (i in 1:num.cutoff)
+{
+syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant"  & QD >= QD.cutoff[i] & AS_SOR <= 3  & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+
+for (j in 1:(length(AF_cutoff)-1)) # at every VQSLOD cutoff, consider 5 variant categories 
+{
+  burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[j], AF_cutoff[j+1])
+  odds.ratio[i,j]=burden_test$OR;
+  #pvalue[i]=burden_test$pvalue; #CI_lower[i]=burden_test$CI_lower; CI_upper[i]=burden_test$CI_upper
+}  # end of for (j in 1:(length(AF_cutoff)-1))
+burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1), num_proband, AF_cutoff[1], AF_cutoff[5]) # private var  
+  odds.ratio[i,j+1]=burden_test$OR; 
+  #pvalue[i+1]=burden_test$pvalue; CI_lower[i+1]=burden_test$CI_lower; CI_upper[i+1]=burden_test$CI_upper
+# 5 categories; (1) private (2) AF<0.1% (3) 0.1%=<AF<1% (4) 1%=<AF<5% (5) 5%=<AF
+  
+  
+} # end of for (i in 1:num.cutoff)
+
+odds.ratio.summary=tibble(QD=rep(QD.cutoff, 5), OR=c(odds.ratio[,5], odds.ratio[,1], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4]), var=c(rep("(1): private", num.cutoff), rep("(2): AF<0.1%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): 1%<AF<5%", num.cutoff), rep("(5): 5%<AF", num.cutoff)))
+
+ggplot(odds.ratio.summary, aes(x=QD, y=OR, group=var)) +
+  geom_line(aes(color=var))+
+  ylim(c(0,1))+
+  geom_vline(xintercept =1, linetype="solid", 
+                color = "blue", size=1.5)+
+  geom_point(aes(color=var))+
+  ggtitle("odds ratio of syn variants with varying QD cutoff")+
+  geom_hline(yintercept=1, linetype="dashed", 
+                color = "red", size=1)+
+theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size controls font size in title 
+
+
+```
 
 
 ## Burden of syn var in different gene sets 
