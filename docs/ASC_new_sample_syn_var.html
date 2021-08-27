@@ -448,24 +448,43 @@ div.tocify {
 <div id="burden-of-syn-var-with-qdreadposranksumsor-filter" class="section level2">
 <h2>Burden of syn var with <code>QD/ReadPosRankSum/SOR</code> filter</h2>
 <p>Consider <a href="https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants"><code>QD, ReadPosRankSum, SOR</code></a> combined filters.</p>
+<div id="filter-used-for-indels-by-kyle" class="section level3">
+<h3>filter used for indels by Kyle:</h3>
 <ul>
+<li><p>Kyle suggested <code>QD &gt;= 3 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -8</code></p></li>
 <li><p>fix <code>QD &gt;= 3 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
-<li><p><code>QD &gt;= 3 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -8</code> for indels suggested by Kyle</p></li>
 <li><p>vertical line is <code>AS_ReadPosRankSum = -8</code></p></li>
 </ul>
 <p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="filter-used-for-snps-by-kyle" class="section level3">
+<h3>filter used for SNPs by Kyle:</h3>
+<p><code>QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> for SNPs suggested by Kyle. Fix two of them and vary one.</p>
+<div id="vary-as_readposranksum" class="section level4">
+<h4>Vary <code>AS_ReadPosRankSum</code></h4>
 <ul>
 <li><p>fix <code>QD &gt;= 1 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
-<li><p><code>QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> for SNPs suggested by Kyle</p></li>
 <li><p>vertical line is <code>AS_ReadPosRankSum = -0.8</code></p></li>
 </ul>
 <p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="vary-qd" class="section level4">
+<h4>vary <code>QD</code></h4>
 <ul>
 <li><p>fix <code>AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> and vary <code>QD</code> and variants with score larger than threshold are chosen</p></li>
-<li><p><code>QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> for SNPs suggested by Kyle</p></li>
 <li><p>vertical line is <code>QD=1</code></p></li>
 </ul>
 <p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="vary-as_sor" class="section level4">
+<h4>vary <code>As_SOR</code></h4>
+<ul>
+<li><p>fix <code>QD &gt;= 1 &amp; AS_ReadPosRankSum &gt;= -0.8</code> and vary <code>AS_SOR</code> and variants with score less than threshold are chosen</p></li>
+<li><p>vertical line is <code>AS_SOR=3</code></p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
 </div>
 
 <hr>

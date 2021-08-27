@@ -225,9 +225,13 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 Consider [`QD, ReadPosRankSum, SOR`](https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants) combined filters.
 
+### filter used for indels by Kyle: 
+
+* Kyle suggested `QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8` 
+
+
 * fix `QD >= 3 & AS_SOR <= 3` and vary `AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
 
-* `QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8` for indels suggested by Kyle 
 
 * vertical line is ` AS_ReadPosRankSum = -8`
 
@@ -270,9 +274,16 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 ```
 
+### filter used for SNPs by Kyle: 
+
+
+`QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` for SNPs suggested by Kyle. Fix two of them and vary one. 
+
+
+#### Vary `AS_ReadPosRankSum`
+
 * fix `QD >= 1 & AS_SOR <= 3` and vary `AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
 
-* `QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` for SNPs suggested by Kyle 
 
 * vertical line is ` AS_ReadPosRankSum = -0.8`
 
@@ -317,9 +328,10 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 ```
 
 
+#### vary `QD`
+
 * fix `AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` and vary `QD` and variants with score larger than threshold are chosen 
 
-* `QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` for SNPs suggested by Kyle 
 
 * vertical line is ` QD=1`
 
@@ -363,6 +375,55 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 ```
 
+
+
+
+#### vary `As_SOR`
+
+* fix `QD >= 1 & AS_ReadPosRankSum >= -0.8` and vary `AS_SOR` and variants with score less than threshold are chosen 
+
+
+* vertical line is `AS_SOR=3 `
+
+
+```{r, echo=F, message=F, warning=F}
+num.cutoff=20
+#summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(AS_SOR)%>%pull)
+SOR.cutoff=seq(0,22,length.out=num.cutoff) # AS_SOR <= 3 by Kyle 
+odds.ratio=matrix(nrow=num.cutoff, ncol=5)
+for (i in 1:num.cutoff)
+{
+syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant"  & AS_SOR <= SOR.cutoff[i] & QD>=1  & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+
+for (j in 1:(length(AF_cutoff)-1)) # at every VQSLOD cutoff, consider 5 variant categories 
+{
+  burden_test=fisher_test(syn_variants_new_sample, num_proband, AF_cutoff[j], AF_cutoff[j+1])
+  odds.ratio[i,j]=burden_test$OR;
+  #pvalue[i]=burden_test$pvalue; #CI_lower[i]=burden_test$CI_lower; CI_upper[i]=burden_test$CI_upper
+}  # end of for (j in 1:(length(AF_cutoff)-1))
+burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_parents+Untransmitted_proband_parents)==1), num_proband, AF_cutoff[1], AF_cutoff[5]) # private var  
+  odds.ratio[i,j+1]=burden_test$OR; 
+  #pvalue[i+1]=burden_test$pvalue; CI_lower[i+1]=burden_test$CI_lower; CI_upper[i+1]=burden_test$CI_upper
+# 5 categories; (1) private (2) AF<0.1% (3) 0.1%=<AF<1% (4) 1%=<AF<5% (5) 5%=<AF
+  
+  
+} # end of for (i in 1:num.cutoff)
+
+odds.ratio.summary=tibble(SOR=rep(SOR.cutoff, 5), OR=c(odds.ratio[,5], odds.ratio[,1], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4]), var=c(rep("(1): private", num.cutoff), rep("(2): AF<0.1%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): 1%<AF<5%", num.cutoff), rep("(5): 5%<AF", num.cutoff)))
+
+ggplot(odds.ratio.summary, aes(x=SOR, y=OR, group=var)) +
+  geom_line(aes(color=var))+
+  ylim(c(0,1))+
+  geom_vline(xintercept =3, linetype="solid", 
+                color = "blue", size=1.5)+
+  geom_point(aes(color=var))+
+  ggtitle("odds ratio of syn variants with varying SOR cutoff")+
+  geom_hline(yintercept=1, linetype="dashed", 
+                color = "red", size=1)+
+theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size controls font size in title 
+
+
+```
 
 
 
