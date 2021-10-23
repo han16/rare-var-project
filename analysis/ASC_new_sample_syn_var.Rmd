@@ -335,6 +335,8 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 * vertical line is ` QD=1`
 
+* when the range of OR is enforced to be (0,1), variant groups (1): private and "(2): AF<0.1%" look broken because their maximum of OR exceeds 1. 
+
 
 ```{r, echo=F, message=F, warning=F}
 num.cutoff=20
@@ -361,9 +363,10 @@ burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_
 
 odds.ratio.summary=tibble(QD=rep(QD.cutoff, 5), OR=c(odds.ratio[,5], odds.ratio[,1], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4]), var=c(rep("(1): private", num.cutoff), rep("(2): AF<0.1%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): 1%<AF<5%", num.cutoff), rep("(5): 5%<AF", num.cutoff)))
 
+y.max=max(odds.ratio.summary$OR)+0.1
 ggplot(odds.ratio.summary, aes(x=QD, y=OR, group=var)) +
   geom_line(aes(color=var))+
-  ylim(c(0,1))+
+  ylim(c(0,y.max))+
   geom_vline(xintercept =1, linetype="solid", 
                 color = "blue", size=1.5)+
   geom_point(aes(color=var))+
@@ -372,7 +375,13 @@ ggplot(odds.ratio.summary, aes(x=QD, y=OR, group=var)) +
                 color = "red", size=1)+
 theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size controls font size in title 
 
+```
 
+
+```{r, echo=F, eval=F}
+# look at two variant groups that look broken
+odds.ratio.summary %>% filter(var=="(1): private")
+odds.ratio.summary %>% filter(var=="(2): AF<0.1%")
 ```
 
 
@@ -384,6 +393,8 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 
 * vertical line is `AS_SOR=3 `
+
+* there are two Inf `  0    Inf     (4): 1%<AF<5% `, ` 0    Inf     (2): AF<0.1%`
 
 
 ```{r, echo=F, message=F, warning=F}
@@ -411,9 +422,10 @@ burden_test=fisher_test(syn_variants_new_sample %>% filter((Transmitted_proband_
 
 odds.ratio.summary=tibble(SOR=rep(SOR.cutoff, 5), OR=c(odds.ratio[,5], odds.ratio[,1], odds.ratio[,2], odds.ratio[,3], odds.ratio[,4]), var=c(rep("(1): private", num.cutoff), rep("(2): AF<0.1%", num.cutoff), rep("(3): 0.1%<AF<1%", num.cutoff), rep("(4): 1%<AF<5%", num.cutoff), rep("(5): 5%<AF", num.cutoff)))
 
+y.max=min(max(odds.ratio.summary$OR)+0.1, 1.3) # because there could be Inf 
 ggplot(odds.ratio.summary, aes(x=SOR, y=OR, group=var)) +
   geom_line(aes(color=var))+
-  ylim(c(0,1))+
+  ylim(c(0,y.max))+
   geom_vline(xintercept =3, linetype="solid", 
                 color = "blue", size=1.5)+
   geom_point(aes(color=var))+

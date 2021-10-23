@@ -473,6 +473,7 @@ div.tocify {
 <ul>
 <li><p>fix <code>AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> and vary <code>QD</code> and variants with score larger than threshold are chosen</p></li>
 <li><p>vertical line is <code>QD=1</code></p></li>
+<li><p>when the range of OR is enforced to be (0,1), variant groups (1): private and “(2): AF&lt;0.1%” look broken because their maximum of OR exceeds 1.</p></li>
 </ul>
 <p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
@@ -481,8 +482,9 @@ div.tocify {
 <ul>
 <li><p>fix <code>QD &gt;= 1 &amp; AS_ReadPosRankSum &gt;= -0.8</code> and vary <code>AS_SOR</code> and variants with score less than threshold are chosen</p></li>
 <li><p>vertical line is <code>AS_SOR=3</code></p></li>
+<li><p>there are two Inf <code>0    Inf     (4): 1%&lt;AF&lt;5%</code>, <code>0    Inf     (2): AF&lt;0.1%</code></p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 </div>
 </div>
