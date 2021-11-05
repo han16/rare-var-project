@@ -77,7 +77,7 @@ return(result)
 
 ## Burden of syn var partitioned by AF 
 
-* filter `Consequence=="synonymous_variant`
+* filter `Consequence=="synonymous_variant"`
 * AF from `Gnomad_non_neuro_AF` is used to define other categories. 
 * When use AF cutoff, be aware of 15614 variants with zero AF going to which category 
 
@@ -113,7 +113,7 @@ ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ```
 
 
-*  filter `Consequence=="synonymous_variant`
+*  filter `Consequence=="synonymous_variant"`
 
 * Private variants are defined as variants with total allele  count equal to  1 in parents calculated as `Transmitted_proband_parents+Untransmitted_proband_parents=1`
 
@@ -174,7 +174,7 @@ Kyle looked at using a VQSLOD cutoff of 3.75, but then brought it up to 5.13 aft
 ```
 
 
-*  filter `Consequence=="synonymous_variant`
+*  filter `Consequence=="synonymous_variant"`
 * Private variants are defined as variants with total allele  count equal to  1 in parents calculated as `Transmitted_proband_parents+Untransmitted_proband_parents=1`
 
 * AF from `Gnomad_non_neuro_AF` is used to define other categories. 
