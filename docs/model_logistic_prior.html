@@ -9,9 +9,11 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Shengtong" />
 
+<meta name="date" content="2021-11-05" />
 
-<title>Statistical rare variant analysis for autism</title>
+<title>rare variants with logistic prior</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,6 +21,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -262,6 +267,90 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -269,6 +358,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -311,57 +410,23 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Statistical rare variant analysis for autism</h1>
+<h1 class="title toc-ignore">rare variants with logistic prior</h1>
+<h4 class="author">Shengtong</h4>
+<h4 class="date">2021-11-05</h4>
 
 </div>
 
 
-<p><a href="https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf">This is the project</a></p>
-<div id="mirage-with-logistic-prior" class="section level2">
-<h2>MIRAGE with logistic prior</h2>
-<ul>
-<li><a href="model_logistic_prior.html">modeling with logistic prior</a></li>
-<li><a href="simulation_logistic_prior.html">simulation experiments</a></li>
-</ul>
-</div>
-<div id="simulation-studies" class="section level2">
-<h2>Simulation studies</h2>
-<ul>
-<li><a href="simulation-study.html">numerical simulation studies</a></li>
-</ul>
-</div>
-<div id="whole-exome-sequencing-wes-data-analysis-for-old-sample" class="section level2">
-<h2>Whole exome sequencing (WES) data analysis for old sample</h2>
-<ul>
-<li><p><a href="ASD.html">Quality control (QC)</a></p></li>
-<li><p><a href="variant_set_analysis.html">Variant Set (VS) analysis</a></p></li>
-<li><p><a href="GeneSetAnalysis.html">Gene set analysis</a></p></li>
-</ul>
-</div>
-<div id="cell-data-downloaded-from-dbgap" class="section level2">
-<h2>Cell data downloaded from dbGaP</h2>
-<ul>
-<li><p><a href="ASD_dbGaP.html">analysis for ASD data dowloaded from dbGaP</a></p></li>
-<li><p><a href="SCZ-analysis.html">analysis for Schizophrenia data</a></p></li>
-<li><p><a href="ASD_dbGaP_code.html">code for merging annotation features and sample data from dbGap</a></p></li>
-</ul>
-</div>
-<div id="analysis-for-transmitted-variants-from-asc-cell-paper" class="section level2">
-<h2>Analysis for transmitted variants from ASC cell paper</h2>
-<ul>
-<li><p><a href="ASC_cell_data.html">Quality control (QC) and annotate variants in Cell data</a></p></li>
-<li><p><a href="VS-ASC.html">Variant set (VS) analysis for transmitted variants in ASC cell paper</a></p></li>
-<li><p><a href="gene_set_analysis_cell_data.html">Gene set analysis for transmitted variants in ASC cell paper</a></p></li>
-</ul>
-</div>
-<div id="analysis-for-transmitted-variant-from-new-unpublished-sample" class="section level2">
-<h2>Analysis for transmitted variant from new (unpublished) sample</h2>
-<ul>
-<li><p><a href="ASC_new_sample.html">Quality control (QC) for new sample</a></p></li>
-<li><p><a href="ASC_new_sample_syn_var.html">Synonymous variants</a></p></li>
-<li><p><a href="ASC_new_sample_variant_set.html">Variant set (VS) analysis</a></p></li>
-<li><p><a href="variant_from_kyle.html">Kyle’s variants</a></p></li>
-</ul>
+<div id="modeling-logistic-prior" class="section level2">
+<h2>modeling logistic prior</h2>
+<p>Let <span class="math inline">\(Z_j\)</span> be an indicator variable for risk status of variant <span class="math inline">\(j\)</span> i.e. <span class="math inline">\(Z_j=1\)</span> for risk variant and <span class="math inline">\(0\)</span> for non-risk variant, which may have multiple annotations, say <span class="math inline">\(K\)</span>, in a vector <span class="math inline">\(A_j=(A_{j1}, A_{j2}, \cdots, A_{jK})&#39;\)</span>. One way of modeling this high dimensional effect is through logistic regression</p>
+<p><span class="math display">\[logit [p(Z_j=1)]=log \frac{p(Z_j=1)}{1-p(Z_j=1)}=\sum_{k=1}^K \beta_kA_{jk}\]</span>.</p>
+<p>Assume <span class="math inline">\(p(Z_j=1)=\eta_j\)</span>, the probability that variant <span class="math inline">\(j\)</span> is a risk variant. then <span class="math inline">\(\eta_j=\frac{e^{\sum_k \beta_k A_{jk}}}{1+e^{\sum_k \beta_k A_{jk}}}\)</span>. The likelihood of the sample with <span class="math inline">\(J\)</span> independent variants is</p>
+<p><span class="math display">\[L(x|\beta&#39;s)\propto \prod_{j=1}^J[(1-\eta_j)+\eta_jB_j]\]</span>, where <span class="math inline">\(B_j\)</span> is the bayes factor for variant <span class="math inline">\(j\)</span>.</p>
+<p>The number of annotation features, <span class="math inline">\(K\)</span> could be a big number, even in hundred. To capture more informative ones, a penalty term could be used on coefficients <span class="math inline">\(\beta&#39;s\)</span>. Two popular choices are <span class="math inline">\(\ell_1, \ell_2\)</span> norms, leading to</p>
+<p><span class="math display">\[l_p(x|\beta&#39;s)=log(L(x|\beta&#39;s))-\frac{\lambda}{2}\sum_{k=1}^K\beta_k^2+c\]</span></p>
+<p>and</p>
+<p><span class="math display">\[min_{\beta&#39;s}\{-log(L(x|\beta&#39;s)+\lambda||\beta||_1)\}\]</span></p>
 </div>
 
 <hr>
@@ -390,6 +455,8 @@ $(document).ready(function () {
 -->
 
 
+</div>
+</div>
 
 </div>
 

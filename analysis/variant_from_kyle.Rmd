@@ -1,0 +1,200 @@
+---
+title: "variant filtered by Kyle"
+output: html_document
+---
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+#library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+```
+
+
+```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
+# read into gene set 
+source("Read.into.Gene.set.R")
+```
+
+```{r, echo=F, cache=T, warning=F, message=F}
+### read into variants filtered by Kyle  
+ASC_filtered_variant=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_TDT_filtered_variants.txt", header=T, fill=T))  # this is the variants filtered by Kyle 
+ASC_new_sample1=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_B15_B16_raw_TDT_by_parent_2021-04-19.txt", header=T, fill=T))
+#ASC_new_sample2=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", header=T, fill=T)) # this is variants shared by Kyle without filtering 
+#ASC_new_sample3=read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", header=T, fill=T)
+# ASC_new_sample3=ASC_new_sample2
+#ASC_new_sample4=read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep='\t', header=T)
+# ASC_sample4=tdt
+ASC_new_sample5=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep='\t',  header=T, fill=T))
+# ASC_new_sample5=tdt  => argument "sep='\t' " matters !!!!!!!!!!!!!!!!
+tdt = read.table('C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt', sep='\t', header=T, stringsAsFactors = F)  # kyle's code 
+
+```
+there are several reasons which may cause quite different results from Kyle's 
+
+
+* when read into the data, must use `sep='\t'` 
+
+```{r, echo=F}
+####################### Kyle's code 
+# Collapse parents and sex of probands and siblings
+tdt$t_proband = tdt$t_proband_male_dad + tdt$t_proband_male_mom + tdt$t_proband_male_ind + 
+                tdt$t_proband_female_dad + tdt$t_proband_female_mom + tdt$t_proband_female_ind
+
+tdt$u_proband = tdt$u_proband_male_dad + tdt$u_proband_male_mom + tdt$u_proband_male_ind + 
+                tdt$u_proband_female_dad + tdt$u_proband_female_mom + tdt$u_proband_female_ind
+
+tdt$t_sibling = tdt$t_sibling_male_dad + tdt$t_sibling_male_mom + tdt$t_sibling_male_ind + 
+                tdt$t_sibling_female_dad + tdt$t_sibling_female_mom + tdt$t_sibling_female_ind
+tdt$u_sibling = tdt$u_sibling_male_dad + tdt$u_sibling_male_mom + tdt$u_sibling_male_ind + 
+                tdt$u_sibling_female_dad + tdt$u_sibling_female_mom + tdt$u_sibling_female_ind
+####################################
+
+```
+
+
+```{r, echo=F}
+###################### my code 
+##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
+Transmitted_proband=ASC_new_sample5%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
+Untransmitted_proband=ASC_new_sample5%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
+
+
+##### add new columns of total transmitted and non-transmitted variants 
+ASC_new_sample=ASC_new_sample5%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband) 
+######### check consistency between tdt and ASC_new_sample 
+#ASC_new_sample2%>% select(starts_with("t_proband"))
+#tdt[1:10, c(27, 28, 31, 33, 34, 37)]
+#ASC_new_sample3[1:10, c(27, 28, 31, 33, 34, 37)]
+#ASC_new_sample4[1:10, c(27, 28, 31, 33, 34, 37)]
+```
+
+
+
+
+```{r, echo=F}
+################### Kyle's code 
+# Determine rarity threshold
+rarity_threshold = 0.001
+
+# Apply rarity threshold... in gnomad
+tdt1 = subset(tdt, is.na(Gnomad_non_neuro_AF) | (Gnomad_non_neuro_AF <= rarity_threshold)) # 2,543,183
+# ...and in this data:
+tdt2 = subset(tdt1, AF <= rarity_threshold) # 2,521,044
+
+# Apply VQSLOD threshold I used
+tdt3 = subset(tdt2, VQSLOD >= 5.13) # 2,238,655 --> 2,094,224
+
+# Also apply additional filters used for this dataset
+tdt4 = subset(tdt3, (isIndel & QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8) |
+                 (!isIndel & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8))
+# 2,094,224 --> 1,777,785
+# Note: 1,358,675 at max AF of 0.01% instead of just 0.1%
+```
+
+
+
+```{r, echo=F, eval=F}
+################## my code 
+AF_cutoff=0.001 # define AF cutoffs 
+ASC_new_sample1=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<=AF_cutoff)  # corresponding to tdt1 
+ASC_new_sample2=ASC_new_sample1 %>% filter(AF<=AF_cutoff)   # corresponding to tdt2
+ASC_new_sample3=ASC_new_sample2 %>% filter(VQSLOD >= 5.13)  # corresponding to tdt3
+ASC_new_sample4=ASC_new_sample3 %>% filter((isIndel & QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8) |
+                 (!isIndel & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8))  # corresponding to tdt4
+```
+
+* Use AF cutoff `0.1%` 
+
+* use filter `VQSLOD>=5.13`
+
+* use filter `(isIndel & QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8)` 
+or `(!isIndel & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8)`
+                 
+* for syn mutations, use `isSyn==TRUE`
+
+```{r, echo=F,eval=F}
+######################### Kyle's code 
+# Get individual variant types
+
+PTVs1 = subset(tdt4, isPTV & loftee == 'HC') 
+PTVs = subset(PTVs1, is.na(loftee_flags) | loftee_flags == 'SINGLE_EXON') 
+
+Mis_MPC2 = subset(tdt4, isMis & MPC >= 2)
+Mis_MPC12 = subset(tdt4, isMis & MPC >= 1 & MPC < 2)
+Mis_All = subset(tdt4, isMis) # it may have memory issue "Error: cannot allocate vector of size 6.8 Mb" in RStudio, instead use RGui window  
+
+Syn = subset(tdt4, isSyn)
+```
+
+```{r, echo=F, eval=F}
+################### my code 
+han_PTVs1=ASC_new_sample4 %>% filter(isPTV=="TRUE" & loftee == 'HC')
+han_PTVs=han_PTVs1 %>% filter(is.na(loftee_flags)==T | loftee_flags=='SINGLE_EXON') # DON't use loftee_flags=="NA"
+
+han_Mis_MPC2=ASC_new_sample4 %>% filter(isMis=="TRUE" & MPC >= 2)
+han_Mis_MPC12=ASC_new_sample4 %>% filter(isMis=="TRUE" & MPC >= 1 & MPC<2)
+han_Mis_All=ASC_new_sample4 %>% filter(isMis=="TRUE")
+
+han_Syn=ASC_new_sample4 %>% filter(isSyn=="TRUE")
+```
+
+
+```{r, echo=F, eval=F}
+################################ kyle's code 
+# Get some sums
+
+p1 = sum(subset(PTVs, pLI >= 0.9)$t_proband) / sum(subset(PTVs, pLI >= 0.9)$u_proband) # 1.110
+s1 = sum(subset(PTVs, pLI >= 0.9)$t_sibling) / sum(subset(PTVs, pLI >= 0.9)$u_sibling) # 0.943
+
+p2 = sum(subset(PTVs, pLI < 0.9)$t_proband) / sum(subset(PTVs, pLI < 0.9)$u_proband) # 1.028
+s2 = sum(subset(PTVs, pLI < 0.9)$t_sibling) / sum(subset(PTVs, pLI < 0.9)$u_sibling) # 1.032
+
+p3 = sum(PTVs$t_proband) / sum(PTVs$u_proband) # 1.031
+s3 = sum(PTVs$t_sibling) / sum(PTVs$u_sibling) # 1.026
+
+p4 = sum(Mis_MPC2$t_proband) / sum(Mis_MPC2$u_proband) # 1.048
+s4 = sum(Mis_MPC2$t_sibling) / sum(Mis_MPC2$u_sibling) # 0.979
+
+p5 = sum(Mis_MPC12$t_proband) / sum(Mis_MPC12$u_proband) # 1.021
+s5 = sum(Mis_MPC12$t_sibling) / sum(Mis_MPC12$u_sibling) # 1.024
+
+p6 = sum(Mis_All$t_proband) / sum(Mis_All$u_proband) # 1.014
+s6 = sum(Mis_All$t_sibling) / sum(Mis_All$u_sibling) # 1.012
+
+p7 = sum(subset(Syn, pLI >= 0.9)$t_proband) / sum(subset(Syn, pLI >= 0.9)$u_proband) # 1.015
+s7 = sum(subset(Syn, pLI >= 0.9)$t_sibling) / sum(subset(Syn, pLI >= 0.9)$u_sibling) # 1.009
+
+p8 = sum(subset(Syn, pLI < 0.9)$t_proband) / sum(subset(Syn, pLI < 0.9)$u_proband) # 1.009
+s8 = sum(subset(Syn, pLI < 0.9)$t_sibling) / sum(subset(Syn, pLI < 0.9)$u_sibling) # 1.013
+
+p9 = sum(Syn$t_proband) / sum(Syn$u_proband) # 1.010
+s9 = sum(Syn$t_sibling) / sum(Syn$u_sibling) # 1.013
+
+p = c(p1, p2, p3, p4, p5, p6, p7, p8, p9)
+s = c(s1, s2, s3, s4, s5, s6, s7, s8, s9)
+
+# Display results
+
+data.frame(Proband = p, Sibling = s)
+```
+
+```{r, echo=F, eval=F}
+############################ my code 
+han_p1=sum(han_PTVs%>%filter(pLI>=0.9)%>%select(Transmitted_proband)%>%pull())/sum(han_PTVs%>%filter(pLI>=0.9)%>%select(Untransmitted_proband)%>%pull())
+
+han_p2=sum(han_PTVs%>%filter(pLI<0.9)%>%select(Transmitted_proband)%>%pull())/sum(han_PTVs%>%filter(pLI<0.9)%>%select(Untransmitted_proband)%>%pull())
+
+```

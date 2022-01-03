@@ -153,6 +153,18 @@ ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ```
   
 
+## Burden of syn var with PLI cutoff 
+
+* filter `Consequence=="synonymous_variant"`
+* AF from `Gnomad_non_neuro_AF` is used to define other categories. 
+* When use AF cutoff, be aware of 15614 variants with zero AF going to which category 
+
+```{r, echo=F, message=F, warning=F}
+syn_variants_new_sample=ASC_new_sample %>% filter(isSyn!="FALSE" & as.numeric(as.character(pLI))>=0.9 & as.numeric(as.character(Gnomad_non_neuro_AF))<0.001 & as.numeric(as.character(VQSLOD)) >= 5.13) %>% select(Variant, Gene, Gnomad_non_neuro_AF,  Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
+
+
+```
+
 
 
 

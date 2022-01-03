@@ -6,7 +6,13 @@ output:
 ---
 
 
- [This is the project][project]
+[This is the project][project]
+
+
+## MIRAGE with logistic prior 
+
+* [modeling with logistic prior](model_logistic_prior.html)
+* [simulation experiments](simulation_logistic_prior.html)
  
 ## Simulation studies  
  
@@ -50,7 +56,7 @@ output:
 
 * [Variant set (VS) analysis](ASC_new_sample_variant_set.html)
 
-
+* [Kyle's variants](variant_from_kyle.html)
 
 
 

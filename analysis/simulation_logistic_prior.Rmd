@@ -1,0 +1,6 @@
+---
+title: "simulation logistic prior"
+output: html_document
+---
+
+## settings 

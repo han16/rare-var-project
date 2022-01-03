@@ -1,0 +1,28 @@
+---
+title: "rare variants with logistic prior"
+author: "Shengtong"
+date: "2021-11-05"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## modeling logistic prior
+
+Let $Z_j$ be an indicator variable for risk status of variant $j$ i.e. $Z_j=1$ for risk variant and $0$ for non-risk variant, which may have multiple annotations, say $K$, in a vector $A_j=(A_{j1}, A_{j2}, \cdots, A_{jK})'$. One way of modeling this high dimensional effect is through logistic regression 
+
+$$logit [p(Z_j=1)]=log \frac{p(Z_j=1)}{1-p(Z_j=1)}=\sum_{k=1}^K \beta_kA_{jk}$$. 
+
+
+Assume $p(Z_j=1)=\eta_j$, the probability that variant $j$ is a risk variant. then $\eta_j=\frac{e^{\sum_k \beta_k A_{jk}}}{1+e^{\sum_k \beta_k A_{jk}}}$. The likelihood of the sample with $J$ independent variants is 
+
+$$L(x|\beta's)\propto \prod_{j=1}^J[(1-\eta_j)+\eta_jB_j]$$, 
+where $B_j$ is the bayes factor for variant $j$. 
+
+The number of annotation features, $K$ could be a big number, even in hundred. To capture more informative ones, a penalty term could be used on coefficients $\beta's$. Two popular choices are $\ell_1, \ell_2$ norms, leading to 
+
+$$l_p(x|\beta's)=log(L(x|\beta's))-\frac{\lambda}{2}\sum_{k=1}^K\beta_k^2+c$$ 
+
+and 
+
+$$min_{\beta's}\{-log(L(x|\beta's)+\lambda||\beta||_1)\}$$

@@ -415,26 +415,6 @@ div.tocify {
 </div>
 
 
-<pre><code>## Registered S3 methods overwritten by &#39;ggplot2&#39;:
-##   method         from 
-##   [.quosures     rlang
-##   c.quosures     rlang
-##   print.quosures rlang</code></pre>
-<pre><code>## -- Attaching packages --------------------------------- tidyverse 1.2.1 --</code></pre>
-<pre><code>## v tibble  2.1.1     v purrr   0.3.2
-## v tidyr   0.8.3     v dplyr   0.8.1
-## v readr   1.3.1     v stringr 1.4.0
-## v tibble  2.1.1     v forcats 0.4.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------ tidyverse_conflicts() --
-## x dplyr::combine() masks gridExtra::combine()
-## x dplyr::count()   masks matrixStats::count()
-## x dplyr::filter()  masks stats::filter()
-## x dplyr::lag()     masks stats::lag()</code></pre>
-<pre><code>## 
-## Attaching package: &#39;cowplot&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
-## 
-##     ggsave</code></pre>
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
@@ -445,11 +425,7 @@ div.tocify {
 <ul>
 <li><span class="math inline">\(U_i=0\)</span>, all variants for gene <span class="math inline">\(i\)</span> are non-causal, which is under null hypothesis. Given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span><br />
 </li>
-<li><span class="math inline">\(U_i=1\)</span>, gene <span class="math inline">\(i\)</span> is a causal gene, the variant <span class="math inline">\((i,j)\)</span> whose risk status is denoted by <span class="math inline">\(Z_{ij}\)</span> is generated as <span class="math inline">\(Z_{ij} \sim Ber(1, \pi(\eta))\)</span>, <span class="math inline">\(\pi(\eta)\)</span> is a function linking annotations to the probability of being causal.
-<ul>
-<li><span class="math inline">\(Z_{ij}=0\)</span> (which is under null), given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span></li>
-<li><span class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF <span class="math inline">\(q_{ij}^{(1)} \sim Beta(\alpha, \beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})\)</span>, split into case and control by conditional binomial distribution with <span class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
-</ul></li>
+<li><span class="math inline">\(U_i=1\)</span>, gene <span class="math inline">\(i\)</span> is a causal gene, the variant <span class="math inline">\((i,j)\)</span> whose risk status is denoted by <span class="math inline">\(Z_{ij}\)</span> is generated as <span class="math inline">\(Z_{ij} \sim Ber(1, \pi(\eta))\)</span>, <span class="math inline">\(\pi(\eta)\)</span> is a function linking annotations to the probability of being causal. * <span class="math inline">\(Z_{ij}=0\)</span> (which is under null), given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span> * <span class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF <span class="math inline">\(q_{ij}^{(1)} \sim Beta(\alpha, \beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})\)</span>, split into case and control by conditional binomial distribution with <span class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
 </ul></li>
 </ul>
 <p>Filtering step: filter variants that have null variant counts in both cases and controls.</p>
@@ -606,9 +582,9 @@ div.tocify {
 <table style="width:100%;">
 <caption>MLE at different sparsity rate <span class="math inline">\(\beta_{true}=0.5\)</span></caption>
 <colgroup>
-<col width="15%" />
+<col width="16%" />
 <col width="8%" />
-<col width="9%" />
+<col width="10%" />
 <col width="8%" />
 <col width="8%" />
 <col width="8%" />
@@ -651,7 +627,7 @@ div.tocify {
 </table>
 <p>When All entries of <span class="math inline">\(A_{jk}\)</span> are zero, <span class="math inline">\(\tau_j=\frac{1}{2}\)</span>, regardless of whatever values of <span class="math inline">\(\beta\)</span> and the likelihood function is a constant of <span class="math inline">\(\beta\)</span>. Thus <span class="math inline">\(\widehat{\beta}\)</span> can be anywhere.</p>
 <p>Set <span class="math inline">\(\beta_{true}=0.2\)</span>.</p>
-<table style="width:100%;">
+<table>
 <caption>MLE at different sparsity rate with <span class="math inline">\(\beta_{true}=0.2\)</span>.</caption>
 <colgroup>
 <col width="14%" />
@@ -662,10 +638,10 @@ div.tocify {
 <col width="8%" />
 <col width="8%" />
 <col width="8%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -700,19 +676,8 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-</div>
-<div id="important-note" class="section level4">
-<h4>Important Note:</h4>
-<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large <span class="math inline">\(\bar{\gamma}\)</span>), Bayes factor will become overflow of being Inf.</p>
-</div>
-<div id="parameter-setting-2-increasing-sample-size" class="section level4">
-<h4>Parameter setting 2-increasing sample size</h4>
-<ul>
-<li><span class="math inline">\(\delta=1\)</span></li>
-<li><span class="math inline">\(\beta_{true}=2\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span></li>
-<li>all entries of <span class="math inline">\(A_{jk}\)</span> are 1</li>
-<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=1000, \beta_0=2000\)</span></li>
-</ul>
+<p>####Important Note: There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large <span class="math inline">\(\bar{\gamma}\)</span>), Bayes factor will become overflow of being Inf.</p>
+<p>####Parameter setting 2-increasing sample size * <span class="math inline">\(\delta=1\)</span> * <span class="math inline">\(\beta_{true}=2\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span> * all entries of <span class="math inline">\(A_{jk}\)</span> are 1 * <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=1000, \beta_0=2000\)</span></p>
 <table>
 <caption>MLE averaging across 10 replicates with different sample size</caption>
 <thead>
@@ -734,6 +699,7 @@ div.tocify {
 <td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span> by GLM</td>
 <td>2.0016 (0.0126)</td>
 <td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -750,13 +716,13 @@ div.tocify {
 <li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=1000, \beta_0=2000\)</span></li>
 </ul>
 <p>When there are more than 2 groups, <span class="math inline">\(A_{ij}\)</span> must be designed carefully such that all columns (all annotations) have as little overlap as possible. Otherwise, the method have difficulty in distinguishing between them, leading to poor estimate. In simulations below, these two factures have no overlap.</p>
-<table style="width:94%;">
+<table>
 <caption>MLE averaging across 10 replicates with different sample size</caption>
 <colgroup>
 <col width="12%" />
-<col width="11%" />
+<col width="10%" />
 <col width="12%" />
-<col width="58%" />
+<col width="64%" />
 </colgroup>
 <thead>
 <tr class="header">
