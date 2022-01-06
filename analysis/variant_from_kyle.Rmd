@@ -106,7 +106,7 @@ tdt4 = subset(tdt3, (isIndel & QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8) 
 
 
 
-```{r, echo=F, eval=F}
+```{r, echo=F, eval=T}
 ################## my code 
 AF_cutoff=0.001 # define AF cutoffs 
 ASC_new_sample1=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<=AF_cutoff)  # corresponding to tdt1 
@@ -125,7 +125,7 @@ or `(!isIndel & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8)`
                  
 * for syn mutations, use `isSyn==TRUE`
 
-```{r, echo=F,eval=F}
+```{r, echo=F,eval=T}
 ######################### Kyle's code 
 # Get individual variant types
 
@@ -139,7 +139,7 @@ Mis_All = subset(tdt4, isMis) # it may have memory issue "Error: cannot allocate
 Syn = subset(tdt4, isSyn)
 ```
 
-```{r, echo=F, eval=F}
+```{r, echo=F, eval=T}
 ################### my code 
 han_PTVs1=ASC_new_sample4 %>% filter(isPTV=="TRUE" & loftee == 'HC')
 han_PTVs=han_PTVs1 %>% filter(is.na(loftee_flags)==T | loftee_flags=='SINGLE_EXON') # DON't use loftee_flags=="NA"
@@ -152,7 +152,7 @@ han_Syn=ASC_new_sample4 %>% filter(isSyn=="TRUE")
 ```
 
 
-```{r, echo=F, eval=F}
+```{r, echo=F, eval=T}
 ################################ kyle's code 
 # Get some sums
 
@@ -191,7 +191,7 @@ s = c(s1, s2, s3, s4, s5, s6, s7, s8, s9)
 data.frame(Proband = p, Sibling = s)
 ```
 
-```{r, echo=F, eval=F}
+```{r, echo=F, eval=T}
 ############################ my code 
 han_p1=sum(han_PTVs%>%filter(pLI>=0.9)%>%select(Transmitted_proband)%>%pull())/sum(han_PTVs%>%filter(pLI>=0.9)%>%select(Untransmitted_proband)%>%pull())
 
