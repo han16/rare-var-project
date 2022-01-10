@@ -420,13 +420,27 @@ div.tocify {
 <li>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</li>
 <li>When use AF cutoff, be aware of 15614 variants with zero AF going to which category</li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<ul>
+<li>use data read in the correct way</li>
+<li>filter <code>isSyn==TRUE</code></li>
+<li>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</li>
+<li>When use AF cutoff, be aware of 15614 variants with zero AF going to which category</li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <ul>
 <li><p>filter <code>Consequence=="synonymous_variant"</code></p></li>
 <li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
 <li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<ul>
+<li><p>use data read in the correct way</p></li>
+<li><p>filter <code>isSyn==TRUE</code></p></li>
+<li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
+<li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="burden-of-syn-var-with-vqslod-filter" class="section level2">
 <h2>Burden of syn var with <code>VQSLOD</code> filter</h2>
@@ -443,7 +457,22 @@ div.tocify {
 <li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
 <li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<ul>
+<li>at each VQSLOD cutoff, variants with VQSLOD score less than cutoff is chosen.</li>
+</ul>
+<pre><code>&gt; summary(ASC_new_sample_correct %&gt;% filter(isSyn==&quot;TRUE&quot;) %&gt;% select(VQSLOD)%&gt;%pull())
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-39450.00      6.02      6.88      4.02      7.70     11.24</code></pre>
+<pre><code>Kyle looked at using a VQSLOD cutoff of 3.75, but then brought it up to 5.13 after trying a similar calibration procedure with non-coding indels.</code></pre>
+<ul>
+<li><p>data read in the correct way</p></li>
+<li><p>filter <code>isSyn=="TRUE"</code></p></li>
+<li><p>Private variants are defined as variants with total allele count equal to 1 in parents calculated as <code>Transmitted_proband_parents+Untransmitted_proband_parents=1</code></p></li>
+<li><p>AF from <code>Gnomad_non_neuro_AF</code> is used to define other categories.</p></li>
+<li><p>blue vertical line is VQSLOD=5.13 and red line is 9.</p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="burden-of-syn-var-with-qdreadposranksumsor-filter" class="section level2">
 <h2>Burden of syn var with <code>QD/ReadPosRankSum/SOR</code> filter</h2>
@@ -455,7 +484,15 @@ div.tocify {
 <li><p>fix <code>QD &gt;= 3 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
 <li><p>vertical line is <code>AS_ReadPosRankSum = -8</code></p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<ul>
+<li><p>Kyle suggested <code>QD &gt;= 3 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -8</code></p></li>
+<li><p>data read in the correct way</p></li>
+<li><p>filter <code>isSyn=="TRUE"</code></p></li>
+<li><p>fix <code>QD &gt;= 3 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
+<li><p>vertical line is <code>AS_ReadPosRankSum = -8</code></p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="filter-used-for-snps-by-kyle" class="section level3">
 <h3>filter used for SNPs by Kyle:</h3>
@@ -466,7 +503,14 @@ div.tocify {
 <li><p>fix <code>QD &gt;= 1 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
 <li><p>vertical line is <code>AS_ReadPosRankSum = -0.8</code></p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<ul>
+<li><p>data read in the correct way</p></li>
+<li><p>filter <code>isSyn=="TRUE"</code></p></li>
+<li><p>fix <code>QD &gt;= 1 &amp; AS_SOR &lt;= 3</code> and vary <code>AS_ReadPosRankSum</code> and variants with score larger than threshold are chosen</p></li>
+<li><p>vertical line is <code>AS_ReadPosRankSum = -0.8</code></p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="vary-qd" class="section level4">
 <h4>vary <code>QD</code></h4>
@@ -475,7 +519,15 @@ div.tocify {
 <li><p>vertical line is <code>QD=1</code></p></li>
 <li><p>when the range of OR is enforced to be (0,1), variant groups (1): private and “(2): AF&lt;0.1%” look broken because their maximum of OR exceeds 1.</p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<ul>
+<li><p>data read in the correct way</p></li>
+<li><p>filter <code>isSyn=="TRUE"</code></p></li>
+<li><p>fix <code>AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code> and vary <code>QD</code> and variants with score larger than threshold are chosen</p></li>
+<li><p>vertical line is <code>QD=1</code></p></li>
+<li><p>when the range of OR is enforced to be (0,1), variant groups (1): private and “(2): AF&lt;0.1%” look broken because their maximum of OR exceeds 1.</p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="vary-as_sor" class="section level4">
 <h4>vary <code>As_SOR</code></h4>
@@ -484,7 +536,15 @@ div.tocify {
 <li><p>vertical line is <code>AS_SOR=3</code></p></li>
 <li><p>there are two Inf <code>0    Inf     (4): 1%&lt;AF&lt;5%</code>, <code>0    Inf     (2): AF&lt;0.1%</code></p></li>
 </ul>
-<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<ul>
+<li><p>data read in the correct way</p></li>
+<li><p>filter <code>isSyn=="TRUE"</code></p></li>
+<li><p>fix <code>QD &gt;= 1 &amp; AS_ReadPosRankSum &gt;= -0.8</code> and vary <code>AS_SOR</code> and variants with score less than threshold are chosen</p></li>
+<li><p>vertical line is <code>AS_SOR=3</code></p></li>
+<li><p>there are two Inf <code>0    Inf     (4): 1%&lt;AF&lt;5%</code>, <code>0    Inf     (2): AF&lt;0.1%</code></p></li>
+</ul>
+<p><img src="ASC_new_sample_syn_var_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 </div>
 </div>
