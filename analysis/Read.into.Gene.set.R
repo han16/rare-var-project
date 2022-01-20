@@ -1,5 +1,5 @@
 # read into gene set 
-GeneDB=src_sqlite(path="C:\\Shengtong\\Research\\rare-var\\gene.list.db", create=F)
+GeneDB=src_sqlite(path="C:\\Shengtong\\han_desktop\\Research\\rare-var\\gene.list.db", create=F)
 #GeneDB=src_sqlite(path="../../gene.list.db", create=F)
 gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
 gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))

@@ -16,7 +16,7 @@ library(gplots)
 library(tidyverse)
 library(gridExtra)
 library(ggpubr)
-#library("devtools")
+#library(devtools)  # only run those three lines once 
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
 library(mirage)
@@ -30,16 +30,16 @@ source("Read.into.Gene.set.R")
 
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into variants filtered by Kyle  
-ASC_filtered_variant=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_TDT_filtered_variants.txt", header=T, fill=T))  # this is the variants filtered by Kyle 
-ASC_new_sample1=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_B15_B16_raw_TDT_by_parent_2021-04-19.txt", header=T, fill=T))
+ASC_filtered_variant=as_tibble(read.table("C:\\Shengtong\\han_desktop\\Research\\rare-var\\ASC\\ASC_v17_TDT_filtered_variants.txt", header=T, fill=T))  # this is the variants filtered by Kyle 
+ASC_new_sample1=as_tibble(read.table("C:\\Shengtong\\han_desktop\\Research\\rare-var\\ASC\\ASC_B15_B16_raw_TDT_by_parent_2021-04-19.txt", header=T, fill=T))
 #ASC_new_sample2=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", header=T, fill=T)) # this is variants shared by Kyle without filtering 
 #ASC_new_sample3=read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", header=T, fill=T)
 # ASC_new_sample3=ASC_new_sample2
 #ASC_new_sample4=read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep='\t', header=T)
 # ASC_sample4=tdt
-ASC_new_sample5=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep='\t',  header=T, fill=T))
+ASC_new_sample5=as_tibble(read.table("C:\\Shengtong\\han_desktop\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep='\t',  header=T, fill=T))
 # ASC_new_sample5=tdt  => argument "sep='\t' " matters !!!!!!!!!!!!!!!!
-tdt = read.table('C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt', sep='\t', header=T, stringsAsFactors = F)  # kyle's code 
+tdt = read.table('C:\\Shengtong\\han_desktop\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt', sep='\t', header=T, stringsAsFactors = F)  # kyle's code 
 
 ```
 there are several reasons which may cause quite different results from Kyle's 
