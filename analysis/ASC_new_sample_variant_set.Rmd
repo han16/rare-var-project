@@ -96,7 +96,9 @@ Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # us
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into new sample 
 ASC_new_sample1=as_tibble(read.table(paste(path, "ASC\\ASC_B15_B16_raw_TDT_by_parent_2021-04-19.txt", sep=""), header=T, fill=T))
-ASC_new_sample2=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), header=T, fill=T))
+ASC_new_sample2=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), header=T, fill=T))  ##### this way of reading data is not correct
+
+ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way Kyle read the data
 ```
 
 
@@ -109,16 +111,17 @@ ASC_new_sample2=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent
 #write.csv(transmitted_variant, file="C:\\Shengtong\\Research\\rare-var\\ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10_transmitted_variant.csv")
 
 ##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
-Transmitted_proband=ASC_new_sample2%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
-Untransmitted_proband=ASC_new_sample2%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
+######### use ASC_new_sample3 rather than ASC_new_sample2
+Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
+Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
 
 ##### count transmitted variants and untransmitted in proband from parents  by summing over male, female, dad, mom  
-Transmitted_proband_parents=ASC_new_sample2%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband_parents = select(., t_proband_male_dad, t_proband_male_mom, t_proband_female_dad, t_proband_female_mom) %>% rowSums())%>% select(Transmitted_proband_parents) 
-Untransmitted_proband_parents=ASC_new_sample2%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband_parents= select(., u_proband_male_dad, u_proband_male_mom, u_proband_female_dad, u_proband_female_mom) %>% rowSums())%>% select(Untransmitted_proband_parents) 
+Transmitted_proband_parents=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband_parents = select(., t_proband_male_dad, t_proband_male_mom, t_proband_female_dad, t_proband_female_mom) %>% rowSums())%>% select(Transmitted_proband_parents) 
+Untransmitted_proband_parents=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband_parents= select(., u_proband_male_dad, u_proband_male_mom, u_proband_female_dad, u_proband_female_mom) %>% rowSums())%>% select(Untransmitted_proband_parents) 
 
 
 ##### add new columns of total transmitted and non-transmitted variants 
-ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_proband_parents=Transmitted_proband_parents$Transmitted_proband_parents, Untransmitted_proband_parents=Untransmitted_proband_parents$Untransmitted_proband_parents)
+ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_proband_parents=Transmitted_proband_parents$Transmitted_proband_parents, Untransmitted_proband_parents=Untransmitted_proband_parents$Untransmitted_proband_parents)
 
 ```
 
@@ -129,6 +132,8 @@ ASC_new_sample=ASC_new_sample2%>%mutate(Transmitted_proband=Transmitted_proband$
 
 * use filter `Gnomad_non_neuro_AF<0.05`
 
+* no burden 
+
 ```{r, echo=F, message=F, warning=F}
 num_proband=6026+1265 # male proband+female proband 
 rare_variant_new_sample=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
@@ -138,6 +143,8 @@ fisher_test_result_all=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.in
 ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
+  geom_hline(yintercept = 1,linetype="dashed", 
+                color = "red", size=1)+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9)) 
 ```
@@ -157,7 +164,7 @@ To compare old sample and new sample
 
 *  look at missense variant with AF<1E-4 in 10 gene sets
 
-* Old sample: missense: Non-LoF variants  
+* In old sample: missense: Non-LoF variants  
 
 * new sample:  there are 2 labels related to "missense". one is `missense_variant` in column `Consequence` and the other is column `isMis`. All 100201 `missense_variant` are with `isMis=TRUE`, but not all 870738 `isMis==TRUE`  are `missense_variant`. Use `missense_variant` as missense variants  and the filter `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
 
@@ -286,9 +293,38 @@ annotate_figure(figure,
 ```
 
 
+```{r, echo=F, message=F, warning=F}
+#### calculate odds ratio of missense variants with AF<0.0001 in different gene sets 
+OR=numeric();OR_low=numeric(); OR_upper=numeric()
+for (i in 1:length(Gene_Set))
+  { 
+   fisher_test=fisher.test(matrix(c(transmitted_new_sample[i], num_proband, nontransmitted_new_sample[i], num_proband), nrow=2))
+   OR[i]=fisher_test$estimate
+   OR_low[i]=fisher_test$conf.int[1]
+   OR_upper[i]=fisher_test$conf.int[2]
+}
+burden_missense_rare=tibble(Gene=Gene_Set, OR=OR, OR_low=OR_low, OR_upper=OR_upper)
+ggplot(burden_missense_rare, aes(x=Gene_Set, y=OR, fill=Gene_Set)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_hline(yintercept = 1,linetype="dashed", 
+                color = "red", size=1)+
+  geom_errorbar(aes(ymin=OR_low, ymax=OR_upper), width=.2,
+                 position=position_dodge(.9))+
+  ylab("odds ratio")+xlab("Gene set")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
+  ggtitle("Burden of rare (AF<0.0001) missense variants")+
+  theme(plot.title = element_text(hjust = 0.5, size=15)) # center the title
+```
+
+
+
+
 * `Gnomad_non_neuro_AF<0.05`
 *  missense variants include `"missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant"`
 * use filter `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
+
+
 
 ```{r, echo=F, message=F, warning=F}
 ## burden for missense variants 
@@ -299,6 +335,8 @@ fisher_test_result_mis=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.in
 ggplot(fisher_test_result_mis, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
+  geom_hline(yintercept = 1,linetype="dashed", 
+                color = "red", size=1)+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9)) 
 
@@ -320,7 +358,9 @@ ggplot(fisher_test_result, aes(x=var, y=OR, fill=var)) + # draw the OR plot
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
-                 position=position_dodge(.9)) 
+                 position=position_dodge(.9))+
+  geom_hline(yintercept = 1,linetype="dashed", 
+                color = "red", size=1)
 ```
 
 
