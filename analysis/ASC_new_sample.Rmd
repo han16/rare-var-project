@@ -52,7 +52,8 @@ d=ASC_new_sample3 %>% filter(Gnomad_non_neuro_AF>0.01) %>% nrow()
 var_count_by_AF=tibble(count=c(a,b,c,d), cate=c("AF<1e-4", "1e-4<AF<1e-3", "1e-3<AF<0.01", "AF>0.01"))
 ggplot(data=var_count_by_AF, aes(x=cate, y=count)) +
   geom_bar(stat="identity", width=0.5, fill="blue")+
-  ggtitle("Variant count in every category by AF")
+  ggtitle("Variant count in every category by AF")+
+  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
 
 ```
 

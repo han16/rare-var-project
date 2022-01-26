@@ -1,0 +1,152 @@
+---
+title: "ASC_new_sample_gene_set"
+output: html_document
+---
+
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+#library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+```
+
+
+```{r, echo=F, cache=T, warning=F, message=F}
+### read into new sample 
+path="C:\\Shengtong\\ResearchProject\\rare-var\\"
+ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way Kyle read the data
+
+
+
+
+```
+
+
+## Genome-wide analysis
+
+### Run mirage-vs on 6 variant groups in cell paper without gene level information 
+
+
+
+```{r, echo=F, warning=F, message=F}
+
+##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
+######### use ASC_new_sample3 rather than ASC_new_sample2
+Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
+Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
+
+##### add new columns of total transmitted and non-transmitted variants 
+ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband)
+
+
+# add one column of variant group index 
+ASC_new_sample_GI=ASC_new_sample %>% add_column(Group_Index=NA)
+
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$pLI>=0.995 & ASC_new_sample_GI$isPTV==T)]=1
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$pLI>=0.5 & ASC_new_sample_GI$pLI<0.995 & ASC_new_sample_GI$isPTV==T)]=2
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$pLI<0.5 & ASC_new_sample_GI$isPTV==T)]=3
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC>=2)]=4
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC>=1 & ASC_new_sample_GI$MPC<2)]=5
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC<1)]=6
+
+
+```
+
+Use mirage-vs to test if there are signals in six variant groups  
+
+```{r, echo=F, eval=F}
+####### test the toy example 
+#data(mirage_vs_toy)
+#res_vs = mirage_vs(mirage_vs_toy,n1=1000,n2=1000)
+#########
+para_est=matrix(nrow=6, ncol=6)
+rownames(para_est)=c("PLI>=0.995", "pLI within (0.5,0.995)", "pLI<0.5", "MPC>=2", "MPC within (1,2)", "MPC<1")
+colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval")
+for (i in 1:6)
+{ 
+#i=1  
+ cat(i, "is running", "\n")
+ variant_set=ASC_new_sample_GI %>% filter(Group_Index==i) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+ para_est[i,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+ pois.test=poisson.test(para_est[i,1:2], c(7291, 7291), r=1, alternative="greater")
+ para_est[i,3:4]=c(pois.test$estimate,pois.test$p.value)
+ if (i<=3) # for LoF variants
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=7291,n2=7291, gamma=6)
+ if (i>3)  # for missense variants 
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=7291,n2=7291, gamma=3)
+ para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+  
+}
+as_tibble(para_est)
+#write.csv(para_est, file="../output/KyleData/para.est.var.group.proband.csv")
+#gene.data=eight.partition(cand.data)
+#ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
+```
+
+
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.  
+
+```{r, echo=F, warning=F, message=F}
+proband_para_est=read.csv("../output/KyleData/para.est.var.group.proband.csv")
+as_tibble(proband_para_est)
+
+
+var_group=c(rep(c("PLI>=0.995", "pLI>=0.5&pLI<0.995", "pLI<0.5", "MPC>=2", "MPC>=1&MPC<2", "MPC<1"), 2))
+method=c(rep("Burden", 6), rep("mirage-vs", 6))
+pvalue=c(round(-log(proband_para_est$pval, base=10), 2), round(-log(proband_para_est$eta_pval, base=10), 2))
+summary=data.frame(var.group=var_group, pvalue=pvalue, method=method)
+ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) + 
+   geom_bar(stat="identity", 
+           position=position_dodge())+
+  ylab(expression(-log[10](pvalue)))+
+  theme(legend.title=element_blank())+
+  xlab("variant groups")+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
+  #ylab(expression(paste(hat(eta))))+ 
+  #guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+  # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+
+### gene set analysis taking into account gene level information
+
+Run mirage on all 17988 genes and $\gamma=6$ for LoF variants and $\gamma=3$ for missense. 
+
+
+```{r, echo=F, eval=F}
+##!!!!!!!!!!!!!!!!! Do not run !!!!!!!!!!!!!!!!!!!
+############  gene set 
+gene_set=ASC_new_sample_GI %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+mirage_result=mirage(data.frame(gene_set),n1=7291, n2=7291, gamma=c(6,6,6,3,3,3)) # input data must be dataframe 
+######### It takes about one hour to finish running mirage function 
+
+#res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
+#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene.csv")
+```
+
+variant category |parameter | estimate |  p value |
+-----------------|-----|-----|------|--------
+\ |$\hat{\delta}$ | 0.0177 | 0
+PLI>=0.995|$\hat{\eta}_1$ | 0.18    | $1.81\times 10^{-66}$
+0.5<=pLI<0.995|$\hat{\eta}_2$ | 0.04    | $4.68\times 10^{-39}$
+pLI<0.5|$\hat{\eta}_3$ | 0.06    | $3.97\times 10^{-130}$
+ MPC>=2|$\hat{\eta}_4$ | 0.06    | $1.32\times 10^{-36}$
+1<=MPC<2| $\hat{\eta}_5$ | 0.12    | $4.11\times 10^{-60}$
+0<=MPC<1| $\hat{\eta}_6$ | 0.05    | $5.53\times 10^{-216}$
+
