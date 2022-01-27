@@ -1,6 +1,6 @@
 ---
-title: "ASC_new_sample_gene_set"
-output: html_document
+title: "ASC new sample gene set analysis"
+output: html_doc ment
 ---
 
 
@@ -250,7 +250,7 @@ gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05)%>% filter(Gene %
 #mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
 mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family)# input data must be dataframe
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
-#write.csv(mirage_result$BF.PP.gene, file="../output/CellDataASC/BF.proband.102Gene.csv")
+#write.csv(mirage_result$BF.PP.gene, file="../output/kyleData/BF.proband.102Gene.csv")
 ```
 
 variant categories |parameter | estimate |  p value |
