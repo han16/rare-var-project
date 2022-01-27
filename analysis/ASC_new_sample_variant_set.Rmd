@@ -17,7 +17,8 @@ library(gplots)
 library(tidyverse)
 library(gridExtra)
 library(ggpubr)
-#library("devtools")
+#install.packages("devtools") # run once 
+library(devtools)
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
 library(mirage)
@@ -27,7 +28,7 @@ library(mirage)
 
 ```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
 # read into gene set 
-GeneDB=src_sqlite(path="C:\\Shengtong\\ResearchProject\\rare-var\\gene.list.db", create=F)
+GeneDB=src_sqlite(path="C:\\Shengtong\\rare-var\\gene.list.db", create=F)
 #GeneDB=src_sqlite(path="../../gene.list.db", create=F)
 gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
 gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
@@ -83,7 +84,7 @@ Gene_Set_List[[10]]=SCZ_Gene
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### old sample
 ########## read into data
-path="C:\\Shengtong\\ResearchProject\\rare-var\\"
+path="C:\\Shengtong\\rare-var\\"
 All.Anno.Data=as_tibble(read.table(paste(path, "AnnotatedTrans.txt", sep=""), header=T))
 N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA

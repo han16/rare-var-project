@@ -352,24 +352,31 @@ div.tocify {
 
 <div id="genome-wide-analysis" class="section level2">
 <h2>Genome-wide analysis</h2>
-<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper-without-gene-level-information" class="section level3">
-<h3>Run mirage-vs on 6 variant groups in cell paper without gene level information</h3>
-<p>Use mirage-vs to test if there are signals in six variant groups</p>
+<div id="run-mirage-vs-on-6-variant-groups-in-kyle-data-without-gene-level-information" class="section level3">
+<h3>Run mirage-vs on 6 variant groups in Kyle data without gene level information</h3>
+<ul>
+<li>Use mirage-vs to test if there are signals in six variant groups<br />
+</li>
+<li>filter <code>Gnomad_non_neuro_AF&lt;0.05</code> was applied</li>
+</ul>
 <p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
 <pre><code>## # A tibble: 6 x 7
-##   X                       No_case No_contr    OR  pval eta_est  eta_pval
-##   &lt;chr&gt;                     &lt;int&gt;    &lt;int&gt; &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-## 1 PLI&gt;=0.995                 8339    11016 0.757     1 0.00656 8.25e- 64
-## 2 pLI within (0.5,0.995)    21807    25655 0.850     1 0.00363 1.98e- 40
-## 3 pLI&lt;0.5                  645131   662680 0.974     1 0.00335 3.69e-130
-## 4 MPC&gt;=2                   130994   139388 0.940     1 0.00436 1.02e- 34
-## 5 MPC within (1,2)         911616   929071 0.981     1 0.00305 9.57e- 48
-## 6 MPC&lt;1                  27819128 27885193 0.998     1 0.00117 4.12e-183</code></pre>
+##   X                      No_case No_contr    OR  pval eta_est  eta_pval
+##   &lt;chr&gt;                    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 PLI&gt;=0.995                4436     7317 0.606     1 0.00662 7.98e- 64
+## 2 pLI within (0.5,0.995)   10523    14050 0.749     1 0.00342 2.38e- 40
+## 3 pLI&lt;0.5                 241695   258839 0.934     1 0.00331 9.61e-122
+## 4 MPC&gt;=2                   62501    70221 0.890     1 0.00383 3.47e- 34
+## 5 MPC within (1,2)        372944   389959 0.956     1 0.00310 7.05e- 45
+## 6 MPC&lt;1                  5085602  5154878 0.987     1 0.00127 1.14e-160</code></pre>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="gene-set-analysis-taking-into-account-gene-level-information" class="section level3">
 <h3>gene set analysis taking into account gene level information</h3>
-<p>Run mirage on all 17988 genes and <span class="math inline">\(\gamma=6\)</span> for LoF variants and <span class="math inline">\(\gamma=3\)</span> for missense.</p>
+<ul>
+<li><p>Run mirage on all 17988 genes and <span class="math inline">\(\gamma=6\)</span> for LoF variants and <span class="math inline">\(\gamma=3\)</span> for missense.</p></li>
+<li><p>apply filter <code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
+</ul>
 <table>
 <thead>
 <tr class="header">
@@ -384,50 +391,150 @@ div.tocify {
 <tr class="odd">
 <td>\</td>
 <td><span class="math inline">\(\hat{\delta}\)</span></td>
-<td>0.0177</td>
+<td>0.0201</td>
 <td>0</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>(1):PLI&gt;=0.995</td>
+<td><span class="math inline">\(\hat{\eta}_1\)</span></td>
+<td>0.17</td>
+<td><span class="math inline">\(1.72\times 10^{-66}\)</span></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>(2):0.5&lt;=pLI&lt;0.995</td>
+<td><span class="math inline">\(\hat{\eta}_2\)</span></td>
+<td>0.04</td>
+<td><span class="math inline">\(3.90\times 10^{-39}\)</span></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>(3):pLI&lt;0.5</td>
+<td><span class="math inline">\(\hat{\eta}_3\)</span></td>
+<td>0.06</td>
+<td><span class="math inline">\(1.55\times 10^{-120}\)</span></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>(4):MPC&gt;=2</td>
+<td><span class="math inline">\(\hat{\eta}_4\)</span></td>
+<td>0.06</td>
+<td><span class="math inline">\(1.55\times 10^{-36}\)</span></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>(5):1&lt;=MPC&lt;2</td>
+<td><span class="math inline">\(\hat{\eta}_5\)</span></td>
+<td>0.12</td>
+<td><span class="math inline">\(6.95\times 10^{-57}\)</span></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>(6):0&lt;=MPC&lt;1</td>
+<td><span class="math inline">\(\hat{\eta}_6\)</span></td>
+<td>0.05</td>
+<td><span class="math inline">\(2.69\times 10^{-182}\)</span></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Below are top ranked genes.</p>
+<pre><code>## # A tibble: 17,987 x 4
+##        X Gene          BF post.prob
+##    &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+##  1   536 FHOD3    1.16e39         1
+##  2   933 ADCY2    1.24e29         1
+##  3  1839 NABP2    7.66e25         1
+##  4  4978 IL23R    9.38e18         1
+##  5  6465 PRB1     8.70e20         1
+##  6  7904 NPIPA1   3.13e45         1
+##  7  9990 KIR2DL3  4.34e17         1
+##  8 10155 PRAM1    2.51e34         1
+##  9 11473 NEFH     3.64e35         1
+## 10 13705 HLA-DRB5 1.38e20         1
+## # ... with 17,977 more rows</code></pre>
+</div>
+</div>
+<div id="asd-genes-in-cell-paper" class="section level2">
+<h2>102 ASD genes in cell paper</h2>
+<div id="variant-set-vs-analysis-without-gene-level-information" class="section level3">
+<h3>variant set (VS) analysis without gene level information</h3>
+<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
+<pre><code>## # A tibble: 6 x 7
+##   X                  No_case No_contr    OR  pval   eta_est eta_pval
+##   &lt;chr&gt;                &lt;int&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 PLI&gt;=0.995             132      381 0.346 1     0.0000375    1    
+## 2 pLI&gt;=0.5&amp;pLI&lt;0.995      45       40 1.12  0.332 0.166        0.324
+## 3 pLI&lt;0.5                 32       22 1.45  0.110 0.230        0.269
+## 4 MPC&gt;=2                 788      955 0.825 1.00  0.000301     1    
+## 5 MPC&gt;=1&amp;MPC&lt;2          5481     5762 0.951 0.996 0.000653     1    
+## 6 MPC&lt;1                30680    30991 0.990 0.896 0.000134     1</code></pre>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="gene-set-analysis-taking-into-account-gene-level-information-1" class="section level3">
+<h3>gene set analysis taking into account gene level information</h3>
+<p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
+<table>
+<caption>Parameter estimate by MIRAGE for 102 ASD genes.</caption>
+<thead>
+<tr class="header">
+<th>variant categories</th>
+<th>parameter</th>
+<th>estimate</th>
+<th>p value</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>\</td>
+<td><span class="math inline">\(\hat{\delta}\)</span></td>
+<td>0.40</td>
+<td><span class="math inline">\(1.10\times 10^{-6}\)</span></td>
 <td></td>
 </tr>
 <tr class="even">
 <td>PLI&gt;=0.995</td>
 <td><span class="math inline">\(\hat{\eta}_1\)</span></td>
-<td>0.18</td>
-<td><span class="math inline">\(1.81\times 10^{-66}\)</span></td>
+<td>0.1452</td>
+<td><span class="math inline">\(1.13\times 10^{-6}\)</span></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>0.5&lt;=pLI&lt;0.995</td>
 <td><span class="math inline">\(\hat{\eta}_2\)</span></td>
-<td>0.04</td>
-<td><span class="math inline">\(4.68\times 10^{-39}\)</span></td>
+<td>1</td>
+<td>0.1546</td>
 <td></td>
 </tr>
 <tr class="even">
 <td>pLI&lt;0.5</td>
 <td><span class="math inline">\(\hat{\eta}_3\)</span></td>
-<td>0.06</td>
-<td><span class="math inline">\(3.97\times 10^{-130}\)</span></td>
+<td>0.7379</td>
+<td>0.2145</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>MPC&gt;=2</td>
 <td><span class="math inline">\(\hat{\eta}_4\)</span></td>
-<td>0.06</td>
-<td><span class="math inline">\(1.32\times 10^{-36}\)</span></td>
+<td>0.1789</td>
+<td><span class="math inline">\(5.20\times 10^{-4}\)</span></td>
 <td></td>
 </tr>
 <tr class="even">
 <td>1&lt;=MPC&lt;2</td>
 <td><span class="math inline">\(\hat{\eta}_5\)</span></td>
-<td>0.12</td>
-<td><span class="math inline">\(4.11\times 10^{-60}\)</span></td>
+<td><span class="math inline">\(8.13\times 10^{-5}\)</span></td>
+<td>1</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>0&lt;=MPC&lt;1</td>
 <td><span class="math inline">\(\hat{\eta}_6\)</span></td>
-<td>0.05</td>
-<td><span class="math inline">\(5.53\times 10^{-216}\)</span></td>
+<td><span class="math inline">\(6.64\times 10^{-12}\)</span></td>
+<td>1</td>
 <td></td>
 </tr>
 </tbody>
