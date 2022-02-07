@@ -475,7 +475,10 @@ div.tocify {
 </div>
 <div id="gene-set-analysis-taking-into-account-gene-level-information-1" class="section level3">
 <h3>gene set analysis taking into account gene level information</h3>
-<p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
+<ul>
+<li><p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p></li>
+<li><p>apply filter <code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
+</ul>
 <table>
 <caption>Parameter estimate by MIRAGE for 102 ASD genes.</caption>
 <thead>
@@ -539,6 +542,130 @@ div.tocify {
 </tr>
 </tbody>
 </table>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+</div>
+<div id="top-5-constraint-genes" class="section level2">
+<h2>Top 5% constraint genes</h2>
+<div id="burden-analysis" class="section level3">
+<h3>Burden analysis</h3>
+<div id="look-at-all-variants-with-af10e-4" class="section level4">
+<h4>Look at all variants with AF&lt;10E-4</h4>
+<p>In old sample, we observe signal in constraint genes with <span class="math inline">\(AF&lt;10^{-4}\)</span>.</p>
+<p>There are 199395 transmitted variants in proband and 204963 untransmitted variants.</p>
+<pre class="r"><code>poisson.test(c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband)), c(num.family, num.family), r=1, alternative=&quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  Comparison of Poisson rates
+## 
+## data:  c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband)) time base: c(num.family, num.family)
+## count1 = 199395, expected count1 = 202179, p-value = 1
+## alternative hypothesis: true rate ratio is greater than 1
+## 95 percent confidence interval:
+##  0.967809      Inf
+## sample estimates:
+## rate ratio 
+##  0.9728341</code></pre>
+</div>
+</div>
+<div id="run-mirage-vs-for-all-variants-together" class="section level3">
+<h3>Run MIRAGE-VS for all variants together</h3>
+<p>Put all variants with AF&lt;10E-4 in one category and run MIRAGE-VS. <span class="math inline">\(\widehat{\eta}=0.0041\)</span>, p value is <span class="math inline">\(1.6\times 10^{-9}\)</span>.</p>
+</div>
+<div id="run-mirage-vs-on-constraint-genes-with-6-variant-groups-in-cell-paper-without-gene-level-information" class="section level3">
+<h3>Run MIRAGE-VS on constraint genes with 6 variant groups in cell paper without gene level information</h3>
+<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
+<pre><code>## # A tibble: 6 x 7
+##   X                      No_case No_contr    OR  pval   eta_est eta_pval
+##   &lt;chr&gt;                    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (1):PLI&gt;=0.995            3760     4456 0.844 1.00  0.00558   1.80e-29
+## 2 (2):pLI&gt;=0.5&amp;pLI&lt;0.995     645      898 0.718 1.00  0.0000572 1   e+ 0
+## 3 (3):pLI&lt;0.5               3854     4581 0.841 1.00  0.000203  1   e+ 0
+## 4 (4):MPC&gt;=2               14144    15569 0.908 1     0.000182  1   e+ 0
+## 5 (5):MPC&gt;=1&amp;MPC&lt;2        103297   105831 0.976 1.00  0.00124   1.33e- 6
+## 6 (6):MPC&lt;1               538935   540873 0.996 0.969 0.000821  2.86e- 3</code></pre>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="gene-set-analysis-using-mirage-taking-into-account-gene-level-information" class="section level3">
+<h3>gene set analysis using mirage taking into account gene level information</h3>
+<p><span class="math inline">\(\gamma=6\)</span> for LoF variant and <span class="math inline">\(\gamma=3\)</span> for missense when running mirage.</p>
+<table>
+<thead>
+<tr class="header">
+<th>variant category</th>
+<th>parameter</th>
+<th>estimate</th>
+<th>p value</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>\</td>
+<td><span class="math inline">\(\hat{\delta}\)</span></td>
+<td>0.0449</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>(1):PLI&gt;=0.995</td>
+<td><span class="math inline">\(\hat{\eta}_1\)</span></td>
+<td>0.22</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>(2):0.5&lt;=pLI&lt;0.995</td>
+<td><span class="math inline">\(\hat{\eta}_2\)</span></td>
+<td><span class="math inline">\(3.40\times 10^{-28}\)</span></td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>(3):pLI&lt;0.5</td>
+<td><span class="math inline">\(\hat{\eta}_3\)</span></td>
+<td>0.59</td>
+<td><span class="math inline">\(3.24\times 10^{-10}\)</span></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>(4):MPC&gt;=2</td>
+<td><span class="math inline">\(\hat{\eta}_4\)</span></td>
+<td><span class="math inline">\(5.44\times 10^{-5}\)</span></td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>(5):1&lt;=MPC&lt;2</td>
+<td><span class="math inline">\(\hat{\eta}_5\)</span></td>
+<td>0.0504</td>
+<td><span class="math inline">\(1.89\times 10^{-16}\)</span></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>(6):0&lt;=MPC&lt;1</td>
+<td><span class="math inline">\(\hat{\eta}_6\)</span></td>
+<td>0.0858</td>
+<td><span class="math inline">\(1.15\times 10^{-22}\)</span></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>Below are top ranked genes.</p>
+<pre><code>## # A tibble: 857 x 4
+##        X Gene       BF post.prob
+##    &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1   267 ADCY2 5.31e38     1    
+##  2   123 NF1   7.42e15     1.00 
+##  3   639 HLA-C 3.41e14     1.00 
+##  4   334 FMN2  4.11e13     1.00 
+##  5   640 HLA-B 4.30e 7     1.00 
+##  6   560 DHX38 6.51e 3     0.997
+##  7   128 ACLY  2.30e 2     0.915
+##  8    84 FRY   1.68e 1     0.441
+##  9   262 NIPBL 1.03e 1     0.327
+## 10    88 IPO5  5.86e 0     0.216
+## # ... with 847 more rows</code></pre>
 </div>
 </div>
 
