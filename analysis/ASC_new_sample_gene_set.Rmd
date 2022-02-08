@@ -82,12 +82,12 @@ for (i in 1:6)
  cat(i, "is running", "\n")
  variant_set=ASC_new_sample_GI %>% filter(Group_Index==i & Gnomad_non_neuro_AF<0.05) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
  para_est[i,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
- pois.test=poisson.test(para_est[i,1:2], c(7291, 7291), r=1, alternative="greater")
+ pois.test=poisson.test(para_est[i,1:2], c(num.family, num.family), r=1, alternative="greater")
  para_est[i,3:4]=c(pois.test$estimate,pois.test$p.value)
  if (i<=3) # for LoF variants
-   vs.mirage=mirage_vs(variant_set[,2:4],n1=7291,n2=7291, gamma=6)
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=6)
  if (i>3)  # for missense variants 
-   vs.mirage=mirage_vs(variant_set[,2:4],n1=7291,n2=7291, gamma=3)
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=3)
  para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
   
 }
@@ -98,7 +98,7 @@ as_tibble(para_est)
 ```
 
 
-This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.  
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for 3 PLI variant groups  and $\gamma=3$ for another 3 MPC groups when running mirage.  
 
 ```{r, echo=F, warning=F, message=F}
 proband_para_est=read.csv("../output/KyleData/para.est.var.group.proband.csv")
@@ -127,7 +127,7 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 
 ### gene set analysis taking into account gene level information
 
-* Run mirage on all 17988 genes and $\gamma=6$ for LoF variants and $\gamma=3$ for missense. 
+* Run mirage on all 17988 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 
 * apply filter `Gnomad_non_neuro_AF<0.05` 
 
@@ -162,7 +162,7 @@ summary=data.frame(var.group=var_group, estimate=estimate)
 ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) + 
    geom_bar(stat="identity", position=position_dodge())+
   theme(legend.title=element_blank())+
-  xlab("variant groups")+
+  xlab("variant groups")+ylab(expression(paste(hat(eta))))+
   ggtitle("")+
   theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
@@ -213,7 +213,7 @@ as_tibble(para_est)
 
 ### variant set (VS) analysis without gene level information
 
-This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for 3 PLI variant groups and $\gamma=3$ for 3 MPC groups when running mirage.
 
 ```{r, echo=F}
 proband_para_est=read.csv("../output/kyleData/para.est.var.group.proband.102ASDGene.csv")
@@ -343,7 +343,7 @@ as_tibble(para_est)
 ```
 
 
-This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for 3 PLI variant groups and $\gamma=3$ for 3 MPC groups when running mirage.
 
 ```{r, echo=F}
 proband_para_est=read.csv("../output/KyleData/para.est.var.group.proband.Constraint.Gene.csv")
@@ -371,7 +371,7 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 
 ### gene set analysis using mirage taking into account gene level information
 
-$\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
+$\gamma=6$ for PLI variant groups and $\gamma=3$ for MPC groups when running mirage.
 
 ```{r,echo=F, eval=F}
 ### !!!!!!!!!!!!!!!!! DO NOT RUN: it takes about ~20 min  to run; not really, heavily depends on the seeds  ####### 
