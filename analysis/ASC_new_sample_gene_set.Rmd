@@ -460,7 +460,7 @@ topgene_summary
 ```
 
 
-#### Gene 
+#### Vairants driving the signal in top gene 
 
 ```{r, echo=F, eval=F}
 intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
