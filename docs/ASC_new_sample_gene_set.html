@@ -573,21 +573,28 @@ div.tocify {
 </div>
 <div id="run-mirage-vs-on-constraint-genes-with-6-variant-groups-in-cell-paper-without-gene-level-information" class="section level3">
 <h3>Run MIRAGE-VS on constraint genes with 6 variant groups in cell paper without gene level information</h3>
-<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. <span class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups and <span class="math inline">\(\gamma=3\)</span> for 3 MPC groups when running mirage.</p>
+<p>This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups.</p>
+<ul>
+<li><p><span class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups and <span class="math inline">\(\gamma=3\)</span> for 3 MPC groups when running mirage.</p></li>
+<li><p>apply filter <code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
+</ul>
 <pre><code>## # A tibble: 6 x 7
 ##   X                      No_case No_contr    OR  pval   eta_est eta_pval
 ##   &lt;chr&gt;                    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (1):PLI&gt;=0.995            3760     4456 0.844 1.00  0.00558   1.80e-29
-## 2 (2):pLI&gt;=0.5&amp;pLI&lt;0.995     645      898 0.718 1.00  0.0000572 1   e+ 0
-## 3 (3):pLI&lt;0.5               3854     4581 0.841 1.00  0.000203  1   e+ 0
-## 4 (4):MPC&gt;=2               14144    15569 0.908 1     0.000182  1   e+ 0
-## 5 (5):MPC&gt;=1&amp;MPC&lt;2        103297   105831 0.976 1.00  0.00124   1.33e- 6
-## 6 (6):MPC&lt;1               538935   540873 0.996 0.969 0.000821  2.86e- 3</code></pre>
+## 1 (1):PLI&gt;=0.995             712     1603 0.444  1    0.00568   1.77e-29
+## 2 (2):pLI&gt;=0.5&amp;pLI&lt;0.995     645      898 0.718  1.00 0.0000572 1   e+ 0
+## 3 (3):pLI&lt;0.5               1976     2694 0.733  1    0.000204  1   e+ 0
+## 4 (4):MPC&gt;=2               10068    11577 0.870  1    0.000192  1   e+ 0
+## 5 (5):MPC&gt;=1&amp;MPC&lt;2         54752    57131 0.958  1.00 0.00128   1.29e- 6
+## 6 (6):MPC&lt;1               157653   160577 0.982  1.00 0.000326  1   e+ 0</code></pre>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="gene-set-analysis-using-mirage-taking-into-account-gene-level-information" class="section level3">
 <h3>gene set analysis using mirage taking into account gene level information</h3>
-<p><span class="math inline">\(\gamma=6\)</span> for PLI variant groups and <span class="math inline">\(\gamma=3\)</span> for MPC groups when running mirage.</p>
+<ul>
+<li><span class="math inline">\(\gamma=6\)</span> for PLI variant groups and <span class="math inline">\(\gamma=3\)</span> for MPC groups when running mirage.</li>
+<li>apply filter <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+</ul>
 <table>
 <thead>
 <tr class="header">
@@ -602,50 +609,50 @@ div.tocify {
 <tr class="odd">
 <td>\</td>
 <td><span class="math inline">\(\hat{\delta}\)</span></td>
-<td>0.0449</td>
+<td>0.0911</td>
 <td>0</td>
 <td></td>
 </tr>
 <tr class="even">
 <td>(1):PLI&gt;=0.995</td>
 <td><span class="math inline">\(\hat{\eta}_1\)</span></td>
-<td>0.22</td>
+<td>0.1509</td>
 <td>0</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>(2):0.5&lt;=pLI&lt;0.995</td>
 <td><span class="math inline">\(\hat{\eta}_2\)</span></td>
-<td><span class="math inline">\(3.40\times 10^{-28}\)</span></td>
+<td><span class="math inline">\(1.14\times 10^{-48}\)</span></td>
 <td>1</td>
 <td></td>
 </tr>
 <tr class="even">
 <td>(3):pLI&lt;0.5</td>
 <td><span class="math inline">\(\hat{\eta}_3\)</span></td>
-<td>0.59</td>
-<td><span class="math inline">\(3.24\times 10^{-10}\)</span></td>
+<td>0.5452</td>
+<td><span class="math inline">\(8.72\times 10^{-11}\)</span></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>(4):MPC&gt;=2</td>
 <td><span class="math inline">\(\hat{\eta}_4\)</span></td>
-<td><span class="math inline">\(5.44\times 10^{-5}\)</span></td>
+<td><span class="math inline">\(1.03\times 10^{-8}\)</span></td>
 <td>1</td>
 <td></td>
 </tr>
 <tr class="even">
 <td>(5):1&lt;=MPC&lt;2</td>
 <td><span class="math inline">\(\hat{\eta}_5\)</span></td>
-<td>0.0504</td>
-<td><span class="math inline">\(1.89\times 10^{-16}\)</span></td>
+<td>0.0258</td>
+<td><span class="math inline">\(1.75\times 10^{-16}\)</span></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>(6):0&lt;=MPC&lt;1</td>
 <td><span class="math inline">\(\hat{\eta}_6\)</span></td>
-<td>0.0858</td>
-<td><span class="math inline">\(1.15\times 10^{-22}\)</span></td>
+<td>0.0263</td>
+<td><span class="math inline">\(1.41\times 10^{-10}\)</span></td>
 <td></td>
 </tr>
 </tbody>
@@ -655,17 +662,54 @@ div.tocify {
 <pre><code>## # A tibble: 857 x 4
 ##        X Gene       BF post.prob
 ##    &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-##  1   267 ADCY2 5.31e38     1    
-##  2   123 NF1   7.42e15     1.00 
-##  3   639 HLA-C 3.41e14     1.00 
-##  4   334 FMN2  4.11e13     1.00 
-##  5   640 HLA-B 4.30e 7     1.00 
-##  6   560 DHX38 6.51e 3     0.997
-##  7   128 ACLY  2.30e 2     0.915
-##  8    84 FRY   1.68e 1     0.441
-##  9   262 NIPBL 1.03e 1     0.327
-## 10    88 IPO5  5.86e 0     0.216
+##  1   267 ADCY2 6.64e38     1    
+##  2   123 NF1   1.03e16     1.00 
+##  3   334 FMN2  4.37e 9     1.00 
+##  4   639 HLA-C 9.33e 7     1.00 
+##  5   560 DHX38 1.16e 4     0.999
+##  6   640 HLA-B 3.85e 3     0.997
+##  7   128 ACLY  1.66e 2     0.943
+##  8    84 FRY   4.52e 0     0.312
+##  9   565 KAT2A 3.93e 0     0.283
+## 10   581 NKPD1 3.92e 0     0.282
 ## # ... with 847 more rows</code></pre>
+<div id="top-genes" class="section level4">
+<h4>Top genes</h4>
+<p>Those top genes with large BF do not have burden.</p>
+<pre><code>## # A tibble: 10 x 5
+##    Gene       BF Transmitted_proband Untransmitted_proband    OR
+##    &lt;chr&gt;   &lt;dbl&gt;               &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
+##  1 ADCY2 6.64e38                6641                  6697 0.992
+##  2 NF1   1.03e16                3923                  4106 0.955
+##  3 FMN2  4.37e 9               13829                 15009 0.921
+##  4 HLA-C 9.33e 7                 448                  1524 0.294
+##  5 DHX38 1.16e 4               16345                 16178 1.01 
+##  6 HLA-B 3.85e 3                3806                  5591 0.681
+##  7 ACLY  1.66e 2                2073                  2083 0.995
+##  8 FRY   4.52e 0               13325                 13465 0.990
+##  9 KAT2A 3.93e 0                3798                  3877 0.980
+## 10 NKPD1 3.92e 0                1720                  1672 1.03</code></pre>
+</div>
+<div id="gene" class="section level4">
+<h4>Gene</h4>
+<p>variants that drive the BF of top genes. Those variants surviving after filter <code>AF&lt;5%</code> has close to 10 times untransmitted variants than transmitted, thereby drive the BF to a high number.</p>
+<pre><code>* 148 5:7757570:TGGCCGTGTTCAACATGGTAAGTCCCAGAGCAC:T                                 ADCY2        0.00882                  15              219           1
+
+&gt; BF.var.inte(15, 219, 3, 3, num.family, num.family)
+[1] 6.321461e+36
+
+In gene ADCY2, there is one variant with `15      219        1 6.015290e+39              1` driving the signal.
+
+* 17:31232075:A:T  NF1      11      123        5 1.022707e+18              5
+
+* 1:240207775:C:T FMN2      23      130        6 202948206699  6 
+
+* 6:31271622:C:CGGAG HLA-C       4       43        3 3.113611e+02    
+6:31271643:A:T HLA-C       3       43        6 1.513167e+03              6
+
+* 16:72109460:GAGCT:G DHX38      35      122        3 4.678945e+04              3
+</code></pre>
+</div>
 </div>
 </div>
 
