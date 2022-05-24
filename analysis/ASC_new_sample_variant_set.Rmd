@@ -28,7 +28,8 @@ library(mirage)
 
 ```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
 # read into gene set 
-GeneDB=src_sqlite(path="C:\\Shengtong\\rare-var\\gene.list.db", create=F)
+path="C:\\Shengtong\\Research\\rare-var\\"
+GeneDB=src_sqlite(path=paste(path, "gene.list.db", sep=""), create=F)
 #GeneDB=src_sqlite(path="../../gene.list.db", create=F)
 gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
 gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
@@ -84,7 +85,6 @@ Gene_Set_List[[10]]=SCZ_Gene
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### old sample
 ########## read into data
-path="C:\\Shengtong\\rare-var\\"
 All.Anno.Data=as_tibble(read.table(paste(path, "AnnotatedTrans.txt", sep=""), header=T))
 N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA
@@ -115,6 +115,8 @@ ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent
 ######### use ASC_new_sample3 rather than ASC_new_sample2
 Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
 Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
+
+
 
 ##### count transmitted variants and untransmitted in proband from parents  by summing over male, female, dad, mom  
 Transmitted_proband_parents=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband_parents = select(., t_proband_male_dad, t_proband_male_mom, t_proband_female_dad, t_proband_female_mom) %>% rowSums())%>% select(Transmitted_proband_parents) 
@@ -150,7 +152,29 @@ ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot
                  position=position_dodge(.9)) 
 ```
 
+## Figure  1(B) in cell paper 
 
+From cell paper, for variants with `pLI>=0.995`, there are 695 transmitted variants and 557 untransmitted in 5869 parents, i.e. 0.12/0.1 variants per sample, leading to 1.2 fold enrichment. 
+
+But the calculated numbers are quite different from the statistics in cell paper! 
+
+```{r, echo=F}
+PTV_cate1=ASC_new_sample %>% filter(pLI>=0.995) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband)
+
+fisher_test=fisher.test(matrix(c(sum(PTV_cate1$Transmitted_proband), num_proband, sum(PTV_cate1$Untransmitted_proband), num_proband), nrow=2))
+fisher_test_result_all=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="pLI>=0.995")
+ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_hline(yintercept = 1,linetype="dashed", 
+                color = "red", size=1)+
+  xlab("")+
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
+
+#sum(PTV_cate1$Transmitted_proband)/(nrow(PTV_cate1)*num_proband)
+#sum(PTV_cate1$Untransmitted_proband)/(num_proband*nrow(PTV_cate1))
+```
 
 
 

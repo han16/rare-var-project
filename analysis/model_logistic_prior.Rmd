@@ -13,6 +13,8 @@ Let $Z_j$ be an indicator variable for risk status of variant $j$ i.e. $Z_j=1$ f
 
 $$logit [p(Z_j=1)]=log \frac{p(Z_j=1)}{1-p(Z_j=1)}=\sum_{k=1}^K \beta_kA_{jk}$$. 
 
+What values does $A_{jk}$ take? 
+
 
 Assume $p(Z_j=1)=\eta_j$, the probability that variant $j$ is a risk variant. then $\eta_j=\frac{e^{\sum_k \beta_k A_{jk}}}{1+e^{\sum_k \beta_k A_{jk}}}$. The likelihood of the sample with $J$ independent variants is 
 

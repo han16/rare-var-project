@@ -23,9 +23,9 @@ library(mirage)
 ```
 
 
-```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
+```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F, eval=F}
 # read into gene set 
-source("Read.into.Gene.set.R")
+source("C:\\Shengtong\\Research\\rare-var\\rare-var-project\\analysis\\Read.into.Gene.set.R")
 ```
 
 
@@ -83,7 +83,7 @@ num_proband=6026+1265 # male proband+female proband
 
 
 
-```{r, echo=F, warning=F, warning=F}
+```{r, echo=F, warning=F, message=F}
 # input must have column Gnomad_non_neuro_AF; Transmitted_proband;  Untransmitted_proband
 fisher_test=function(input.data, sample_size, AF_lower, AF_upper)
 {
@@ -101,12 +101,13 @@ return(result)
 ## Burden of syn var partitioned by AF 
 
 
+```{r, echo=F, message=F, warning=F, eval=F}
+############# this is old version, DONOT RUN 
+#* filter `Consequence=="synonymous_variant"`
+#* AF from `Gnomad_non_neuro_AF` is used to define other #categories. 
+#* When use AF cutoff, be aware of 15614 variants with #zero AF going to which category 
+########################################
 
-* filter `Consequence=="synonymous_variant"`
-* AF from `Gnomad_non_neuro_AF` is used to define other categories. 
-* When use AF cutoff, be aware of 15614 variants with zero AF going to which category 
-
-```{r, echo=F, message=F, warning=F}
 syn_variants_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" ) %>% select(Variant, Gene, Gnomad_non_neuro_AF,  Transmitted_proband, Untransmitted_proband, Transmitted_proband_parents, Untransmitted_proband_parents)
 
 AF_cutoff=c(0, 0.05, 1) # define AF cutoffs 
@@ -175,17 +176,17 @@ ggplot(syn_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ```
 
 
+```{r, echo=F, message=F, warning=F, eval=F} 
+######### this is old version, DONOT run 
+
+#*  filter `Consequence=="synonymous_variant"`
+#
+#* Private variants are defined as variants with total #allele  count equal to  1 in parents calculated as #`Transmitted_proband_parents+Untransmitted_proband_paren#ts=1`
+#
+#* AF from `Gnomad_non_neuro_AF` is used to define other #categories. 
 
 
-*  filter `Consequence=="synonymous_variant"`
 
-* Private variants are defined as variants with total allele  count equal to  1 in parents calculated as `Transmitted_proband_parents+Untransmitted_proband_parents=1`
-
-* AF from `Gnomad_non_neuro_AF` is used to define other categories. 
-
-
-
-```{r, echo=F}
 AF_cutoff=c(0, 0.001, 0.01, 0.05, 1)
 
 OR=numeric(); pvalue=numeric(); CI_lower=numeric(); CI_upper=numeric()
@@ -278,12 +279,15 @@ Kyle looked at using a VQSLOD cutoff of 3.75, but then brought it up to 5.13 aft
 ```
 
 
-*  filter `Consequence=="synonymous_variant"`
-* Private variants are defined as variants with total allele  count equal to  1 in parents calculated as `Transmitted_proband_parents+Untransmitted_proband_parents=1`
 
-* AF from `Gnomad_non_neuro_AF` is used to define other categories. 
+```{r, echo=F, message=F, warning=F, eval=F}
+################## this is old version, DONOT RUN 
+#*  filter `Consequence=="synonymous_variant"`
+#* Private variants are defined as variants with total #allele  count equal to  1 in parents calculated as #`Transmitted_proband_parents+Untransmitted_proband_paren# ts=1`
+#
+#* AF from `Gnomad_non_neuro_AF` is used to define other categories. 
 
-```{r, echo=F, message=F, warning=F}
+
 num.cutoff=100
 AF_cutoff=c(0, 0.001, 0.01, 0.05, 1)
 #summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05)%>%select(VQSLOD)%>%pull)
@@ -397,15 +401,19 @@ Consider [`QD, ReadPosRankSum, SOR`](https://gatk.broadinstitute.org/hc/en-us/ar
 
 ### filter used for indels by Kyle: 
 
-* Kyle suggested `QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8` 
 
+```{r, echo=F, message=F, warning=F, eval=F}
+########### this is old version, DONOT RUN 
+##############
+#* Kyle suggested `QD >= 3 & AS_SOR <= 3 & #AS_ReadPosRankSum >= -8` 
+#
+#
+#* fix `QD >= 3 & AS_SOR <= 3` and vary #`AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
+#
+#
+#* vertical line is ` AS_ReadPosRankSum = -8`
+#
 
-* fix `QD >= 3 & AS_SOR <= 3` and vary `AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
-
-
-* vertical line is ` AS_ReadPosRankSum = -8`
-
-```{r, echo=F, message=F, warning=F}
 num.cutoff=20
 #summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(AS_ReadPosRankSum)%>%pull)
 ReadPosRankSum.cutoff=seq(-18,11,length.out=num.cutoff) # AS_ReadPosRankSum >= -8 by Kyle 
@@ -507,13 +515,19 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 #### Vary `AS_ReadPosRankSum`
 
-* fix `QD >= 1 & AS_SOR <= 3` and vary `AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
 
 
-* vertical line is ` AS_ReadPosRankSum = -0.8`
+
+```{r, echo=F, message=F, warning=F, eval=F}
+#
+#* fix `QD >= 1 & AS_SOR <= 3` and vary #`AS_ReadPosRankSum` and variants with score larger than threshold are chosen 
+#
+#
+#* vertical line is ` AS_ReadPosRankSum = -0.8`
+#
 
 
-```{r, echo=F, message=F, warning=F}
+
 num.cutoff=20
 #summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(AS_ReadPosRankSum)%>%pull)
 ReadPosRankSum.cutoff=seq(-18,11,length.out=num.cutoff) # AS_ReadPosRankSum >= -8 by Kyle 
@@ -606,15 +620,19 @@ theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title; size 
 
 #### vary `QD`
 
-* fix `AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` and vary `QD` and variants with score larger than threshold are chosen 
 
 
-* vertical line is ` QD=1`
+```{r, echo=F, message=F, warning=F, eval=F}
+############ this is old version, DONOT run 
+#
+#* fix `AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8` and vary #`QD` and variants with score larger than threshold are chosen 
 
-* when the range of OR is enforced to be (0,1), variant groups (1): private and "(2): AF<0.1%" look broken because their maximum of OR exceeds 1. 
+
+#* vertical line is ` QD=1`
+#
+#* when the range of OR is enforced to be (0,1), variant groups (1): private and "(2): AF<0.1%" look broken because their maximum of OR exceeds 1.
 
 
-```{r, echo=F, message=F, warning=F}
 num.cutoff=20
 #summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(QD)%>%pull)
 QD.cutoff=seq(0,70,length.out=num.cutoff) # AS_ReadPosRankSum >= -8 by Kyle 
@@ -718,15 +736,22 @@ odds.ratio.summary %>% filter(var=="(2): AF<0.1%")
 
 #### vary `As_SOR`
 
-* fix `QD >= 1 & AS_ReadPosRankSum >= -0.8` and vary `AS_SOR` and variants with score less than threshold are chosen 
 
 
-* vertical line is `AS_SOR=3 `
 
-* there are two Inf `  0    Inf     (4): 1%<AF<5% `, ` 0    Inf     (2): AF<0.1%`
+```{r, echo=F, message=F, warning=F, eval=F}
+
+############ this is old version 
+#
+#* fix `QD >= 1 & AS_ReadPosRankSum >= -0.8` and vary #`AS_SOR` and variants with score less than threshold are chosen 
+#
+#
+#* vertical line is `AS_SOR=3 `
+#
+#* there are two Inf `  0    Inf     (4): 1%<AF<5% `, ` 0 #   Inf     (2): AF<0.1%`
 
 
-```{r, echo=F, message=F, warning=F}
+
 num.cutoff=20
 #summary(ASC_new_sample %>% filter(Consequence=="synonymous_variant")%>%select(AS_SOR)%>%pull)
 SOR.cutoff=seq(0,22,length.out=num.cutoff) # AS_SOR <= 3 by Kyle 

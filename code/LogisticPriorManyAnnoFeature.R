@@ -102,7 +102,7 @@ objec.func.min=function(beta.est) # this is the log likelihood function to be ma
 deriv.objec.func=function(beta.est)
 {
   par.beta=numeric(anno.num)
-  for (k in 1:anno.num) # k: annotattion index
+  for (k in 1:anno.num) # k: annotation index
   {
     par.beta.k=0
     for (j in 1:num.var) # j: variant index
@@ -117,8 +117,8 @@ deriv.objec.func=function(beta.est)
   return(par.beta)
 }
 ################################################
-num.gene=1000
-m=200
+num.gene=1000  # number of genes 
+m=200  # number of variants 
 N0=50000; N1=50000
 delta=1
 alpha0 <- 0.1
@@ -129,13 +129,13 @@ gamma.mean <- 10
 sigma <- 1
 split.ratio=c(0,1)
 num.group=length(split.ratio)-1
-anno.num=10
-############  generate feature covariate 
-Ajk=matrix(0, nrow=(num.gene*m), ncol=anno.num) # Ajk are indicator matrix with elelements of being 0, or 1
+anno.num=10 # number of annotation groups 
+############  generate feature covariates 
+Ajk=matrix(0, nrow=(num.gene*m), ncol=anno.num) # Ajk are indicator matrix with elements of being 0, or 1
 for (i in 1:ncol(Ajk))
-  Ajk[sample(nrow(Ajk), (0.5*nrow(Ajk))),i]=1
+  Ajk[sample(nrow(Ajk), (0.5*nrow(Ajk))),i]=1 # half of variants across all genes are "1", i.e. risk variants 
 ############## generate beta 
-beta.true=numeric(anno.num)
+beta.true=numeric(anno.num) # beta coefficients for all annotation groups 
 beta.true[1]=0.05
 beta.true[2]=2
 beta.true[3]=3.5
@@ -147,6 +147,7 @@ max.rep=1
 all.beta=matrix(nrow=max.rep, ncol=anno.num)
 for (rep in 1:max.rep)
 {  
+  ############## generate the sample 
   cat(rep, "th replicate is running", "\n")  
   Ui=rbinom(num.gene, 1, delta)
   all.data=list(); var.orig.index=numeric(); var.orig.index[1]=NA
@@ -158,7 +159,7 @@ for (rep in 1:max.rep)
   }
   var.orig.index=var.orig.index[-1]
   Ajk.effect=Ajk[var.orig.index, ]
-  ################### calculate bayes factor for every variant 
+  ################### calculate Bayes factor for every variant 
   k=0; BF.var=numeric(); var.count=matrix(nrow=(m*num.gene), ncol=2)
   for (i in 1:length(all.data))
   {
@@ -184,8 +185,7 @@ for (rep in 1:max.rep)
   fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2]+Ajk.effect[,3]+Ajk.effect[,4]+Ajk.effect[,5]+Ajk.effect[,6]+Ajk.effect[,7]
              +Ajk.effect[,8]+Ajk.effect[,9]+Ajk.effect[,10],family=binomial())
   all.beta[rep,]=fit$coefficients 
-  #######################
-  
+  #######################  use optim to estimate beta 
   for (k in 1:length(lambda.range))
   {
     cat(k, "is running", "\n")  
@@ -197,7 +197,8 @@ for (rep in 1:max.rep)
     #beta.fin.est[k,]=theta.est$optim$bestmem
     error[k]=sum((beta.fin.est[k,]-beta.true)^2)
     
-  }
+  }  # end of for (k in 1:length(lambda.range))
+  
   #plot(beta.true, ylim=c(-1,1), type="o")
   #lines(beta.fin.est[which.min(error),], ylim=c(-1,1), type="o", col=2)
   #beta.fin.est

@@ -2057,6 +2057,8 @@ This is the simplest case in that every variant has one annotation feature if an
 
 
 #### likelihood function: 
+
+
 If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of $\beta$ (true $\beta=0.5$)is as 
 
 
@@ -2087,11 +2089,18 @@ Sparsity rate | 95% | 90% |85%  |80% |75% |70%  | 65% |60% |55% | 50%|
 $\hat{\beta}_{MLE}$|0.3075 | 0.2259 |0.3481 |0.3944 |0.3677 |0.4167|0.3956|0.4331|0.4565|0.4091|
 Table: MLE at different sparsity rate with  $\beta_{true}=0.2$. 
 
-####Important Note: 
+
+#### Important Note: 
+
+
+
 There are two variables affecting estimate of $\beta$, sparsity of $A_{jk}$ and $\beta_{true}$. 
 (1) $\beta$ cannot be set too large, say >10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of $\beta$ value. Any large enough $\beta$ will give the same likelihood. (2) Sparsity of $A_{jk}$ will certainly influences the estimate of $\beta$. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large $\bar{\gamma}$), Bayes factor will become overflow of being Inf.      
 
-####Parameter setting 2-increasing sample size
+#### Parameter setting 2-increasing sample size
+
+
+
 * $\delta=1$
 * $\beta_{true}=2$, $\bar{\gamma}=10$
 * all entries of $A_{jk}$ are 1
@@ -2112,6 +2121,8 @@ Use function GLM to estimate $\beta$.
 
 
 ### Case 2: Two Annotation features 
+
+
 $K=2$. Set $\beta_1=0.05, \beta_2=2$. Other parameters are 
 
 * $\delta=1$
