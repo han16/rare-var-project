@@ -45,11 +45,17 @@ ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent
 
 ##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
 ######### use ASC_new_sample3 rather than ASC_new_sample2
-Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) 
-Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) 
+Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) # extract transmitted variants 
+Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) # extract untransmitted variants 
 
 ##### add new columns of total transmitted and non-transmitted variants 
-ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband)
+ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband) %>% filter(isIndel=="FALSE") # exclude indel 
+
+##################
+AF_cutoff=0.00001
+sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff & num_alleles<5) %>% select(Transmitted_proband) %>% pull)  # include variant with allele count <5 
+sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff & num_alleles<5) %>% select(Untransmitted_proband) %>% pull)  # include variant with allele count <5 
+########### 1164 vs 1413 not 695 vs 557 in cell paper 
 
 
 # add one column of variant group index 
@@ -122,6 +128,19 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
   #guides(fill=guide_legend(title=NULL))+
   #ylim(0.05,0.15)+
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
+```
+
+
+#### rare variants with PLI>=0.995
+
+```{r, echo=F, message=F, warning=F}
+i=1
+
+variant_set=ASC_new_sample_GI %>% filter(Group_Index==i & Gnomad_non_neuro_AF<0.001 & num_alleles<5) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index)  %>% drop_na()  # include variant with allele count <5 
+
+variant_set2=ASC_new_sample_GI %>% filter(Group_Index==i & Gnomad_non_neuro_AF<0.001 & num_alleles<5) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) 
+
+
 ```
 
 
