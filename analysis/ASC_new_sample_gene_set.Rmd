@@ -69,6 +69,7 @@ ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC>=1 & ASC_new_sample_GI
 ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC<1)]=6
 
 num.family=7291
+## test 
 ```
 
 * Use mirage-vs to test if there are signals in six variant groups  
