@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Shengtong Han" />
@@ -14,12 +14,22 @@
 
 <title>Gene Set Analysis</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -27,15 +37,20 @@
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -48,32 +63,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 
 
@@ -84,13 +74,8 @@ h6 {
   margin-left: auto;
   margin-right: auto;
 }
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -104,40 +89,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -165,7 +123,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -177,7 +135,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -188,10 +146,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -203,7 +174,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -239,6 +209,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -251,48 +222,9 @@ $(document).ready(function () {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -306,6 +238,12 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -361,7 +299,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -406,7 +344,7 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -427,28 +365,48 @@ LoF.def=c(&quot;stopgain&quot;, &quot;frameshift substitution&quot;, &quot;splic
 LoF.var=as.character(Anno.Data$ID[which(Anno.Data$Annotation %in% LoF.def==T)]) </code></pre>
 <div id="simple-burden-test" class="section level2">
 <h2>Simple burden test</h2>
-<pre><code>## Warning: `src_sqlite()` is deprecated as of dplyr 1.0.0.
+<pre><code>## Warning: `src_sqlite()` was deprecated in dplyr 1.0.0.
 ## Please use `tbl()` directly with a database connection
 ## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
 <ul>
 <li>Two sample one side (“greater”) test</li>
-<li>high confidence gene: TADA q&lt;0.05, <a href="https://sfari.org/">SFARI</a> cate1&amp;2</li>
+<li>high confidence gene: TADA q&lt;0.05, <a
+href="https://sfari.org/">SFARI</a> cate1&amp;2</li>
 <li>Moder confi: 0.3&gt;TADA q&gt;0.05 SFARI cat3 &amp; S</li>
-<li>ID gene: 252 genes from AJHG <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4067558/">paper</a></li>
-<li>842 <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3232425/">FMRP</a> gene</li>
-<li>171 <a href="http://autismkb.cbi.pku.edu.cn/">AutismKB</a> genes</li>
-<li>1003 <a href="http://www.nature.com/ng/journal/v46/n9/abs/ng.3050.html?foxtrotcallback=true">constraint</a> genes</li>
-<li><a href="http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1003709">RVIS</a> gene</li>
-<li><a href="http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1003709">Haploinsufficient</a> genes</li>
-<li><a href="https://www.ncbi.nlm.nih.gov/pubmed/24463508">Schizophrenia</a>, SCZ gene</li>
-<li>861 <a href="http://www.genenames.org/genefamilies/OR">Olfactory</a> gene</li>
+<li>ID gene: 252 genes from AJHG <a
+href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4067558/">paper</a></li>
+<li>842 <a
+href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3232425/">FMRP</a>
+gene</li>
+<li>171 <a href="http://autismkb.cbi.pku.edu.cn/">AutismKB</a>
+genes</li>
+<li>1003 <a
+href="http://www.nature.com/ng/journal/v46/n9/abs/ng.3050.html?foxtrotcallback=true">constraint</a>
+genes</li>
+<li><a
+href="http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1003709">RVIS</a>
+gene</li>
+<li><a
+href="http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1003709">Haploinsufficient</a>
+genes</li>
+<li><a
+href="https://www.ncbi.nlm.nih.gov/pubmed/24463508">Schizophrenia</a>,
+SCZ gene</li>
+<li>861 <a href="http://www.genenames.org/genefamilies/OR">Olfactory</a>
+gene</li>
 <li>67SCZ genes are from SCZ genes with cutoff 0.3.</li>
-<li>de novo gene: TADA_SNV_CNV_combined_Feb7, look at column qvalue.combined, the smaller q value, the more likely to be risk gene</li>
-<li>Constraint gene set: use Exac Constraint data ConstraintMat.RDS, look at the last column lof.Z, the smaller value the less constraint</li>
-<li>ASD prior list: ASD_Priors, look at the column-post, the larger, the more likely to be risk.</li>
+<li>de novo gene: TADA_SNV_CNV_combined_Feb7, look at column
+qvalue.combined, the smaller q value, the more likely to be risk
+gene</li>
+<li>Constraint gene set: use Exac Constraint data ConstraintMat.RDS,
+look at the last column lof.Z, the smaller value the less
+constraint</li>
+<li>ASD prior list: ASD_Priors, look at the column-post, the larger, the
+more likely to be risk.</li>
 </ul>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 Burden analysis of gene set
@@ -900,7 +858,8 @@ NA
 </tbody>
 </table>
 </div>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 Burden analysis of LoF in different gene sets
@@ -1352,12 +1311,19 @@ NA
 </tbody>
 </table>
 </div>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="variant-partitions" class="section level2">
 <h2>Variant partitions</h2>
-<p>A gene usually has many variants such as missense, LoF, etc which contribute to the disease at different degree of deleteriousness. So we partition variants from all genes into different variant categories based on their annotation priors.</p>
+<p>A gene usually has many variants such as missense, LoF, etc which
+contribute to the disease at different degree of deleteriousness. So we
+partition variants from all genes into different variant categories
+based on their annotation priors.</p>
 <div id="eight-variant-groups" class="section level3">
 <h3>Eight variant groups</h3>
 <table>
@@ -1419,13 +1385,16 @@ NA
 </div>
 <div id="constraint-top-51003-gene-set" class="section level2">
 <h2>Constraint (top 5%~1003) gene set</h2>
-<p>Constraint gene set is from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4222185/">this paper</a>.</p>
+<p>Constraint gene set is from <a
+href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4222185/">this
+paper</a>.</p>
 <div id="cons-simple-burden-analysis" class="section level3">
 <h3>Cons: Simple burden analysis</h3>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 The burden of 8 categories is
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 The burden of eight categories
@@ -1562,13 +1531,16 @@ No.co
 </tbody>
 </table>
 </div>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <ul>
 <li>The first catogry only has one common variant with 298/272.</li>
 </ul>
 </div>
 <div id="cons-estimate-all-parameters-delta-eta" class="section level3">
-<h3>Cons: Estimate all parameters, <span class="math inline">\(\delta, \eta\)</span></h3>
+<h3>Cons: Estimate all parameters, <span class="math inline">\(\delta,
+\eta\)</span></h3>
 <div id="parameter-estimate" class="section level4">
 <h4>Parameter estimate</h4>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
@@ -1600,30 +1572,39 @@ No.co
 ## sample estimates:
 ## odds ratio 
 ##   12.84167</code></pre>
-<p>strong ASD gene score 1,2,3 : enrichemnt is 8/10 vs 76/1003 gives OR 10.5058 and p value <span class="math inline">\(1.98\times 10^{-5}\)</span></p>
-<p>strong ASD gene score 1,2: enrichemnt is 4/10 vs 31/1003 gives OR 12.8417 and p value <span class="math inline">\(8.24\times 10^{-4}\)</span></p>
+<p>strong ASD gene score 1,2,3 : enrichemnt is 8/10 vs 76/1003 gives OR
+10.5058 and p value <span class="math inline">\(1.98\times
+10^{-5}\)</span></p>
+<p>strong ASD gene score 1,2: enrichemnt is 4/10 vs 31/1003 gives OR
+12.8417 and p value <span class="math inline">\(8.24\times
+10^{-4}\)</span></p>
 </div>
 <div id="bayesian-fdr" class="section level4">
 <h4>Bayesian FDR</h4>
-<p>Below are top risk genes with highest Bayes factor and enrichment with de novo rank.</p>
+<p>Below are top risk genes with highest Bayes factor and enrichment
+with de novo rank.</p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-1.png" width="672" /><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
-<p>** Enrichment of top MIRAGE genes with Strong ASD gene, plausible ASD gene and DNM candidate genes Strong ASD gene: SFARI score 1,2 plausible ASD gene: SFARI score 3 DNM candidate genes: top 1000 DNM genes</p>
+<p>** Enrichment of top MIRAGE genes with Strong ASD gene, plausible ASD
+gene and DNM candidate genes Strong ASD gene: SFARI score 1,2 plausible
+ASD gene: SFARI score 3 DNM candidate genes: top 1000 DNM genes</p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p>This is the how FDR varies as the posterior probability cutoff <span class="math inline">\(\tau\)</span> changes with <span class="math inline">\(\hat{\delta}=0.18\)</span> as prior.</p>
+<p>This is the how FDR varies as the posterior probability cutoff <span
+class="math inline">\(\tau\)</span> changes with <span
+class="math inline">\(\hat{\delta}=0.18\)</span> as prior.</p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <pre><code>## # A tibble: 30 x 5
-##    SKATO.pvalue.adj CMC.pvalue.adj ASUM.pvalue.adj Fisher.pvalue.a~
-##               &lt;dbl&gt;          &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;
-##  1            0.745          0.650               0            0.914
-##  2            0.816          0.650               0            1    
-##  3            0.816          0.650               0            1    
-##  4            0.816          0.650               0            1    
-##  5            0.816          0.650               0            1    
-##  6            0.816          0.650               0            1    
-##  7            0.816          0.650               0            1    
-##  8            0.816          0.650               0            1    
-##  9            0.816          0.650               0            1    
-## 10            0.816          0.650               0            1    
+##    SKATO.pvalue.adj CMC.pvalue.adj ASUM.pvalue.adj Fisher.pvalue.adj
+##               &lt;dbl&gt;          &lt;dbl&gt;           &lt;dbl&gt;             &lt;dbl&gt;
+##  1            0.745          0.650               0             0.914
+##  2            0.816          0.650               0             1    
+##  3            0.816          0.650               0             1    
+##  4            0.816          0.650               0             1    
+##  5            0.816          0.650               0             1    
+##  6            0.816          0.650               0             1    
+##  7            0.816          0.650               0             1    
+##  8            0.816          0.650               0             1    
+##  9            0.816          0.650               0             1    
+## 10            0.816          0.650               0             1    
 ## # ... with 20 more rows, and 1 more variable: Fisher.adj.pvalue.adj &lt;dbl&gt;</code></pre>
 <pre class="r"><code>MIRAGE_gene=const.gene.BF.pvalue.combine %&gt;% filter(post_prob&gt;0.72)%&gt;%select(Gene, BF, post_prob)
 MIRAGE_gene%&gt;%arrange(desc(post_prob))  # FDR&lt;0.2</code></pre>
@@ -1693,7 +1674,8 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 ## 3 FBN1    11.9       0.722                NA</code></pre>
 <p>FDR has the minimum of 0.14</p>
 <table>
-<caption>Number of genes identified by different methods at different FDR levels.</caption>
+<caption>Number of genes identified by different methods at different
+FDR levels.</caption>
 <thead>
 <tr class="header">
 <th>method</th>
@@ -1724,8 +1706,9 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 </tr>
 </tbody>
 </table>
-<pre><code>## png 
-##   2</code></pre>
+<p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre><code>## null device 
+##           1</code></pre>
 </div>
 <div id="highlight-genes" class="section level4">
 <h4>highlight genes</h4>
@@ -1744,12 +1727,13 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 </div>
 <div id="cons-estimate-eta_i" class="section level3">
 <h3>Cons: Estimate <span class="math inline">\(\eta_i\)</span></h3>
-<table style="width:96%;">
-<caption>Parameter estimates of 1003 constraint genes by EM with eight partitions.</caption>
+<table>
+<caption>Parameter estimates of 1003 constraint genes by EM with eight
+partitions.</caption>
 <colgroup>
-<col width="30%" />
-<col width="22%" />
-<col width="27%" />
+<col width="32%" />
+<col width="23%" />
+<col width="29%" />
 <col width="15%" />
 </colgroup>
 <thead>
@@ -1757,12 +1741,14 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 <th>Annotation category</th>
 <th>fix <span class="math inline">\(\delta=0.1\)</span> (test.stat)</th>
 <th>fix <span class="math inline">\(\delta=0.2\)</span> (test.stat)</th>
-<th>estimate <span class="math inline">\(\hat{\delta}=0.18 (9.93)\)</span></th>
+<th>estimate <span class="math inline">\(\hat{\delta}=0.18
+(9.93)\)</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td><span class="math inline">\(\eta_1=0\)</span> (0)</td>
 <td>0 (0)</td>
 <td>0 (0)</td>
@@ -1774,13 +1760,15 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 <td>0.41 (0.75)</td>
 </tr>
 <tr class="odd">
-<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td><span class="math inline">\(\eta_3=0\)</span> (0)</td>
 <td>0 (0)</td>
 <td>0 (0)</td>
 </tr>
 <tr class="even">
-<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td><span class="math inline">\(\eta_4=0\)</span> (0)</td>
 <td>0 (0)</td>
 <td>0 (0)</td>
@@ -1792,19 +1780,22 @@ CALPHA_gene %&gt;% arrange(CALPHA.pvalue.adj) %&gt;% print(n=7)</code></pre>
 <td>0.16 (5.72)</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td><span class="math inline">\(\eta_6=0\)</span> (0)</td>
 <td>0 (0)</td>
 <td>0 (0)</td>
 </tr>
 <tr class="odd">
-<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td><span class="math inline">\(\eta_7=0\)</span> (0)</td>
 <td>0 (0)</td>
 <td>0 (0)</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></td>
 <td><span class="math inline">\(\eta_8=0.24\)</span> (3.11)</td>
 <td>0.16 (3.49)</td>
 <td>0.17 (3.46)</td>
@@ -1824,7 +1815,8 @@ plot(x, para.est, type=&quot;p&quot;, ylim=c(0,1), cex.lab=0.7, ylab=expression(
 <pre class="r"><code>kable(cbind(rank.BF.const.gene.common.delta[1:20,1:2], no.case, no.contr), row.names=NA, caption =(&quot;Top 20 genes of constraint genes with fixed delta&quot;), &quot;html&quot;)%&gt;%
 kable_styling() %&gt;%
 scroll_box(height = &quot;200px&quot;)</code></pre>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 Top 20 genes of constraint genes with fixed delta
@@ -2193,7 +2185,10 @@ BAZ1A
 </div>
 <div id="enrichment-with-de-novo-genes" class="section level4">
 <h4>enrichment with de novo genes</h4>
-<p>In top 1000 denovo genes, there are 9 in top 20 constarint genes and 87 in 1003 constraint genes. By Fisher exact test (9/20 vs 87/1003), OR=5.17 and p value of <span class="math inline">\(4.10 \times 10^{-4}\)</span>.</p>
+<p>In top 1000 denovo genes, there are 9 in top 20 constarint genes and
+87 in 1003 constraint genes. By Fisher exact test (9/20 vs 87/1003),
+OR=5.17 and p value of <span class="math inline">\(4.10 \times
+10^{-4}\)</span>.</p>
 </div>
 <div id="lof-category" class="section level4">
 <h4>LoF category</h4>
@@ -2208,9 +2203,28 @@ axis(1,at=1:10,labels=axis.label)</code></pre>
 </div>
 <div id="cons-fixed-eta_i" class="section level3">
 <h3>Cons: Fixed <span class="math inline">\(\eta_i\)</span></h3>
-<p>With fixed parameter in every variant group, calculate the BF of every gene which is the product of BF of every variant in this gene. Below are top 20 genes with large BF.</p>
+<p>With fixed parameter in every variant group, calculate the BF of
+every gene which is the product of BF of every variant in this gene.
+Below are top 20 genes with large BF.</p>
 <table>
-<caption>Bayes factor partition of top 20 genes from 1003 constraint genes. Rank: Rank by DNM; p-val: empirical p values by perturbating case control labels with null distribution of all constraint genes. ``-&quot; means no variants in the category.</caption>
+<caption>Bayes factor partition of top 20 genes from 1003 constraint
+genes. Rank: Rank by DNM; p-val: empirical p values by perturbating case
+control labels with null distribution of all constraint genes. ``-”
+means no variants in the category.</caption>
+<colgroup>
+<col width="7%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="9%" />
+<col width="27%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>Gene</th>
@@ -2510,19 +2524,30 @@ axis(1,at=1:10,labels=axis.label)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>In top 1000 denovo genes, 5 are found in top 20 genes and 81 in all 1003 genes. Fisher exact test (5/20 vs 81/1003) gives OR=3.7857 and p value=0.0211.</p>
-<p>ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 11/20 vs 261/1003, OR=3.4696, pvalue=0.008017; (2) enrichment with top 2000 genes: 12/20 vs 419/1003, OR=2.0892, p value=0.1135.</p>
+<p>In top 1000 denovo genes, 5 are found in top 20 genes and 81 in all
+1003 genes. Fisher exact test (5/20 vs 81/1003) gives OR=3.7857 and p
+value=0.0211.</p>
+<p>ASD gene priors for 1003 constraint genes. (1) Enrichment with top
+1000 genes: 11/20 vs 261/1003, OR=3.4696, pvalue=0.008017; (2)
+enrichment with top 2000 genes: 12/20 vs 419/1003, OR=2.0892, p
+value=0.1135.</p>
 </div>
-<div id="cons-estimate-eta_i-gene-specific-delta_i" class="section level3">
-<h3>Cons: Estimate <span class="math inline">\(\eta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="cons-estimate-eta_i-gene-specific-delta_i"
+class="section level3">
+<h3>Cons: Estimate <span class="math inline">\(\eta_i\)</span>, gene
+specific <span class="math inline">\(\delta_i\)</span></h3>
 <div id="lof-only" class="section level4">
 <h4>(1) LoF only</h4>
-<p>The burden is 622/583. <span class="math inline">\(\widehat{\beta}=0.74\)</span> and test statistic is 2.99.</p>
+<p>The burden is 622/583. <span
+class="math inline">\(\widehat{\beta}=0.74\)</span> and test statistic
+is 2.99.</p>
 </div>
 <div id="eight-categories" class="section level4">
 <h4>(2) Eight categories</h4>
 <table>
-<caption>Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific <span class="math inline">\(\delta\)</span>.</caption>
+<caption>Parameter estimates of 1003 constraint genes by EM with eight
+partitions with gene specific <span
+class="math inline">\(\delta\)</span>.</caption>
 <thead>
 <tr class="header">
 <th>Annotation category</th>
@@ -2532,7 +2557,8 @@ axis(1,at=1:10,labels=axis.label)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -2542,12 +2568,14 @@ axis(1,at=1:10,labels=axis.label)</code></pre>
 <td>2.98</td>
 </tr>
 <tr class="odd">
-<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -2557,17 +2585,20 @@ axis(1,at=1:10,labels=axis.label)</code></pre>
 <td>6.88</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></td>
 <td>0.09</td>
 <td>0</td>
 </tr>
@@ -2576,7 +2607,8 @@ axis(1,at=1:10,labels=axis.label)</code></pre>
 <pre class="r"><code>kable(rank.BF.const.gene.specific.delta[1:20,1:2], row.names=NA, caption =(&quot;Top 20 genes of constraint genes with gene specific delta&quot;), &quot;html&quot;)%&gt;%
 kable_styling() %&gt;%
 scroll_box(height = &quot;200px&quot;)</code></pre>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 Top 20 genes of constraint genes with gene specific delta
@@ -2817,8 +2849,11 @@ ITSN1
 </tbody>
 </table>
 </div>
-<p>In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all 1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95, pvalue=0.0311.</p>
-<p>ASD gene priors for 1003 constraint genes. (1) Enrichment with top 1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896.</p>
+<p>In top 1000 denovo genes, 6 are found in top 20 genes and 102 in all
+1003 genes. Fisher exact test (6/20 vs 102/1003) gives OR=2.95,
+pvalue=0.0311.</p>
+<p>ASD gene priors for 1003 constraint genes. (1) Enrichment with top
+1000 genes: 10/20 vs 331/1003, OR=1.5146, pvalue=0.2896.</p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <pre class="r"><code>para.est=c(0, 0.54, 0, 0, 0.23, 0, 0, 0.24)
 x=1:8
@@ -2831,7 +2866,9 @@ abline(h=0, lty=2)</code></pre>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <p>Replace “damaging” with “consensus damaging”</p>
 <table>
-<caption>Parameter estimates of 1003 constraint genes by EM with eight partitions with gene specific <span class="math inline">\(\delta\)</span>.</caption>
+<caption>Parameter estimates of 1003 constraint genes by EM with eight
+partitions with gene specific <span
+class="math inline">\(\delta\)</span>.</caption>
 <thead>
 <tr class="header">
 <th>Annotation category</th>
@@ -2841,7 +2878,8 @@ abline(h=0, lty=2)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -2851,32 +2889,38 @@ abline(h=0, lty=2)</code></pre>
 <td>2.99</td>
 </tr>
 <tr class="odd">
-<td>Consensus Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Consensus Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Consensus Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Consensus Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td>Consensus Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>Consensus Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></td>
 <td>0.1310</td>
 <td>10.06</td>
 </tr>
 <tr class="even">
-<td>Non-Consensus Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Non-Consensus Damaging, <span class="math inline">\(0.01 \leq AF
+&lt; 0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td>Non-Consensus Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Non-Consensus Damaging, <span class="math inline">\(0.001 \leq AF
+&lt; 0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Non-Consensus Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>Non-Consensus Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></td>
 <td>0.0737</td>
 <td>0</td>
 </tr>
@@ -2884,7 +2928,8 @@ abline(h=0, lty=2)</code></pre>
 </table>
 </div>
 </div>
-<div id="qq-plot-of-p-values-by-different-methods" class="section level3">
+<div id="qq-plot-of-p-values-by-different-methods"
+class="section level3">
 <h3>QQ plot of p values by different methods</h3>
 <pre><code>## [1] 0.3069552</code></pre>
 <pre><code>## [1] 0.6547919</code></pre>
@@ -2892,9 +2937,13 @@ abline(h=0, lty=2)</code></pre>
 <p>This is for LoF and damaging variants only.</p>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
 </div>
-<div id="empirical-distribution-of-bf-by-permutations" class="section level3">
+<div id="empirical-distribution-of-bf-by-permutations"
+class="section level3">
 <h3>Empirical distribution of BF by permutations</h3>
-<p>permutate the variant count in cases and controls for every gene 100 times, calculate Bayes factor by MIRAGE and get their empirical p value by comparing original BF and 100 permutated BF. The null distribution of BF is pooling BF’s of all genes through permutations together.</p>
+<p>permutate the variant count in cases and controls for every gene 100
+times, calculate Bayes factor by MIRAGE and get their empirical p value
+by comparing original BF and 100 permutated BF. The null distribution of
+BF is pooling BF’s of all genes through permutations together.</p>
 <pre><code>## # A tibble: 771 x 6
 ##    Gene       BF LoF.BF nonLoF.BF post_prob empirical.pvalue
 ##    &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;            &lt;dbl&gt;
@@ -2918,11 +2967,14 @@ abline(h=0, lty=2)</code></pre>
 <div id="constraint-genes" class="section level2">
 <h2>Constraint genes</h2>
 <p>There are 17,416 genes.</p>
-<div id="con-estimate-beta_i-gene-specific-delta_i" class="section level3">
-<h3>Con: Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="con-estimate-beta_i-gene-specific-delta_i"
+class="section level3">
+<h3>Con: Estimate <span class="math inline">\(\beta_i\)</span>, gene
+specific <span class="math inline">\(\delta_i\)</span></h3>
 <div id="non-nested-gene-sets" class="section level4">
 <h4>Non-nested gene sets</h4>
-<p>With their constraint scores, focus on top 10% genes, top 10-20% genes, top 20-30% genes, top 30-40% genes, top 40-50% genes.</p>
+<p>With their constraint scores, focus on top 10% genes, top 10-20%
+genes, top 20-30% genes, top 30-40% genes, top 40-50% genes.</p>
 <pre class="r"><code>beta=matrix(nrow=5, ncol=8)
 rownames(beta)=c(&quot;&lt;10%&quot;, &quot;10-20%&quot;, &quot;20-30%&quot;, &quot;30-40%&quot;, &quot;40-50%&quot;)
 beta[1,]=c(0, 0.6195,  0, 0.0025,  0.0427, 0,  0,  0.0855)
@@ -2953,18 +3005,21 @@ for (i in 2:8)
  lines(beta[,i], type=&quot;o&quot;, col=i)
 legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8), lty=rep(1,8))</code></pre>
 <p><img src="GeneSetAnalysis_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
-<table style="width:81%;">
-<caption>Number of variants in C5 and C8 at different constrait level.</caption>
+<table>
+<caption>Number of variants in C5 and C8 at different constrait
+level.</caption>
 <colgroup>
-<col width="30%" />
-<col width="22%" />
+<col width="38%" />
 <col width="27%" />
+<col width="34%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th>constraint level</th>
-<th>C5: Consensus Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></th>
-<th>C8: Non-Consensus Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></th>
+<th>C5: Consensus Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></th>
+<th>C8: Non-Consensus Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></th>
 </tr>
 </thead>
 <tbody>
@@ -3002,29 +3057,41 @@ legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8
 <h2>TADA gene (q&lt;5%)</h2>
 <p>Only 46 genes with TADA q values less than 5%.</p>
 <div id="tada-estimate-beta-fixed-delta1" class="section level3">
-<h3>TADA: Estimate <span class="math inline">\(\beta\)</span>, fixed <span class="math inline">\(\delta=1\)</span></h3>
+<h3>TADA: Estimate <span class="math inline">\(\beta\)</span>, fixed
+<span class="math inline">\(\delta=1\)</span></h3>
 <div id="only-lof-variants" class="section level4">
 <h4>Only LoF variants</h4>
-<p>In the simple burden analysis (see Table above), LoF variants is 55/27. With <span class="math inline">\(\delta=1\)</span>, <span class="math inline">\(\widehat{\beta}=0.5692\)</span>, and test statistic is 12.0211.</p>
+<p>In the simple burden analysis (see Table above), LoF variants is
+55/27. With <span class="math inline">\(\delta=1\)</span>, <span
+class="math inline">\(\widehat{\beta}=0.5692\)</span>, and test
+statistic is 12.0211.</p>
 </div>
 </div>
-<div id="tada-estimate-beta_i-gene-specific-delta_i" class="section level3">
-<h3>TADA: Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
-<p>Use 1-FDR of every gene as priors to estimate <span class="math inline">\(\beta_i\)</span>.</p>
+<div id="tada-estimate-beta_i-gene-specific-delta_i"
+class="section level3">
+<h3>TADA: Estimate <span class="math inline">\(\beta_i\)</span>, gene
+specific <span class="math inline">\(\delta_i\)</span></h3>
+<p>Use 1-FDR of every gene as priors to estimate <span
+class="math inline">\(\beta_i\)</span>.</p>
 <div id="only-lof-category" class="section level4">
 <h4>Only LoF category</h4>
-<p><span class="math inline">\(\widehat{\beta}=0.63\)</span>, test statistics is 10.07.</p>
+<p><span class="math inline">\(\widehat{\beta}=0.63\)</span>, test
+statistics is 10.07.</p>
 </div>
 </div>
 </div>
 <div id="rvis-gene" class="section level2">
 <h2>RVIS gene</h2>
-<div id="rvisestimate-beta_i-gene-specific-delta_i" class="section level3">
-<h3>RVIS:Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="rvisestimate-beta_i-gene-specific-delta_i"
+class="section level3">
+<h3>RVIS:Estimate <span class="math inline">\(\beta_i\)</span>, gene
+specific <span class="math inline">\(\delta_i\)</span></h3>
 <div id="quantile-score-50-8437-genes" class="section level4">
 <h4>Quantile score &lt;50 (8437) genes</h4>
 <table>
-<caption>Parameter estimates of 8437 ( quantile&lt;50 ) RVIS genes by EM with eight partitions with gene specific <span class="math inline">\(\delta_i\)</span>.</caption>
+<caption>Parameter estimates of 8437 ( quantile&lt;50 ) RVIS genes by EM
+with eight partitions with gene specific <span
+class="math inline">\(\delta_i\)</span>.</caption>
 <thead>
 <tr class="header">
 <th>Annotation category</th>
@@ -3034,7 +3101,8 @@ legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8
 </thead>
 <tbody>
 <tr class="odd">
-<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -3044,12 +3112,14 @@ legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8
 <td>6.06</td>
 </tr>
 <tr class="odd">
-<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -3059,17 +3129,20 @@ legend(4, 1, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1,8
 <td>13.55</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></td>
 <td>0.08</td>
 <td>11.34</td>
 </tr>
@@ -3098,10 +3171,14 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <div id="whole-genome" class="section level2">
 <h2>Whole genome</h2>
 <p>consider all 15624 genes in ASD data.</p>
-<div id="whole-estimate-beta_i-gene-specific-delta_i" class="section level3">
-<h3>Whole: Estimate <span class="math inline">\(\beta_i\)</span>, gene specific <span class="math inline">\(\delta_i\)</span></h3>
+<div id="whole-estimate-beta_i-gene-specific-delta_i"
+class="section level3">
+<h3>Whole: Estimate <span class="math inline">\(\beta_i\)</span>, gene
+specific <span class="math inline">\(\delta_i\)</span></h3>
 <table>
-<caption>Parameter estimates of 15624 genes by EM with eight partitions with gene specific <span class="math inline">\(\delta_i\)</span>.</caption>
+<caption>Parameter estimates of 15624 genes by EM with eight partitions
+with gene specific <span
+class="math inline">\(\delta_i\)</span>.</caption>
 <thead>
 <tr class="header">
 <th>Annotation category</th>
@@ -3111,7 +3188,8 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 </thead>
 <tbody>
 <tr class="odd">
-<td>LoF, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>LoF, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -3121,12 +3199,14 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <td>3.94</td>
 </tr>
 <tr class="odd">
-<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -3136,17 +3216,20 @@ legend(4, 0.5, c(paste(&quot;beta&quot;, seq(1,8), sep=&quot;&quot;)), col=seq(1
 <td>23.85</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt; 0.05\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.01 \leq AF &lt;
+0.05\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="odd">
-<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt; 0.01\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(0.001 \leq AF &lt;
+0.01\)</span></td>
 <td>0</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>Non-Damaging, <span class="math inline">\(AF &lt; 0.001\)</span></td>
+<td>Non-Damaging, <span class="math inline">\(AF &lt;
+0.001\)</span></td>
 <td>0.06</td>
 <td>11.42</td>
 </tr>
@@ -3198,13 +3281,59 @@ plot(para.est, type=&quot;p&quot;, ylim=c(0,0.5), cex.lab=0.7, ylab=expression(p
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

@@ -422,8 +422,11 @@ $\hat{\delta}=0.18$.
 
 
 ```{r, echo=F}
-BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
-Bayes_factor=as_tibble(BF_para_all_est)
+#BF_para_all_est=loadRData("C:\\Shengtong\\Research\\rare-var\\rare-var-project\\output\\para.est.constraint.gene.estimate.delta.RData")
+#BF_para_all_est=loadRData("..\\output\\para.est.constraint.gene.estimate.delta.RData")
+BF_para_all_est=load("..\\output\\para.est.constraint.gene.estimate.delta.RData")
+# Bayes_factor=as_tibble(BF_para_all_est) old code doesn't work???
+Bayes_factor=as_tibble(BF.gene)
 
 sort_BF=Bayes_factor %>% arrange(desc(BF))
 top10genes=as.character(sort_BF$Gene[1:10])
@@ -457,13 +460,17 @@ strong ASD gene score 1,2: enrichemnt is 4/10 vs 31/1003 gives OR 12.8417 and p 
 Below are top risk genes with highest Bayes factor and enrichment with de novo rank. 
 
 ```{r, echo=F}
-BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
+# BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData") # old code that doesn't work 
+BF_para_all_est=load("../output/para.est.constraint.gene.estimate.delta.RData")
 denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
 rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
 top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
-top.const.overlap.withdenovo=length(intersect(top1000.denovo.gene, BF_para_all_est$Gene))
+#top.const.overlap.withdenovo=length(intersect(top1000.denovo.gene, BF_para_all_est$Gene)) # old code 
+top.const.overlap.withdenovo=length(intersect(top1000.denovo.gene, BF.gene$Gene))
 
-Bayes_factor=as_tibble(BF_para_all_est)
+#Bayes_factor=as_tibble(BF_para_all_est)
+Bayes_factor=as_tibble(BF.gene)
+
 sort_BF=Bayes_factor %>% arrange(desc(BF))
 #sort_BF %>% print(n=20)
 
@@ -546,8 +553,10 @@ DNM candidate genes: top 1000 DNM genes
 ```{r, echo=F}
 ############# MIRAGE gene 
 
-BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
-Bayes_factor=as_tibble(BF_para_all_est)
+#BF_para_all_est=loadRData("../output/para.est.constraint.gene.estimate.delta.RData")
+#Bayes_factor=as_tibble(BF_para_all_est)
+BF_para_all_est=load("../output/para.est.constraint.gene.estimate.delta.RData")
+Bayes_factor=as_tibble(BF.gene)
 sort_BF=Bayes_factor %>% arrange(desc(BF))
 top10genes=as.character(sort_BF$Gene[1:10])
 top20genes=as.character(sort_BF$Gene[1:20])
@@ -711,7 +720,7 @@ pvalue=numeric()
 for (i in 1:3)
 pvalue[i]=fisher.test(matrix(c(top10CALPHA.percent[i]*10, const.gene.percent[i]*1003, 10, 1003 ), nrow=2))$p.value
 
-pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/top_CALPHA_gene_enrichment.pdf")
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/top_CALPHA_gene_enrichment.pdf")
 top10CALPHA_enrichment=ggplot(top10CALPHA.enrichment.tidy, aes(group, percent)) + 
   geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
   theme_classic()+
@@ -1096,6 +1105,11 @@ ASUM.pvalue=pvalues.othermethod$ASUM.pvalue
 Burden.pvalue=pvalues.othermethod$Fisher.pvalue
 
 #######################   John storey's q value 
+#### install qvalue package 
+#install.packages("devtools")
+#library("devtools")
+#install_github("jdstorey/qvalue")   https://github.com/StoreyLab/qvalue
+
 library(qvalue)
 qobj.burden=qvalue(Burden.pvalue)
 localFDR.burden <- qobj.burden$lfdr

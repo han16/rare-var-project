@@ -352,13 +352,47 @@ div.tocify {
 
 <div id="genome-wide-analysis" class="section level2">
 <h2>Genome-wide analysis</h2>
+<div id="variant-count-in-ptv-with-pli0.995" class="section level3">
+<h3>Variant count in PTV with <code>PLI&gt;=0.995</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">AF cutoff</th>
+<th align="center">Trans</th>
+<th align="right">Untrans</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">&lt;0.000001</td>
+<td align="center">659</td>
+<td align="right">655</td>
+</tr>
+<tr class="even">
+<td align="left">&lt;0.00001</td>
+<td align="center">779</td>
+<td align="right">805</td>
+</tr>
+<tr class="odd">
+<td align="left">&lt;0.0001</td>
+<td align="center">876</td>
+<td align="right">966</td>
+</tr>
+<tr class="even">
+<td align="left">&lt;0.001</td>
+<td align="center">1164</td>
+<td align="right">1413</td>
+</tr>
+</tbody>
+</table>
+<p>These numbers are not consistent with that in cell paper 695 vs
+557.</p>
+</div>
 <div
 id="run-mirage-vs-on-6-variant-groups-in-kyle-data-without-gene-level-information"
 class="section level3">
 <h3>Run mirage-vs on 6 variant groups in Kyle data without gene level
 information</h3>
-<pre><code>## [1] 779</code></pre>
-<pre><code>## [1] 805</code></pre>
 <ul>
 <li>Use mirage-vs to test if there are signals in six variant
 groups<br />
