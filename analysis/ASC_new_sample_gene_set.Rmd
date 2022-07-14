@@ -80,7 +80,7 @@ num.family=7291
 | <0.001    | 1164    | 1413   |
 
 
-These numbers are not consistent with that in cell paper 695 vs 557.  
+When AF <0.1%, there are 1164 transmitted variants and 1413 untransmitted, not consistent with numbers in cell paper 695 vs 557.  
 
 
 
