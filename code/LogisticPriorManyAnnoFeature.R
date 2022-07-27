@@ -1,8 +1,9 @@
 # Ui; latent binary variant for gene , Ui~Ber(delta) Ui=1: risk gene Ui=0: non risk gene
 # Zij: latent binary variant for variant, Zij~Ber(pi), Zij=1, variant j of gene i is causal variant, Zij=0 otherwise
-# m: number of variant
+# m: number of variants in each gene. 
 # N0: number of controls; N1: number of cases
 # num.gene: number of genes in the sample
+# q: allele frequency q~Beta(alpha0, beta0)
 library(DEoptim)
 #################################
 rm(list=ls())
@@ -13,15 +14,15 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
   #x1x0=matrix(nrow=(N0+N1), ncol=m)
   #for (i in 1:m)  # generate the data with certain variants full of zeros
   #  x1x0[,i]=rpois((N0+N1), q[i])
-  #filter.x1x0=x1x0[,!apply(x1x0==0,2,all)]  # filter variants with 0 counts in both cases and controls since these variants are noninformative
+  #filter.x1x0=x1x0[,!apply(x1x0==0,2,all)]  # filter variants with 0 counts in both cases and controls since these variants are non-informative
   #mm=ncol(filter.x1x0)
   #var.index=which(colSums(x1x0!=0)>0) # get the variant index in the original data before filtering
   ################## only save the counts 
   total.count=numeric()
-  for (i in 1:m)  # generate the data with certain variants full of zeros
+  for (i in 1:m)  # generate the data with certain variants full of zeros that will be filtered out later 
     total.count[i]=sum(rpois((N0+N1), q[i]))
   var.index=which(total.count>0) # get the variant index in the original data before filtering
-  mm=length(var.index)
+  mm=length(var.index) # number of effective variants with at least one count 
   filter.count=total.count[var.index]
   ##################
   #mm=m
@@ -140,8 +141,9 @@ beta.true[1]=0.05
 beta.true[2]=2
 beta.true[3]=3.5
 beta.true[4:anno.num]=runif(anno.num-4+1)
-############# compute tau: risk of every variant being risk variant
-tau.true=exp(Ajk%*%beta.true)/(1+exp(Ajk%*%beta.true))
+############# compute eta: risk of every variant being risk variant
+eta.true=exp(Ajk%*%beta.true)/(1+exp(Ajk%*%beta.true)) 
+# eta.true is variant specific, could be very big number 
 ######################
 max.rep=1
 all.beta=matrix(nrow=max.rep, ncol=anno.num)
@@ -153,7 +155,7 @@ for (rep in 1:max.rep)
   all.data=list(); var.orig.index=numeric(); var.orig.index[1]=NA
   for (i in 1:num.gene)
   {
-    data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=tau.true[((i-1)*m+1):(i*m)], Ui[i], num.group, split.ratio)
+    data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=eta.true[((i-1)*m+1):(i*m)], Ui[i], num.group, split.ratio)
     all.data[[i]]=data
     var.orig.index=c(var.orig.index, (i-1)*m+data$var.index)
   }

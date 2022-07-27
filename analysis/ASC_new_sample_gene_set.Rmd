@@ -29,9 +29,6 @@ library(mirage)
 path="C:\\Shengtong\\research\\rare-var\\"
 ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way that Kyle read the data
 
-
-
-
 ```
 
 
@@ -43,16 +40,23 @@ ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent
 
 ##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
 ######### use ASC_new_sample3 rather than ASC_new_sample2
-Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) # extract transmitted variants 
-Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) # extract untransmitted variants 
+Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) # extract transmitted variants for proband 
+
+Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) # extract untransmitted variants for proband 
+
+Transmitted_sibling=ASC_new_sample3%>% select(starts_with("t_sibling"))%>%  mutate(Transmitted_sibling = select(., t_sibling_male_dad:t_sibling_female_ind) %>% rowSums())%>% select(Transmitted_sibling) # extract transmitted variants for sibling 
+
+Untransmitted_sibling=ASC_new_sample3%>% select(starts_with("u_sibling"))%>%  mutate(Untransmitted_sibling = select(., u_sibling_male_dad:u_sibling_female_ind) %>% rowSums())%>% select(Untransmitted_sibling) # extract untransmitted variants for sibling
 
 ##### add new columns of total transmitted and non-transmitted variants 
-ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband) %>% filter(isIndel=="FALSE") # exclude indel 
+ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & VQSLOD<9) # exclude indel & VQSLOD filter 
+
+#ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's 
 
 ##################
-AF_cutoff=0.001
-#sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff & num_alleles<5) %>% select(Transmitted_proband) %>% pull)  # include variant with allele count <5 
-#sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff & num_alleles<5) %>% select(Untransmitted_proband) %>% pull)  # include variant with allele count <5 
+#AF_cutoff=0.001
+#sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff) %>% select(Transmitted_proband) %>% pull)   
+#sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff) %>% select(Untransmitted_proband) %>% pull)   
 ########### 1164 vs 1413 not 695 vs 557 in cell paper 
 
 
@@ -81,6 +85,27 @@ num.family=7291
 
 
 When AF <0.1%, there are 1164 transmitted variants and 1413 untransmitted, not consistent with numbers in cell paper 695 vs 557.  
+
+* `pLI>=0.995`
+* `isPTV==T`
+* `isIndel=="FALSE"`
+* `Gnomad_non_neuro_AF<AF_cutoff`
+* `num_alleles<5`
+
+
+
+| filter      | Trans |   Untrans    | 
+| :---        |    :----:   |          ---: |
+|  VQSLOD<3.75   | 255    | 546   |
+| VQSLOD<5.13    | 300    | 624   |
+| VQSLOD<9    | 1151    | 1415  |
+| QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8    | 818    | 785   |
+
+
+* `pLI>=0.995`
+* `isPTV==T`
+* `isIndel=="FALSE"`
+* `Gnomad_non_neuro_AF<0.001`
 
 
 

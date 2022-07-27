@@ -387,6 +387,56 @@ div.tocify {
 </table>
 <p>When AF &lt;0.1%, there are 1164 transmitted variants and 1413
 untransmitted, not consistent with numbers in cell paper 695 vs 557.</p>
+<ul>
+<li><code>pLI&gt;=0.995</code></li>
+<li><code>isPTV==T</code></li>
+<li><code>isIndel=="FALSE"</code></li>
+<li><code>Gnomad_non_neuro_AF&lt;AF_cutoff</code></li>
+<li><code>num_alleles&lt;5</code></li>
+</ul>
+<table style="width:100%;">
+<colgroup>
+<col width="28%" />
+<col width="42%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">filter</th>
+<th align="center">Trans</th>
+<th align="right">Untrans</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">VQSLOD&lt;3.75</td>
+<td align="center">255</td>
+<td align="right">546</td>
+</tr>
+<tr class="even">
+<td align="left">VQSLOD&lt;5.13</td>
+<td align="center">300</td>
+<td align="right">624</td>
+</tr>
+<tr class="odd">
+<td align="left">VQSLOD&lt;9</td>
+<td align="center">1151</td>
+<td align="right">1415</td>
+</tr>
+<tr class="even">
+<td align="left">QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum
+&gt;= -0.8</td>
+<td align="center">818</td>
+<td align="right">785</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>pLI&gt;=0.995</code></li>
+<li><code>isPTV==T</code></li>
+<li><code>isIndel=="FALSE"</code></li>
+<li><code>Gnomad_non_neuro_AF&lt;0.001</code></li>
+</ul>
 </div>
 <div
 id="run-mirage-vs-on-6-variant-groups-in-kyle-data-without-gene-level-information"
@@ -753,16 +803,16 @@ running mirage.</li>
 <pre><code>## # A tibble: 10 x 5
 ##    Gene       BF Transmitted_proband Untransmitted_proband    OR
 ##    &lt;chr&gt;   &lt;dbl&gt;               &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
-##  1 ADCY2 6.64e38                6623                  6474 1.02 
-##  2 NF1   1.03e16                3905                  4072 0.959
-##  3 FMN2  4.37e 9               13696                 14724 0.930
+##  1 ADCY2 6.64e38                1151                  1164 0.989
+##  2 NF1   1.03e16                 703                   908 0.774
+##  3 FMN2  4.37e 9                1959                  2938 0.667
 ##  4 HLA-C 9.33e 7                 378                  1218 0.310
-##  5 DHX38 1.16e 4               16300                 16027 1.02 
-##  6 HLA-B 3.85e 3                3727                  5344 0.697
-##  7 ACLY  1.66e 2                1823                  1800 1.01 
-##  8 FRY   4.52e 0               13321                 13459 0.990
-##  9 KAT2A 3.93e 0                3605                  3573 1.01 
-## 10 NKPD1 3.92e 0                1705                  1656 1.03</code></pre>
+##  5 DHX38 1.16e 4                1287                  1392 0.925
+##  6 HLA-B 3.85e 3                3726                  5341 0.698
+##  7 ACLY  1.66e 2                 232                   198 1.17 
+##  8 FRY   4.52e 0                1626                  1620 1.00 
+##  9 KAT2A 3.93e 0                2376                  2355 1.01 
+## 10 NKPD1 3.92e 0                 233                   270 0.863</code></pre>
 </div>
 <div id="vairants-driving-the-signal-in-top-gene"
 class="section level4">
