@@ -51,6 +51,9 @@ Untransmitted_sibling=ASC_new_sample3%>% select(starts_with("u_sibling"))%>%  mu
 ##### add new columns of total transmitted and non-transmitted variants 
 #ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & VQSLOD<9) # exclude indel & VQSLOD filter 
 
+################################################
+
+
 ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & QD >= 10.5 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's 
 
 ##################
@@ -106,6 +109,23 @@ When AF <0.1%, there are 1164 transmitted variants and 1413 untransmitted, not c
 * `isPTV==T`
 * `isIndel=="FALSE"`
 * `Gnomad_non_neuro_AF<0.001`
+
+
+### plot of QD value 
+
+```{r, echo=F, message=F, warning=F}
+############## plot of QD values 
+QD=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE"  & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% select(QD) %>% pull
+plot(density(QD))
+summary(QD)
+```
+
+
+use filters 
+
+* `isIndel=="FALSE"`
+* `AS_SOR <= 3`
+* `AS_ReadPosRankSum >= -0.8`
 
 
 
