@@ -435,9 +435,31 @@ AS_ReadPosRankSum &gt;= -0.8</td>
 <td align="center">714</td>
 <td align="right">567</td>
 </tr>
+<tr class="even">
+<td align="left">QD &gt;= 11 &amp; AS_SOR &lt;= 3 &amp;
+AS_ReadPosRankSum &gt;= -0.8</td>
+<td align="center">678</td>
+<td align="right">526</td>
+</tr>
+<tr class="odd">
+<td align="left">QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum
+&gt;= -2</td>
+<td align="center">956</td>
+<td align="right">946</td>
+</tr>
 </tbody>
 </table>
 <ul>
+<li>Kyle suggested: QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp;
+AS_ReadPosRankSum &gt;= -0.8</li>
+<li>cutoff for <code>AS_ReadPosRankSum</code> could decrease to, for
+instance -2, or even lower, while maintaining balanced T/UT, but the OR
+consistently stay around 1.01, a bit away from 1.2</li>
+<li>OR will increase with increasing cutoff for <code>QD</code>. When
+cutoff =10.5, both OR and variant counts are close to numbers in paper,
+but when cutoff &gt;10.5, the variant count will become smaller than
+than in paper, seems not appropriate.<br />
+</li>
 <li><code>pLI&gt;=0.995</code></li>
 <li><code>isPTV==T</code></li>
 <li><code>isIndel=="FALSE"</code></li>
@@ -821,16 +843,16 @@ running mirage.</li>
 <pre><code>## # A tibble: 10 x 5
 ##    Gene       BF Transmitted_proband Untransmitted_proband    OR
 ##    &lt;chr&gt;   &lt;dbl&gt;               &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
-##  1 ADCY2 6.64e38                6584                  6408 1.03 
-##  2 NF1   1.03e16                3807                  3810 0.999
-##  3 FMN2  4.37e 9               12902                 13084 0.986
-##  4 HLA-C 9.33e 7                  48                   153 0.314
-##  5 DHX38 1.16e 4               15778                 15437 1.02 
-##  6 HLA-B 3.85e 3                1613                  1911 0.844
-##  7 ACLY  1.66e 2                1775                  1761 1.01 
-##  8 FRY   4.52e 0               13202                 13351 0.989
-##  9 KAT2A 3.93e 0                3572                  3522 1.01 
-## 10 NKPD1 3.92e 0                1680                  1617 1.04</code></pre>
+##  1 ADCY2 6.64e38                6622                  6470 1.02 
+##  2 NF1   1.03e16                3880                  3915 0.991
+##  3 FMN2  4.37e 9               13655                 14613 0.934
+##  4 HLA-C 9.33e 7                 250                   906 0.276
+##  5 DHX38 1.16e 4               16015                 15659 1.02 
+##  6 HLA-B 3.85e 3                2245                  3121 0.719
+##  7 ACLY  1.66e 2                1822                  1795 1.02 
+##  8 FRY   4.52e 0               13317                 13456 0.990
+##  9 KAT2A 3.93e 0                3599                  3543 1.02 
+## 10 NKPD1 3.92e 0                1702                  1652 1.03</code></pre>
 </div>
 <div id="vairants-driving-the-signal-in-top-gene"
 class="section level4">

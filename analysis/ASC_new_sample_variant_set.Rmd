@@ -149,11 +149,12 @@ return(result)
 
 ### All rare variants 
 
-* use filter `Gnomad_non_neuro_AF<0.05`
+* AF filter `Gnomad_non_neuro_AF<0.05`
 * syn: `isSyn==T`
 * missense: `isSyn==T`
 * PTV: `isPTV==T`
 * sample size should be 7291
+* Other filter `isIndel=="FALSE" & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
  
 
 ```{r, echo=F, message=F, warning=F}
@@ -161,6 +162,9 @@ num_proband=6026+1265 # male proband+female proband
 OR=numeric(); CI_lower=numeric(); CI_upper=numeric()
 variant_count=matrix(nrow=4, ncol=2)
 ##################### all variants 
+ASC_new_sample=ASC_new_sample%>% 
+  filter(isIndel=="FALSE" & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's
+
 rare_variant_new_sample=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # all  rare var in new sample data with Gnomad AF threshold 
 fisher_test=fisher.test(matrix(c(sum(rare_variant_new_sample$Transmitted_proband), num_proband, sum(rare_variant_new_sample$Untransmitted_proband), num_proband), nrow=2))
 OR[1]=fisher_test$estimate; CI_lower[1]=fisher_test$conf.int[1]; CI_upper[1]=fisher_test$conf.int[2]
@@ -200,6 +204,64 @@ ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
   theme(legend.position="none")
 
 ```
+
+
+* AF filter `Gnomad_non_neuro_AF<0.05`
+* syn: `isSyn==T`
+* missense: `isSyn==T`
+* PTV: `isPTV==T`
+* sample size should be 7291
+* Other filter `isIndel=="FALSE" & QD >= 10.5 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+ 
+
+```{r, echo=F, message=F, warning=F}
+num_proband=6026+1265 # male proband+female proband 
+OR=numeric(); CI_lower=numeric(); CI_upper=numeric()
+variant_count=matrix(nrow=4, ncol=2)
+##################### all variants 
+ASC_new_sample=ASC_new_sample%>% 
+  filter(isIndel=="FALSE" & QD >= 10.5 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's
+
+rare_variant_new_sample=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # all  rare var in new sample data with Gnomad AF threshold 
+fisher_test=fisher.test(matrix(c(sum(rare_variant_new_sample$Transmitted_proband), num_proband, sum(rare_variant_new_sample$Untransmitted_proband), num_proband), nrow=2))
+OR[1]=fisher_test$estimate; CI_lower[1]=fisher_test$conf.int[1]; CI_upper[1]=fisher_test$conf.int[2]
+variant_count[1,]=c(sum(rare_variant_new_sample$Transmitted_proband), sum(rare_variant_new_sample$Untransmitted_proband))
+
+rare_variant_new_sample_syn=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<0.05 & isSyn==T) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # all rare syn var  in new sample data with Gnomad AF threshold 
+fisher_test=fisher.test(matrix(c(sum(rare_variant_new_sample_syn$Transmitted_proband), num_proband, sum(rare_variant_new_sample_syn$Untransmitted_proband), num_proband), nrow=2))
+OR[2]=fisher_test$estimate; CI_lower[2]=fisher_test$conf.int[1]; CI_upper[2]=fisher_test$conf.int[2]
+variant_count[2,]=c(sum(rare_variant_new_sample_syn$Transmitted_proband), sum(rare_variant_new_sample_syn$Untransmitted_proband))
+
+rare_variant_new_sample_missense=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<0.05 & isMis==T) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # all rare missense var  in new sample data with Gnomad AF threshold 
+fisher_test=fisher.test(matrix(c(sum(rare_variant_new_sample_missense$Transmitted_proband), num_proband, sum(rare_variant_new_sample_missense$Untransmitted_proband), num_proband), nrow=2))
+OR[3]=fisher_test$estimate; CI_lower[3]=fisher_test$conf.int[1]; CI_upper[3]=fisher_test$conf.int[2]
+variant_count[3,]=c(sum(rare_variant_new_sample_missense$Transmitted_proband), sum(rare_variant_new_sample_missense$Untransmitted_proband))
+
+rare_variant_new_sample_PTV=ASC_new_sample %>% filter(Gnomad_non_neuro_AF<0.05 & isPTV==T) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # all rare PTV var  in new sample data with Gnomad AF threshold 
+fisher_test=fisher.test(matrix(c(sum(rare_variant_new_sample_PTV$Transmitted_proband), num_proband, sum(rare_variant_new_sample_PTV$Untransmitted_proband), num_proband), nrow=2))
+OR[4]=fisher_test$estimate; CI_lower[4]=fisher_test$conf.int[1]; CI_upper[4]=fisher_test$conf.int[2]
+variant_count[4,]=c(sum(rare_variant_new_sample_PTV$Transmitted_proband), sum(rare_variant_new_sample_PTV$Untransmitted_proband))
+
+rownames(variant_count)=c( "(1): all var", "(2): all syn", "(3): missense", "(4): PTV")
+colnames(variant_count)=c("Trans", "Untrans")
+variant_count
+############################################ draw the plot 
+rare_varint_burden=tibble(OR=OR, var=c( "(1): all var", "(2): all syn", "(3): missense", "(4): PTV"), lower=CI_lower, upper=CI_upper)
+
+ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  ylim(c(0,1.1))+
+  ggtitle("Burden of variant sets")+
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9))+
+  geom_hline(yintercept=1, linetype="dashed", 
+                color = "red", size=1)+
+  theme(plot.title = element_text(hjust = 0.5))+ # center the title
+  theme(legend.position="none")
+
+```
+
 
 
 
