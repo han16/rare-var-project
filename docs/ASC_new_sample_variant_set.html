@@ -359,7 +359,7 @@ div.tocify {
 <ul>
 <li>AF filter <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li>syn: <code>isSyn==T</code></li>
-<li>missense: <code>isSyn==T</code></li>
+<li>missense: <code>isMis==T</code></li>
 <li>PTV: <code>isPTV==T</code></li>
 <li>sample size should be 7291</li>
 <li>Other filter
@@ -393,8 +393,13 @@ div.tocify {
 <p>From cell paper, for variants with <code>pLI&gt;=0.995</code>, there
 are 695 transmitted variants and 557 untransmitted in 5869 parents,
 i.e. 0.12/0.1 variants per sample, leading to 1.2 fold enrichment.</p>
-<p>But the calculated numbers are quite different from the statistics in
-cell paper!</p>
+<ul>
+<li><code>pLI&gt;=0.995</code></li>
+<li><code>Gnomad_non_neuro_AF&lt;0.001</code></li>
+<li><code>isPTV=="TRUE"</code></li>
+<li><code>isIndel=="FALSE" &amp; QD &gt;= 10.5 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
+</ul>
+<p>with above filters, 714 transmitted variants vs 567 untransmitted</p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="old-sample-vs-new-sample" class="section level2">
@@ -411,8 +416,14 @@ class="section level3">
 other is column <code>isMis</code>. All 100201
 <code>missense_variant</code> are with <code>isMis=TRUE</code>, but not
 all 870738 <code>isMis==TRUE</code> are <code>missense_variant</code>.
-Use <code>missense_variant</code> as missense variants and the filter
-<code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></p></li>
+Use <code>isMis=TRUE</code> as missense variants and the filter
+<code>QD&gt;=10.5  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></p></li>
+</ul>
+<p>for new sample, use filter</p>
+<ul>
+<li><code>isMis==TRUE</code></li>
+<li><code>Gnomad_non_neuro_AF&lt;0.0001</code></li>
+<li><code>QD&gt;=10.5  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
@@ -420,10 +431,9 @@ Use <code>missense_variant</code> as missense variants and the filter
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
-<li>missense variants include
-<code>"missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant"</code></li>
+<li>missense variants: <code>isMis=="TRUE"</code></li>
 <li>use filter
-<code>QD&gt;=1  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
+<code>QD&gt;=10.5  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
 </ul>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
@@ -431,10 +441,6 @@ Use <code>missense_variant</code> as missense variants and the filter
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-</div>
-<div id="missense-ismistrue" class="section level4">
-<h4>Missense: isMis==TRUE</h4>
-<p>This definition of missense variant is very likely not correct!</p>
 </div>
 </div>
 <div id="missense-variants-in-individual-constraint-gene"
@@ -449,8 +455,7 @@ sample and new sample and see how they compare</p>
 <h2>Gene-CYFIP1</h2>
 <ul>
 <li>AF&lt;0.05 by setting <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
-<li>exclude synonymous variants by setting
-<code>pLI!=synonymous_variant</code></li>
+<li>exclude synonymous variants by setting <code>isSyn==F</code></li>
 </ul>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
@@ -502,75 +507,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22870040:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22870043:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22870049:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
 </td>
 <td style="text-align:right;">
 1
@@ -670,29 +606,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22870094:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22870099:C:T
 </td>
 <td style="text-align:left;">
@@ -712,29 +625,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22870100:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
 </td>
 </tr>
 <tr>
@@ -762,29 +652,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22870103:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22870114:G:C
 </td>
 <td style="text-align:left;">
@@ -808,29 +675,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22870118:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22870132:T:C
 </td>
 <td style="text-align:left;">
@@ -847,29 +691,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22870148:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
 </td>
 <td style="text-align:right;">
 1
@@ -946,29 +767,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22870187:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-35
-</td>
-<td style="text-align:right;">
-39
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22872840:C:G
 </td>
 <td style="text-align:left;">
@@ -1011,29 +809,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22872880:T:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
 </td>
 </tr>
 <tr>
@@ -1107,29 +882,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22872927:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22872970:T:A
 </td>
 <td style="text-align:left;">
@@ -1172,75 +924,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22873586:G:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22873598:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22873604:A:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-4
 </td>
 </tr>
 <tr>
@@ -1383,29 +1066,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22873676:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22874544:C:T
 </td>
 <td style="text-align:left;">
@@ -1422,52 +1082,6 @@ splice_region_variant,intron_variant
 </td>
 <td style="text-align:right;">
 2
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22874567:T:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22874571:A:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
 </td>
 <td style="text-align:right;">
 2
@@ -1521,190 +1135,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22874598:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-88
-</td>
-<td style="text-align:right;">
-85
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22874612:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22874625:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22875215:C:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22875215:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22875239:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22875247:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22875257:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22875270:G:C
 </td>
 <td style="text-align:left;">
@@ -1751,98 +1181,6 @@ splice_region_variant,intron_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22879925:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22879928:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22879947:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-127
-</td>
-<td style="text-align:right;">
-115
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22880006:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22881839:C:T
 </td>
 <td style="text-align:left;">
@@ -1862,29 +1200,6 @@ splice_region_variant,intron_variant
 </td>
 <td style="text-align:right;">
 2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22881862:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
 </td>
 </tr>
 <tr>
@@ -2027,75 +1342,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22882879:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22882910:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22882931:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22882932:C:T
 </td>
 <td style="text-align:left;">
@@ -2138,98 +1384,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22882946:A:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22882955:A:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22882964:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22882981:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-102
-</td>
-<td style="text-align:right;">
-100
 </td>
 </tr>
 <tr>
@@ -2299,75 +1453,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22903768:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22903786:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-24
-</td>
-<td style="text-align:right;">
-26
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22903792:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
 </td>
 </tr>
 <tr>
@@ -2464,29 +1549,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22903831:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22903835:C:T
 </td>
 <td style="text-align:left;">
@@ -2510,29 +1572,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22903843:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22903853:C:T
 </td>
 <td style="text-align:left;">
@@ -2552,29 +1591,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22903877:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-2
 </td>
 </tr>
 <tr>
@@ -2671,29 +1687,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22909269:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22909297:A:G
 </td>
 <td style="text-align:left;">
@@ -2733,75 +1726,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22909308:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22909311:G:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-splice_region_variant,synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22910526:A:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
 </td>
 <td style="text-align:right;">
 1
@@ -2851,52 +1775,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22910550:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-6
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22910562:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
 </td>
 </tr>
 <tr>
@@ -2970,29 +1848,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22910621:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22910738:T:C
 </td>
 <td style="text-align:left;">
@@ -3003,121 +1858,6 @@ CYFIP1
 </td>
 <td style="text-align:left;">
 missense_variant,splice_region_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22910805:T:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22912197:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22912200:C:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-3214
-</td>
-<td style="text-align:right;">
-3188
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22912230:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22912275:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-splice_region_variant,synonymous_variant
 </td>
 <td style="text-align:right;">
 0
@@ -3200,29 +1940,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22914734:C:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:right;">
-16
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22914757:T:C
 </td>
 <td style="text-align:left;">
@@ -3242,52 +1959,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22914764:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22914821:C:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
 </td>
 </tr>
 <tr>
@@ -3315,75 +1986,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22914850:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22914854:C:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22914854:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:right;">
-7
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22914855:G:A
 </td>
 <td style="text-align:left;">
@@ -3407,52 +2009,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22914878:C:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22914878:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22916469:T:C
 </td>
 <td style="text-align:left;">
@@ -3463,29 +2019,6 @@ CYFIP1
 </td>
 <td style="text-align:left;">
 splice_region_variant,intron_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22916577:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
 </td>
 <td style="text-align:right;">
 0
@@ -3725,29 +2258,6 @@ intron_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22916763:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-intron_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
 </td>
 </tr>
 <tr>
@@ -4396,29 +2906,6 @@ intron_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22917815:G:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22917830:G:T
 </td>
 <td style="text-align:left;">
@@ -4438,75 +2925,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22917833:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22917839:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22917857:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-361
-</td>
-<td style="text-align:right;">
-356
 </td>
 </tr>
 <tr>
@@ -4619,29 +3037,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 2
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22918766:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
 </td>
 <td style="text-align:right;">
 0
@@ -4787,52 +3182,6 @@ splice_region_variant,intron_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22925997:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22926006:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22926031:C:T
 </td>
 <td style="text-align:left;">
@@ -4879,29 +3228,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22926036:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22926049:C:T
 </td>
 <td style="text-align:left;">
@@ -4912,98 +3238,6 @@ CYFIP1
 </td>
 <td style="text-align:left;">
 missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22926054:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22926081:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22926093:A:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22926093:A:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
 </td>
 <td style="text-align:right;">
 0
@@ -5086,29 +3320,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22927990:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22932225:C:T
 </td>
 <td style="text-align:left;">
@@ -5151,98 +3362,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22932241:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22932250:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22932274:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22932292:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-7
 </td>
 </tr>
 <tr>
@@ -5339,52 +3458,6 @@ splice_region_variant,intron_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22933831:G:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22933882:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-54
-</td>
-<td style="text-align:right;">
-57
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22937105:T:C
 </td>
 <td style="text-align:left;">
@@ -5447,29 +3520,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 2
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22937188:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
 </td>
 <td style="text-align:right;">
 1
@@ -5546,29 +3596,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22939273:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22939298:A:G
 </td>
 <td style="text-align:left;">
@@ -5588,29 +3615,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22939303:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
 </td>
 </tr>
 <tr>
@@ -5638,29 +3642,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22939504:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22943213:T:C
 </td>
 <td style="text-align:left;">
@@ -5684,29 +3665,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22943270:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22943285:C:T
 </td>
 <td style="text-align:left;">
@@ -5726,29 +3684,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22943331:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-34
-</td>
-<td style="text-align:right;">
-21
 </td>
 </tr>
 <tr>
@@ -5822,29 +3757,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22944621:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22944626:T:C
 </td>
 <td style="text-align:left;">
@@ -5891,29 +3803,6 @@ splice_region_variant,intron_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22944895:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22944909:C:T
 </td>
 <td style="text-align:left;">
@@ -5933,29 +3822,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22944925:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
 </td>
 </tr>
 <tr>
@@ -6075,75 +3941,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22947042:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947069:T:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947072:A:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22947182:G:A
 </td>
 <td style="text-align:left;">
@@ -6186,29 +3983,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947190:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-6
 </td>
 </tr>
 <tr>
@@ -6259,121 +4033,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22947199:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947217:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2230
-</td>
-<td style="text-align:right;">
-2320
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947223:G:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947259:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947280:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22947281:G:A
 </td>
 <td style="text-align:left;">
@@ -6393,29 +4052,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947286:C:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-5_prime_UTR_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-104
-</td>
-<td style="text-align:right;">
-102
 </td>
 </tr>
 </tbody>
@@ -6990,29 +4626,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22872880:T:C
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22872905:G:A
 </td>
 <td style="text-align:left;">
@@ -7565,29 +5178,6 @@ synonymous_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22875215:C:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22875215:C:T
 </td>
 <td style="text-align:left;">
@@ -7768,29 +5358,6 @@ synonymous_variant
 </td>
 <td style="text-align:right;">
 4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22879947:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-127
-</td>
-<td style="text-align:right;">
-115
 </td>
 </tr>
 <tr>
@@ -8002,29 +5569,6 @@ missense_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22882879:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22882910:G:A
 </td>
 <td style="text-align:left;">
@@ -8182,29 +5726,6 @@ synonymous_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22882981:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-102
-</td>
-<td style="text-align:right;">
-100
 </td>
 </tr>
 <tr>
@@ -8527,29 +6048,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22903877:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-2
 </td>
 </tr>
 <tr>
@@ -8923,29 +6421,6 @@ missense_variant
 <tr>
 <td style="text-align:left;">
 15:22910612:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-missense_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22910621:G:A
 </td>
 <td style="text-align:left;">
 15
@@ -9700,29 +7175,6 @@ intron_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22916763:G:A
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-intron_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-2
 </td>
 </tr>
 <tr>
@@ -11337,29 +8789,6 @@ synonymous_variant
 </tr>
 <tr>
 <td style="text-align:left;">
-15:22933882:C:T
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-synonymous_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-54
-</td>
-<td style="text-align:right;">
-57
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 15:22937105:T:C
 </td>
 <td style="text-align:left;">
@@ -12368,29 +9797,6 @@ missense_variant
 </td>
 <td style="text-align:right;">
 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-15:22947286:C:G
-</td>
-<td style="text-align:left;">
-15
-</td>
-<td style="text-align:left;">
-CYFIP1
-</td>
-<td style="text-align:left;">
-5_prime_UTR_variant
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-104
-</td>
-<td style="text-align:right;">
-102
 </td>
 </tr>
 </tbody>

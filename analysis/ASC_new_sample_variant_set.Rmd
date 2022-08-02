@@ -96,8 +96,8 @@ Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # us
 
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into new sample 
-ASC_new_sample1=as_tibble(read.table(paste(path, "ASC\\ASC_B15_B16_raw_TDT_by_parent_2021-04-19.txt", sep=""), header=T, fill=T))
-ASC_new_sample2=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), header=T, fill=T))  ##### this way of reading data is not correct
+#ASC_new_sample1=as_tibble(read.table(paste(path, "ASC\\ASC_B15_B16_raw_TDT_by_parent_2021-04-19.txt", sep=""), header=T, fill=T))
+#ASC_new_sample2=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), header=T, fill=T))  ##### this way of reading data is not correct
 
 ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way Kyle read the data
 ```
@@ -151,7 +151,7 @@ return(result)
 
 * AF filter `Gnomad_non_neuro_AF<0.05`
 * syn: `isSyn==T`
-* missense: `isSyn==T`
+* missense: `isMis==T`
 * PTV: `isPTV==T`
 * sample size should be 7291
 * Other filter `isIndel=="FALSE" & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
@@ -269,10 +269,22 @@ ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 
 From cell paper, for variants with `pLI>=0.995`, there are 695 transmitted variants and 557 untransmitted in 5869 parents, i.e. 0.12/0.1 variants per sample, leading to 1.2 fold enrichment. 
 
-But the calculated numbers are quite different from the statistics in cell paper! 
+* `pLI>=0.995`
+* `Gnomad_non_neuro_AF<0.001`
+* `isPTV=="TRUE"`
+* `isIndel=="FALSE" & QD >= 10.5 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
-```{r, echo=F}
-PTV_cate1=ASC_new_sample %>% filter(pLI>=0.995) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband)
+with above filters, 714 transmitted variants vs 567 untransmitted 
+
+```{r, echo=F, message=F, warning=F}
+
+
+ASC_new_sample=ASC_new_sample%>% 
+  filter(isIndel=="FALSE" & QD >= 10.5 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's
+
+
+
+PTV_cate1=ASC_new_sample %>% filter(pLI>=0.995 & Gnomad_non_neuro_AF<0.001 & isPTV=="TRUE") %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband)
 
 fisher_test=fisher.test(matrix(c(sum(PTV_cate1$Transmitted_proband), num_proband, sum(PTV_cate1$Untransmitted_proband), num_proband), nrow=2))
 fisher_test_result_all=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="pLI>=0.995")
@@ -304,7 +316,13 @@ To compare old sample and new sample
 
 * In old sample: missense: Non-LoF variants  
 
-* new sample:  there are 2 labels related to "missense". one is `missense_variant` in column `Consequence` and the other is column `isMis`. All 100201 `missense_variant` are with `isMis=TRUE`, but not all 870738 `isMis==TRUE`  are `missense_variant`. Use `missense_variant` as missense variants  and the filter `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
+* new sample:  there are 2 labels related to "missense". one is `missense_variant` in column `Consequence` and the other is column `isMis`. All 100201 `missense_variant` are with `isMis=TRUE`, but not all 870738 `isMis==TRUE`  are `missense_variant`. Use `isMis=TRUE` as missense variants  and the filter `QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
+
+for new sample, use filter 
+
+* `isMis==TRUE`
+* `Gnomad_non_neuro_AF<0.0001`
+*  `QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
 
 ```{r, echo=F, eval=F}
 sum(ASC_new_sample2%>% select(Consequence, isMis) %>% filter(Consequence=="missense_variant") %>%select(isMis)%>%pull() # how many TRUE isMis in misense_variant
@@ -378,7 +396,9 @@ rownames(Burden_MIRAGE_VS)=Gene_Set
 colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
 ##############
 
-rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence %in% c("missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant")==T )%>% filter(Gnomad_non_neuro_AF<0.0001 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF<1-10-4
+#rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence %in% c("missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant")==T )%>% filter(Gnomad_non_neuro_AF<0.0001 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF<1-10-4
+
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(isMis==TRUE )%>% filter(Gnomad_non_neuro_AF<0.0001 & QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF<1-10-4
 
 transmitted_new_sample=numeric()
 nontransmitted_new_sample=numeric()
@@ -459,14 +479,14 @@ ggplot(burden_missense_rare, aes(x=Gene_Set, y=OR, fill=Gene_Set)) + # draw the 
 
 
 * `Gnomad_non_neuro_AF<0.05`
-*  missense variants include `"missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant"`
-* use filter `QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
+*  missense variants: `isMis=="TRUE"`
+* use filter `QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
 
 
 
 ```{r, echo=F, message=F, warning=F}
 ## burden for missense variants 
-rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence %in% c("missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant")==T )%>% filter(Gnomad_non_neuro_AF<0.05 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF filter 
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(isMis=="TRUE")%>% filter(Gnomad_non_neuro_AF<0.05 & QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF filter 
 
 fisher_test=fisher.test(matrix(c(sum(rare_missense_variant_new_sample$Transmitted_proband), num_proband, sum(rare_missense_variant_new_sample$Untransmitted_proband), num_proband), nrow=2))
 fisher_test_result_mis=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="mis")
@@ -481,7 +501,7 @@ ggplot(fisher_test_result_mis, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ```
 
 ```{r, echo=F, message=F, warning=F}
-rare_syn_variant_new_sample=ASC_new_sample %>% filter(Consequence=="synonymous_variant" & Gnomad_non_neuro_AF<0.05 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
+rare_syn_variant_new_sample=ASC_new_sample %>% filter(isSyn=="TRUE" & Gnomad_non_neuro_AF<0.05 & QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find syn variants   in new sample data with Gnomad AF threshold 
 
 
 fisher_test=fisher.test(matrix(c(sum(rare_syn_variant_new_sample$Transmitted_proband), num_proband, sum(rare_syn_variant_new_sample$Untransmitted_proband), num_proband), nrow=2))
@@ -564,7 +584,7 @@ rownames(Burden_MIRAGE_VS)=Gene_Set
 colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
 ##############
 
-rare_missense_variant_new_sample=ASC_new_sample %>% filter(Consequence %in% c("missense_variant,NMD_transcript_variant","missense_variant", "missense_variant,splice_region_variant")==T )%>% filter(Gnomad_non_neuro_AF<0.001 & Gnomad_non_neuro_AF>0.0001 & QD>=1  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF<1-10-4
+rare_missense_variant_new_sample=ASC_new_sample %>% filter(isMis=="TRUE" )%>% filter(Gnomad_non_neuro_AF<0.001 & Gnomad_non_neuro_AF>0.0001 & QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # find missense variant in new sample data with AF<1-10-4
 
 transmitted_new_sample=numeric()
 nontransmitted_new_sample=numeric()
@@ -617,13 +637,15 @@ annotate_figure(figure,
 ```
 
 
-#### Missense: isMis==TRUE
-
-
-This definition of missense variant is very likely not correct! 
 
 
 ```{r, echo=F, warning=F, message=F, eval=F}
+
+#### Missense: isMis==TRUE
+
+
+This definition of missense variant is very likely not correct!
+
 ######### obtain missense variants with AF<1-E4+10 gene set in new sample data
 ############## to save burden and mirage-vs result 
 Burden_MIRAGE_VS=matrix(nrow=length(Gene_Set_List), ncol=6)
@@ -750,10 +772,10 @@ g2
 
 
 * AF<0.05 by setting `Gnomad_non_neuro_AF<0.05`
-* exclude synonymous variants by setting `pLI!=synonymous_variant`
+* exclude synonymous variants by setting `isSyn==F`
 
 ```{r, echo=F}
-CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & pLI!="synonymous_variant"& Gnomad_non_neuro_AF<0.05) %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & isSyn==F & Gnomad_non_neuro_AF<0.05) %>% filter(QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
 
 kable(CYFIP1, caption = "Variant (AF<0.05) in gene CYFIP1")%>%
 kable_styling() %>%
@@ -767,7 +789,7 @@ In old sample, there is one variant having 8/0 at '15:22963816-22963816_A_G' whi
 * all variants don't go beyond `2295xxxx`.
 
 ```{r, echo=F}
-CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% filter(QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
 
 kable(CYFIP1, caption = "All variants  in gene CYFIP1")%>%
 kable_styling() %>%
