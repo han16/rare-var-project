@@ -386,6 +386,21 @@ div.tocify {
 ## (3): missense  6039210  6004977
 ## (4): PTV        169567   168700</code></pre>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<ul>
+<li>AF filter <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+<li>syn: <code>isSyn==T</code></li>
+<li>missense: <code>isMis==T</code></li>
+<li>PTV: <code>isPTV==T</code></li>
+<li>sample size should be 7291</li>
+<li>Other filter
+<code>isIndel=="FALSE" &amp; QD &gt;= 6 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
+</ul>
+<pre><code>##                  Trans  Untrans
+## (1): all var  13152940 13089824
+## (2): all syn   5027525  5013752
+## (3): missense  6039210  6004977
+## (4): PTV        169567   168700</code></pre>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 </div>
 <div id="figure-1b-in-cell-paper" class="section level2">
@@ -400,7 +415,7 @@ i.e. 0.12/0.1 variants per sample, leading to 1.2 fold enrichment.</p>
 <li><code>isIndel=="FALSE" &amp; QD &gt;= 10.5 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 <p>with above filters, 714 transmitted variants vs 567 untransmitted</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="old-sample-vs-new-sample" class="section level2">
 <h2>Old sample vs new sample</h2>
@@ -427,20 +442,20 @@ Use <code>isMis=TRUE</code> as missense variants and the filter
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li>missense variants: <code>isMis=="TRUE"</code></li>
 <li>use filter
 <code>QD&gt;=10.5  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
 </ul>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 </div>
 <div id="missense-variants-in-individual-constraint-gene"
@@ -448,7 +463,7 @@ class="section level3">
 <h3>Missense variants in individual constraint gene</h3>
 <p>consider missense variants with AF&lt;10-E4 in top 10 genes from old
 sample and new sample and see how they compare</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 </div>
 </div>
 <div id="gene-cyfip1" class="section level2">
