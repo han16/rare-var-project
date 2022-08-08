@@ -904,7 +904,7 @@ In old sample, there is one variant having 8/0 at '15:22963816-22963816_A_G' whi
 * all variants don't go beyond `2295xxxx`.
 
 ```{r, echo=F}
-CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% filter(QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% filter(QD>=10  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
 
 kable(CYFIP1, caption = "All variants  in gene CYFIP1")%>%
 kable_styling() %>%
