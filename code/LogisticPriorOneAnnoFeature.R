@@ -43,11 +43,6 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
   qq=rbeta(mm, alpha0, beta0)
   if (model==1)
   {
-    #  for (k in 1:num.group) # when one gene has multiple annotation groups
-    #  {
-    #    from=split.ratio[k]*mm+1; to=split.ratio[k+1]*mm
-    #    Zij[from:to]=rbinom((to-from+1), 1, pi[k])
-    #  }
     for (i in 1:mm)
       Zij[i]=rbinom(1,1,pi[var.index[mm]])
     
@@ -118,7 +113,7 @@ objec.func.min=function(beta.est) # this is the log likelihood function to be ma
 deriv.objec.func=function(beta.est) # derivative function of parameters 
 {
   par.beta=numeric(anno.num)
-  for (k in 1:anno.num) # k: annotattion index
+  for (k in 1:anno.num) # k: annotation index
   {
     par.beta.k=0
     for (j in 1:num.var) # j: variant index
@@ -164,7 +159,7 @@ for (rep in 1:max.rep)
   cat(rep, "th replicate is running", "\n")  
   Ui=rbinom(num.gene, 1, delta)
   all.data=list(); var.orig.index=numeric(); var.orig.index[1]=NA
-  for (i in 1:num.gene)
+  for (i in 1:num.gene)  # for each gene, generate sample including genoptype, phenotype, etc 
   {
     data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=tau.true[((i-1)*m+1):(i*m)], Ui[i], num.group, split.ratio)
     all.data[[i]]=data
@@ -172,7 +167,7 @@ for (rep in 1:max.rep)
   }
   var.orig.index=var.orig.index[-1]
   Ajk.effect=Ajk[var.orig.index]
-  ################### calculate bayes factor for every variant 
+  ################### calculate Bayes factor for every variant 
   k=0; BF.var=numeric(); var.count=matrix(nrow=(m*num.gene), ncol=2)
   for (i in 1:length(all.data))
   {

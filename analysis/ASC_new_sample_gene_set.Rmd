@@ -54,7 +54,7 @@ Untransmitted_sibling=ASC_new_sample3%>% select(starts_with("u_sibling"))%>%  mu
 ################################################
 
 
-ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & QD >= 6 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's 
+ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's 
 
 ##################
 #AF_cutoff=0.001
@@ -104,6 +104,7 @@ When AF <0.1%, there are 1164 transmitted variants and 1413 untransmitted, not c
 | VQSLOD<9    | 1151    | 1415  |
 | QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8    | 818    | 785   |
 | QD >= 6 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8    | 816    | 726   |
+| QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8    | 738    | 604   |
 | QD >= 10.5 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8    | 714    | 567   |
 | QD >= 11 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8    | 678    | 526   |
 | QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -2   | 956    | 946   |
