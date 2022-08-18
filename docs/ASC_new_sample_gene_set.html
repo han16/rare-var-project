@@ -518,6 +518,7 @@ information</h3>
 groups<br />
 </li>
 <li>filter <code>Gnomad_non_neuro_AF&lt;0.05</code> was applied</li>
+<li><code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 <p>This figure shows the comparison between burden test (one side two
 sample poisson test) and mirage-vs for proband in 6 variant groups.
@@ -525,27 +526,36 @@ sample poisson test) and mirage-vs for proband in 6 variant groups.
 and <span class="math inline">\(\gamma=3\)</span> for another 3 MPC
 groups when running mirage.</p>
 <pre><code>## # A tibble: 6 x 7
-##   X                      No_case No_contr    OR  pval eta_est  eta_pval
-##   &lt;chr&gt;                    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-## 1 PLI&gt;=0.995                4436     7317 0.606     1 0.00662 7.98e- 64
-## 2 pLI within (0.5,0.995)   10523    14050 0.749     1 0.00342 2.38e- 40
-## 3 pLI&lt;0.5                 241695   258839 0.934     1 0.00331 9.61e-122
-## 4 MPC&gt;=2                   62501    70221 0.890     1 0.00383 3.47e- 34
-## 5 MPC within (1,2)        372944   389959 0.956     1 0.00310 7.05e- 45
-## 6 MPC&lt;1                  5085602  5154878 0.987     1 0.00127 1.14e-160</code></pre>
+##   X                      No_case No_contr    OR     pval eta_est eta_pval
+##   &lt;chr&gt;                    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+## 1 PLI&gt;=0.995                1351     1220  1.11 5.17e- 3 0.130   1.62e- 3
+## 2 pLI within (0.5,0.995)    2939     2764  1.06 1.06e- 2 0.0643  2.11e- 2
+## 3 pLI&lt;0.5                 109275   108331  1.01 2.16e- 2 0.00390 8.92e- 1
+## 4 MPC&gt;=2                   48444    47081  1.03 5.24e- 6 0.0349  2.48e- 3
+## 5 MPC within (1,2)        325810   319274  1.02 2.03e-16 0.0101  1.76e-11
+## 6 MPC&lt;1                  4770861  4747671  1.00 2.82e-14 0.00131 2.50e-28</code></pre>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<div id="rare-variants-with-pli0.995" class="section level4">
-<h4>rare variants with PLI&gt;=0.995</h4>
 </div>
+<div id="run-mirage-vs-on-180-variant-sets" class="section level3">
+<h3>Run MIRAGE-VS on 180 variant sets</h3>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<ul>
+<li><p>6 variant groups X 3 AF categories (0.001&lt;AF&lt;0.01,
+0.0001&lt;AF&lt;0.001, AF&lt;0.0001) X 10 gene sets=180 variant
+groups</p></li>
+<li><p>use filter
+<code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></p></li>
+</ul>
 </div>
 <div id="gene-set-analysis-taking-into-account-gene-level-information"
 class="section level3">
 <h3>gene set analysis taking into account gene level information</h3>
 <ul>
-<li><p>Run mirage on all 17988 genes and <span
+<li><p>Run mirage on all 17850 genes and <span
 class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups and
 <span class="math inline">\(\gamma=3\)</span> for 3 MPC groups.</p></li>
 <li><p>apply filter <code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
+<li><p><code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></p></li>
 </ul>
 <table>
 <thead>
@@ -561,70 +571,70 @@ class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups and
 <tr class="odd">
 <td>\</td>
 <td><span class="math inline">\(\hat{\delta}\)</span></td>
-<td>0.0201</td>
-<td>0</td>
+<td>0.0683</td>
+<td>1.361528e-42</td>
 <td></td>
 </tr>
 <tr class="even">
 <td>(1):PLI&gt;=0.995</td>
 <td><span class="math inline">\(\hat{\eta}_1\)</span></td>
-<td>0.17</td>
-<td><span class="math inline">\(1.72\times 10^{-66}\)</span></td>
+<td>0.8310</td>
+<td><span class="math inline">\(1.856047e-02\)</span></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>(2):0.5&lt;=pLI&lt;0.995</td>
 <td><span class="math inline">\(\hat{\eta}_2\)</span></td>
-<td>0.04</td>
-<td><span class="math inline">\(3.90\times 10^{-39}\)</span></td>
+<td>0.8482</td>
+<td><span class="math inline">\(1.222383e-02\)</span></td>
 <td></td>
 </tr>
 <tr class="even">
 <td>(3):pLI&lt;0.5</td>
 <td><span class="math inline">\(\hat{\eta}_3\)</span></td>
-<td>0.06</td>
-<td><span class="math inline">\(1.55\times 10^{-120}\)</span></td>
+<td>0.0290</td>
+<td><span class="math inline">\(6.837045e-01\)</span></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>(4):MPC&gt;=2</td>
 <td><span class="math inline">\(\hat{\eta}_4\)</span></td>
-<td>0.06</td>
-<td><span class="math inline">\(1.55\times 10^{-36}\)</span></td>
+<td>0.4662</td>
+<td><span class="math inline">\(1.483169e-03\)</span></td>
 <td></td>
 </tr>
 <tr class="even">
 <td>(5):1&lt;=MPC&lt;2</td>
 <td><span class="math inline">\(\hat{\eta}_5\)</span></td>
-<td>0.12</td>
-<td><span class="math inline">\(6.95\times 10^{-57}\)</span></td>
+<td>0.1124</td>
+<td><span class="math inline">\(1.451614e-12\)</span></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>(6):0&lt;=MPC&lt;1</td>
 <td><span class="math inline">\(\hat{\eta}_6\)</span></td>
-<td>0.05</td>
-<td><span class="math inline">\(2.69\times 10^{-182}\)</span></td>
+<td>0.0119</td>
+<td><span class="math inline">\(1.524884e-32\)</span></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>Below are top ranked genes.</p>
-<pre><code>## # A tibble: 17,987 x 4
+<pre><code>## # A tibble: 17,850 x 4
 ##        X Gene          BF post.prob
 ##    &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;
-##  1   536 FHOD3    1.16e39         1
-##  2   933 ADCY2    1.24e29         1
-##  3  1839 NABP2    7.66e25         1
-##  4  4978 IL23R    9.38e18         1
-##  5  6465 PRB1     8.70e20         1
-##  6  7904 NPIPA1   3.13e45         1
-##  7  9990 KIR2DL3  4.34e17         1
-##  8 10155 PRAM1    2.51e34         1
-##  9 11473 NEFH     3.64e35         1
-## 10 13705 HLA-DRB5 1.38e20         1
-## # ... with 17,977 more rows</code></pre>
+##  1 10093 HLA-DRB1 2.06e15     1.00 
+##  2  7049 SSC5D    5.43e12     1.00 
+##  3 13643 GSTM1    3.04e11     1.00 
+##  4  6420 TXNDC2   5.26e 6     1.00 
+##  5  7169 PRAM1    1.77e 3     0.992
+##  6  6234 ENPP7    2.83e 1     0.675
+##  7   828 PTEN     1.46e 1     0.516
+##  8   315 SUPT5H   1.40e 1     0.507
+##  9   408 MICAL3   1.36e 1     0.500
+## 10  5778 DPH1     1.31e 1     0.489
+## # ... with 17,840 more rows</code></pre>
 </div>
 </div>
 <div id="asd-genes-in-cell-paper" class="section level2">
@@ -646,7 +656,7 @@ running mirage.</p>
 ## 4 MPC&gt;=2                 788      955 0.825 1.00  0.000301     1    
 ## 5 MPC&gt;=1&amp;MPC&lt;2          5481     5762 0.951 0.996 0.000653     1    
 ## 6 MPC&lt;1                30680    30991 0.990 0.896 0.000134     1</code></pre>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="gene-set-analysis-taking-into-account-gene-level-information-1"
 class="section level3">
@@ -720,7 +730,7 @@ mirage.</p></li>
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 </div>
 <div id="top-5-constraint-genes" class="section level2">
@@ -738,13 +748,13 @@ untransmitted variants.</p>
 ##  Comparison of Poisson rates
 ## 
 ## data:  c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband)) time base: c(num.family, num.family)
-## count1 = 162760, expected count1 = 159218, p-value &lt; 2.2e-16
+## count1 = 166801, expected count1 = 163404, p-value &lt; 2.2e-16
 ## alternative hypothesis: true rate ratio is greater than 1
 ## 95 percent confidence interval:
-##  1.03942     Inf
+##  1.036478      Inf
 ## sample estimates:
 ## rate ratio 
-##   1.045505</code></pre>
+##   1.042467</code></pre>
 </div>
 </div>
 <div id="run-mirage-vs-for-all-variants-together"
@@ -776,7 +786,7 @@ groups when running mirage.</p></li>
 ## 4 (4):MPC&gt;=2               10068    11577 0.870  1    0.000192  1   e+ 0
 ## 5 (5):MPC&gt;=1&amp;MPC&lt;2         54752    57131 0.958  1.00 0.00128   1.29e- 6
 ## 6 (6):MPC&lt;1               157653   160577 0.982  1.00 0.000326  1   e+ 0</code></pre>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div
 id="gene-set-analysis-using-mirage-taking-into-account-gene-level-information"
@@ -851,7 +861,7 @@ running mirage.</li>
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>Below are top ranked genes.</p>
 <pre><code>## # A tibble: 857 x 4
 ##        X Gene       BF post.prob

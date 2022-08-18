@@ -32,6 +32,63 @@ ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent
 ```
 
 
+```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
+# read into gene set 
+path="C:\\Shengtong\\Research\\rare-var\\"
+GeneDB=src_sqlite(path=paste(path, "gene.list.db", sep=""), create=F)
+#GeneDB=src_sqlite(path="../../gene.list.db", create=F)
+gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
+gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
+gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
+gene_cate4=data.frame(collect(tbl(GeneDB, "SFARI_cate4_gene")))
+gene_cate5=data.frame(collect(tbl(GeneDB, "SFARI_cate5_gene")))
+gene_cate6=data.frame(collect(tbl(GeneDB, "SFARI_cate6_gene")))
+gene_cateS=data.frame(collect(tbl(GeneDB, "SFARI_cateS_gene")))
+TADAGene=data.frame(collect(tbl(GeneDB, "TADAGenelist")))
+Qlessthan5percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.05]
+Qlessthan20percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.2]
+Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
+Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
+Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
+Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
+###### ID gene ######
+ID_Gene=as.character(data.frame(collect(tbl(GeneDB, "Pinto14AJHG_IDgene")))$GeneID)
+#### high confidence gene 
+High_Confidence_Gene=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
+#### moderate confidence gene 
+Moderate_Confidence_Gene=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
+#### psd gene 
+purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
+PSD_Gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
+#### FMRP gene 
+FMRP_Gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
+#### Autism KB gene 
+ASD_KB_Gene=as.character(data.frame(collect(tbl(GeneDB, "AutismKB_gene")))$GeneID)
+#### constraint gene 
+Constraint_Gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
+### RVIS gene 
+RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
+RVIS_Gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene
+#### Haplo insufficient gene 
+Haploinsufficient_Gene=as.character(data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))$GeneID)
+#### SCZ data 
+SCZ_Gene=purcell.genelist$Gene_symbol
+Gene_Set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff", "SCZ gene")
+Gene_Set_List=list()
+Gene_Set_List[[1]]=ID_Gene
+Gene_Set_List[[2]]=High_Confidence_Gene
+Gene_Set_List[[3]]=Moderate_Confidence_Gene
+Gene_Set_List[[4]]=PSD_Gene
+Gene_Set_List[[5]]=FMRP_Gene
+Gene_Set_List[[6]]=ASD_KB_Gene
+Gene_Set_List[[7]]=Constraint_Gene
+Gene_Set_List[[8]]=RVIS_Gene
+Gene_Set_List[[9]]=Haploinsufficient_Gene
+Gene_Set_List[[10]]=SCZ_Gene
+```
+
+
+
 ## Genome-wide analysis
 
 
@@ -146,6 +203,7 @@ use filters
 
 * Use mirage-vs to test if there are signals in six variant groups  
 * filter `Gnomad_non_neuro_AF<0.05` was applied 
+* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 ```{r, echo=F, eval=F}
 ####### test the toy example 
@@ -203,26 +261,162 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
 ```
 
+### Run MIRAGE-VS on 180 variant sets 
 
-#### rare variants with PLI>=0.995
+
+```{r, echo=F, eval=F}
+####### test the toy example 
+#data(mirage_vs_toy)
+#res_vs = mirage_vs(mirage_vs_toy,n1=1000,n2=1000)
+#########
+para_est=matrix(nrow=180, ncol=7)
+rownames(para_est)=paste(rep(paste(rep(Gene_Set,each=6), c("PLI>=0.995", "pLI within (0.5,0.995)", "pLI<0.5", "MPC>=2", "MPC within (1,2)", "MPC<1"), sep="_"), each=3), c("0.001<AF<0.01", "0.0001<0.001", "AF<0.0001"), sep="_")
+colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval", "cate_index")
+for (i in 1:10) # for each gene set
+  for (j in 1:6) # for each variant group
+{ 
+#i=1  
+ cat(i, "is running", "\n")
+    k=((i-1)*6+j-1)*3
+    ###################
+ variant_set=ASC_new_sample_GI %>% filter( Gene %in% Gene_Set_List[[i]]==T &  Group_Index==j & Gnomad_non_neuro_AF>0.001 & Gnomad_non_neuro_AF<0.01) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+ if (nrow(variant_set)>0)
+ {
+ para_est[k+1,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+ pois.test=poisson.test(para_est[k+1,1:2], c(num.family, num.family), r=1, alternative="greater")
+ para_est[k+1,3:4]=c(pois.test$estimate,pois.test$p.value)
+ if (j<=3) # for LoF variants
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=6)
+ if (j>3)  # for missense variants 
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=3)
+ para_est[k+1,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+ }
+ para_est[k+1,7]=j  # group index need to be recorded regardless of having variants or not 
+ ###################
+ variant_set=ASC_new_sample_GI %>% filter( Gene %in% Gene_Set_List[[i]]==T &  Group_Index==j & Gnomad_non_neuro_AF>0.0001 & Gnomad_non_neuro_AF<0.001) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+ if (nrow(variant_set)>0)
+ {
+ para_est[k+2,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+ pois.test=poisson.test(para_est[k+2,1:2], c(num.family, num.family), r=1, alternative="greater")
+ para_est[k+2,3:4]=c(pois.test$estimate,pois.test$p.value)
+ if (j<=3) # for LoF variants
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=6)
+ if (j>3)  # for missense variants 
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=3)
+ para_est[k+2,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+ }  
+ para_est[k+2,7]=j  # group index need to be recorded regardless of having variants or not
+ ###################
+ variant_set=ASC_new_sample_GI %>% filter( Gene %in% Gene_Set_List[[i]]==T &  Group_Index==j &  Gnomad_non_neuro_AF<0.0001) %>% select(Variant, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+ if (nrow(variant_set)>0)
+ {
+ para_est[k+3,1:2]=c(sum(variant_set$Transmitted_proband),sum(variant_set$Untransmitted_proband))
+ pois.test=poisson.test(para_est[k+3,1:2], c(num.family, num.family), r=1, alternative="greater")
+ para_est[k+3,3:4]=c(pois.test$estimate,pois.test$p.value)
+ if (j<=3) # for LoF variants
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=6)
+ if (j>3)  # for missense variants 
+   vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=3)
+ para_est[k+3,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
+ }
+ para_est[k+3,7]=j  # group index need to be recorded regardless of having variants or not
+} # end of  for (j in 1:6) # for each variant group
+#as_tibble(para_est)
+#write.csv(para_est, file="../output/KyleData/MIRAGE_VS.for.180.variant.group.proband.csv")
+```
+
 
 ```{r, echo=F, message=F, warning=F}
-i=1
 
-variant_set=ASC_new_sample_GI %>% filter(Group_Index==i & Gnomad_non_neuro_AF<0.001 & num_alleles<5) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index)  %>% drop_na()  # include variant with allele count <5 
+para_est=read.csv("../output/KyleData/MIRAGE_VS.for.180.variant.group.proband.csv", header=T)
+############### plot the results 
+#para_est_withoutNA=as_tibble(para_est) %>% drop_na()
+para_est_withoutNA=para_est[complete.cases(para_est), ]
+############### multiple correction for p values
+Burden.pvalue=para_est_withoutNA[,5]
+MIRAGE.pvalue=para_est_withoutNA[,7]
+Burden.MIRAGE.pvalue=cbind(Burden.pvalue, MIRAGE.pvalue)
+Burden.pvalue.adjust=p.adjust(Burden.pvalue, method="BH", n=length(Burden.pvalue))
+MIRAGE.pvalue.adjust=p.adjust(MIRAGE.pvalue, method="BH", n=length(MIRAGE.pvalue))
 
-variant_set2=ASC_new_sample_GI %>% filter(Group_Index==i & Gnomad_non_neuro_AF<0.001 & num_alleles<5) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) 
+Burden.MIRAGE.pvalue.adjust.pvalue=tibble(Burden.pvalue=Burden.pvalue, MIRAGE.pvalue=MIRAGE.pvalue, Burden.adjust.pvalue=Burden.pvalue.adjust, MIRAGE.adjust.pvalue=MIRAGE.pvalue.adjust)
+burden.pvalue.fdr.0.05.cutoff=Burden.MIRAGE.pvalue.adjust.pvalue%>% filter(Burden.adjust.pvalue<0.05) %>% summarize(max.burden.pvalue=max(Burden.pvalue)) %>% pull()
+mirage.pvalue.fdr.0.05.cutoff=Burden.MIRAGE.pvalue.adjust.pvalue%>% filter(MIRAGE.adjust.pvalue<0.05) %>% summarize(max.mirage.pvalue=max(MIRAGE.pvalue)) %>% pull()
+ 
+##############
+
+Burden.MIRAGE.combine=tibble(Burden.OR=para_est_withoutNA[,4], Burden.pvalue=Burden.pvalue, MIRAGE.risk.prop=para_est_withoutNA[,6], MIRAGE.pvalue=MIRAGE.pvalue, No.var.case=para_est_withoutNA[,2], No.var.control=para_est_withoutNA[,3], combine.feature=para_est_withoutNA[,1], cate.index=para_est_withoutNA[,8])
+Burden.MIRAGE.combine <- drop_na(Burden.MIRAGE.combine) # remove rows with NA
+#Burden.MIRAGE.combine.clear <- as_tibble(data.matrix(Burden.MIRAGE.combine)[is.finite(rowSums(data.matrix(Burden.MIRAGE.combine))),])
+Burden.MIRAGE.combine.clear=Burden.MIRAGE.combine
+Burden.MIRAGE.combine.clear$cate.index=Burden.MIRAGE.combine.clear$cate.index %>% recode("1"="PTV:pLI>=0.995", "2"="PTV:0.5<pLI<0.995", "3"="PTV: pLI<0.5", "4"="MPC>=2", "5"="1<=MPC<2", "6"="0<MPC<1")
 
 
+
+################### save significant combined features with p values less than 0.05
+significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pvalue<0.05 | MIRAGE.pvalue<0.05) %>% arrange(MIRAGE.pvalue)
+#write.csv(Burden.MIRAGE.combine.clear, file="../output/CombinedFeature/combined.features.of.gene.set.disjoint.AF.damaging.csv")
+###################
+y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
+num.test=length(MIRAGE.pvalue)
+g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index), size=15, stroke = 0.5))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+
+  geom_point()+
+  #xlim(c(0,4))+
+  ylim(c(0,y.max+2))+
+  geom_hline(yintercept=-log(0.05/num.test, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(burden.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
+  xlab("OR")+ylab(expression(paste("-log" [10], "(p value)")))+
+  ggtitle("Burden")+
+  theme_classic()+
+   theme(legend.position = "none")+  # no legend 
+#theme(plot.title = element_text(hjust = 0.5, size=35)) +# center the title 
+  theme(plot.title = element_text(hjust = 0.5)) +# center the title 
+theme(legend.title=element_blank())+
+theme(legend.text=element_text(size=20))+
+theme(text = element_text(size=20))+
+guides(size=FALSE)+  # suppress size legend 
+guides(shape = guide_legend(override.aes = list(size = 5))) # symbol size in legend 
+
+g2=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=MIRAGE.risk.prop, y=-log(MIRAGE.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index),size=5))+
+  scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+  # manually define shapes if more than 6 groups 
+  geom_point()+
+  xlab(expression(paste(hat(eta))))+
+  ylab("")+
+  ylim(c(0,y.max+2))+
+  geom_hline(yintercept=-log(0.05/num.test, base=10), linetype="dashed", color = "red")+
+  geom_hline(yintercept=-log(mirage.pvalue.fdr.0.05.cutoff, base=10), linetype="solid", color = "blue")+
+  ggtitle("MIRAGE-VS")+
+  theme_classic()+
+  #theme(plot.title = element_text(hjust = 0.5, size=35))+  # center the title 
+  theme(plot.title = element_text(hjust = 0.5))+  # center the title 
+  #labs(color='variant group')+   # define legend title 
+  theme(legend.title=element_blank())+
+theme(text = element_text(size=20))
+
+
+  #theme(legend.text=element_text(size=10))
+  #theme(legend.position = c(0.8, 4),
+  #        legend.direction = "vertical")
+#+
+  #theme(legend.position="bottom")
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-Burden_MIRAGE-vs_CombinedFeature_Split.pdf")
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom") 
+#dev.off()
 ```
+
+* 6 variant groups X 3 AF categories (0.001<AF<0.01, 0.0001<AF<0.001, AF<0.0001) X 10 gene sets=180 variant groups 
+
+* use filter `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 
 ### gene set analysis taking into account gene level information
 
-* Run mirage on all 17988 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
+* Run mirage on all 17850 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 
 * apply filter `Gnomad_non_neuro_AF<0.05` 
 
+* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 ```{r, echo=F, eval=F}
 ##!!!!!!!!!!!!!!!!! Do not run !!!!!!!!!!!!!!!!!!!
@@ -238,18 +432,18 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(
 
 variant category |parameter | estimate |  p value |
 -----------------|-----|-----|------|--------
-\ |$\hat{\delta}$ | 0.0201 | 0
-(1):PLI>=0.995|$\hat{\eta}_1$ | 0.17    | $1.72\times 10^{-66}$
-(2):0.5<=pLI<0.995|$\hat{\eta}_2$ | 0.04    | $3.90\times 10^{-39}$
-(3):pLI<0.5|$\hat{\eta}_3$ | 0.06    | $1.55\times 10^{-120}$
-(4):MPC>=2|$\hat{\eta}_4$ | 0.06    | $1.55\times 10^{-36}$
-(5):1<=MPC<2| $\hat{\eta}_5$ | 0.12    | $6.95\times 10^{-57}$
-(6):0<=MPC<1| $\hat{\eta}_6$ | 0.05    | $2.69\times 10^{-182}$
+\ |$\hat{\delta}$ | 0.0683 | 1.361528e-42
+(1):PLI>=0.995|$\hat{\eta}_1$ | 0.8310    | $1.856047e-02$
+(2):0.5<=pLI<0.995|$\hat{\eta}_2$ | 0.8482    | $1.222383e-02$
+(3):pLI<0.5|$\hat{\eta}_3$ | 0.0290    | $6.837045e-01$
+(4):MPC>=2|$\hat{\eta}_4$ | 0.4662    | $1.483169e-03$
+(5):1<=MPC<2| $\hat{\eta}_5$ | 0.1124    | $1.451614e-12$
+(6):0<=MPC<1| $\hat{\eta}_6$ | 0.0119    | $1.524884e-32$
 
 
 ```{r, echo=F}
 var_group=c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1")
-estimate=c(0.17, 0.04, 0.06, 0.06, 0.12, 0.05)
+estimate=c(0.8310, 0.8482, 0.0290, 0.4662, 0.1124, 0.0119)
 summary=data.frame(var.group=var_group, estimate=estimate)
 ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) + 
    geom_bar(stat="identity", position=position_dodge())+
