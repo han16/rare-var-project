@@ -195,7 +195,7 @@ ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   ylim(c(0,1.1))+
-  ggtitle("Burden of variant sets")+
+  ggtitle("Burden of variant sets with QD >= 1")+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9))+
   geom_hline(yintercept=1, linetype="dashed", 
@@ -252,7 +252,7 @@ ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   ylim(c(0,1.1))+
-  ggtitle("Burden of variant sets")+
+  ggtitle("Burden of variant sets with QD >= 10.5")+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9))+
   geom_hline(yintercept=1, linetype="dashed", 
@@ -310,7 +310,7 @@ ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   ylim(c(0,1.1))+
-  ggtitle("Burden of variant sets")+
+  ggtitle("Burden of variant sets with QD >= 6")+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9))+
   geom_hline(yintercept=1, linetype="dashed", 
@@ -367,7 +367,7 @@ ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   ylim(c(0,1.1))+
-  ggtitle("Burden of variant sets")+
+  ggtitle("Burden of variant sets with QD >= 10")+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9))+
   geom_hline(yintercept=1, linetype="dashed", 
@@ -422,26 +422,15 @@ ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ### Missense variants in different gene set
 
 
-To compare old sample and new sample
-
-
-*  look at missense variant with AF<1E-4 in 10 gene sets
+To compare old sample and new sample, look at missense variant with AF<1E-4 in 10 gene sets
 
 * In old sample: missense: Non-LoF variants  
-
-* new sample:  there are 2 labels related to "missense". one is `missense_variant` in column `Consequence` and the other is column `isMis`. All 100201 `missense_variant` are with `isMis=TRUE`, but not all 870738 `isMis==TRUE`  are `missense_variant`. Use `isMis=TRUE` as missense variants  and the filter `QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
 
 for new sample, use filter 
 
 * `isMis==TRUE`
 * `Gnomad_non_neuro_AF<0.0001`
 *  `QD>=10  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8`
-
-```{r, echo=F, eval=F}
-sum(ASC_new_sample2%>% select(Consequence, isMis) %>% filter(Consequence=="missense_variant") %>%select(isMis)%>%pull() # how many TRUE isMis in misense_variant
-ASC_new_sample2%>% select(Consequence, isMis) %>% filter(isMis=="TRUE") # how many TRUE isMis    
-```
-
 
 
 #### Variant counts comparison
@@ -547,7 +536,7 @@ g_new_sample=ggplot(missense_new_sample, aes(x = Gene, y = variant_count, fill =
   #geom_bar(stat="identity")+
   theme_classic()+
   ylim(c(0,y.max))+
-  ylab("Variant count")+xlab("Gene set")+
+  ylab("")+xlab("Gene set")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
 theme(text = element_text(size=10))+
 ggtitle("new sample")+
@@ -585,7 +574,7 @@ ggplot(burden_missense_rare, aes(x=Gene_Set, y=OR, fill=Gene_Set)) + # draw the 
                  position=position_dodge(.9))+
   ylab("odds ratio")+xlab("Gene set")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
-  ggtitle("Burden of rare (AF<0.0001) missense variants")+
+  ggtitle("Burden of rare (AF<0.0001) missense variants in new sample")+
   theme(plot.title = element_text(hjust = 0.5, size=15)) # center the title
 ```
 
@@ -734,7 +723,7 @@ g_new_sample=ggplot(missense_new_sample, aes(x = Gene, y = variant_count, fill =
   #geom_bar(stat="identity")+
   theme_classic()+
   ylim(c(0,y.max))+
-  ylab("Variant count")+xlab("Gene set")+
+  ylab("")+xlab("Gene set")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
 theme(text = element_text(size=10))+
 ggtitle("new sample")+
@@ -754,75 +743,6 @@ annotate_figure(figure,
 
 
 
-```{r, echo=F, warning=F, message=F, eval=F}
-
-#### Missense: isMis==TRUE
-
-
-This definition of missense variant is very likely not correct!
-
-######### obtain missense variants with AF<1-E4+10 gene set in new sample data
-############## to save burden and mirage-vs result 
-Burden_MIRAGE_VS=matrix(nrow=length(Gene_Set_List), ncol=6)
-rownames(Burden_MIRAGE_VS)=Gene_Set
-colnames(Burden_MIRAGE_VS)=c("Transmitted", "Untransmitted", "Burden_OR", "Burden_Pval", "MIRAGE-VS_eta", "MIRAGE-VS_Pval")
-##############
-
-rare_missense_variant_new_sample=ASC_new_sample %>% filter(isMis==TRUE)%>% filter(Gnomad_non_neuro_AF<0.0001) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)  # missense variant in new sample data with AF<1-10-4, define missense as isMis=TRUE
-
-transmitted_new_sample=numeric()
-nontransmitted_new_sample=numeric()
-for ( i in 1:length(Gene_Set_List))
- {
-  Feature_Data=rare_missense_variant_new_sample%>%filter(Gene %in% Gene_Set_List[[i]])%>% drop_na()
-  if (nrow(Feature_Data)>0)
-  { 
-    transmitted_new_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
-    nontransmitted_new_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
-    
-     ##############  run mirage-vs on every variant set, takes several minutes to run
-#  Feature_Data_VS=cell_variant_set%>% filter(GENE_NAME %in% Gene_Set_List[[i]])%>% select(Transmitted_proband,Untransmitted_proband) %>% add_column(Group_Index=1)%>% drop_na()
-#  Burden_MIRAGE_VS[i,1:2]=c(transmitted_cell_sample[i], nontransmitted_cell_sample[i])
-#  pois.test=poisson.test(Burden_MIRAGE_VS[i,1:2], c(5869, 5869), r=1, alternative="greater")
-# Burden_MIRAGE_VS[i,3:4]=c(pois.test$estimate,pois.test$p.value)
- 
-#  vs.mirage=mirage_vs(data.frame(Feature_Data_VS),n1=5869,n2=5869)
-#  Burden_MIRAGE_VS[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
-  
-  ##############
-    
-  }
-  }  ### end of i
-
-#write.csv(Burden_MIRAGE_VS, file="../output/CellDataASC/Variant_Set_missense_10Geneset.csv")
-
-missense_new_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_new_sample, nontransmitted_new_sample))
-
-g_new_sample=ggplot(missense_new_sample, aes(x = Gene, y = variant_count, fill = status)) +
-  geom_col(position = position_dodge())+
-  #geom_bar(stat="identity")+
-  theme_classic()+
-  ylim(c(0,2300000))+
-  ylab("Variant count")+xlab("Gene set")+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
-theme(text = element_text(size=10))+
-ggtitle("new sample")+
-  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
-
-#####################  this is from old sample 
-g_old_sample=ggplot(missense_old_sample, aes(x = Gene, y = variant_count, fill = status)) +
-  geom_col(position = "dodge")+
-  theme_classic()+
-  ylim(c(0,2300000))+
-  ylab("Variant count")+xlab("Gene set")+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
-theme(text = element_text(size=10))+
-ggtitle("old sample")+
-  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
-#####################
-
-ggarrange( g_old_sample, g_new_sample, common.legend = TRUE, legend="right") 
-```
 
 
 ###  Missense variants in individual constraint gene 
@@ -886,8 +806,8 @@ g2
 ## Gene-CYFIP1
 
 
-* AF<0.05 by setting `Gnomad_non_neuro_AF<0.05`
-* exclude synonymous variants by setting `isSyn==F`
+*  `Gnomad_non_neuro_AF<0.05`
+* exclude synonymous variants `isSyn==F`
 
 ```{r, echo=F}
 CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & isSyn==F & Gnomad_non_neuro_AF<0.05) %>% filter(QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
@@ -913,18 +833,16 @@ scroll_box(height = "500px")
 
 
 
-### LoF variants in different gene set 
-
-
-
-To compare old sample and new data, look at LoF +AF<1E-4+10 gene set and how they compare with each other. 
-
-Old sample: LoF: the union of  "stopgain", "frameshift substitution", "splicing", "stoploss" 
-
-new sample: LoF: 
 
 
 ```{r, echo=F, warning=F, message=F, eval=F}
+### LoF variants in different gene set 
+#To compare old sample and new data, look at LoF +AF<1E-4+10 gene set and how they compare with each other. 
+
+#Old sample: LoF: the union of  "stopgain", "frameshift substitution", "splicing", "stoploss" 
+
+#new sample: LoF:
+
 ######### obtain LOF variants with AF<1-E4+10 gene set in old sample
 LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
 old_variant_set=Anno.Data%>%filter(Annotation %in% LoF.def & ExacAF<0.0001)%>%select(ID, Gene, No.case, No.contr) %>% drop_na() # LoF variant with AF<1E-4 in old sample
@@ -953,9 +871,6 @@ ggtitle("old sample")+
   theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
 
 
-```
-
-```{r, echo=F, warning=F, message=F, eval=F}
 ######### obtain LOF variants with AF<1-E4+10 gene set in new data
 cell_variant_set=cell_trans_data_AF %>% filter(pLI>=0.5) %>% filter(PTV==T)%>% filter(ExacAF<0.0001) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband)  # LoF variant in cell data with AF<1-10-4
 transmitted_cell_sample=numeric()

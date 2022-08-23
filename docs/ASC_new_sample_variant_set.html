@@ -437,17 +437,10 @@ i.e. 0.12/0.1 variants per sample, leading to 1.2 fold enrichment.</p>
 <div id="missense-variants-in-different-gene-set"
 class="section level3">
 <h3>Missense variants in different gene set</h3>
-<p>To compare old sample and new sample</p>
+<p>To compare old sample and new sample, look at missense variant with
+AF&lt;1E-4 in 10 gene sets</p>
 <ul>
-<li><p>look at missense variant with AF&lt;1E-4 in 10 gene sets</p></li>
-<li><p>In old sample: missense: Non-LoF variants</p></li>
-<li><p>new sample: there are 2 labels related to “missense”. one is
-<code>missense_variant</code> in column <code>Consequence</code> and the
-other is column <code>isMis</code>. All 100201
-<code>missense_variant</code> are with <code>isMis=TRUE</code>, but not
-all 870738 <code>isMis==TRUE</code> are <code>missense_variant</code>.
-Use <code>isMis=TRUE</code> as missense variants and the filter
-<code>QD&gt;=10.5  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></p></li>
+<li>In old sample: missense: Non-LoF variants</li>
 </ul>
 <p>for new sample, use filter</p>
 <ul>
@@ -457,20 +450,20 @@ Use <code>isMis=TRUE</code> as missense variants and the filter
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li>missense variants: <code>isMis=="TRUE"</code></li>
 <li>use filter
 <code>QD&gt;=10  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
 </ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 </div>
 <div id="missense-variants-in-individual-constraint-gene"
@@ -478,14 +471,14 @@ class="section level3">
 <h3>Missense variants in individual constraint gene</h3>
 <p>consider missense variants with AF&lt;10-E4 in top 10 genes from old
 sample and new sample and see how they compare</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-20-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-20-2.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
 </div>
 </div>
 <div id="gene-cyfip1" class="section level2">
 <h2>Gene-CYFIP1</h2>
 <ul>
-<li>AF&lt;0.05 by setting <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
-<li>exclude synonymous variants by setting <code>isSyn==F</code></li>
+<li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+<li>exclude synonymous variants <code>isSyn==F</code></li>
 </ul>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
@@ -9831,14 +9824,6 @@ missense_variant
 </tr>
 </tbody>
 </table>
-</div>
-<div id="lof-variants-in-different-gene-set" class="section level3">
-<h3>LoF variants in different gene set</h3>
-<p>To compare old sample and new data, look at LoF +AF&lt;1E-4+10 gene
-set and how they compare with each other.</p>
-<p>Old sample: LoF: the union of “stopgain”, “frameshift substitution”,
-“splicing”, “stoploss”</p>
-<p>new sample: LoF:</p>
 </div>
 </div>
 
