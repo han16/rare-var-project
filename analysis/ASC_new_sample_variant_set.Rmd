@@ -822,6 +822,7 @@ In old sample, there is one variant having 8/0 at '15:22963816-22963816_A_G' whi
 
 * if no any constraint 
 * all variants don't go beyond `2295xxxx`.
+* none of loci in old sample appears in new sample. 
 
 ```{r, echo=F}
 CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% filter(QD>=10  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
@@ -834,70 +835,4 @@ scroll_box(height = "500px")
 
 
 
-
-```{r, echo=F, warning=F, message=F, eval=F}
-### LoF variants in different gene set 
-#To compare old sample and new data, look at LoF +AF<1E-4+10 gene set and how they compare with each other. 
-
-#Old sample: LoF: the union of  "stopgain", "frameshift substitution", "splicing", "stoploss" 
-
-#new sample: LoF:
-
-######### obtain LOF variants with AF<1-E4+10 gene set in old sample
-LoF.def=c("stopgain", "frameshift substitution", "splicing", "stoploss")
-old_variant_set=Anno.Data%>%filter(Annotation %in% LoF.def & ExacAF<0.0001)%>%select(ID, Gene, No.case, No.contr) %>% drop_na() # LoF variant with AF<1E-4 in old sample
-transmitted_old_sample=numeric()
-nontransmitted_old_sample=numeric()
-for ( i in 1:10)
- {
-  Feature_Data=old_variant_set%>%filter(Gene %in% Gene_Set_List[[i]])
-  if (nrow(Feature_Data)>0)
-  { 
-    transmitted_old_sample[i]=Feature_Data%>%select(No.case)%>%sum()
-    nontransmitted_old_sample[i]=Feature_Data%>%select(No.contr)%>%sum()
-  }
-  }
-
-LoF_old_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_old_sample, nontransmitted_old_sample))
-
-g_old_sample=ggplot(LoF_old_sample, aes(x = Gene, y = variant_count, fill = status)) +
-  geom_col(position = "dodge")+
-  theme_classic()+
-  ylim(c(0,1000))+
-  ylab("Variant count")+xlab("Gene set")+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
-theme(text = element_text(size=10))+
-ggtitle("old sample")+
-  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
-
-
-######### obtain LOF variants with AF<1-E4+10 gene set in new data
-cell_variant_set=cell_trans_data_AF %>% filter(pLI>=0.5) %>% filter(PTV==T)%>% filter(ExacAF<0.0001) %>% select(Variant, GENE_NAME, Transmitted_proband, Untransmitted_proband)  # LoF variant in cell data with AF<1-10-4
-transmitted_cell_sample=numeric()
-nontransmitted_cell_sample=numeric()
-for ( i in 1:10)
- {
-  Feature_Data=cell_variant_set%>%filter(GENE_NAME %in% Gene_Set_List[[i]])
-  if (nrow(Feature_Data)>0)
-  { 
-    transmitted_cell_sample[i]=Feature_Data%>%select(Transmitted_proband)%>%sum()
-    nontransmitted_cell_sample[i]=Feature_Data%>%select(Untransmitted_proband)%>%sum()
-  }
-  }
-
-LoF_cell_sample=tibble(Gene=rep(Gene_Set,2), status=rep(c("transmitted", "nontransmitted"), each=10), variant_count=c(transmitted_cell_sample, nontransmitted_cell_sample))
-
-g_cell_sample=ggplot(LoF_cell_sample, aes(x = Gene, y = variant_count, fill = status)) +
-  geom_col(position = position_dodge())+
-  #geom_bar(stat="identity")+
-  theme_classic()+
-  ylim(c(0,1000))+
-  ylab("Variant count")+xlab("Gene set")+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size=10))+
-theme(text = element_text(size=10))+
-ggtitle("cell sample")+
-  theme(plot.title = element_text(hjust = 0.5, size=10)) # center the title
-
-ggarrange( g_old_sample, g_cell_sample, common.legend = TRUE, legend="right") 
-```
 
