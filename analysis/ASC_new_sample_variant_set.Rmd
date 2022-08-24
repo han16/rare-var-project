@@ -103,7 +103,7 @@ ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent
 ```
 
 
-```{r, echo=F, eval=T}
+```{r, echo=F, message=F, warning=F, eval=T}
 ## identify transmitted and non-transmitted variants 
 #transmitted_variant=ASC_new_sample2%>%select(starts_with(c("t", "u")), "Gnomad_non_neuro_AF")
 #kable(transmitted_variant[1:10,])%>%
@@ -802,6 +802,35 @@ g2=ggplot(untransmitted_variant, aes(x=Gene, y=count, shape=sample, color=sample
 g2
 ```
 
+
+### variant count of top 10 genes in old sample
+
+
+```{r, echo=F, message=F, warning=F}
+top_10gene=c("CYFIP1", "EP400", "FBN1", "SRCAP", "DYNC1H1", "ABCA2", "DOCK4", "CACNA1D", "CHD8", "TRIP12")
+top_10gene_old_sample=matrix(nrow=10, ncol=2)
+top_10gene_new_sample=matrix(nrow=10, ncol=2)
+for ( i in 1:length(top_10gene))
+{
+  
+  top_10gene_old_sample[i,1]=sum(Anno.Data %>% filter(ExacAF<0.05 & Gene==top_10gene[i]) %>% select(No.case) %>% pull)
+  top_10gene_old_sample[i,2]=sum(Anno.Data %>% filter(ExacAF<0.05 & Gene==top_10gene[i]) %>% select(No.contr) %>% pull)
+  
+  top_10gene_new_sample[i,1]=sum(ASC_new_sample %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>%  filter(Gnomad_non_neuro_AF <0.05 & Gene==top_10gene[i]) %>% select(Transmitted_proband) %>% pull)
+  top_10gene_new_sample[i,2]=sum(ASC_new_sample %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>%filter(Gnomad_non_neuro_AF<0.05 & Gene==top_10gene[i]) %>% select(Untransmitted_proband) %>% pull)
+}
+
+top_10gene_variant_count=data.frame(Gene=rep(top_10gene,4), count=c(as.vector(top_10gene_new_sample), as.vector(top_10gene_old_sample)), transmission=c(rep("Transmitted", 10), rep("Untransmitted", 10), rep("Transmitted", 10), rep("Untransmitted", 10)), sample=c(rep("new", 20), rep("old", 20)))
+
+ggplot(top_10gene_variant_count, aes(x = sample, y = count, fill = transmission)) + 
+  geom_bar(stat="identity") + 
+  facet_wrap(~Gene)+
+  theme(axis.text.x = element_text(angle = 60, size = 8))
+```
+
+* `AF<5%`
+
+* new sample `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 ## Gene-CYFIP1
 

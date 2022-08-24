@@ -359,7 +359,7 @@ significant.combined.features=Burden.MIRAGE.combine.clear %>% filter(Burden.pval
 ###################
 y.max=max(-log(Burden.pvalue, base=10), -log(MIRAGE.pvalue, base=10))
 num.test=length(MIRAGE.pvalue)
-g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index), size=15, stroke = 0.5))+
+g1=ggplot(as_tibble(Burden.MIRAGE.combine.clear), aes(x=Burden.OR, y=-log(Burden.pvalue, base=10), color=as.factor(cate.index), shape=as.factor(cate.index), size=1, stroke = 0.5))+
   scale_shape_manual(values=1:nlevels(as.factor(Burden.MIRAGE.combine.clear$cate.index)))+
   geom_point()+
   #xlim(c(0,4))+
