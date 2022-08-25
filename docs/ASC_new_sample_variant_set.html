@@ -478,9 +478,10 @@ class="section level3">
 <h3>variant count of top 10 genes in old sample</h3>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <ul>
-<li><p><code>AF&lt;5%</code></p></li>
-<li><p>new sample
-<code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></p></li>
+<li><code>AF&lt;5%</code></li>
+<li>exclude syn variants <code>isSyn=="FALSE"</code></li>
+<li>new sample
+<code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 </div>
 </div>

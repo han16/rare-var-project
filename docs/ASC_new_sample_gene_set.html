@@ -500,7 +500,7 @@ decrease OR, even below 1, becoming depleted<br />
 <h3>plot of QD value</h3>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   0.323  11.300  12.480  12.440  13.560  63.520</code></pre>
+##   0.323  11.270  12.480  12.418  13.580  46.520</code></pre>
 <p>use filters</p>
 <ul>
 <li><code>isIndel=="FALSE"</code></li>
@@ -540,6 +540,7 @@ groups when running mirage.</p>
 <h3>Run MIRAGE-VS on 180 variant sets</h3>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <ul>
+<li><p>exclude syn variants <code>isSyn=="FALSE"</code></p></li>
 <li><p>6 variant groups X 3 AF categories (0.001&lt;AF&lt;0.01,
 0.0001&lt;AF&lt;0.001, AF&lt;0.0001) X 10 gene sets=180 variant
 groups</p></li>
@@ -549,6 +550,15 @@ groups</p></li>
 correction p = 0.05/total number of tests.</p></li>
 </ul>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<ul>
+<li><p>variant set
+<code>ID gene_PLI&gt;=0.995_0.001&lt;AF&lt;0.01</code>, two loci, 13
+(Trans) vs 15 (Nontrans) and 21 vs 8=&gt; 34 vs 23 in total.</p></li>
+<li><p>varying <span class="math inline">\(\bar{\gamma}\)</span>
+produces quite different p values for MIRAGE_VS.</p></li>
+<li><p>blue dashed line: burden test p value of 0.09242524</p></li>
+</ul>
 </div>
 <div id="gene-set-analysis-taking-into-account-gene-level-information"
 class="section level3">
@@ -622,7 +632,7 @@ class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups and
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>Below are top ranked genes.</p>
 <pre><code>## # A tibble: 17,850 x 4
 ##        X Gene          BF post.prob
@@ -659,7 +669,7 @@ running mirage.</p>
 ## 4 MPC&gt;=2                 788      955 0.825 1.00  0.000301     1    
 ## 5 MPC&gt;=1&amp;MPC&lt;2          5481     5762 0.951 0.996 0.000653     1    
 ## 6 MPC&lt;1                30680    30991 0.990 0.896 0.000134     1</code></pre>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="gene-set-analysis-taking-into-account-gene-level-information-1"
 class="section level3">
@@ -733,7 +743,7 @@ mirage.</p></li>
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 </div>
 <div id="top-5-constraint-genes" class="section level2">
@@ -751,13 +761,13 @@ untransmitted variants.</p>
 ##  Comparison of Poisson rates
 ## 
 ## data:  c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband)) time base: c(num.family, num.family)
-## count1 = 166801, expected count1 = 163404, p-value &lt; 2.2e-16
+## count1 = 99333, expected count1 = 96954, p-value &lt; 2.2e-16
 ## alternative hypothesis: true rate ratio is greater than 1
 ## 95 percent confidence interval:
-##  1.036478      Inf
+##  1.042479      Inf
 ## sample estimates:
 ## rate ratio 
-##   1.042467</code></pre>
+##   1.050309</code></pre>
 </div>
 </div>
 <div id="run-mirage-vs-for-all-variants-together"
@@ -789,7 +799,7 @@ groups when running mirage.</p></li>
 ## 4 (4):MPC&gt;=2               10068    11577 0.870  1    0.000192  1   e+ 0
 ## 5 (5):MPC&gt;=1&amp;MPC&lt;2         54752    57131 0.958  1.00 0.00128   1.29e- 6
 ## 6 (6):MPC&lt;1               157653   160577 0.982  1.00 0.000326  1   e+ 0</code></pre>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 </div>
 <div
 id="gene-set-analysis-using-mirage-taking-into-account-gene-level-information"
@@ -864,7 +874,7 @@ running mirage.</li>
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <p>Below are top ranked genes.</p>
 <pre><code>## # A tibble: 857 x 4
 ##        X Gene       BF post.prob
@@ -886,16 +896,16 @@ running mirage.</li>
 <pre><code>## # A tibble: 10 x 5
 ##    Gene       BF Transmitted_proband Untransmitted_proband    OR
 ##    &lt;chr&gt;   &lt;dbl&gt;               &lt;dbl&gt;                 &lt;dbl&gt; &lt;dbl&gt;
-##  1 ADCY2 6.64e38                6586                  6411 1.03 
-##  2 NF1   1.03e16                3811                  3824 0.997
-##  3 FMN2  4.37e 9               12908                 13088 0.986
-##  4 HLA-C 9.33e 7                  82                   262 0.313
-##  5 DHX38 1.16e 4               15791                 15448 1.02 
-##  6 HLA-B 3.85e 3                1617                  1930 0.838
-##  7 ACLY  1.66e 2                1780                  1766 1.01 
-##  8 FRY   4.52e 0               13213                 13364 0.989
-##  9 KAT2A 3.93e 0                3580                  3530 1.01 
-## 10 NKPD1 3.92e 0                1681                  1621 1.04</code></pre>
+##  1 ADCY2 6.64e38                3361                  3248 1.03 
+##  2 NF1   1.03e16                3048                  3062 0.995
+##  3 FMN2  4.37e 9                3872                  3899 0.993
+##  4 HLA-C 9.33e 7                  81                   252 0.321
+##  5 DHX38 1.16e 4                1368                  1326 1.03 
+##  6 HLA-B 3.85e 3                 901                  1119 0.805
+##  7 ACLY  1.66e 2                1549                  1544 1.00 
+##  8 FRY   4.52e 0                4228                  4234 0.999
+##  9 KAT2A 3.93e 0                2475                  2389 1.04 
+## 10 NKPD1 3.92e 0                1639                  1571 1.04</code></pre>
 </div>
 <div id="vairants-driving-the-signal-in-top-gene"
 class="section level4">
