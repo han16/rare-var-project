@@ -89,8 +89,6 @@ Gene_Set_List[[10]]=SCZ_Gene
 
 
 
-## Genome-wide analysis
-
 
 
 ```{r, echo=F, warning=F, message=F}
@@ -133,7 +131,8 @@ ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC<1)]=6
 num.family=7291
 ## test 
 ```
-### Variant count in PTV with `PLI>=0.995`
+
+## Variant count in PTV with `PLI>=0.995` at different AF cutoffs
 
 
 | AF cutoff      | Trans |   Untrans    | 
@@ -179,7 +178,7 @@ When AF <0.1%, there are 1164 transmitted variants and 1413 untransmitted, not c
 * `Gnomad_non_neuro_AF<0.001`
 
 
-### plot of QD value 
+## plot of QD value 
 
 ```{r, echo=F, message=F, warning=F}
 ############## plot of QD values 
@@ -197,13 +196,14 @@ use filters
 
 
 
-### Run mirage-vs on 6 variant groups in Kyle data  without gene level information 
+## Run mirage-vs on 6 variant groups in cell paper 
 
 
 
 * Use mirage-vs to test if there are signals in six variant groups  
 * filter `Gnomad_non_neuro_AF<0.05` was applied 
 * `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+* `isSyn=="FALSE"`
 
 ```{r, echo=F, eval=F}
 ####### test the toy example 
@@ -229,16 +229,16 @@ for (i in 1:6)
   
 }
 as_tibble(para_est)
-#write.csv(para_est, file="../output/KyleData/para.est.var.group.proband.csv")
+#write.csv(para_est, file="../output/KyleData/para.est.var.group.proband_0826_2022.csv")
 #gene.data=eight.partition(cand.data)
 #ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
 ```
 
 
-This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for 3 PLI variant groups  and $\gamma=3$ for another 3 MPC groups when running mirage.  
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for 3 PLI variant groups  and $\gamma=3$ for another 3 MPC groups when running mirage_vs.  
 
 ```{r, echo=F, warning=F, message=F}
-proband_para_est=read.csv("../output/KyleData/para.est.var.group.proband.csv")
+proband_para_est=read.csv("../output/KyleData/para.est.var.group.proband_0826_2022.csv")
 as_tibble(proband_para_est)
 
 
@@ -261,7 +261,7 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
 ```
 
-### Run MIRAGE-VS on 180 variant sets 
+## Run MIRAGE-VS on 180 variant sets 
 
 
 ```{r, echo=F, eval=F}
@@ -450,7 +450,7 @@ ggplot(data=gamma_pvalue, aes(x=gamma, y=pvalue, group=1)) +
 
 
 
-### gene set analysis taking into account gene level information
+## Run MIRAGE genomewide 
 
 * Run mirage on all 17850 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 

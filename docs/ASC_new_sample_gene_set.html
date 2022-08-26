@@ -350,10 +350,10 @@ div.tocify {
 </div>
 
 
-<div id="genome-wide-analysis" class="section level2">
-<h2>Genome-wide analysis</h2>
-<div id="variant-count-in-ptv-with-pli0.995" class="section level3">
-<h3>Variant count in PTV with <code>PLI&gt;=0.995</code></h3>
+<div id="variant-count-in-ptv-with-pli0.995-at-different-af-cutoffs"
+class="section level2">
+<h2>Variant count in PTV with <code>PLI&gt;=0.995</code> at different AF
+cutoffs</h2>
 <table>
 <thead>
 <tr class="header">
@@ -496,8 +496,8 @@ decrease OR, even below 1, becoming depleted<br />
 <li><code>Gnomad_non_neuro_AF&lt;0.001</code></li>
 </ul>
 </div>
-<div id="plot-of-qd-value" class="section level3">
-<h3>plot of QD value</h3>
+<div id="plot-of-qd-value" class="section level2">
+<h2>plot of QD value</h2>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   0.323  11.270  12.480  12.418  13.580  46.520</code></pre>
@@ -508,36 +508,35 @@ decrease OR, even below 1, becoming depleted<br />
 <li><code>AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 </div>
-<div
-id="run-mirage-vs-on-6-variant-groups-in-kyle-data-without-gene-level-information"
-class="section level3">
-<h3>Run mirage-vs on 6 variant groups in Kyle data without gene level
-information</h3>
+<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper"
+class="section level2">
+<h2>Run mirage-vs on 6 variant groups in cell paper</h2>
 <ul>
 <li>Use mirage-vs to test if there are signals in six variant
 groups<br />
 </li>
 <li>filter <code>Gnomad_non_neuro_AF&lt;0.05</code> was applied</li>
 <li><code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
+<li><code>isSyn=="FALSE"</code></li>
 </ul>
 <p>This figure shows the comparison between burden test (one side two
 sample poisson test) and mirage-vs for proband in 6 variant groups.
 <span class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups
 and <span class="math inline">\(\gamma=3\)</span> for another 3 MPC
-groups when running mirage.</p>
+groups when running mirage_vs. </p>
 <pre><code>## # A tibble: 6 x 7
 ##   X                      No_case No_contr    OR     pval eta_est eta_pval
 ##   &lt;chr&gt;                    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
 ## 1 PLI&gt;=0.995                1351     1220  1.11 5.17e- 3 0.130   1.62e- 3
 ## 2 pLI within (0.5,0.995)    2939     2764  1.06 1.06e- 2 0.0643  2.11e- 2
 ## 3 pLI&lt;0.5                 109275   108331  1.01 2.16e- 2 0.00390 8.92e- 1
-## 4 MPC&gt;=2                   48444    47081  1.03 5.24e- 6 0.0349  2.48e- 3
-## 5 MPC within (1,2)        325810   319274  1.02 2.03e-16 0.0101  1.76e-11
-## 6 MPC&lt;1                  4770861  4747671  1.00 2.82e-14 0.00131 2.50e-28</code></pre>
+## 4 MPC&gt;=2                   48429    47071  1.03 5.64e- 6 0.0345  2.72e- 3
+## 5 MPC within (1,2)        325625   319079  1.02 1.80e-16 0.0101  1.72e-11
+## 6 MPC&lt;1                  4768875  4745827  1.00 3.96e-14 0.00131 2.49e-28</code></pre>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
-<div id="run-mirage-vs-on-180-variant-sets" class="section level3">
-<h3>Run MIRAGE-VS on 180 variant sets</h3>
+<div id="run-mirage-vs-on-180-variant-sets" class="section level2">
+<h2>Run MIRAGE-VS on 180 variant sets</h2>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <ul>
 <li><p>exclude syn variants <code>isSyn=="FALSE"</code></p></li>
@@ -560,9 +559,8 @@ produces quite different p values for MIRAGE_VS.</p></li>
 <li><p>blue dashed line: burden test p value of 0.09242524</p></li>
 </ul>
 </div>
-<div id="gene-set-analysis-taking-into-account-gene-level-information"
-class="section level3">
-<h3>gene set analysis taking into account gene level information</h3>
+<div id="run-mirage-genomewide" class="section level2">
+<h2>Run MIRAGE genomewide</h2>
 <ul>
 <li><p>Run mirage on all 17850 genes and <span
 class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups and
@@ -649,7 +647,6 @@ class="math inline">\(\gamma=6\)</span> for 3 PLI variant groups and
 ## 10  5778 DPH1     1.31e 1     0.489
 ## # ... with 17,840 more rows</code></pre>
 </div>
-</div>
 <div id="asd-genes-in-cell-paper" class="section level2">
 <h2>102 ASD genes in cell paper</h2>
 <div id="variant-set-vs-analysis-without-gene-level-information"
@@ -671,7 +668,7 @@ running mirage.</p>
 ## 6 MPC&lt;1                30680    30991 0.990 0.896 0.000134     1</code></pre>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
-<div id="gene-set-analysis-taking-into-account-gene-level-information-1"
+<div id="gene-set-analysis-taking-into-account-gene-level-information"
 class="section level3">
 <h3>gene set analysis taking into account gene level information</h3>
 <ul>
