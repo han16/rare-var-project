@@ -472,11 +472,11 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(
 ######### It takes more than one hour to finish running mirage function 
 
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
-write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_0830_2022.csv")
+#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_0830_2022.csv")
 ```
 
-variant category |parameter | estimate |  p value |
------------------|-----|-----|------|--------
+| variant category    | parameter |   estimate   | p value |
+| :---        |    :----:   |         :----: |   ---: |
 \ |$\hat{\delta}$ | 0.0677 | $1.383766e-42$
 (1):PLI>=0.995|$\hat{\eta}_1$ | 0.8341    | $1.887287e-02$
 (2):0.5<=pLI<0.995|$\hat{\eta}_2$ | 0.8510    | $1.236803e-02$
@@ -599,8 +599,8 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family)# input d
 #write.csv(mirage_result$BF.PP.gene, file="../output/kyleData/BF.proband.102Gene_0830_2022.csv")
 ```
 
-variant categories |parameter | estimate |  p value |
--------------------|-----|-----|------|--------
+| variant category    | parameter |   estimate   | p value |
+| :---        |    :----:   |         :----: |   ---: |
 \ |$\hat{\delta}$ | 0.9998 | $0.0295$
 PLI>=0.995| $\hat{\eta}_1$ | 0.4321    | $0.2334$
 0.5<=pLI<0.995 | $\hat{\eta}_2$ | 1  | 0.0056
@@ -772,8 +772,8 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(
 ```
 
 
-variant category |parameter | estimate |  p value |
------------------|-----|-----|------|--------
+| variant category    | parameter |   estimate   | p value |
+| :---        |    :----:   |         :----: |   ---: |
 \ |$\hat{\delta}$ | 0.9832 | $2.014043e-06$
 (1):PLI>=0.995|$\hat{\eta}_1$ | 0.2036    | 0.0150
 (2):0.5<=pLI<0.995|$\hat{\eta}_2$ | $1.118248e-35$    | 1
