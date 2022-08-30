@@ -270,10 +270,10 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 #res_vs = mirage_vs(mirage_vs_toy,n1=1000,n2=1000)
 #########
 para_est=matrix(nrow=180, ncol=7)
-rownames(para_est)=paste(rep(paste(rep(Gene_Set,each=6), c("PLI>=0.995", "pLI within (0.5,0.995)", "pLI<0.5", "MPC>=2", "MPC within (1,2)", "MPC<1"), sep="_"), each=3), c("0.001<AF<0.01", "0.0001<0.001", "AF<0.0001"), sep="_")
+rownames(para_est)=paste(rep(paste(rep(Gene_Set,each=6), c("PLI>=0.995", "pLI within (0.5,0.995)", "pLI<0.5", "MPC>=2", "MPC within (1,2)", "MPC<1"), sep="_"), each=3), c("0.001<AF<0.01", "0.0001<AF<0.001", "AF<0.0001"), sep="_")
 colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval", "cate_index")
-for (i in 1:1) # for each gene set
-  for (j in 1:6) # for each variant group
+for (i in 6:6) # for each gene set
+  for (j in 6:6) # for each variant group
 { 
 #i=1  
  cat(i, "is running", "\n")
@@ -322,13 +322,13 @@ for (i in 1:1) # for each gene set
  para_est[k+3,7]=j  # group index need to be recorded regardless of having variants or not
 } # end of  for (j in 1:6) # for each variant group
 #as_tibble(para_est)
-#write.csv(para_est, file="../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0824_2022.csv")
+#write.csv(para_est, file="../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0829_2022.csv")
 ```
 
 
 ```{r, echo=F, message=F, warning=F}
 
-para_est=read.csv("../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0824_2022.csv", header=T)
+para_est=read.csv("../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0829_2022.csv", header=T)
 ############### plot the results 
 #para_est_withoutNA=as_tibble(para_est) %>% drop_na()
 para_est_withoutNA=para_est[complete.cases(para_est), ]
@@ -426,6 +426,9 @@ ggplot(data.frame(Burden_pval=-log(Burden.MIRAGE.combine.clear$Burden.pvalue, ba
   
 ```
 
+* one outlier with extremely small MIRAGE_Vs p value is gene set `AutismKB_MPC<1_0.0001<AF<0.001` with 6802 (transmitted) vs 6914 (untransmitted) on 1901 loci. Burden p value: 0.9839; MIRAGE_VS p value: 5.195326e-15. 
+
+
 ```{r, echo=F, warning=F, message=F}
 gamma_pvalue=data.frame(gamma=seq(1,10),pvalue=c(0.2595, 0.0896, 0.0900, 0.1151, 0.1748, 0.2980, 0.5398, 0.9934, 1,1))
 ggplot(data=gamma_pvalue, aes(x=gamma, y=pvalue, group=1)) +
@@ -454,7 +457,9 @@ ggplot(data=gamma_pvalue, aes(x=gamma, y=pvalue, group=1)) +
 
 * Run mirage on all 17850 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 
-* apply filter `Gnomad_non_neuro_AF<0.05` 
+* AF<0.05,  `Gnomad_non_neuro_AF<0.05` 
+
+* `isSyn=="FALSE"`
 
 * `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
@@ -467,23 +472,23 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(
 ######### It takes more than one hour to finish running mirage function 
 
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
-#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene.csv")
+write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_0830_2022.csv")
 ```
 
 variant category |parameter | estimate |  p value |
 -----------------|-----|-----|------|--------
-\ |$\hat{\delta}$ | 0.0683 | 1.361528e-42
-(1):PLI>=0.995|$\hat{\eta}_1$ | 0.8310    | $1.856047e-02$
-(2):0.5<=pLI<0.995|$\hat{\eta}_2$ | 0.8482    | $1.222383e-02$
-(3):pLI<0.5|$\hat{\eta}_3$ | 0.0290    | $6.837045e-01$
-(4):MPC>=2|$\hat{\eta}_4$ | 0.4662    | $1.483169e-03$
-(5):1<=MPC<2| $\hat{\eta}_5$ | 0.1124    | $1.451614e-12$
-(6):0<=MPC<1| $\hat{\eta}_6$ | 0.0119    | $1.524884e-32$
+\ |$\hat{\delta}$ | 0.0677 | $1.383766e-42$
+(1):PLI>=0.995|$\hat{\eta}_1$ | 0.8341    | $1.887287e-02$
+(2):0.5<=pLI<0.995|$\hat{\eta}_2$ | 0.8510    | $1.236803e-02$
+(3):pLI<0.5|$\hat{\eta}_3$ | 0.0292    | $6.837139e-01$
+(4):MPC>=2|$\hat{\eta}_4$ | 0.4683    | $1.576707e-03$
+(5):1<=MPC<2| $\hat{\eta}_5$ | 0.1136    | $1.401804e-12$
+(6):0<=MPC<1| $\hat{\eta}_6$ | 0.0120    | $1.471682e-32$
 
 
 ```{r, echo=F}
 var_group=c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1")
-estimate=c(0.8310, 0.8482, 0.0290, 0.4662, 0.1124, 0.0119)
+estimate=c(0.8341, 0.8510, 0.0292, 0.4683, 0.1136, 0.0120)
 summary=data.frame(var.group=var_group, estimate=estimate)
 ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) + 
    geom_bar(stat="identity", position=position_dodge())+
@@ -495,14 +500,22 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 ```
 
 
+
+
 Below are top ranked genes. 
 ```{r, echo=F}
-BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene.csv"))
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_0830_2022.csv"))
 BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
 #length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
 BF_proband_AllGene_sorted
 #BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
 ```
+
+* [HLA-DRB1](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5955937/)
+* [SSC5D](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7697115/)
+* [GSTM1](https://pubmed.ncbi.nlm.nih.gov/33546147/)
+* [TXNDC2](https://www.nature.com/articles/s41598-021-00123-x)
+
 
 
 
@@ -532,17 +545,17 @@ vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=6)
 para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
 }
 as_tibble(para_est)
-#write.csv(para_est, file="../output/kyleData/para.est.var.group.proband.102ASDGene.csv")
+#write.csv(para_est, file="../output/kyleData/para.est.var.group.proband.102ASDGene_0830_2022.csv")
 #gene.data=eight.partition(cand.data)
 #ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
 ```
 
-### variant set (VS) analysis without gene level information
+### variant set (VS) analysis by MIRAGE_VS
 
-This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for 3 PLI variant groups and $\gamma=3$ for 3 MPC groups when running mirage.
+This figure shows the comparison between burden test (one side two sample poisson test) and mirage-vs for proband in 6 variant groups. $\gamma=6$ for 3 PLI variant groups and $\gamma=3$ for 3 MPC groups when running mirage_vs.
 
 ```{r, echo=F}
-proband_para_est=read.csv("../output/kyleData/para.est.var.group.proband.102ASDGene.csv")
+proband_para_est=read.csv("../output/kyleData/para.est.var.group.proband.102ASDGene_0830_2022.csv")
 as_tibble(proband_para_est)
 
 
@@ -566,11 +579,15 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 ```
 
 
-### gene set analysis taking into account gene level information
+### gene set analysis by MIRAGE
 
 * $\gamma=6$ for LoF variant and $\gamma=3$ for missense when running mirage.
 
-* apply filter `Gnomad_non_neuro_AF<0.05` 
+*  filter `Gnomad_non_neuro_AF<0.05` 
+
+* `isSyn=="FALSE"`
+
+* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 
 ```{r,echo=F, eval=F}
@@ -579,25 +596,25 @@ gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05)%>% filter(Gene %
 #mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
 mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family)# input data must be dataframe
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
-#write.csv(mirage_result$BF.PP.gene, file="../output/kyleData/BF.proband.102Gene.csv")
+#write.csv(mirage_result$BF.PP.gene, file="../output/kyleData/BF.proband.102Gene_0830_2022.csv")
 ```
 
 variant categories |parameter | estimate |  p value |
 -------------------|-----|-----|------|--------
-\ |$\hat{\delta}$ | 0.40 | $1.10\times 10^{-6}$
-PLI>=0.995| $\hat{\eta}_1$ | 0.1452    | $1.13\times 10^{-6}$
-0.5<=pLI<0.995 | $\hat{\eta}_2$ | 1  | 0.1546
-pLI<0.5 | $\hat{\eta}_3$ | 0.7379    | 0.2145
-MPC>=2 | $\hat{\eta}_4$ | 0.1789    | $5.20\times 10^{-4}$
-1<=MPC<2 | $\hat{\eta}_5$ | $8.13\times 10^{-5}$    | 1
-0<=MPC<1 | $\hat{\eta}_6$ | $6.64\times 10^{-12}$    | 1
+\ |$\hat{\delta}$ | 0.9998 | $0.0295$
+PLI>=0.995| $\hat{\eta}_1$ | 0.4321    | $0.2334$
+0.5<=pLI<0.995 | $\hat{\eta}_2$ | 1  | 0.0056
+pLI<0.5 | $\hat{\eta}_3$ | 0.5156    | 0.2508
+MPC>=2 | $\hat{\eta}_4$ | 0.1176    | 0.1685
+1<=MPC<2 | $\hat{\eta}_5$ | 0.0539    | 0.0729
+0<=MPC<1 | $\hat{\eta}_6$ | $7.814873e-09$    | 1
 Table: Parameter estimate by MIRAGE for 102 ASD genes. 
 
 
 
 ```{r, echo=F}
 var_group=c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1")
-estimate=c(0.1452, 1, 0.7379, 0.1789, 0.0000813, 0)
+estimate=c(0.4321, 1, 0.5156, 0.1176, 0.0539, 0)
 summary=data.frame(var.group=var_group, estimate=estimate)
 ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) + 
    geom_bar(stat="identity", position=position_dodge())+
@@ -613,9 +630,7 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 ## Top 5% constraint genes 
 
 
-### Burden analysis 
-
-#### Look at all variants with AF<10E-4 
+### Burden analysis for variants in constrant genes  with AF<10E-4 
 
 In old sample, we observe signal in constraint genes with $AF<10^{-4}$. 
 
@@ -624,15 +639,28 @@ Constraint_Gene=as.character(read.csv("../data/GeneSet/Samocha_2014NG_contraintg
 new_sample_trans_data_Constraint_Gene=ASC_new_sample_GI%>% filter(Gene %in% Constraint_Gene & Gnomad_non_neuro_AF<0.0001)%>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)%>%drop_na()
 ```
 
-There are 199395 transmitted variants in proband and 204963 untransmitted variants. 
+* There are 99333 transmitted variants in proband and 94575 untransmitted variants. 
 
-```{r, echo=T}
-poisson.test(c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband)), c(num.family, num.family), r=1, alternative="greater")
+```{r, echo=F}
+#poisson.test(c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband)), c(num.family, num.family), r=1, alternative="greater")
+
+fisher_test=fisher.test(matrix(c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), num.family, sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband), num.family), nrow=2))
+
+fisher_test_result_all=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="Constraint_gene_AF<0.0001")
+ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_hline(yintercept = 1,linetype="dashed", 
+                color = "red", size=1)+
+  xlab("")+
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
+
 ```
 
-### Run MIRAGE-VS for all variants together
+### Run MIRAGE_VS on all variants in constraint genes with AF<10E-4 in one group
 
-Put all variants with AF<10E-4 in one category and run MIRAGE-VS. $\widehat{\eta}=0.0041$, p value is $1.6\times 10^{-9}$.  
+* Put all variants with AF<10E-4 in one category and run MIRAGE_VS. $\widehat{\eta}=0.0882$, p value is $2.585515e-34$.  
 
 ```{r, echo=F, eval=F}
 Constraint_Gene_for_VS=new_sample_trans_data_Constraint_Gene%>% select(Transmitted_proband, Untransmitted_proband)%>%add_column(Group_Index=1)%>% drop_na()
@@ -642,7 +670,7 @@ vs.mirage=mirage_vs(data.frame(Constraint_Gene_for_VS),n1=num.family,n2=num.fami
 
 
 
-### Run MIRAGE-VS on constraint genes with   6 variant groups in cell paper  without gene level information
+### Run MIRAGE-VS on  6 variant groups in cell paper 
 
 ```{r, echo=F, eval=F}
 #########
@@ -663,7 +691,7 @@ vs.mirage=mirage_vs(variant_set[,2:4],n1=num.family,n2=num.family, gamma=6)
 para_est[i,5:6]=c(vs.mirage$eta.est, vs.mirage$eta.pvalue)
 }
 as_tibble(para_est)
-#write.csv(para_est, file="../output/KyleData/para.est.var.group.proband.Constraint.Gene.csv")
+#write.csv(para_est, file="../output/KyleData/para.est.var.group.proband.Constraint.Gene_0830_2022.csv")
 #gene.data=eight.partition(cand.data)
 #ds.asd.result=mirage(gene.data, n1=2403, n2=2403)
 ```
@@ -675,8 +703,14 @@ This figure shows the comparison between burden test (one side two sample poisso
 
 * apply filter `Gnomad_non_neuro_AF<0.05` 
 
+* `isSyn=="FALSE"`
+
+* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+
+
+
 ```{r, echo=F}
-proband_para_est=read.csv("../output/KyleData/para.est.var.group.proband.Constraint.Gene.csv")
+proband_para_est=read.csv("../output/KyleData/para.est.var.group.proband.Constraint.Gene_0830_2022.csv")
 as_tibble(proband_para_est)
 
 
@@ -699,20 +733,27 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
   # geom_hline(yintercept=0.1,linetype="dashed", color = "red")
 ```
 
-### gene set analysis using mirage taking into account gene level information
+### gene set analysis by MIRAGE
 
 * $\gamma=6$ for PLI variant groups and $\gamma=3$ for MPC groups when running mirage.
+
 * apply filter `Gnomad_non_neuro_AF<0.05` 
+
+* `isSyn=="FALSE"`
+
+* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+
+* 836 genes in total 
 
 ```{r,echo=F, eval=F}
 ### !!!!!!!!!!!!!!!!! DO NOT RUN: it takes about ~20 min  to run; not really, heavily depends on the seeds  ####### 
 ############  gene set 
 gene_set=ASC_new_sample_GI %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% Constraint_Gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
-#mirage_result=mirage(data.frame(gene_set),n1=5869, n2=5869, gamma=c(6,6,6,3,3,3))
+mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(6,6,6,3,3,3))
 ######## this case takes about 2 hours to finish running 
 #set.seed(Sys.time()) # set a unique random seed 
-mirage_result1=mirage(data.frame(gene_set),n1=num.family, n2=num.family)# input data must be dataframe
-#write.csv(mirage_result1$BF.PP.gene, file="../output/KyleData/BF.proband.ConstraintGene.csv")
+#mirage_result1=mirage(data.frame(gene_set),n1=num.family, n2=num.family)# input data must be dataframe
+#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.ConstraintGene_0830_2022.csv")
 #saveRDS(mirage_result1$BF.all, file="../output/KyleData/BF.proband.ConstraintGene.BF.all.rds") #this saves Bayes factor for all variants in each gene, no need to re-run the program 
 
 ####### this case takes close to 2 hours to finish running 
@@ -733,18 +774,18 @@ mirage_result1=mirage(data.frame(gene_set),n1=num.family, n2=num.family)# input 
 
 variant category |parameter | estimate |  p value |
 -----------------|-----|-----|------|--------
-\ |$\hat{\delta}$ | 0.0911 | 0
-(1):PLI>=0.995|$\hat{\eta}_1$ | 0.1509    | 0
-(2):0.5<=pLI<0.995|$\hat{\eta}_2$ | $1.14\times 10^{-48}$    | 1
-(3):pLI<0.5|$\hat{\eta}_3$ | 0.5452    | $8.72\times 10^{-11}$
-(4):MPC>=2|$\hat{\eta}_4$ | $1.03\times 10^{-8}$    | 1
-(5):1<=MPC<2| $\hat{\eta}_5$ | 0.0258    | $1.75\times 10^{-16}$
-(6):0<=MPC<1| $\hat{\eta}_6$ | 0.0263    | $1.41\times 10^{-10}$
+\ |$\hat{\delta}$ | 0.9832 | $2.014043e-06$
+(1):PLI>=0.995|$\hat{\eta}_1$ | 0.2036    | 0.0150
+(2):0.5<=pLI<0.995|$\hat{\eta}_2$ | $1.118248e-35$    | 1
+(3):pLI<0.5|$\hat{\eta}_3$ | 0.2145    | 0.0011$
+(4):MPC>=2|$\hat{\eta}_4$ | 0.1115    | 0.0000152777
+(5):1<=MPC<2| $\hat{\eta}_5$ | 0.0175    | 0.0559135877
+(6):0<=MPC<1| $\hat{\eta}_6$ | 2.259378e-06    | 1
 
 
 ```{r, echo=F}
 var_group=c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1")
-estimate=c(0.1509, 0, 0.5452, 0, 0.0258, 0.0263)
+estimate=c(0.2036, 0, 0.2145, 0.1115, 0.0175, 0)
 summary=data.frame(var.group=var_group, estimate=estimate)
 ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) + 
    geom_bar(stat="identity", position=position_dodge())+
@@ -755,19 +796,19 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
 ```
 
-Below are top ranked genes. 
-```{r, echo=F}
+```{r, echo=F, warning=F, message=F}
+#Below are top ranked genes. 
 BF_all=readRDS("../output/KyleData/BF.proband.ConstraintGene.BF.all.rds")
-BF_proband_ConstraintGene=as_tibble(read.csv("../output/kyleData/BF.proband.ConstraintGene.csv"))
+BF_proband_ConstraintGene=as_tibble(read.csv("../output/kyleData/BF.proband.ConstraintGene_0830_2022.csv"))
 BF_proband_ConstraintGene_sorted=BF_proband_ConstraintGene%>%arrange(desc(post.prob))
 #length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
-BF_proband_ConstraintGene_sorted
+#BF_proband_ConstraintGene_sorted
 #BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
 ```
 
-#### Top genes 
+#### Top 10 genes with burden 
 
-Those top genes with large BF  do not have burden. 
+*  top genes with large BF don't have heavy burden. 
 
 
 ```{r, echo=F}
@@ -784,6 +825,13 @@ OR[i]=burden_test$estimate
 topgene_summary=tibble(Gene=topgene, BF=BF_proband_ConstraintGene_sorted$BF[1:10], Transmitted_proband=Transmitted_proband, Untransmitted_proband=Untransmitted_proband, OR=OR)
 topgene_summary
 ```
+
+* [KIAA1109](https://www.nature.com/articles/s41398-021-01578-2.pdf?proof=t)
+
+* [EIF3I](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5785978/pdf/krnb-15-01-1391437.pdf)
+
+* [CTNNA2](https://gene.sfari.org/database/human-gene/CTNNA2)
+
 
 
 #### Vairants driving the signal in top gene 
@@ -806,28 +854,12 @@ BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
   return(BF.var)
 }
 
-```
-
-variants that drive the BF of top genes. Those variants surviving after filter `AF<5%`  has close to 10 times untransmitted variants than transmitted, thereby drive the BF to a high number.  
-
-```
-* 148 5:7757570:TGGCCGTGTTCAACATGGTAAGTCCCAGAGCAC:T                                 ADCY2        0.00882                  15              219           1
-
 > BF.var.inte(15, 219, 3, 3, num.family, num.family)
 [1] 6.321461e+36
 
-In gene ADCY2, there is one variant with `15      219        1 6.015290e+39              1` driving the signal.
-
-* 17:31232075:A:T  NF1      11      123        5 1.022707e+18              5
-
-* 1:240207775:C:T FMN2      23      130        6 202948206699  6 
-
-* 6:31271622:C:CGGAG HLA-C       4       43        3 3.113611e+02    
-6:31271643:A:T HLA-C       3       43        6 1.513167e+03              6
-
-* 16:72109460:GAGCT:G DHX38      35      122        3 4.678945e+04              3
 
 ```
+
 
  
 

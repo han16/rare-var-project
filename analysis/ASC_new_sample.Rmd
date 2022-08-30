@@ -34,6 +34,8 @@ ASC_new_sample3
 ```
 
 
+## 
+
 ### Variant partition by Gnomad AF 
 
 
@@ -58,7 +60,7 @@ ggplot(data=var_count_by_AF, aes(x=cate, y=count)) +
 ```
 
 
-#### Variant partition by percentage 
+### Variant partition by percentage 
 
 
 ```{r, echo=F}

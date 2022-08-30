@@ -378,6 +378,10 @@ ggplot(rare_varint_burden, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 ```
 
 
+
+
+
+
 ## Figure  1(B) in cell paper 
 
 From cell paper, for variants with `pLI>=0.995`, there are 695 transmitted variants and 557 untransmitted in 5869 parents, i.e. 0.12/0.1 variants per sample, leading to 1.2 fold enrichment. 
