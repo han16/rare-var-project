@@ -640,7 +640,7 @@ Use below filters and stated otherwise
 
 
 
-### Burden analysis for variants in constrant genes  with AF<10E-4 
+### One variant set: constrant genes+ AF<10E-4 
 
 * In old sample, we observe signal in constraint genes with $AF<10^{-4}$. 
 
@@ -657,12 +657,14 @@ new_sample_trans_data_Constraint_Gene=ASC_new_sample_GI%>% filter(Gene %in% Cons
 fisher_test=fisher.test(matrix(c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), num.family, sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband), num.family), nrow=2))
 
 fisher_test_result_all=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="Constraint_gene_AF<0.0001")
-ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
+
+g1=ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
   geom_bar(stat="identity", color="black", 
            position=position_dodge()) +
   geom_hline(yintercept = 1,linetype="dashed", 
                 color = "red", size=1)+
-  ggtitle("Burden of new sample")+
+  ggtitle("")+
+  theme(legend.position = "none")+  # no legend 
   theme(plot.title = element_text(hjust = 0.5, size=15))+  #center the title
   xlab("")+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
@@ -670,7 +672,6 @@ ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot
 
 ```
 
-### Run MIRAGE_VS on all variants in constraint genes with AF<10E-4 in one group
 
 * Put all variants with AF<10E-4 in one category and run MIRAGE_VS. $\widehat{\eta}=0.0882$, p value is $2.585515e-34$.  
 
@@ -681,19 +682,30 @@ vs.mirage=mirage_vs(data.frame(Constraint_Gene_for_VS),n1=num.family,n2=num.fami
 ```
 
 
-* Burden p value vs MIRAGE_VS p value 
 
 ```{r, echo=F, message=F, warning=F}
 method=c("MIRAGE_VS", "Burden")
 pvalue=c(2.585515e-34, 0.004349)
 summary=data.frame(method=method, pvalue=-log(pvalue, base=10))
-ggplot(summary, aes(x=method, y=pvalue, fill=method)) + 
+g2=ggplot(summary, aes(x=method, y=pvalue, fill=method)) + 
    geom_bar(stat="identity", position=position_dodge())+
   theme(legend.title=element_blank())+
   xlab("method")+ylab(expression(-log[10](pvalue)))+
-  ggtitle("Variant set: constraint gene+AF<0.0001")+
+  ggtitle("")+
+ #  theme(legend.position = "none")+  # no legend
   theme(plot.title = element_text(hjust = 0.5, size=15))+  #center the title 
   theme(axis.text.x = element_text(angle = 0, vjust = 0.5, size=10))
+
+
+figure=ggarrange(g1, g2, common.legend = F, legend="bottom") 
+annotate_figure(figure,
+                top = text_grob("Variant set: constraint gene+AF<0.0001", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Data source: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+)
 ```
 
 ### Run MIRAGE_VS on  6 variant groups in cell paper 
