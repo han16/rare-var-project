@@ -630,16 +630,26 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 ## Top 5% constraint genes 
 
 
+Use below filters and stated otherwise 
+
+*  filter `Gnomad_non_neuro_AF<0.05` 
+
+* `isSyn=="FALSE"`
+
+* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+
+
+
 ### Burden analysis for variants in constrant genes  with AF<10E-4 
 
-In old sample, we observe signal in constraint genes with $AF<10^{-4}$. 
+* In old sample, we observe signal in constraint genes with $AF<10^{-4}$. 
 
 ```{r, echo=F, warning=F, message=F, cache=T}
 Constraint_Gene=as.character(read.csv("../data/GeneSet/Samocha_2014NG_contraintgene.csv", header=T)$gene)
 new_sample_trans_data_Constraint_Gene=ASC_new_sample_GI%>% filter(Gene %in% Constraint_Gene & Gnomad_non_neuro_AF<0.0001)%>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband)%>%drop_na()
 ```
 
-* There are 99333 transmitted variants in proband and 94575 untransmitted variants. 
+* in new sample, there are 99333 transmitted variants and  94575 untransmitted variants. 
 
 ```{r, echo=F}
 #poisson.test(c(sum(new_sample_trans_data_Constraint_Gene$Transmitted_proband), sum(new_sample_trans_data_Constraint_Gene$Untransmitted_proband)), c(num.family, num.family), r=1, alternative="greater")
@@ -652,6 +662,8 @@ ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot
            position=position_dodge()) +
   geom_hline(yintercept = 1,linetype="dashed", 
                 color = "red", size=1)+
+  ggtitle("Burden of new sample")+
+  theme(plot.title = element_text(hjust = 0.5, size=15))+  #center the title
   xlab("")+
   geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
                  position=position_dodge(.9)) 
@@ -669,8 +681,22 @@ vs.mirage=mirage_vs(data.frame(Constraint_Gene_for_VS),n1=num.family,n2=num.fami
 ```
 
 
+* Burden p value vs MIRAGE_VS p value 
 
-### Run MIRAGE-VS on  6 variant groups in cell paper 
+```{r, echo=F, message=F, warning=F}
+method=c("MIRAGE_VS", "Burden")
+pvalue=c(2.585515e-34, 0.004349)
+summary=data.frame(method=method, pvalue=-log(pvalue, base=10))
+ggplot(summary, aes(x=method, y=pvalue, fill=method)) + 
+   geom_bar(stat="identity", position=position_dodge())+
+  theme(legend.title=element_blank())+
+  xlab("method")+ylab(expression(-log[10](pvalue)))+
+  ggtitle("Variant set: constraint gene+AF<0.0001")+
+  theme(plot.title = element_text(hjust = 0.5, size=15))+  #center the title 
+  theme(axis.text.x = element_text(angle = 0, vjust = 0.5, size=10))
+```
+
+### Run MIRAGE_VS on  6 variant groups in cell paper 
 
 ```{r, echo=F, eval=F}
 #########
@@ -701,11 +727,6 @@ This figure shows the comparison between burden test (one side two sample poisso
 
 * $\gamma=6$ for 3 PLI variant groups and $\gamma=3$ for 3 MPC groups when running mirage.
 
-* apply filter `Gnomad_non_neuro_AF<0.05` 
-
-* `isSyn=="FALSE"`
-
-* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 
 
@@ -724,8 +745,8 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
   ylab(expression(-log[10](pvalue)))+
   theme(legend.title=element_blank())+
   xlab(" variant groups")+
-  ggtitle(" p value comparison between Burden and MIRAGE-VS")+
-  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  ggtitle("Burden vs MIRAGE_VS")+
+  theme(plot.title = element_text(hjust = 0.5, size=15))+  #center the title 
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
   #ylab(expression(paste(hat(eta))))+ 
   #guides(fill=guide_legend(title=NULL))+
@@ -736,12 +757,6 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 ### gene set analysis by MIRAGE
 
 * $\gamma=6$ for PLI variant groups and $\gamma=3$ for MPC groups when running mirage.
-
-* apply filter `Gnomad_non_neuro_AF<0.05` 
-
-* `isSyn=="FALSE"`
-
-* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 * 836 genes in total 
 

@@ -404,6 +404,7 @@ ASC_new_sample=ASC_new_sample%>%
 PTV_cate1=ASC_new_sample %>% filter(pLI>=0.995 & Gnomad_non_neuro_AF<0.001 & isPTV=="TRUE") %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband)
 
 fisher_test=fisher.test(matrix(c(sum(PTV_cate1$Transmitted_proband), num_proband, sum(PTV_cate1$Untransmitted_proband), num_proband), nrow=2))
+
 fisher_test_result_all=tibble(OR=fisher_test$estimate, lower=fisher_test$conf.int[1], upper=fisher_test$conf.int[2], var="pLI>=0.995")
 ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR plot 
   geom_bar(stat="identity", color="black", 

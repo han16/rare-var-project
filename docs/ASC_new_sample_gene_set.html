@@ -760,15 +760,21 @@ class="math inline">\(7.814873e-09\)</span></td>
 </div>
 <div id="top-5-constraint-genes" class="section level2">
 <h2>Top 5% constraint genes</h2>
+<p>Use below filters and stated otherwise</p>
+<ul>
+<li><p>filter <code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
+<li><p><code>isSyn=="FALSE"</code></p></li>
+<li><p><code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></p></li>
+</ul>
 <div id="burden-analysis-for-variants-in-constrant-genes-with-af10e-4"
 class="section level3">
 <h3>Burden analysis for variants in constrant genes with
 AF&lt;10E-4</h3>
-<p>In old sample, we observe signal in constraint genes with <span
-class="math inline">\(AF&lt;10^{-4}\)</span>.</p>
 <ul>
-<li>There are 99333 transmitted variants in proband and 94575
-untransmitted variants.</li>
+<li><p>In old sample, we observe signal in constraint genes with <span
+class="math inline">\(AF&lt;10^{-4}\)</span>.</p></li>
+<li><p>in new sample, there are 99333 transmitted variants and 94575
+untransmitted variants.</p></li>
 </ul>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
@@ -778,23 +784,22 @@ class="section level3">
 <h3>Run MIRAGE_VS on all variants in constraint genes with AF&lt;10E-4
 in one group</h3>
 <ul>
-<li>Put all variants with AF&lt;10E-4 in one category and run MIRAGE_VS.
-<span class="math inline">\(\widehat{\eta}=0.0882\)</span>, p value is
-<span class="math inline">\(2.585515e-34\)</span>.</li>
+<li><p>Put all variants with AF&lt;10E-4 in one category and run
+MIRAGE_VS. <span class="math inline">\(\widehat{\eta}=0.0882\)</span>, p
+value is <span class="math inline">\(2.585515e-34\)</span>.</p></li>
+<li><p>Burden p value vs MIRAGE_VS p value</p></li>
 </ul>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
-<div id="run-mirage-vs-on-6-variant-groups-in-cell-paper-1"
+<div id="run-mirage_vs-on-6-variant-groups-in-cell-paper"
 class="section level3">
-<h3>Run MIRAGE-VS on 6 variant groups in cell paper</h3>
+<h3>Run MIRAGE_VS on 6 variant groups in cell paper</h3>
 <p>This figure shows the comparison between burden test (one side two
 sample poisson test) and mirage-vs for proband in 6 variant groups.</p>
 <ul>
-<li><p><span class="math inline">\(\gamma=6\)</span> for 3 PLI variant
+<li><span class="math inline">\(\gamma=6\)</span> for 3 PLI variant
 groups and <span class="math inline">\(\gamma=3\)</span> for 3 MPC
-groups when running mirage.</p></li>
-<li><p>apply filter <code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
-<li><p><code>isSyn=="FALSE"</code></p></li>
-<li><p><code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></p></li>
+groups when running mirage.</li>
 </ul>
 <pre><code>## # A tibble: 6 x 7
 ##   X                      No_case No_contr    OR       pval  eta_est  eta_pval
@@ -805,7 +810,7 @@ groups when running mirage.</p></li>
 ## 4 (4):MPC&gt;=2                7968     7638 1.04  0.00422    0.0730   0.0000137
 ## 5 (5):MPC&gt;=1&amp;MPC&lt;2         48412    47060 1.03  0.00000614 0.00926  0.0918   
 ## 6 (6):MPC&lt;1               146671   145348 1.01  0.00721    0.000871 1</code></pre>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 <div id="gene-set-analysis-by-mirage-1" class="section level3">
 <h3>gene set analysis by MIRAGE</h3>
@@ -813,9 +818,6 @@ groups when running mirage.</p></li>
 <li><p><span class="math inline">\(\gamma=6\)</span> for PLI variant
 groups and <span class="math inline">\(\gamma=3\)</span> for MPC groups
 when running mirage.</p></li>
-<li><p>apply filter <code>Gnomad_non_neuro_AF&lt;0.05</code></p></li>
-<li><p><code>isSyn=="FALSE"</code></p></li>
-<li><p><code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></p></li>
 <li><p>836 genes in total</p></li>
 </ul>
 <table>
@@ -880,7 +882,7 @@ class="math inline">\(\hat{\eta}_6\)</span></td>
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <div id="top-10-genes-with-burden" class="section level4">
 <h4>Top 10 genes with burden</h4>
 <ul>
