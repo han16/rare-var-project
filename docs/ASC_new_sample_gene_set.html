@@ -783,23 +783,12 @@ value is <span class="math inline">\(2.585515e-34\)</span>.</p></li>
 <div id="run-mirage_vs-on-6-variant-groups-in-cell-paper"
 class="section level3">
 <h3>Run MIRAGE_VS on 6 variant groups in cell paper</h3>
-<p>This figure shows the comparison between burden test (one side two
-sample poisson test) and mirage-vs for proband in 6 variant groups.</p>
 <ul>
 <li><span class="math inline">\(\gamma=6\)</span> for 3 PLI variant
 groups and <span class="math inline">\(\gamma=3\)</span> for 3 MPC
-groups when running mirage.</li>
+groups when running mirage_vs.</li>
 </ul>
-<pre><code>## # A tibble: 6 x 7
-##   X                      No_case No_contr    OR       pval  eta_est  eta_pval
-##   &lt;chr&gt;                    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
-## 1 (1):PLI&gt;=0.995             225      178 1.26  0.0109     0.200    0.0150   
-## 2 (2):pLI&gt;=0.5&amp;pLI&lt;0.995     174      182 0.956 0.683      0.000342 1        
-## 3 (3):pLI&lt;0.5                854      775 1.10  0.0266     0.212    0.00105  
-## 4 (4):MPC&gt;=2                7968     7638 1.04  0.00422    0.0730   0.0000137
-## 5 (5):MPC&gt;=1&amp;MPC&lt;2         48412    47060 1.03  0.00000614 0.00926  0.0918   
-## 6 (6):MPC&lt;1               146671   145348 1.01  0.00721    0.000871 1</code></pre>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-24-1.png" width="672" /><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-24-2.png" width="672" /></p>
 </div>
 <div id="gene-set-analysis-by-mirage-1" class="section level3">
 <h3>gene set analysis by MIRAGE</h3>
@@ -810,12 +799,29 @@ when running mirage.</p></li>
 <li><p>836 genes in total</p></li>
 </ul>
 <table>
+<caption>Summary of top 5% constraint genes</caption>
+<colgroup>
+<col width="8%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="8%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">variant category</th>
 <th align="center">parameter</th>
-<th align="center">estimate</th>
-<th align="right">p value</th>
+<th align="center">MIRAGE: estimate</th>
+<th align="center">MIRAGE:p value</th>
+<th align="center">Trans</th>
+<th align="center">non-Trans</th>
+<th align="center">OR</th>
+<th align="center">MIRAGE_VS: estimate</th>
+<th align="right">MIRAGE_VS: p value</th>
 </tr>
 </thead>
 <tbody>
@@ -824,13 +830,24 @@ when running mirage.</p></li>
 <td align="center"><span
 class="math inline">\(\hat{\delta}\)</span></td>
 <td align="center">0.9832</td>
-<td align="right"><span class="math inline">\(2.014043e-06\)</span></td>
+<td align="center"><span
+class="math inline">\(2.014043e-06\)</span></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="right"></td>
 </tr>
 <tr class="even">
 <td align="left">(1):PLI&gt;=0.995</td>
 <td align="center"><span
 class="math inline">\(\hat{\eta}_1\)</span></td>
 <td align="center">0.2036</td>
+<td align="center">0.0150</td>
+<td align="center">225</td>
+<td align="center">178</td>
+<td align="center">1.26</td>
+<td align="center">0.200</td>
 <td align="right">0.0150</td>
 </tr>
 <tr class="odd">
@@ -839,6 +856,11 @@ class="math inline">\(\hat{\eta}_1\)</span></td>
 class="math inline">\(\hat{\eta}_2\)</span></td>
 <td align="center"><span
 class="math inline">\(1.118248e-35\)</span></td>
+<td align="center">1</td>
+<td align="center">174</td>
+<td align="center">182</td>
+<td align="center">0.956</td>
+<td align="center">0.000342</td>
 <td align="right">1</td>
 </tr>
 <tr class="even">
@@ -846,32 +868,52 @@ class="math inline">\(1.118248e-35\)</span></td>
 <td align="center"><span
 class="math inline">\(\hat{\eta}_3\)</span></td>
 <td align="center">0.2145</td>
-<td align="right">0.0011$</td>
+<td align="center">0.0011</td>
+<td align="center">854</td>
+<td align="center">775</td>
+<td align="center">1.10</td>
+<td align="center">0.212</td>
+<td align="right">0.00105</td>
 </tr>
 <tr class="odd">
 <td align="left">(4):MPC&gt;=2</td>
 <td align="center"><span
 class="math inline">\(\hat{\eta}_4\)</span></td>
 <td align="center">0.1115</td>
-<td align="right">0.0000152777</td>
+<td align="center">0.0000152777</td>
+<td align="center">7968</td>
+<td align="center">7638</td>
+<td align="center">1.04</td>
+<td align="center">0.0730</td>
+<td align="right">0.0000137</td>
 </tr>
 <tr class="even">
 <td align="left">(5):1&lt;=MPC&lt;2</td>
 <td align="center"><span
 class="math inline">\(\hat{\eta}_5\)</span></td>
 <td align="center">0.0175</td>
-<td align="right">0.0559135877</td>
+<td align="center">0.0559135877</td>
+<td align="center">48412</td>
+<td align="center">47060</td>
+<td align="center">1.03</td>
+<td align="center">0.00926</td>
+<td align="right">0.0918</td>
 </tr>
 <tr class="odd">
 <td align="left">(6):0&lt;=MPC&lt;1</td>
 <td align="center"><span
 class="math inline">\(\hat{\eta}_6\)</span></td>
 <td align="center">2.259378e-06</td>
+<td align="center">1</td>
+<td align="center">146671</td>
+<td align="center">145348</td>
+<td align="center">1.01</td>
+<td align="center">0.000871</td>
 <td align="right">1</td>
 </tr>
 </tbody>
 </table>
-<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-26-1.png" width="672" /><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
 <div id="top-10-genes-with-burden" class="section level4">
 <h4>Top 10 genes with burden</h4>
 <ul>
