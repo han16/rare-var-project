@@ -323,6 +323,8 @@ for (i in 6:6) # for each gene set
 } # end of  for (j in 1:6) # for each variant group
 #as_tibble(para_est)
 #write.csv(para_est, file="../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0829_2022.csv")
+
+para_est[complete.cases(para_est), ]
 ```
 
 
@@ -426,7 +428,17 @@ ggplot(data.frame(Burden_pval=-log(Burden.MIRAGE.combine.clear$Burden.pvalue, ba
   
 ```
 
-* one outlier with extremely small MIRAGE_Vs p value is gene set `AutismKB_MPC<1_0.0001<AF<0.001` with 6802 (transmitted) vs 6914 (untransmitted) on 1901 loci. Burden p value: 0.9839; MIRAGE_VS p value: 5.195326e-15. 
+* one outlier with extremely small MIRAGE_Vs p value is variant set `AutismKB_MPC<1_0.0001<AF<0.001` with 6802 (transmitted) vs 6914 (untransmitted) on 1901 loci. Burden p value: 0.9839; MIRAGE_VS p value: 5.195326e-15.
+
+* this variant set has several loci driving the BF 
+
+```
+1500 1500      76      262        1 1.185888e+12
+1499 1499      56      152        1 1.008106e+05
+ 
+ BF.var.inte(trans=72, nontrans=262, bar.gamma=3, sig=3, num.family, num.family)
+[1] 403764608704
+```
 
 
 ```{r, echo=F, warning=F, message=F}
@@ -971,8 +983,8 @@ BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
   return(BF.var)
 }
 
-> BF.var.inte(15, 219, 3, 3, num.family, num.family)
-[1] 6.321461e+36
+#> BF.var.inte(15, 219, 3, 3, num.family, num.family)
+#[1] 6.321461e+36
 
 
 ```
