@@ -90,7 +90,7 @@ N1=4315; N0=4315
 All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
-Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
+#Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
 ```
 
 
@@ -143,6 +143,51 @@ return(result)
 }
 ```
 
+
+
+## Allele frequency: old sample vs new sample 
+
+```{r, echo=F, message=F, warning=F, cache=T}
+old_data=Anno.Data %>% select(ID, ExacAF)
+new_data=ASC_new_sample %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% filter(isSyn=="FALSE") %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gnomad_non_neuro_AF)
+### match IDs in both data sets 
+old_pos=unlist(gregexpr("-", old_data$ID))
+old_ID=substr(old_data$ID, 1,old_pos-1)
+
+new_pos=unlist(gregexpr(":", new_data$Variant))[2]
+new_ID=substr(new_data$Variant, 1,new_pos-1)
+
+old_data1=tibble(ID=old_ID, AF_old=old_data$ExacAF)
+new_data1=tibble(ID=new_ID, AF_new=new_data$Gnomad_non_neuro_AF)
+old_new_combine=old_data1 %>% full_join(new_data1) # combine two data sets 
+old_new_combine1=old_new_combine %>% drop_na()
+
+g1=ggplot(old_new_combine1, aes(x=AF_new, y=AF_old))+geom_point()+
+  geom_abline(intercept =0, slope = 1, color="red")+
+  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
+  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
+   ggtitle("AF: new vs old sample")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
+#g1
+
+old_new_combine2=old_new_combine %>% replace_na(list(AF_old=2, AF_new=2))  # replace NA with 2 
+g2=ggplot(old_new_combine2, aes(x=AF_new, y=AF_old))+geom_point()+
+  geom_abline(intercept =0, slope = 1, color="red")+
+  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
+  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
+   ggtitle("AF: new vs old sample")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
+#g2
+
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom") 
+```
+
+* for both samples, focus on variants with AF<5% and exclude syn mutations. 
+* each point is one locus 
+* left panel: 346 loci with numeric AF from both old and new sample 
+* right panel: 1,826,936 loci with `NA` AF replaced with 2 either from new or old sample 
 
 
 ## Burden analysis for new sample 
@@ -821,8 +866,8 @@ for ( i in 1:length(top_10gene))
   top_10gene_old_sample[i,1]=sum(Anno.Data %>% filter(ExacAF<0.05 & Gene==top_10gene[i]) %>% select(No.case) %>% pull)
   top_10gene_old_sample[i,2]=sum(Anno.Data %>% filter(ExacAF<0.05 & Gene==top_10gene[i]) %>% select(No.contr) %>% pull)
   
-  top_10gene_new_sample[i,1]=sum(ASC_new_sample %>% filter(isSyn=="FALSE")%>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>%  filter(Gnomad_non_neuro_AF <0.05 & Gene==top_10gene[i]) %>% select(Transmitted_proband) %>% pull)
-  top_10gene_new_sample[i,2]=sum(ASC_new_sample %>% filter(isSyn=="FALSE")  %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>%filter(Gnomad_non_neuro_AF<0.05 & Gene==top_10gene[i]) %>% select(Untransmitted_proband) %>% pull)
+  top_10gene_new_sample[i,1]=sum(ASC_new_sample %>% filter(isSyn=="FALSE")%>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% filter(!str_detect(Consequence, 'intron_variant')) %>%  filter(Gnomad_non_neuro_AF <0.05 & Gene==top_10gene[i]) %>% select(Transmitted_proband) %>% pull)
+  top_10gene_new_sample[i,2]=sum(ASC_new_sample %>% filter(isSyn=="FALSE")  %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% filter(!str_detect(Consequence, 'intron_variant')) %>% filter(Gnomad_non_neuro_AF<0.05 & Gene==top_10gene[i]) %>% select(Untransmitted_proband) %>% pull)
 }
 
 top_10gene_variant_count=data.frame(Gene=rep(top_10gene,4), count=c(as.vector(top_10gene_new_sample), as.vector(top_10gene_old_sample)), transmission=c(rep("Transmitted", 10), rep("Untransmitted", 10), rep("Transmitted", 10), rep("Untransmitted", 10)), sample=c(rep("new", 20), rep("old", 20)))
@@ -833,8 +878,9 @@ ggplot(top_10gene_variant_count, aes(x = sample, y = count, fill = transmission)
   theme(axis.text.x = element_text(angle = 0, size = 10))
 ```
 
-* `AF<5%`
+* `Gnomad_non_neuro_AF<0.05`
 * exclude syn variants `isSyn=="FALSE"`
+* filter introns `!str_detect(Consequence, 'intron_variant'`
 * new sample `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 ## Gene-CYFIP1
@@ -842,9 +888,10 @@ ggplot(top_10gene_variant_count, aes(x = sample, y = count, fill = transmission)
 
 *  `Gnomad_non_neuro_AF<0.05`
 * exclude synonymous variants `isSyn==F`
+* filter out introns `!str_detect(Consequence, 'intron_variant')`
 
 ```{r, echo=F}
-CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & isSyn=="FALSE" & Gnomad_non_neuro_AF<0.05) %>% filter(QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & isSyn=="FALSE" & Gnomad_non_neuro_AF<0.05) %>% filter(QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE")  %>% filter(!str_detect(Consequence, 'intron_variant')) %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
 
 kable(CYFIP1, caption = "Variant (AF<0.05) in gene CYFIP1")%>%
 kable_styling() %>%
@@ -853,13 +900,14 @@ scroll_box(height = "500px")
 
 In old sample, there is one variant having 8/0 at '15:22963816-22963816_A_G' which doesn’t show up in new sample.
 
+* for locus `15:22927986`, `Gnomad_non_neuro_AF=0`, but query from [Gnomad database](https://gnomad.broadinstitute.org/region/15-22927986-22927986?dataset=gnomad_r3) indicates of `1.31e-2` under version `gnomAD v3.1.2`, but no allele frequency under version `gnomAD v2.1.1` 
 
 * if no any constraint 
 * all variants don't go beyond `2295xxxx`.
 * none of loci in old sample appears in new sample. 
 
 ```{r, echo=F}
-CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% filter(QD>=10  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1") %>% filter(QD>=10  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE") %>% filter(!str_detect(Consequence, 'intron_variant')) %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband )
 
 kable(CYFIP1, caption = "All variants  in gene CYFIP1")%>%
 kable_styling() %>%
