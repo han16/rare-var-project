@@ -186,8 +186,10 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")
 
 * for both samples, focus on variants with AF<5% and exclude syn mutations. 
 * each point is one locus 
-* left panel: 346 overlapping loci with numeric AF from both old and new sample 
-* right panel: 1,826,936 loci with `NA` AF replaced with 2 either from new or old sample 
+* left panel: 344 (0.0188%) overlapping loci with numeric AF from both old and new sample; one example is `7:100683050 0.042 (AF_old)      0.0000816(AF_new)`, in Gnomad database, V2 say AF is `4.05e-2`, ExAC AF is `4.22e-2`, and v3 (hg38) AF is `3.28e-5`. This example suggests `Gnomad_non_neuro_AF` is close to genomewide AF under hg38. 
+
+
+* right panel: 1826590 loci with `NA` AF replaced with 2 either from new or old sample 
 
 
 ## Burden analysis for new sample 
@@ -900,7 +902,7 @@ scroll_box(height = "500px")
 
 In old sample, there is one variant having 8/0 at '15:22963816-22963816_A_G' which doesn’t show up in new sample.
 
-* for locus `15:22927986`, `Gnomad_non_neuro_AF=0`, but query from [Gnomad database](https://gnomad.broadinstitute.org/region/15-22927986-22927986?dataset=gnomad_r3) indicates of `1.31e-2` under version `gnomAD v3.1.2`, but no allele frequency under version `gnomAD v2.1.1` 
+* for locus `15:22927986`, `Gnomad_non_neuro_AF=0`, but query from [Gnomad database](https://gnomad.broadinstitute.org/region/15-22927986-22927986?dataset=gnomad_r3) indicates of `1.31e-2` under version `gnomAD v3.1.2 (hg38)`, but no allele frequency under version `gnomAD v2.1.1 (hg19)` 
 
 * if no any constraint 
 * all variants don't go beyond `2295xxxx`.

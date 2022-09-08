@@ -357,13 +357,18 @@ class="section level2">
 <h2>Allele frequency: old sample vs new sample</h2>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <ul>
-<li>for both samples, focus on variants with AF&lt;5% and exclude syn
-mutations.</li>
-<li>each point is one locus</li>
-<li>left panel: 346 overlapping loci with numeric AF from both old and
-new sample</li>
-<li>right panel: 1,826,936 loci with <code>NA</code> AF replaced with 2
-either from new or old sample</li>
+<li><p>for both samples, focus on variants with AF&lt;5% and exclude syn
+mutations.</p></li>
+<li><p>each point is one locus</p></li>
+<li><p>left panel: 344 (0.0188%) overlapping loci with numeric AF from
+both old and new sample; one example is
+<code>7:100683050 0.042 (AF_old)      0.0000816(AF_new)</code>, in
+Gnomad database, V2 say AF is <code>4.05e-2</code>, ExAC AF is
+<code>4.22e-2</code>, and v3 (hg38) AF is <code>3.28e-5</code>. This
+example suggests <code>Gnomad_non_neuro_AF</code> is close to genomewide
+AF under hg38.</p></li>
+<li><p>right panel: 1826590 loci with <code>NA</code> AF replaced with 2
+either from new or old sample</p></li>
 </ul>
 </div>
 <div id="burden-analysis-for-new-sample" class="section level2">
@@ -2874,8 +2879,8 @@ missense_variant
 <code>Gnomad_non_neuro_AF=0</code>, but query from <a
 href="https://gnomad.broadinstitute.org/region/15-22927986-22927986?dataset=gnomad_r3">Gnomad
 database</a> indicates of <code>1.31e-2</code> under version
-<code>gnomAD v3.1.2</code>, but no allele frequency under version
-<code>gnomAD v2.1.1</code></p></li>
+<code>gnomAD v3.1.2 (hg38)</code>, but no allele frequency under version
+<code>gnomAD v2.1.1 (hg19)</code></p></li>
 <li><p>if no any constraint</p></li>
 <li><p>all variants don’t go beyond <code>2295xxxx</code>.</p></li>
 <li><p>none of loci in old sample appears in new sample.</p></li>
