@@ -1,17 +1,27 @@
 ---
 title: "rare variants with logistic prior"
 author: "Shengtong"
-date: "2021-11-05"
+date: ""
 output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
 ---
 
+## Bayes factor for variant 
+
+Assume Poisson model for variant count in cases and control with sample sizes $N_1, N_0$ respectively, $X_1 \sim Pois(q\gamma N_1), X_0 \sim Pois(qN_0)$, both are total counts across all individuals (summary statistics). 
+
+
+Consider conditional distribution $X_1|X_1+X_0 \sim Bin(X_1+X_0, \frac{\gamma N_1}{\gamma N_1+N_0})$. For variant $j$, the Bayes factor $B_j=\frac{p(X_{1j}|Z_j=1)}{p(x_{1j}|Z_j=0)}$. This connects to hypothesis testing $H_0: \gamma=1$ vs $H_a:\gamma \sim Gamma(\bar{\gamma}\sigma, \sigma)$, so $B_j$ is calculated under each hypothesis. 
+
+
+
+
 ## modeling logistic prior
 
 Let $Z_j$ be an indicator variable for risk status of variant $j$ i.e. $Z_j=1$ for risk variant and $0$ for non-risk variant, which may have multiple annotations, say $K$, in a vector $A_j=(A_{j1}, A_{j2}, \cdots, A_{jK})'$. One way of modeling this high dimensional effect is through logistic regression 
 
-$$logit [p(Z_j=1)]=log \frac{p(Z_j=1)}{1-p(Z_j=1)}=\sum_{k=1}^K \beta_kA_{jk}$$. 
+$$logit [p(Z_j=1)]=logit [\eta_j]=log \frac{p(Z_j=1)}{1-p(Z_j=1)}=\sum_{k=1}^K \beta_kA_{jk}$$. 
 
 What values does $A_{jk}$ take? 
 
@@ -20,6 +30,8 @@ Assume $p(Z_j=1)=\eta_j$, the probability that variant $j$ is a risk variant. th
 
 $$L(x|\beta's)\propto \prod_{j=1}^J[(1-\eta_j)+\eta_jB_j]$$, 
 where $B_j$ is the bayes factor for variant $j$. 
+
+## Shrinkaging $\beta_j$
 
 The number of annotation features, $K$ could be a big number, even in hundred. To capture more informative ones, a penalty term could be used on coefficients $\beta's$. Two popular choices are $\ell_1, \ell_2$ norms, leading to 
 

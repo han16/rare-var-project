@@ -3,6 +3,37 @@ title: "simulation logistic prior"
 output: html_document
 ---
 
-## settings 
+```{r, echo=F, message=F, warning=F}
+library(tidyverse)
+```
 
+## data generation process 
+
+
+
+
+## one Annotation group 
+
+Suppose there is one annotation group affecting the risk of variants via logistic function 
+
+```{r, echo=F, message=F, warning=F}
+beta_estimate=c(2.016002, 1.998177, 1.994396, 2.024530, 1.988762, 1.989376, 1.995133, 2.011443, 1.977110, 1.969553) # this estimate is obtained by running code: LogisticPriorOneAnnoFeature.R 
+
+
+beta_estimate_summary=data.frame(estimate=mean(beta_estimate), lower=mean(beta_estimate)-sd(beta_estimate), upper=mean(beta_estimate)+sd(beta_estimate), var="effect size: beta")
+ggplot(beta_estimate_summary, aes(x=var, y=estimate, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_hline(yintercept = 2,linetype="dashed", 
+                color = "red", size=1)+
+  xlab("")+
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
+
+```
+
+* run 10 replicates 
+* one annotation group with true $\beta=2$
+
+## multiple annotation groups 
 

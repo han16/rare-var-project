@@ -1,0 +1,48 @@
+---
+title: "liftover samples"
+output: html_document
+date: ''
+---
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+#install.packages("devtools") # run once 
+library(devtools)
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+```
+
+
+## with/without liftover 
+
+
+### old sample 
+
+```{r, echo=F, cache=T, warning=F, message=F}
+path="C:\\Shengtong\\Research\\rare-var\\"
+### old sample
+########## read into data
+All.Anno.Data=as_tibble(read.table(paste(path, "AnnotatedTrans.txt", sep=""), header=T))
+N1=4315; N0=4315
+All.Anno.Data[All.Anno.Data =="."] <- NA
+All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
+Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
+#Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
+
+All.Anno.Data_liftover=as_tibble(readRDS("C:\\Shengtong\\Research\\rare-var\\ASC\\hg19tohg38.rds"))
+All.Anno.Data_liftover[All.Anno.Data_liftover =="."] <- NA
+All.Anno.Data_liftover$ExacAF[is.na(All.Anno.Data_liftover$ExacAF)]=0 # set AF of NA to zero 
+Anno.Data_liftover=All.Anno.Data_liftover[which(All.Anno.Data_liftover$ExacAF<0.05 & All.Anno.Data_liftover$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
+```

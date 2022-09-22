@@ -355,20 +355,36 @@ div.tocify {
 <div id="allele-frequency-old-sample-vs-new-sample"
 class="section level2">
 <h2>Allele frequency: old sample vs new sample</h2>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
 <ul>
-<li><p>for both samples, focus on variants with AF&lt;5% and exclude syn
-mutations.</p></li>
-<li><p>each point is one locus</p></li>
-<li><p>left panel: 344 (0.0188%) overlapping loci with numeric AF from
-both old and new sample; one example is
+<li>for both samples, focus on variants with AF&lt;5% and exclude syn
+mutations.</li>
+<li>each point is one locus</li>
+<li>left panel: 344 (0.0188%) overlapping loci with numeric AF from both
+old and new sample; one example is
 <code>7:100683050 0.042 (AF_old)      0.0000816(AF_new)</code>, in
 Gnomad database, V2 say AF is <code>4.05e-2</code>, ExAC AF is
 <code>4.22e-2</code>, and v3 (hg38) AF is <code>3.28e-5</code>. This
 example suggests <code>Gnomad_non_neuro_AF</code> is close to genomewide
-AF under hg38.</p></li>
+AF under hg38.</li>
+</ul>
+<pre><code>&gt; ASC_new_sample %&gt;% filter(Variant==&quot;7:100683050:G:A&quot;) %&gt;% select(Variant, Gene, pLI, Consequence, Gnomad_non_neuro_AF)
+# A tibble: 1 x 5
+  Variant         Gene     pLI Consequence      Gnomad_non_neuro_AF
+  &lt;chr&gt;           &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                          &lt;dbl&gt;
+1 7:100683050:G:A GIGYF1 0.979 missense_variant           0.0000816</code></pre>
+<pre><code>&gt; Anno.Data %&gt;%
++     filter(str_detect(ID, &#39;7:100683050&#39;)) %&gt;% select(ID, Gene, ExacAF)
+# A tibble: 1 x 3
+  ID                        Gene  ExacAF
+  &lt;chr&gt;                     &lt;chr&gt;  &lt;dbl&gt;
+1 7:100683050-100683050_T_G MUC17  0.042</code></pre>
+<ul>
 <li><p>right panel: 1826590 loci with <code>NA</code> AF replaced with 2
 either from new or old sample</p></li>
+<li><p>in the two figures in the bottom, old samples are liftover, a
+larger number of loci (45,886, 2.57%) are overlapping between new sample
+and liftover sample of old data.</p></li>
 </ul>
 </div>
 <div id="burden-analysis-for-new-sample" class="section level2">

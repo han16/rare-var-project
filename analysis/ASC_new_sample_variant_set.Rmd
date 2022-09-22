@@ -91,6 +91,12 @@ All.Anno.Data[All.Anno.Data =="."] <- NA
 All.Anno.Data$ExacAF[is.na(All.Anno.Data$ExacAF)]=0 # set AF of NA to zero 
 Anno.Data=All.Anno.Data[which(All.Anno.Data$ExacAF<0.05 & All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
 #Anno.Data=All.Anno.Data[which(All.Anno.Data$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
+
+##### old sample after liftover 
+All.Anno.Data_liftover=as_tibble(readRDS("C:\\Shengtong\\Research\\rare-var\\ASC\\hg19tohg38.rds"))
+All.Anno.Data_liftover[All.Anno.Data_liftover =="."] <- NA
+All.Anno.Data_liftover$ExacAF[is.na(All.Anno.Data_liftover$ExacAF)]=0 # set AF of NA to zero 
+Anno.Data_liftover=All.Anno.Data_liftover[which(All.Anno.Data_liftover$ExacAF<0.05 & All.Anno.Data_liftover$Annotation!="synonymous SNV"),] # use AF cutoff and exclude synonymous SNV
 ```
 
 
@@ -149,18 +155,27 @@ return(result)
 
 ```{r, echo=F, message=F, warning=F, cache=T}
 old_data=Anno.Data %>% select(ID, ExacAF)
+old_data_liftover=Anno.Data_liftover %>% select(seqnames, start, ExacAF)
 new_data=ASC_new_sample %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% filter(isSyn=="FALSE") %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gnomad_non_neuro_AF)
 ### match IDs in both data sets 
-old_pos=unlist(gregexpr("-", old_data$ID))
+old_pos=unlist(gregexpr("-", old_data$ID))  # locate the position of "-"
 old_ID=substr(old_data$ID, 1,old_pos-1)
+
+old_pos_liftover=unlist(gregexpr("1", old_data_liftover$seqnames)) # locate the position of "1"
+old_ID_liftover=paste(substr(old_data_liftover$seqnames, 4, old_pos_liftover), old_data_liftover$start, sep=":")
 
 new_pos=unlist(gregexpr(":", new_data$Variant))[2]
 new_ID=substr(new_data$Variant, 1,new_pos-1)
 
 old_data1=tibble(ID=old_ID, AF_old=old_data$ExacAF)
+old_data1_liftover=tibble(ID=old_ID_liftover, AF_old_liftover=old_data_liftover$ExacAF)
 new_data1=tibble(ID=new_ID, AF_new=new_data$Gnomad_non_neuro_AF)
-old_new_combine=old_data1 %>% full_join(new_data1) # combine two data sets 
-old_new_combine1=old_new_combine %>% drop_na()
+
+old_new_combine=old_data1 %>% full_join(new_data1) # combine two data sets: old & new 
+old_liftover_new_combine=old_data1_liftover %>% full_join(new_data1) # combine two data sets: old_liftover & new
+  
+old_new_combine1=old_new_combine %>% drop_na();
+old_liftover_new_combine1=old_liftover_new_combine %>% drop_na()
 
 g1=ggplot(old_new_combine1, aes(x=AF_new, y=AF_old))+geom_point()+
   geom_abline(intercept =0, slope = 1, color="red")+
@@ -182,14 +197,57 @@ g2=ggplot(old_new_combine2, aes(x=AF_new, y=AF_old))+geom_point()+
 #g2
 
 ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom") 
+
+
+g3=ggplot(old_liftover_new_combine1, aes(x=AF_new, y=AF_old_liftover))+geom_point()+
+  geom_abline(intercept =0, slope = 1, color="red")+
+  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
+  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
+   ggtitle("AF: new vs old sample after liftover")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
+
+
+old_new_combine2=old_liftover_new_combine %>% replace_na(list(AF_old_liftover=2, AF_new=2))  # replace NA with 2 
+g4=ggplot(old_new_combine2, aes(x=AF_new, y=AF_old_liftover))+geom_point()+
+  geom_abline(intercept =0, slope = 1, color="red")+
+  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
+  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
+   ggtitle("AF: new vs old sample after liftover")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
+
+ggarrange(g3, g4,nrow=1, common.legend = TRUE, legend="bottom")
 ```
 
 * for both samples, focus on variants with AF<5% and exclude syn mutations. 
 * each point is one locus 
 * left panel: 344 (0.0188%) overlapping loci with numeric AF from both old and new sample; one example is `7:100683050 0.042 (AF_old)      0.0000816(AF_new)`, in Gnomad database, V2 say AF is `4.05e-2`, ExAC AF is `4.22e-2`, and v3 (hg38) AF is `3.28e-5`. This example suggests `Gnomad_non_neuro_AF` is close to genomewide AF under hg38. 
 
+```
+> ASC_new_sample %>% filter(Variant=="7:100683050:G:A") %>% select(Variant, Gene, pLI, Consequence, Gnomad_non_neuro_AF)
+# A tibble: 1 x 5
+  Variant         Gene     pLI Consequence      Gnomad_non_neuro_AF
+  <chr>           <chr>  <dbl> <chr>                          <dbl>
+1 7:100683050:G:A GIGYF1 0.979 missense_variant           0.0000816
+```
+
+
+```
+> Anno.Data %>%
++     filter(str_detect(ID, '7:100683050')) %>% select(ID, Gene, ExacAF)
+# A tibble: 1 x 3
+  ID                        Gene  ExacAF
+  <chr>                     <chr>  <dbl>
+1 7:100683050-100683050_T_G MUC17  0.042
+```
+
 
 * right panel: 1826590 loci with `NA` AF replaced with 2 either from new or old sample 
+
+
+* in the two figures in the bottom, old samples are liftover, a larger number of loci (45,886, 2.57%) are overlapping between new sample and liftover sample of old data.  
+
 
 
 ## Burden analysis for new sample 

@@ -9,10 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Shengtong" />
 
 
-<title>rare variants with logistic prior</title>
+<title>liftover samples</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -346,68 +345,13 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">rare variants with logistic prior</h1>
-<h4 class="author">Shengtong</h4>
+<h1 class="title toc-ignore">liftover samples</h1>
 
 </div>
 
 
-<div id="bayes-factor-for-variant" class="section level2">
-<h2>Bayes factor for variant</h2>
-<p>Assume Poisson model for variant count in cases and control with
-sample sizes <span class="math inline">\(N_1, N_0\)</span> respectively,
-<span class="math inline">\(X_1 \sim Pois(q\gamma N_1), X_0 \sim
-Pois(qN_0)\)</span>, both are total counts across all individuals
-(summary statistics).</p>
-<p>Consider conditional distribution <span
-class="math inline">\(X_1|X_1+X_0 \sim Bin(X_1+X_0, \frac{\gamma
-N_1}{\gamma N_1+N_0})\)</span>. For variant <span
-class="math inline">\(j\)</span>, the Bayes factor <span
-class="math inline">\(B_j=\frac{p(X_{1j}|Z_j=1)}{p(x_{1j}|Z_j=0)}\)</span>.
-This connects to hypothesis testing <span class="math inline">\(H_0:
-\gamma=1\)</span> vs <span class="math inline">\(H_a:\gamma \sim
-Gamma(\bar{\gamma}\sigma, \sigma)\)</span>, so <span
-class="math inline">\(B_j\)</span> is calculated under each
-hypothesis.</p>
-</div>
-<div id="modeling-logistic-prior" class="section level2">
-<h2>modeling logistic prior</h2>
-<p>Let <span class="math inline">\(Z_j\)</span> be an indicator variable
-for risk status of variant <span class="math inline">\(j\)</span>
-i.e. <span class="math inline">\(Z_j=1\)</span> for risk variant and
-<span class="math inline">\(0\)</span> for non-risk variant, which may
-have multiple annotations, say <span class="math inline">\(K\)</span>,
-in a vector <span class="math inline">\(A_j=(A_{j1}, A_{j2}, \cdots,
-A_{jK})&#39;\)</span>. One way of modeling this high dimensional effect
-is through logistic regression</p>
-<p><span class="math display">\[logit [p(Z_j=1)]=logit [\eta_j]=log
-\frac{p(Z_j=1)}{1-p(Z_j=1)}=\sum_{k=1}^K \beta_kA_{jk}\]</span>.</p>
-<p>What values does <span class="math inline">\(A_{jk}\)</span>
-take?</p>
-<p>Assume <span class="math inline">\(p(Z_j=1)=\eta_j\)</span>, the
-probability that variant <span class="math inline">\(j\)</span> is a
-risk variant. then <span class="math inline">\(\eta_j=\frac{e^{\sum_k
-\beta_k A_{jk}}}{1+e^{\sum_k \beta_k A_{jk}}}\)</span>. The likelihood
-of the sample with <span class="math inline">\(J\)</span> independent
-variants is</p>
-<p><span class="math display">\[L(x|\beta&#39;s)\propto
-\prod_{j=1}^J[(1-\eta_j)+\eta_jB_j]\]</span>, where <span
-class="math inline">\(B_j\)</span> is the bayes factor for variant <span
-class="math inline">\(j\)</span>.</p>
-</div>
-<div id="shrinkaging-beta_j" class="section level2">
-<h2>Shrinkaging <span class="math inline">\(\beta_j\)</span></h2>
-<p>The number of annotation features, <span
-class="math inline">\(K\)</span> could be a big number, even in hundred.
-To capture more informative ones, a penalty term could be used on
-coefficients <span class="math inline">\(\beta&#39;s\)</span>. Two
-popular choices are <span class="math inline">\(\ell_1, \ell_2\)</span>
-norms, leading to</p>
-<p><span
-class="math display">\[l_p(x|\beta&#39;s)=log(L(x|\beta&#39;s))-\frac{\lambda}{2}\sum_{k=1}^K\beta_k^2+c\]</span></p>
-<p>and</p>
-<p><span
-class="math display">\[min_{\beta&#39;s}\{-log(L(x|\beta&#39;s)+\lambda||\beta||_1)\}\]</span></p>
+<div id="withwithout-liftover" class="section level2">
+<h2>with/without liftover</h2>
 </div>
 
 <hr>
