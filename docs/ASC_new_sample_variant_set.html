@@ -385,7 +385,17 @@ either from new or old sample</p></li>
 <li><p>in the two figures in the bottom, old samples are liftover, a
 larger number of loci (289,157, 18.80%, 289,157/1,537,827) are
 overlapping between new sample and liftover sample of old data.</p></li>
+<li><p>a small number of loci with variants not in Gnomad, their new AF
+will be zero, thus a small number of loci stacking at
+<code>AF_new=0</code> for example,</p></li>
 </ul>
+<pre><code>ID              AF_old_liftover AF_new
+  &lt;chr&gt;                     &lt;dbl&gt;  &lt;dbl&gt;
+1 1:1527777:G:A           0.00540      0
+2 2:172491230:G:T         0.01         0
+3 4:9444548:T:G           0.00616      0
+4 5:137870800:A:C         0.00772      0
+5 9:18928678:G:T          0.00800      0</code></pre>
 </div>
 <div id="burden-analysis-for-new-sample" class="section level2">
 <h2>Burden analysis for new sample</h2>

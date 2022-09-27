@@ -253,7 +253,17 @@ ggarrange(g3, g4,nrow=1, common.legend = TRUE, legend="bottom")
 * in the two figures in the bottom, old samples are liftover, a larger number of loci (289,157, 18.80%, 289,157/1,537,827) are overlapping between new sample and liftover sample of old data.  
 
 
+* a small number of loci with variants not in Gnomad, their new AF will be zero, thus a small number of loci stacking at `AF_new=0`  for example, 
 
+```
+ID              AF_old_liftover AF_new
+  <chr>                     <dbl>  <dbl>
+1 1:1527777:G:A           0.00540      0
+2 2:172491230:G:T         0.01         0
+3 4:9444548:T:G           0.00616      0
+4 5:137870800:A:C         0.00772      0
+5 9:18928678:G:T          0.00800      0
+```
 
 ## Burden analysis for new sample 
 
