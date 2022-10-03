@@ -106,6 +106,11 @@ Anno.Data_liftover=All.Anno.Data_liftover[which(All.Anno.Data_liftover$ExacAF<0.
 #ASC_new_sample2=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), header=T, fill=T))  ##### this way of reading data is not correct
 
 ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way Kyle read the data
+
+################ new sample after liftover 
+ASC_new_sample_liftover1=as_tibble(readRDS("C:\\Shengtong\\Research\\rare-var\\ASC\\hg38tohg19.rds"))
+
+ASC_new_sample_liftover2=ASC_new_sample_liftover1 %>% filter(!str_detect(Consequence, 'intron_variant'))%>%filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% filter(isSyn=="FALSE") %>% filter(Gnomad_non_neuro_AF<0.05)# exclude indel & apply other filters for SNP's
 ```
 
 
@@ -132,7 +137,14 @@ Untransmitted_proband_parents=ASC_new_sample3%>% select(starts_with("u_proband")
 ##### add new columns of total transmitted and non-transmitted variants 
 ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_proband_parents=Transmitted_proband_parents$Transmitted_proband_parents, Untransmitted_proband_parents=Untransmitted_proband_parents$Untransmitted_proband_parents)
 
+#################################
+ASC_new_sample=ASC_new_sample%>% 
+  filter(isIndel=="FALSE" & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% filter(!str_detect(Consequence, 'intron_variant')) # exclude indel & apply other filters for SNP's
+
 ```
+
+
+
 
 
 
@@ -151,119 +163,7 @@ return(result)
 
 
 
-## Allele frequency: old sample vs new sample 
 
-```{r, echo=F, message=F, warning=F, cache=T}
-old_data=Anno.Data %>% select(ID, ExacAF)
-old_data_liftover=Anno.Data_liftover %>% select(seqnames, start, ExacAF, allele1, allele2) 
-new_data=ASC_new_sample %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) %>% filter(isSyn=="FALSE") %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gnomad_non_neuro_AF)
-### match IDs in both data sets 
-old_pos=unlist(gregexpr("-", old_data$ID))  # locate the position of "-"
-old_ID=substr(old_data$ID, 1,old_pos-1)
-###########
-#old_data_new_ID=str_replace_all(old_data$ID, "_", ":")
-old_pos_liftover=nchar(as.character(old_data_liftover$seqnames)) # find the length of string, the last position
-old_ID_liftover=paste(substr(old_data_liftover$seqnames, 4, old_pos_liftover), old_data_liftover$start, old_data_liftover$allele1, old_data_liftover$allele2, sep=":") # extract loci position without "chr", starting from 4th position to the end, to be consistent with format with other data 
-
-new_pos=unlist(gregexpr(":", new_data$Variant))[2]
-new_ID=substr(new_data$Variant, 1,new_pos-1)
-
-
-
-old_data1=tibble(ID=old_ID, AF_old=old_data$ExacAF)
-old_data1_liftover=tibble(ID=old_ID_liftover, AF_old_liftover=old_data_liftover$ExacAF)
-new_data1=tibble(ID=new_ID, AF_new=new_data$Gnomad_non_neuro_AF)
-new_data2=new_data %>% rename(ID=Variant, AF_new=Gnomad_non_neuro_AF)
-
-old_new_combine=old_data1 %>% full_join(new_data1) # combine two data sets: old & new 
-old_liftover_new_combine=old_data1_liftover %>% full_join(new_data2) # combine two data sets: old_liftover & new
-  
-old_new_combine_withoutNA=old_new_combine %>% drop_na()  # remove rows with NA 
-old_liftover_new_combine_withoutNA=old_liftover_new_combine %>% drop_na() # removes rows with NA
-
-g1=ggplot(old_new_combine_withoutNA, aes(x=AF_new, y=AF_old))+geom_point()+
-  geom_abline(intercept =0, slope = 1, color="red")+
-  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
-  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
-   ggtitle("Overlapping loci")+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
-#g1
-
-old_new_combine2=old_new_combine %>% replace_na(list(AF_old=2, AF_new=2))  # replace NA with 2 
-g2=ggplot(old_new_combine2, aes(x=AF_new, y=AF_old))+geom_point()+
-  geom_abline(intercept =0, slope = 1, color="red")+
-  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
-  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
-   ggtitle("Union of loci")+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
-#g2
-
-ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom") 
-
-
-g3=ggplot(old_liftover_new_combine_withoutNA, aes(x=AF_new, y=AF_old_liftover))+geom_point()+
-  geom_abline(intercept =0, slope = 1, color="red", size=2)+
-  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
-  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
-   ggtitle("Overlapping loci")+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
-
-
-old_new_combine2=old_liftover_new_combine %>% replace_na(list(AF_old_liftover=2, AF_new=2))  # replace NA with 2 
-g4=ggplot(old_new_combine2, aes(x=AF_new, y=AF_old_liftover))+geom_point()+
-  geom_abline(intercept =0, slope = 1, color="red")+
-  #xlab(expression(paste("Burden: -log" [10], "(p value)")))+
-  #ylab(expression(paste("MIRAGE_VS: -log" [10], "(p value)")))+
-   ggtitle("Union of loci")+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
-
-ggarrange(g3, g4,nrow=1, common.legend = TRUE, legend="bottom")
-```
-
-* for both samples, focus on variants with AF<5% and exclude syn mutations. 
-* each point is one locus 
-* left panel: 344 (0.0188%) overlapping loci with numeric AF from both old and new sample; one example is `7:100683050 0.042 (AF_old)      0.0000816(AF_new)`, in Gnomad database, V2 say AF is `4.05e-2`, ExAC AF is `4.22e-2`, and v3 (hg38) AF is `3.28e-5`. This example suggests `Gnomad_non_neuro_AF` is close to genomewide AF under hg38. 
-
-```
-> ASC_new_sample %>% filter(Variant=="7:100683050:G:A") %>% select(Variant, Gene, pLI, Consequence, Gnomad_non_neuro_AF)
-# A tibble: 1 x 5
-  Variant         Gene     pLI Consequence      Gnomad_non_neuro_AF
-  <chr>           <chr>  <dbl> <chr>                          <dbl>
-1 7:100683050:G:A GIGYF1 0.979 missense_variant           0.0000816
-```
-
-
-```
-> Anno.Data %>%
-+     filter(str_detect(ID, '7:100683050')) %>% select(ID, Gene, ExacAF)
-# A tibble: 1 x 3
-  ID                        Gene  ExacAF
-  <chr>                     <chr>  <dbl>
-1 7:100683050-100683050_T_G MUC17  0.042
-```
-
-
-* right panel: 1826590 loci with `NA` AF replaced with 2 either from new or old sample 
-
-
-* in the two figures in the bottom, old samples are liftover, a larger number of loci (289,157, 18.80%, 289,157/1,537,827) are overlapping between new sample and liftover sample of old data.  
-
-
-* a small number of loci with variants not in Gnomad, their new AF will be zero, thus a small number of loci stacking at `AF_new=0`  for example, 
-
-```
-ID              AF_old_liftover AF_new
-  <chr>                     <dbl>  <dbl>
-1 1:1527777:G:A           0.00540      0
-2 2:172491230:G:T         0.01         0
-3 4:9444548:T:G           0.00616      0
-4 5:137870800:A:C         0.00772      0
-5 9:18928678:G:T          0.00800      0
-```
 
 ## Burden analysis for new sample 
 
@@ -964,9 +864,10 @@ ggplot(top_10gene_variant_count, aes(x = sample, y = count, fill = transmission)
 *  `Gnomad_non_neuro_AF<0.05`
 * exclude synonymous variants `isSyn==F`
 * filter out introns `!str_detect(Consequence, 'intron_variant')`
+* `QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE"`
 
 ```{r, echo=F}
-CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & isSyn=="FALSE" & Gnomad_non_neuro_AF<0.05) %>% filter(QD>=10.5  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE")  %>% filter(!str_detect(Consequence, 'intron_variant')) %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
+CYFIP1=ASC_new_sample%>%filter(Gene=="CYFIP1" & isSyn=="FALSE" & Gnomad_non_neuro_AF<0.05) %>% filter(QD>=10  & AS_SOR <=3 & AS_ReadPosRankSum>-0.8 & isIndel=="FALSE")  %>% filter(!str_detect(Consequence, 'intron_variant')) %>% select(Variant, Chrom, Gene, Consequence,Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband  )
 
 kable(CYFIP1, caption = "Variant (AF<0.05) in gene CYFIP1")%>%
 kable_styling() %>%
@@ -988,6 +889,10 @@ kable(CYFIP1, caption = "All variants  in gene CYFIP1")%>%
 kable_styling() %>%
 scroll_box(height = "500px")
 ```
+
+
+### comparison between old and new sample after liftover under hg19 
+
 
 
 

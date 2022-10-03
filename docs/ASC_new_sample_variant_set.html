@@ -352,51 +352,6 @@ div.tocify {
 </div>
 
 
-<div id="allele-frequency-old-sample-vs-new-sample"
-class="section level2">
-<h2>Allele frequency: old sample vs new sample</h2>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
-<ul>
-<li>for both samples, focus on variants with AF&lt;5% and exclude syn
-mutations.</li>
-<li>each point is one locus</li>
-<li>left panel: 344 (0.0188%) overlapping loci with numeric AF from both
-old and new sample; one example is
-<code>7:100683050 0.042 (AF_old)      0.0000816(AF_new)</code>, in
-Gnomad database, V2 say AF is <code>4.05e-2</code>, ExAC AF is
-<code>4.22e-2</code>, and v3 (hg38) AF is <code>3.28e-5</code>. This
-example suggests <code>Gnomad_non_neuro_AF</code> is close to genomewide
-AF under hg38.</li>
-</ul>
-<pre><code>&gt; ASC_new_sample %&gt;% filter(Variant==&quot;7:100683050:G:A&quot;) %&gt;% select(Variant, Gene, pLI, Consequence, Gnomad_non_neuro_AF)
-# A tibble: 1 x 5
-  Variant         Gene     pLI Consequence      Gnomad_non_neuro_AF
-  &lt;chr&gt;           &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                          &lt;dbl&gt;
-1 7:100683050:G:A GIGYF1 0.979 missense_variant           0.0000816</code></pre>
-<pre><code>&gt; Anno.Data %&gt;%
-+     filter(str_detect(ID, &#39;7:100683050&#39;)) %&gt;% select(ID, Gene, ExacAF)
-# A tibble: 1 x 3
-  ID                        Gene  ExacAF
-  &lt;chr&gt;                     &lt;chr&gt;  &lt;dbl&gt;
-1 7:100683050-100683050_T_G MUC17  0.042</code></pre>
-<ul>
-<li><p>right panel: 1826590 loci with <code>NA</code> AF replaced with 2
-either from new or old sample</p></li>
-<li><p>in the two figures in the bottom, old samples are liftover, a
-larger number of loci (289,157, 18.80%, 289,157/1,537,827) are
-overlapping between new sample and liftover sample of old data.</p></li>
-<li><p>a small number of loci with variants not in Gnomad, their new AF
-will be zero, thus a small number of loci stacking at
-<code>AF_new=0</code> for example,</p></li>
-</ul>
-<pre><code>ID              AF_old_liftover AF_new
-  &lt;chr&gt;                     &lt;dbl&gt;  &lt;dbl&gt;
-1 1:1527777:G:A           0.00540      0
-2 2:172491230:G:T         0.01         0
-3 4:9444548:T:G           0.00616      0
-4 5:137870800:A:C         0.00772      0
-5 9:18928678:G:T          0.00800      0</code></pre>
-</div>
 <div id="burden-analysis-for-new-sample" class="section level2">
 <h2>Burden analysis for new sample</h2>
 <div id="all-rare-variants" class="section level3">
@@ -411,11 +366,11 @@ will be zero, thus a small number of loci stacking at
 <code>isIndel=="FALSE" &amp; QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 <pre><code>##                  Trans  Untrans
-## (1): all var  13474254 13522697
+## (1): all var  12052662 12103329
 ## (2): all syn   5124473  5143323
 ## (3): missense  6209845  6236366
 ## (4): PTV        176179   178190</code></pre>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <ul>
 <li>AF filter <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li>syn: <code>isSyn==T</code></li>
@@ -426,7 +381,22 @@ will be zero, thus a small number of loci stacking at
 <code>isIndel=="FALSE" &amp; QD &gt;= 10.5 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 <pre><code>##                  Trans  Untrans
-## (1): all var  13152940 13089824
+## (1): all var  11763929 11712248
+## (2): all syn   5027525  5013752
+## (3): missense  6039210  6004977
+## (4): PTV        169567   168700</code></pre>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<ul>
+<li>AF filter <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
+<li>syn: <code>isSyn==T</code></li>
+<li>missense: <code>isMis==T</code></li>
+<li>PTV: <code>isPTV==T</code></li>
+<li>sample size should be 7291</li>
+<li>Other filter
+<code>isIndel=="FALSE" &amp; QD &gt;= 6 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
+</ul>
+<pre><code>##                  Trans  Untrans
+## (1): all var  11763929 11712248
 ## (2): all syn   5027525  5013752
 ## (3): missense  6039210  6004977
 ## (4): PTV        169567   168700</code></pre>
@@ -438,29 +408,14 @@ will be zero, thus a small number of loci stacking at
 <li>PTV: <code>isPTV==T</code></li>
 <li>sample size should be 7291</li>
 <li>Other filter
-<code>isIndel=="FALSE" &amp; QD &gt;= 6 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
+<code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 <pre><code>##                  Trans  Untrans
-## (1): all var  13152940 13089824
+## (1): all var  11763929 11712248
 ## (2): all syn   5027525  5013752
 ## (3): missense  6039210  6004977
 ## (4): PTV        169567   168700</code></pre>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<ul>
-<li>AF filter <code>Gnomad_non_neuro_AF&lt;0.05</code></li>
-<li>syn: <code>isSyn==T</code></li>
-<li>missense: <code>isMis==T</code></li>
-<li>PTV: <code>isPTV==T</code></li>
-<li>sample size should be 7291</li>
-<li>Other filter
-<code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
-</ul>
-<pre><code>##                  Trans  Untrans
-## (1): all var  13152940 13089824
-## (2): all syn   5027525  5013752
-## (3): missense  6039210  6004977
-## (4): PTV        169567   168700</code></pre>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div id="figure-1b-in-cell-paper" class="section level2">
@@ -475,7 +430,7 @@ i.e. 0.12/0.1 variants per sample, leading to 1.2 fold enrichment.</p>
 <li><code>isIndel=="FALSE" &amp; QD &gt;= 10 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code></li>
 </ul>
 <p>with above filters, 714 transmitted variants vs 567 untransmitted</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="old-sample-vs-new-sample" class="section level2">
 <h2>Old sample vs new sample</h2>
@@ -495,20 +450,20 @@ AF&lt;1E-4 in 10 gene sets</p>
 </ul>
 <div id="variant-counts-comparison" class="section level4">
 <h4>Variant counts comparison</h4>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li>missense variants: <code>isMis=="TRUE"</code></li>
 <li>use filter
 <code>QD&gt;=10  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8</code></li>
 </ul>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="af10-3" class="section level4">
 <h4><span class="math inline">\(10^{-4}&lt; AF&lt;10^{-3}\)</span></h4>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 </div>
 <div id="missense-variants-in-individual-constraint-gene"
@@ -516,12 +471,12 @@ class="section level3">
 <h3>Missense variants in individual constraint gene</h3>
 <p>consider missense variants with AF&lt;10-E4 in top 10 genes from old
 sample and new sample and see how they compare</p>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
 </div>
 <div id="variant-count-of-top-10-genes-in-old-sample"
 class="section level3">
 <h3>variant count of top 10 genes in old sample</h3>
-<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="ASC_new_sample_variant_set_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <ul>
 <li><code>Gnomad_non_neuro_AF&lt;0.05</code></li>
 <li>exclude syn variants <code>isSyn=="FALSE"</code></li>
@@ -539,6 +494,7 @@ class="section level3">
 <li>exclude synonymous variants <code>isSyn==F</code></li>
 <li>filter out introns
 <code>!str_detect(Consequence, 'intron_variant')</code></li>
+<li><code>QD&gt;=10.5  &amp; AS_SOR &lt;=3 &amp; AS_ReadPosRankSum&gt;-0.8 &amp; isIndel=="FALSE"</code></li>
 </ul>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
@@ -7407,6 +7363,11 @@ missense_variant
 </tr>
 </tbody>
 </table>
+</div>
+<div
+id="comparison-between-old-and-new-sample-after-liftover-under-hg19"
+class="section level3">
+<h3>comparison between old and new sample after liftover under hg19</h3>
 </div>
 </div>
 

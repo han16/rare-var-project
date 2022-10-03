@@ -35,6 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -350,8 +352,2524 @@ div.tocify {
 </div>
 
 
-<div id="withwithout-liftover" class="section level2">
-<h2>with/without liftover</h2>
+<div id="allele-frequency-old-sample-vs-new-sample"
+class="section level2">
+<h2>Allele frequency: old sample vs new sample</h2>
+<p><img src="liftover_files_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="liftover_files_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<p><img src="liftover_files_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<ul>
+<li>for both samples, focus on variants with AF&lt;5% and exclude syn
+mutations.</li>
+<li>each point is one single variant<br />
+</li>
+<li>left panel: 344 (0.0188%) overlapping loci with numeric AF from both
+old and new sample; one example is
+<code>7:100683050 0.042 (AF_old)      0.0000816(AF_new)</code>, in
+Gnomad database, V2 say AF is <code>4.05e-2</code>, ExAC AF is
+<code>4.22e-2</code>, and v3 (hg38) AF is <code>3.28e-5</code>. This
+example suggests <code>Gnomad_non_neuro_AF</code> is close to genomewide
+AF under hg38. (<strong>old sample is under hg 19 and new sample under
+hg38=&gt; they are incompatible</strong>)</li>
+</ul>
+<pre><code>&gt; ASC_new_sample %&gt;% filter(Variant==&quot;7:100683050:G:A&quot;) %&gt;% select(Variant, Gene, pLI, Consequence, Gnomad_non_neuro_AF)
+# A tibble: 1 x 5
+  Variant         Gene     pLI Consequence      Gnomad_non_neuro_AF
+  &lt;chr&gt;           &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                          &lt;dbl&gt;
+1 7:100683050:G:A GIGYF1 0.979 missense_variant           0.0000816</code></pre>
+<pre><code>&gt; Anno.Data %&gt;%
++     filter(str_detect(ID, &#39;7:100683050&#39;)) %&gt;% select(ID, Gene, ExacAF)
+# A tibble: 1 x 3
+  ID                        Gene  ExacAF
+  &lt;chr&gt;                     &lt;chr&gt;  &lt;dbl&gt;
+1 7:100683050-100683050_T_G MUC17  0.042</code></pre>
+<ul>
+<li><p>right panel: 1826590 loci with <code>NA</code> AF replaced with 2
+either from new or old sample</p></li>
+<li><p>in the two figures in the middle, old samples are liftover, a
+larger number of loci (272,141, 19.31%, 272,141/1,409,319) are
+overlapping between new sample and liftover sample of old data.</p></li>
+<li><p>a small number of loci with variants not in Gnomad, their new AF
+will be zero, thus a small number of loci stacking at
+<code>AF_new=0</code> for example,</p></li>
+</ul>
+<pre><code>ID              AF_old_liftover AF_new
+  &lt;chr&gt;                     &lt;dbl&gt;  &lt;dbl&gt;
+1 1:1527777:G:A           0.00540      0
+2 2:172491230:G:T         0.01         0
+3 4:9444548:T:G           0.00616      0
+4 5:137870800:A:C         0.00772      0
+5 9:18928678:G:T          0.00800      0</code></pre>
+<ul>
+<li>new sample both with and without liftover, apply the filter
+<code>isIndel=="FALSE" &amp; QD &gt;= 1 &amp; AS_SOR &lt;= 3 &amp; AS_ReadPosRankSum &gt;= -0.8</code>,
+<code>!str_detect(Consequence, 'intron_variant')</code>,
+<code>isSyn=="FALSE"</code>, and
+<code>Gnomad_non_neuro_AF&lt;0.05</code> to exclude intron variants</li>
+</ul>
+</div>
+<div id="gene-cyfip1" class="section level2">
+<h2>Gene-CYFIP1</h2>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ID
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Gene
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+ExacAF
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ID2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+15:22925883-22925883_C_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000330
+</td>
+<td style="text-align:left;">
+15:22925883
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22925886-22925886_C_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000165
+</td>
+<td style="text-align:left;">
+15:22925886
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22929855-22929855_A_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:left;">
+15:22929855
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933649-22933649_A_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:22933649
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933770-22933770_T_C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:left;">
+15:22933770
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933860-22933860_A_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0001483
+</td>
+<td style="text-align:left;">
+15:22933860
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933862-22933862_C_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0001483
+</td>
+<td style="text-align:left;">
+15:22933862
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22933871-22933871_C_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000330
+</td>
+<td style="text-align:left;">
+15:22933871
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947019-22947019_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:22947019
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947036-22947036_C_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:22947036
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947037-22947037_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:left;">
+15:22947037
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22958213-22958213_C_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:22958213
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962456-22962456_C_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000165
+</td>
+<td style="text-align:left;">
+15:22962456
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962487-22962487_C_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000330
+</td>
+<td style="text-align:left;">
+15:22962487
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22962523-22962523_C_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:left;">
+15:22962523
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963761-22963761_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:22963761
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963798-22963798_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:22963798
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963813-22963813_T_C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000576
+</td>
+<td style="text-align:left;">
+15:22963813
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22963869-22963869_A_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0054690
+</td>
+<td style="text-align:left;">
+15:22963869
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969215-22969215_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0001730
+</td>
+<td style="text-align:left;">
+15:22969215
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969233-22969233_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0008072
+</td>
+<td style="text-align:left;">
+15:22969233
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969238-22969238_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0001071
+</td>
+<td style="text-align:left;">
+15:22969238
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969241-22969241_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000247
+</td>
+<td style="text-align:left;">
+15:22969241
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22969250-22969250_C_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:22969250
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22990087-22990087_G_A
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0082610
+</td>
+<td style="text-align:left;">
+15:22990087
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22990123-22990123_C_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:left;">
+15:22990123
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22997798-22997798_C_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:left;">
+15:22997798
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000098-23000098_A_T
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000247
+</td>
+<td style="text-align:left;">
+15:23000098
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000149-23000149_T_C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:left;">
+15:23000149
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000151-23000151_G_C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000247
+</td>
+<td style="text-align:left;">
+15:23000151
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000188-23000188_A_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0001235
+</td>
+<td style="text-align:left;">
+15:23000188
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000199-23000199_A_G
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0001071
+</td>
+<td style="text-align:left;">
+15:23000199
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:23000228-23000228_G_C
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0.0000082
+</td>
+<td style="text-align:left;">
+15:23000228
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+group_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ID
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ID2
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Gene
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Gnomad_non_neuro_AF
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+15:22872840:C:G
+</td>
+<td style="text-align:left;">
+15:23000228-23000228_C_G
+</td>
+<td style="text-align:left;">
+15:23000228
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22872869:T:C
+</td>
+<td style="text-align:left;">
+15:23000199-23000199_T_C
+</td>
+<td style="text-align:left;">
+15:23000199
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22872880:T:C
+</td>
+<td style="text-align:left;">
+15:23000188-23000188_T_C
+</td>
+<td style="text-align:left;">
+15:23000188
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22872917:C:G
+</td>
+<td style="text-align:left;">
+15:23000151-23000151_C_G
+</td>
+<td style="text-align:left;">
+15:23000151
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22872919:A:G
+</td>
+<td style="text-align:left;">
+15:23000149-23000149_A_G
+</td>
+<td style="text-align:left;">
+15:23000149
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22872970:T:A
+</td>
+<td style="text-align:left;">
+15:23000098-23000098_T_A
+</td>
+<td style="text-align:left;">
+15:23000098
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22875270:G:C
+</td>
+<td style="text-align:left;">
+15:22997798-22997798_G_C
+</td>
+<td style="text-align:left;">
+15:22997798
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22882945:G:C
+</td>
+<td style="text-align:left;">
+15:22990123-22990123_G_C
+</td>
+<td style="text-align:left;">
+15:22990123
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22882981:C:T
+</td>
+<td style="text-align:left;">
+15:22990087-22990087_C_T
+</td>
+<td style="text-align:left;">
+15:22990087
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903818:G:A
+</td>
+<td style="text-align:left;">
+15:22969250-22969250_G_A
+</td>
+<td style="text-align:left;">
+15:22969250
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903827:C:T
+</td>
+<td style="text-align:left;">
+15:22969241-22969241_C_T
+</td>
+<td style="text-align:left;">
+15:22969241
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903830:C:T
+</td>
+<td style="text-align:left;">
+15:22969238-22969238_C_T
+</td>
+<td style="text-align:left;">
+15:22969238
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903835:C:T
+</td>
+<td style="text-align:left;">
+15:22969233-22969233_C_T
+</td>
+<td style="text-align:left;">
+15:22969233
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903853:C:T
+</td>
+<td style="text-align:left;">
+15:22969215-22969215_C_T
+</td>
+<td style="text-align:left;">
+15:22969215
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22909199:T:C
+</td>
+<td style="text-align:left;">
+15:22963869-22963869_T_C
+</td>
+<td style="text-align:left;">
+15:22963869
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22909255:A:G
+</td>
+<td style="text-align:left;">
+15:22963813-22963813_A_G
+</td>
+<td style="text-align:left;">
+15:22963813
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22909270:C:T
+</td>
+<td style="text-align:left;">
+15:22963798-22963798_C_T
+</td>
+<td style="text-align:left;">
+15:22963798
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22909307:C:T
+</td>
+<td style="text-align:left;">
+15:22963761-22963761_C_T
+</td>
+<td style="text-align:left;">
+15:22963761
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22910545:G:A
+</td>
+<td style="text-align:left;">
+15:22962523-22962523_G_A
+</td>
+<td style="text-align:left;">
+15:22962523
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22910581:G:A
+</td>
+<td style="text-align:left;">
+15:22962487-22962487_G_A
+</td>
+<td style="text-align:left;">
+15:22962487
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22910612:G:A
+</td>
+<td style="text-align:left;">
+15:22962456-22962456_G_A
+</td>
+<td style="text-align:left;">
+15:22962456
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22914855:G:A
+</td>
+<td style="text-align:left;">
+15:22958213-22958213_G_A
+</td>
+<td style="text-align:left;">
+15:22958213
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22926031:C:T
+</td>
+<td style="text-align:left;">
+15:22947037-22947037_C_T
+</td>
+<td style="text-align:left;">
+15:22947037
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22926032:G:A
+</td>
+<td style="text-align:left;">
+15:22947036-22947036_G_A
+</td>
+<td style="text-align:left;">
+15:22947036
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22926049:C:T
+</td>
+<td style="text-align:left;">
+15:22947019-22947019_C_T
+</td>
+<td style="text-align:left;">
+15:22947019
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22939197:G:C
+</td>
+<td style="text-align:left;">
+15:22933871-22933871_G_C
+</td>
+<td style="text-align:left;">
+15:22933871
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22939206:G:T
+</td>
+<td style="text-align:left;">
+15:22933862-22933862_G_T
+</td>
+<td style="text-align:left;">
+15:22933862
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22939208:T:C
+</td>
+<td style="text-align:left;">
+15:22933860-22933860_T_C
+</td>
+<td style="text-align:left;">
+15:22933860
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22939298:A:G
+</td>
+<td style="text-align:left;">
+15:22933770-22933770_A_G
+</td>
+<td style="text-align:left;">
+15:22933770
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22939419:T:C
+</td>
+<td style="text-align:left;">
+15:22933649-22933649_T_C
+</td>
+<td style="text-align:left;">
+15:22933649
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22943213:T:C
+</td>
+<td style="text-align:left;">
+15:22929855-22929855_T_C
+</td>
+<td style="text-align:left;">
+15:22929855
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947182:G:A
+</td>
+<td style="text-align:left;">
+15:22925886-22925886_G_A
+</td>
+<td style="text-align:left;">
+15:22925886
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947185:G:T
+</td>
+<td style="text-align:left;">
+15:22925883-22925883_G_T
+</td>
+<td style="text-align:left;">
+15:22925883
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+group_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ID
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ID2
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Gene
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Gnomad_non_neuro_AF
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+15:22870039:C:T
+</td>
+<td style="text-align:left;">
+15:23003029-23003029_C_T
+</td>
+<td style="text-align:left;">
+15:23003029
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870072:G:A
+</td>
+<td style="text-align:left;">
+15:23002996-23002996_G_A
+</td>
+<td style="text-align:left;">
+15:23002996
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870087:G:A
+</td>
+<td style="text-align:left;">
+15:23002981-23002981_G_A
+</td>
+<td style="text-align:left;">
+15:23002981
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870092:C:T
+</td>
+<td style="text-align:left;">
+15:23002976-23002976_C_T
+</td>
+<td style="text-align:left;">
+15:23002976
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870093:C:T
+</td>
+<td style="text-align:left;">
+15:23002975-23002975_C_T
+</td>
+<td style="text-align:left;">
+15:23002975
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870099:C:T
+</td>
+<td style="text-align:left;">
+15:23002969-23002969_C_T
+</td>
+<td style="text-align:left;">
+15:23002969
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870102:C:T
+</td>
+<td style="text-align:left;">
+15:23002966-23002966_C_T
+</td>
+<td style="text-align:left;">
+15:23002966
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870114:G:C
+</td>
+<td style="text-align:left;">
+15:23002954-23002954_G_C
+</td>
+<td style="text-align:left;">
+15:23002954
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870132:T:C
+</td>
+<td style="text-align:left;">
+15:23002936-23002936_T_C
+</td>
+<td style="text-align:left;">
+15:23002936
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870164:C:T
+</td>
+<td style="text-align:left;">
+15:23002904-23002904_C_T
+</td>
+<td style="text-align:left;">
+15:23002904
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870165:G:A
+</td>
+<td style="text-align:left;">
+15:23002903-23002903_G_A
+</td>
+<td style="text-align:left;">
+15:23002903
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870180:T:C
+</td>
+<td style="text-align:left;">
+15:23002888-23002888_T_C
+</td>
+<td style="text-align:left;">
+15:23002888
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22870182:T:A
+</td>
+<td style="text-align:left;">
+15:23002886-23002886_T_A
+</td>
+<td style="text-align:left;">
+15:23002886
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22872905:G:A
+</td>
+<td style="text-align:left;">
+15:23000163-23000163_G_A
+</td>
+<td style="text-align:left;">
+15:23000163
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873527:T:C
+</td>
+<td style="text-align:left;">
+15:22999541-22999541_T_C
+</td>
+<td style="text-align:left;">
+15:22999541
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873611:C:T
+</td>
+<td style="text-align:left;">
+15:22999457-22999457_C_T
+</td>
+<td style="text-align:left;">
+15:22999457
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873612:G:A
+</td>
+<td style="text-align:left;">
+15:22999456-22999456_G_A
+</td>
+<td style="text-align:left;">
+15:22999456
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873627:C:G
+</td>
+<td style="text-align:left;">
+15:22999441-22999441_C_G
+</td>
+<td style="text-align:left;">
+15:22999441
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873638:C:A
+</td>
+<td style="text-align:left;">
+15:22999430-22999430_C_A
+</td>
+<td style="text-align:left;">
+15:22999430
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873638:C:T
+</td>
+<td style="text-align:left;">
+15:22999430-22999430_C_T
+</td>
+<td style="text-align:left;">
+15:22999430
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873645:G:A
+</td>
+<td style="text-align:left;">
+15:22999423-22999423_G_A
+</td>
+<td style="text-align:left;">
+15:22999423
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22873665:A:G
+</td>
+<td style="text-align:left;">
+15:22999403-22999403_A_G
+</td>
+<td style="text-align:left;">
+15:22999403
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22874593:G:A
+</td>
+<td style="text-align:left;">
+15:22998475-22998475_G_A
+</td>
+<td style="text-align:left;">
+15:22998475
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22874597:C:T
+</td>
+<td style="text-align:left;">
+15:22998471-22998471_C_T
+</td>
+<td style="text-align:left;">
+15:22998471
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22879947:G:A
+</td>
+<td style="text-align:left;">
+15:22993121-22993121_G_A
+</td>
+<td style="text-align:left;">
+15:22993121
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22881867:G:A
+</td>
+<td style="text-align:left;">
+15:22991201-22991201_G_A
+</td>
+<td style="text-align:left;">
+15:22991201
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22881900:T:C
+</td>
+<td style="text-align:left;">
+15:22991168-22991168_T_C
+</td>
+<td style="text-align:left;">
+15:22991168
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22881911:A:C
+</td>
+<td style="text-align:left;">
+15:22991157-22991157_A_C
+</td>
+<td style="text-align:left;">
+15:22991157
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22881912:C:T
+</td>
+<td style="text-align:left;">
+15:22991156-22991156_C_T
+</td>
+<td style="text-align:left;">
+15:22991156
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22882878:A:G
+</td>
+<td style="text-align:left;">
+15:22990190-22990190_A_G
+</td>
+<td style="text-align:left;">
+15:22990190
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22882879:C:T
+</td>
+<td style="text-align:left;">
+15:22990189-22990189_C_T
+</td>
+<td style="text-align:left;">
+15:22990189
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22882932:C:T
+</td>
+<td style="text-align:left;">
+15:22990136-22990136_C_T
+</td>
+<td style="text-align:left;">
+15:22990136
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903719:C:T
+</td>
+<td style="text-align:left;">
+15:22969349-22969349_C_T
+</td>
+<td style="text-align:left;">
+15:22969349
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903823:A:G
+</td>
+<td style="text-align:left;">
+15:22969245-22969245_A_G
+</td>
+<td style="text-align:left;">
+15:22969245
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22903877:C:T
+</td>
+<td style="text-align:left;">
+15:22969191-22969191_C_T
+</td>
+<td style="text-align:left;">
+15:22969191
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22909254:C:T
+</td>
+<td style="text-align:left;">
+15:22963814-22963814_C_T
+</td>
+<td style="text-align:left;">
+15:22963814
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22909297:A:G
+</td>
+<td style="text-align:left;">
+15:22963771-22963771_A_G
+</td>
+<td style="text-align:left;">
+15:22963771
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22910533:T:C
+</td>
+<td style="text-align:left;">
+15:22962535-22962535_T_C
+</td>
+<td style="text-align:left;">
+15:22962535
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22910563:G:A
+</td>
+<td style="text-align:left;">
+15:22962505-22962505_G_A
+</td>
+<td style="text-align:left;">
+15:22962505
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22910621:G:A
+</td>
+<td style="text-align:left;">
+15:22962447-22962447_G_A
+</td>
+<td style="text-align:left;">
+15:22962447
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22910738:T:C
+</td>
+<td style="text-align:left;">
+15:22962330-22962330_T_C
+</td>
+<td style="text-align:left;">
+15:22962330
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22914733:T:C
+</td>
+<td style="text-align:left;">
+15:22958335-22958335_T_C
+</td>
+<td style="text-align:left;">
+15:22958335
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22914757:T:C
+</td>
+<td style="text-align:left;">
+15:22958311-22958311_T_C
+</td>
+<td style="text-align:left;">
+15:22958311
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22914828:A:C
+</td>
+<td style="text-align:left;">
+15:22958240-22958240_A_C
+</td>
+<td style="text-align:left;">
+15:22958240
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22916587:T:C
+</td>
+<td style="text-align:left;">
+15:22956481-22956481_T_C
+</td>
+<td style="text-align:left;">
+15:22956481
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22917830:G:T
+</td>
+<td style="text-align:left;">
+15:22955238-22955238_G_T
+</td>
+<td style="text-align:left;">
+15:22955238
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22917858:C:T
+</td>
+<td style="text-align:left;">
+15:22955210-22955210_C_T
+</td>
+<td style="text-align:left;">
+15:22955210
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22917862:G:A
+</td>
+<td style="text-align:left;">
+15:22955206-22955206_G_A
+</td>
+<td style="text-align:left;">
+15:22955206
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22917894:G:A
+</td>
+<td style="text-align:left;">
+15:22955174-22955174_G_A
+</td>
+<td style="text-align:left;">
+15:22955174
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22918704:T:G
+</td>
+<td style="text-align:left;">
+15:22954364-22954364_T_G
+</td>
+<td style="text-align:left;">
+15:22954364
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22918768:G:T
+</td>
+<td style="text-align:left;">
+15:22954300-22954300_G_T
+</td>
+<td style="text-align:left;">
+15:22954300
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22918774:C:T
+</td>
+<td style="text-align:left;">
+15:22954294-22954294_C_T
+</td>
+<td style="text-align:left;">
+15:22954294
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22918779:A:G
+</td>
+<td style="text-align:left;">
+15:22954289-22954289_A_G
+</td>
+<td style="text-align:left;">
+15:22954289
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22918789:G:A
+</td>
+<td style="text-align:left;">
+15:22954279-22954279_G_A
+</td>
+<td style="text-align:left;">
+15:22954279
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22918809:C:T
+</td>
+<td style="text-align:left;">
+15:22954259-22954259_C_T
+</td>
+<td style="text-align:left;">
+15:22954259
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22926098:T:C
+</td>
+<td style="text-align:left;">
+15:22946970-22946970_T_C
+</td>
+<td style="text-align:left;">
+15:22946970
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22927985:G:A
+</td>
+<td style="text-align:left;">
+15:22945083-22945083_G_A
+</td>
+<td style="text-align:left;">
+15:22945083
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22927986:C:T
+</td>
+<td style="text-align:left;">
+15:22945082-22945082_C_T
+</td>
+<td style="text-align:left;">
+15:22945082
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22932225:C:T
+</td>
+<td style="text-align:left;">
+15:22940843-22940843_C_T
+</td>
+<td style="text-align:left;">
+15:22940843
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22932240:G:A
+</td>
+<td style="text-align:left;">
+15:22940828-22940828_G_A
+</td>
+<td style="text-align:left;">
+15:22940828
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22932261:G:A
+</td>
+<td style="text-align:left;">
+15:22940807-22940807_G_A
+</td>
+<td style="text-align:left;">
+15:22940807
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22932321:C:T
+</td>
+<td style="text-align:left;">
+15:22940747-22940747_C_T
+</td>
+<td style="text-align:left;">
+15:22940747
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22932336:T:A
+</td>
+<td style="text-align:left;">
+15:22940732-22940732_T_A
+</td>
+<td style="text-align:left;">
+15:22940732
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22932337:C:A
+</td>
+<td style="text-align:left;">
+15:22940731-22940731_C_A
+</td>
+<td style="text-align:left;">
+15:22940731
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22937105:T:C
+</td>
+<td style="text-align:left;">
+15:22935963-22935963_T_C
+</td>
+<td style="text-align:left;">
+15:22935963
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22937159:T:C
+</td>
+<td style="text-align:left;">
+15:22935909-22935909_T_C
+</td>
+<td style="text-align:left;">
+15:22935909
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22937169:T:C
+</td>
+<td style="text-align:left;">
+15:22935899-22935899_T_C
+</td>
+<td style="text-align:left;">
+15:22935899
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22943285:C:T
+</td>
+<td style="text-align:left;">
+15:22929783-22929783_C_T
+</td>
+<td style="text-align:left;">
+15:22929783
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22944569:T:C
+</td>
+<td style="text-align:left;">
+15:22928499-22928499_T_C
+</td>
+<td style="text-align:left;">
+15:22928499
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22944576:C:T
+</td>
+<td style="text-align:left;">
+15:22928492-22928492_C_T
+</td>
+<td style="text-align:left;">
+15:22928492
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22944620:C:G
+</td>
+<td style="text-align:left;">
+15:22928448-22928448_C_G
+</td>
+<td style="text-align:left;">
+15:22928448
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22944626:T:C
+</td>
+<td style="text-align:left;">
+15:22928442-22928442_T_C
+</td>
+<td style="text-align:left;">
+15:22928442
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22944909:C:T
+</td>
+<td style="text-align:left;">
+15:22928159-22928159_C_T
+</td>
+<td style="text-align:left;">
+15:22928159
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947014:G:A
+</td>
+<td style="text-align:left;">
+15:22926054-22926054_G_A
+</td>
+<td style="text-align:left;">
+15:22926054
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947017:C:T
+</td>
+<td style="text-align:left;">
+15:22926051-22926051_C_T
+</td>
+<td style="text-align:left;">
+15:22926051
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947191:G:A
+</td>
+<td style="text-align:left;">
+15:22925877-22925877_G_A
+</td>
+<td style="text-align:left;">
+15:22925877
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947195:G:A
+</td>
+<td style="text-align:left;">
+15:22925873-22925873_G_A
+</td>
+<td style="text-align:left;">
+15:22925873
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947281:G:A
+</td>
+<td style="text-align:left;">
+15:22925787-22925787_G_A
+</td>
+<td style="text-align:left;">
+15:22925787
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15:22947286:C:G
+</td>
+<td style="text-align:left;">
+15:22925782-22925782_C_G
+</td>
+<td style="text-align:left;">
+15:22925782
+</td>
+<td style="text-align:left;">
+CYFIP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><p>With the samle filter, gene <code>CYFIP1</code> has 46 variants,
+new sample after liftover has 112 variants, and 33 variants are
+overlapping between themm, shown in above two tables. The third table
+list non-overlapping variants in new sample, all of which have 0
+AF.</p></li>
+<li><p>the variants are complementary to each other, e.g. in old sample,
+<code>15:22947019-22947019_G_A</code> and new sample after liftover
+<code>15:22947019-22947019_C_T</code>.</p></li>
+<li><p>variants in old sample <code>15:22963816</code> with variants
+<code>8 vs 0</code> doesn’t survive the filter
+<code>AS_ReadPosRankSum &gt;= -0.8</code>, and in new sample with
+variants <code>12 vs 0</code>.</p></li>
+</ul>
+<pre><code>## # A tibble: 1 x 8
+##   Variant           pLI   MPC Consequence      Gnomad_non_neur~ AS_ReadPosRankS~
+##   &lt;chr&gt;           &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;                       &lt;dbl&gt;            &lt;dbl&gt;
+## 1 15:22909252:T:C 0.995    NA missense_variant                0             -0.9
+## # ... with 2 more variables: Transmitted_proband &lt;dbl&gt;,
+## #   Untransmitted_proband &lt;dbl&gt;</code></pre>
 </div>
 
 <hr>
