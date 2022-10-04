@@ -19,6 +19,7 @@ library(gridExtra)
 library(ggpubr)
 #install.packages("devtools") # run once 
 library(devtools)
+library(DT)
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
 library(mirage)
@@ -262,22 +263,34 @@ CYFIP1_new_liftover_with_filter=ASC_new_sample_liftover1 %>% filter(Gene=="CYFIP
 ID_overlap=intersect(CYFIP1_old$ID2, CYFIP1_new_liftover_with_filter$ID2)
 
 CYFIP1_old %>% filter(ID2 %in% ID_overlap==T)%>%
-  kbl() %>%
-  kable_styling()%>%
-scroll_box(height = "300px") # display overlapping variants in old sample 
+datatable(extensions = 'Buttons',
+          caption = "33 overlapping variants in old sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+#%>%
+#  kbl() %>%
+#  kable_styling()%>%
+#scroll_box(height = "300px") # display overlapping variants in old sample 
 
 
 CYFIP1_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==T) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF )%>%
-  kbl() %>%
-  kable_styling()%>%
-scroll_box(height = "300px")  # overlapping variant in new sample 
+datatable(extensions = 'Buttons',
+          caption = "33 overlapping variants in new sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
 
 CYFIP1_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF )%>%
-  kbl() %>%
-  kable_styling()%>%
-scroll_box(height = "300px")  # non-overlapping variant in new sample
-
-
+datatable(extensions = 'Buttons',
+          caption = "non-overlapping variants in new sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
 
 CYFIP1_old_new_liftover_combine=CYFIP1_old %>% full_join(CYFIP1_new_liftover_with_filter) %>% select(ID, Gene, ExacAF, Gnomad_non_neuro_AF, group_name)
 ```
