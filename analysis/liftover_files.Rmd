@@ -258,7 +258,7 @@ old_ID=substr(CYFIP1_old$ID, 1,old_pos-1)
 CYFIP1_old=CYFIP1_old %>% mutate(ID2=old_ID)
 
 CYFIP1_new_liftover_no_filter=ASC_new_sample_liftover2 %>% filter(Gene=="CYFIP1") %>% select(group_name, start, allele1, allele2, Gene, Gnomad_non_neuro_AF) %>% mutate(ID=paste("15", ":", start, "-", start, "_", allele1, "_", allele2, sep="")) %>% mutate(ID2=paste("15",":", start, sep=""))
-CYFIP1_new_liftover_with_filter=ASC_new_sample_liftover1 %>% filter(Gene=="CYFIP1") %>% select(group_name, start, allele1, allele2, Gene, Gnomad_non_neuro_AF)%>% mutate(ID=paste("15",":", start, "-", start, "_", allele1, "_", allele2, sep="")) %>% mutate(ID2=paste("15",":", start, sep=""))
+CYFIP1_new_liftover_with_filter=ASC_new_sample_liftover1 %>% filter(Gene=="CYFIP1") %>% select(group_name, start, allele1, allele2, Gene, Gnomad_non_neuro_AF, Consequence)%>% mutate(ID=paste("15",":", start, "-", start, "_", allele1, "_", allele2, sep="")) %>% mutate(ID2=paste("15",":", start, sep=""))
 ############# there is multi-allelic issue here 
 ID_overlap=intersect(CYFIP1_old$ID2, CYFIP1_new_liftover_with_filter$ID2)
 
@@ -284,9 +284,9 @@ datatable(extensions = 'Buttons',
                            lengthMenu = list(c(10,25,50,-1),
                                              c(10,25,50,"All"))))
 
-CYFIP1_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF )%>%
+CYFIP1_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF, Consequence)%>%
 datatable(extensions = 'Buttons',
-          caption = "non-overlapping variants in new sample",
+          caption = "79 non-overlapping variants in new sample",
             options = list(dom = 'Blfrtip',
                            #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                            lengthMenu = list(c(10,25,50,-1),
@@ -297,7 +297,9 @@ CYFIP1_old_new_liftover_combine=CYFIP1_old %>% full_join(CYFIP1_new_liftover_wit
 
 
 
-* With the samle filter, gene `CYFIP1` has 46 variants, new sample after liftover has 112 variants, and 33 variants are overlapping between themm, shown in above two tables. The third table list non-overlapping variants in new sample, all of which have 0 AF. 
+* With the same/similar filter, gene `CYFIP1` has 46 variants, new sample after liftover has 112 variants, and 33 variants are overlapping between them, shown in above two tables. The third table list non-overlapping variants in new sample, all of which have 0 AF. Among 79 non-overlapping variants, (1) one variant has multi-allele (2) most of them are missense variants, (3) their `Gnomad_non_neuro_AF=0` under hg38. 
+
+
 
 * the variants are complementary to each other, e.g. in old sample, `15:22947019-22947019_G_A` and new sample after liftover `15:22947019-22947019_C_T`. 
 
