@@ -292,6 +292,8 @@ datatable(extensions = 'Buttons',
                            lengthMenu = list(c(10,25,50,-1),
                                              c(10,25,50,"All"))))
 
+CYFIP1_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF, Consequence) %>% select(Consequence)%>% count(by=Consequence)  # display the variant types and counts 
+
 CYFIP1_old_new_liftover_combine=CYFIP1_old %>% full_join(CYFIP1_new_liftover_with_filter) %>% select(ID, Gene, ExacAF, Gnomad_non_neuro_AF, group_name)
 ```
 
@@ -309,3 +311,57 @@ CYFIP1_old_new_liftover_combine=CYFIP1_old %>% full_join(CYFIP1_new_liftover_wit
 #ASC_new_sample_liftover2 %>% filter(start=="22963816") %>% select(group_name)
 ASC_new_sample_nofilter %>% filter(Variant=="15:22909252:T:C") %>% select(Variant, pLI, MPC, Consequence, Gnomad_non_neuro_AF, AS_ReadPosRankSum, Transmitted_proband, Untransmitted_proband)
 ```
+
+
+
+## Gene-SRCAP
+
+```{r, echo=F, message=F, warning=F}
+SRCAP_old=Anno.Data %>% filter(Gene=="SRCAP") %>% select(ID, Gene, ExacAF)
+old_pos=unlist(gregexpr("-", SRCAP_old$ID))  # locate the position of "-"
+old_ID=substr(SRCAP_old$ID, 1,old_pos-1)
+SRCAP_old=SRCAP_old %>% mutate(ID2=old_ID)
+
+SRCAP_new_liftover_no_filter=ASC_new_sample_liftover2 %>% filter(Gene=="SRCAP") %>% select(group_name, start, allele1, allele2, Gene, Gnomad_non_neuro_AF) %>% mutate(ID=paste("16", ":", start, "-", start, "_", allele1, "_", allele2, sep="")) %>% mutate(ID2=paste("15",":", start, sep=""))
+SRCAP_new_liftover_with_filter=ASC_new_sample_liftover1 %>% filter(Gene=="SRCAP") %>% select(group_name, start, allele1, allele2, Gene, Gnomad_non_neuro_AF, Consequence)%>% mutate(ID=paste("16",":", start, "-", start, "_", allele1, "_", allele2, sep="")) %>% mutate(ID2=paste("16",":", start, sep=""))
+############# there is multi-allelic issue here 
+ID_overlap=intersect(SRCAP_old$ID2, SRCAP_new_liftover_with_filter$ID2)
+
+SRCAP_old %>% filter(ID2 %in% ID_overlap==T)%>%
+datatable(extensions = 'Buttons',
+          caption = "overlapping variants in old sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+#%>%
+#  kbl() %>%
+#  kable_styling()%>%
+#scroll_box(height = "300px") # display overlapping variants in old sample 
+
+
+SRCAP_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==T) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF )%>%
+datatable(extensions = 'Buttons',
+          caption = "overlapping variants in new sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+SRCAP_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF, Consequence)%>%
+datatable(extensions = 'Buttons',
+          caption = "non-overlapping variants in new sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+SRCAP_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF, Consequence) %>% select(Consequence)%>% count(by=Consequence)
+```
+
+
+* among 86 variants in old sample, 61 are overlapping with new data with a total of 315  variants.  
+
+* among 254 non-overlapping variants in new data, most are missense variants 
+
