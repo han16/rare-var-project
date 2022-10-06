@@ -365,3 +365,73 @@ SRCAP_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(gro
 
 * among 254 non-overlapping variants in new data, most are missense variants 
 
+
+## more genes 
+
+* consider top 10 genes in old analysis "CYFIP1","EP400","FBN1","SRCAP","DYNC1H1","ABCA2","DOCK4","CACNA1D","CHD8","TRIP12". 
+
+
+```{r, echo=F, message=F, warning=F}
+top_genes=c("CYFIP1","EP400","FBN1","SRCAP","DYNC1H1","ABCA2","DOCK4","CACNA1D","CHD8","TRIP12")
+top_genes_old=Anno.Data %>% filter(Gene%in%top_genes) %>% select(ID, Gene, ExacAF)
+old_pos=unlist(gregexpr("-", top_genes_old$ID))  # locate the position of "-"
+old_ID=substr(top_genes_old$ID, 1,old_pos-1)
+top_genes_old=top_genes_old %>% mutate(ID2=old_ID)
+
+
+top_genes_new_liftover_with_filter=ASC_new_sample_liftover1 %>% filter(Gene%in%top_genes) %>% select(group_name, start, allele1, allele2, Gene, Gnomad_non_neuro_AF, Consequence, seqnames)
+
+###########
+new_pos_liftover=nchar(as.character(top_genes_new_liftover_with_filter$seqnames)) # find the length of string, the last position
+new_ID_liftover=paste(substr(top_genes_new_liftover_with_filter$seqnames, 4, new_pos_liftover), ":", top_genes_new_liftover_with_filter$start, "-", top_genes_new_liftover_with_filter$start, "_", top_genes_new_liftover_with_filter$allele1,"_", top_genes_new_liftover_with_filter$allele2, sep="") # extract loci position without "chr", starting from 4th position to the end, to be consistent with format with other data
+new_ID_liftover2=paste(substr(top_genes_new_liftover_with_filter$seqnames, 4, new_pos_liftover), ":", top_genes_new_liftover_with_filter$start, sep="") # extract loci position without "chr", starting from 4th position to the end, to be consistent with format with other data
+###########
+
+top_genes_new_liftover_with_filter=top_genes_new_liftover_with_filter%>% mutate(ID=new_ID_liftover) %>% mutate(ID2=new_ID_liftover2)
+############# there is multi-allelic issue here 
+ID_overlap=intersect(top_genes_old$ID2, top_genes_new_liftover_with_filter$ID2)
+
+top_genes_old %>% filter(ID2 %in% ID_overlap==T)%>%
+datatable(extensions = 'Buttons',
+          caption = "overlapping variants in old sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+#%>%
+#  kbl() %>%
+#  kable_styling()%>%
+#scroll_box(height = "300px") # display overlapping variants in old sample 
+
+
+top_genes_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==T) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF )%>%
+datatable(extensions = 'Buttons',
+          caption = "overlapping variants in new sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+top_genes_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF, Consequence)%>%
+datatable(extensions = 'Buttons',
+          caption = "non-overlapping variants in new sample",
+            options = list(dom = 'Blfrtip',
+                           #buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+top_genes_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(group_name, ID, ID2, Gene,Gnomad_non_neuro_AF, Consequence) %>% select(Consequence)%>% count(by=Consequence)
+
+top_genes_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(Gnomad_non_neuro_AF)%>%ggplot(aes(x=Gnomad_non_neuro_AF)) + 
+  geom_histogram(color="black", fill="white")+
+  labs(title="histogram of Gnomad_non_neuro_AF of non-overlapping variants")
+
+#top_genes_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select(Gnomad_non_neuro_AF)%>%ggplot(aes(x=Gnomad_non_neuro_AF)) + 
+# geom_histogram(aes(y=..density..), colour="black", fill="white")+
+# geom_density(alpha=.2, fill="#FF6666") 
+```
+
+* among 627 variants, 476 (76%) are overlapping with new data with a total of 1988 variants. 
+
+* among 1512 non-overlapping variants, most (96%) are missense variants with small Gnomad_non_neuro_AF. 
