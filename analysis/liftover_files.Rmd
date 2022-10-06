@@ -432,6 +432,6 @@ top_genes_new_liftover_with_filter %>% filter(ID2 %in% ID_overlap==F) %>% select
 # geom_density(alpha=.2, fill="#FF6666") 
 ```
 
-* among 627 variants, 476 (76%) are overlapping with new data with a total of 1988 variants. 
+* among 627 variants in old data, 476 (76%) are overlapping with new data with a total of 1988 variants. 
 
 * among 1512 non-overlapping variants, most (96%) are missense variants with small Gnomad_non_neuro_AF. 
