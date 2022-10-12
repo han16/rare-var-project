@@ -17,6 +17,7 @@ library(gplots)
 library(tidyverse)
 library(gridExtra)
 library(ggpubr)
+library(DT)
 #library("devtools")
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
@@ -109,7 +110,7 @@ Untransmitted_sibling=ASC_new_sample3%>% select(starts_with("u_sibling"))%>%  mu
 ################################################
 
 
-ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8) # exclude indel & apply other filters for SNP's 
+ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8)%>%filter(!str_detect(Consequence, 'intron_variant'))# exclude indel & apply other filters for SNP's 
 
 ##################
 #AF_cutoff=0.001
@@ -649,6 +650,7 @@ Use below filters and stated otherwise
 * `isSyn=="FALSE"`
 
 * `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+* `filter(!str_detect(Consequence, 'intron_variant'))`  exclude intron 
 
 
 
@@ -688,6 +690,7 @@ g1=ggplot(fisher_test_result_all, aes(x=var, y=OR, fill=var)) + # draw the OR pl
 * Put all variants with AF<10E-4 in one category and run MIRAGE_VS. $\widehat{\eta}=0.0882$, p value is $2.585515e-34$.  
 
 ```{r, echo=F, eval=F}
+################### DO NOT RUN ##################
 Constraint_Gene_for_VS=new_sample_trans_data_Constraint_Gene%>% select(Transmitted_proband, Untransmitted_proband)%>%add_column(Group_Index=1)%>% drop_na()
 ########### here it takes about 5 mins to run mirage-VS 
 vs.mirage=mirage_vs(data.frame(Constraint_Gene_for_VS),n1=num.family,n2=num.family)
@@ -723,7 +726,7 @@ annotate_figure(figure,
 ### Run MIRAGE_VS on  6 variant groups in cell paper 
 
 ```{r, echo=F, eval=F}
-#########
+#########  DO NOT RUN #########################
 Constraint_Gene=as.character(read.csv("../data/GeneSet/Samocha_2014NG_contraintgene.csv", header=T)$gene)
 para_est=matrix(nrow=6, ncol=6)
 rownames(para_est)=c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1")
@@ -878,7 +881,8 @@ Table: Summary of top 5% constraint genes
 
 
 
-```{r, echo=F}
+
+```{r, echo=F, message=F, warning=F}
 
 ################ plot parameter estimate: eta
 var_group=c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1")
@@ -990,6 +994,85 @@ BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
 ```
 
 
- 
 
+
+### use fixed $\widehat{\eta}$ to compute BF 
+
+
+```{r, echo=F, message=F, warning=F, eval=T, cache=T}
+############ DO NOT RUN #############
+########## use fixed parameter estimate to calculate BF
+intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+
+  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+  BF.var <- marglik1.CC/marglik0.CC
+
+  return(BF.var)
+}
+
+fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
+{
+  #######################
+  beta.k=beta
+  full.info.genevar=list()
+  gene.list=new.data$Gene; unique.gene=unique(gene.list) # find the gene list
+  num.gene=length(unique.gene)
+  BF.gene=numeric()
+  ########################
+  for (i in 1:num.gene)
+  {
+#    cat(i, "th gene of ", "\t", num.gene, "\t", "is running", "\n")
+    var.index.list=which(gene.list==unique.gene[i])
+    indi.gene=new.data[var.index.list,]   # note var.index.list matches new.data
+    bb=1; var.BF=numeric()
+    if (length(var.index.list)>0) # calculate Bayes factor for variant (i,j)
+      for (j in 1:length(var.index.list))
+      {
+        if (new.data$group.index[var.index.list[j]]<=3)
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=6, sig=sigma, N1, N0)
+        if (new.data$group.index[var.index.list[j]]>3)
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=gamma.mean, sig=sigma, N1, N0)
+        bb=bb*((1-beta.k[new.data$group.index[var.index.list[j]]])+beta.k[new.data$group.index[var.index.list[j]]]*var.BF[j])
+      }
+    full.info.genevar[[i]]=cbind(indi.gene, var.BF)
+    BF.gene[i]=bb
+  }
+  
+  return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
+}
+###########################
+#beta=c(0.41, 0, 0, 0.16, 0, 0)
+#new.data=ASC_new_sample_GI %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% Constraint_Gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+#colnames(new.data)[3:5]=c("No.case", "No.contr", "group.index")
+#result=fixed.beta.func(new.data, N1=7291, N0=7291, gamma.mean=c(6,6,6,3,3,3),sigma=2, beta=beta) # use fixed beta to calculate Bayes factors
+
+############## verify the calculations 
+#gene_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="ACACA")]]
+#group.index=gene_variant_BF$group.index
+#gene_BF=prod(1-beta[group.index]+beta[group.index]*gene_variant_BF$var.BF)
+##############
+
+#write.csv(result$BayesFactor, file="../output/KyleData/BF.with.fixed.parameter.Constraint.Gene_1011_2022.csv")
+
+
+BayesFactor=read.csv("../output/KyleData/BF.with.fixed.parameter.Constraint.Gene_1011_2022.csv", header=T)
+constraint_gene_BF=BayesFactor[order(BayesFactor$BF, decreasing = TRUE),]
+constraint_gene_BF$BF=round(constraint_gene_BF$BF,4)
+constraint_gene_BF[,-1]%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+```
+ 
+* $\eta's$ are fixed at values in old results, i.e.  $\eta_1 (PTV, pLI>0.995)=0.41, \eta_4 (MPC>2)=0.16$, all others are set 0, 
   
