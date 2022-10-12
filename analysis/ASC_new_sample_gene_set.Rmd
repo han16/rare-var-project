@@ -939,13 +939,13 @@ BF_proband_ConstraintGene_sorted=BF_proband_ConstraintGene%>%arrange(desc(post.p
 #BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
 ```
 
-#### Top 10 genes with burden 
+#### Top genes with burden 
 
 *  top genes with large BF don't have heavy burden. 
 
 
 ```{r, echo=F}
-num_gene=10
+num_gene=100
 topgene=BF_proband_ConstraintGene_sorted$Gene[1:num_gene]
 Transmitted_proband=numeric(); Untransmitted_proband=numeric(); OR=numeric()
 for (i in 1:length(topgene))
@@ -955,8 +955,13 @@ Untransmitted_proband[i]=sum(ASC_new_sample_GI%>%filter(Gene==topgene[i] & Gnoma
 burden_test=fisher.test(matrix(c(Transmitted_proband[i],num.family, Untransmitted_proband[i], num.family), nrow=2))
 OR[i]=burden_test$estimate
 }
-topgene_summary=tibble(Gene=topgene, BF=BF_proband_ConstraintGene_sorted$BF[1:10], Transmitted_proband=Transmitted_proband, Untransmitted_proband=Untransmitted_proband, OR=OR)
-topgene_summary
+topgene_summary=tibble(Gene=topgene, BF=round(BF_proband_ConstraintGene_sorted$BF[1:num_gene],4), Transmitted_proband=Transmitted_proband, Untransmitted_proband=Untransmitted_proband, OR=round(OR,4))
+topgene_summary%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
 ```
 
 * [KIAA1109](https://www.nature.com/articles/s41398-021-01578-2.pdf?proof=t)
@@ -999,7 +1004,7 @@ BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
 ### use fixed $\widehat{\eta}$ to compute BF 
 
 
-```{r, echo=F, message=F, warning=F, eval=T, cache=T}
+```{r, echo=F, message=F, warning=F, eval=T}
 ############ DO NOT RUN #############
 ########## use fixed parameter estimate to calculate BF
 intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
