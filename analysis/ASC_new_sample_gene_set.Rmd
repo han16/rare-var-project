@@ -476,7 +476,7 @@ ggplot(data=gamma_pvalue, aes(x=gamma, y=pvalue, group=1)) +
 
 * `!str_detect(Consequence, 'intron_variant')` exclude introns 
 
-* `!str_detect(Consequence, 'UTR')` exclude introns
+* `!str_detect(Consequence, 'UTR')` exclude UTRs
 
 
 
