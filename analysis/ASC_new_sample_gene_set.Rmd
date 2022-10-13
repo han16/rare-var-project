@@ -468,9 +468,37 @@ ggplot(data=gamma_pvalue, aes(x=gamma, y=pvalue, group=1)) +
 
 ## Run MIRAGE genomewide 
 
+* `Gnomad_non_neuro_AF<0.05` 
+
+* `isSyn=="FALSE"`
+
+* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+
+* `!str_detect(Consequence, 'intron_variant')` exclude introns 
+
+* `!str_detect(Consequence, 'UTR')` exclude introns
+
+
+
+
+### variant types 
+
+```{r, echo=F, message=F, warning=F}
+ASC_new_sample%>% filter(!str_detect(Consequence, 'UTR')) %>%count(by=Consequence) %>% mutate(prop=round(n/nrow(ASC_new_sample),6))%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+```
+
+
+
+### parameter estimate 
+
 * Run mirage on all 17850 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 
-* AF<0.05,  `Gnomad_non_neuro_AF<0.05` 
+* `Gnomad_non_neuro_AF<0.05` 
 
 * `isSyn=="FALSE"`
 
