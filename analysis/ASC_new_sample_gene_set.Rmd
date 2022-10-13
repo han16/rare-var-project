@@ -484,7 +484,7 @@ ggplot(data=gamma_pvalue, aes(x=gamma, y=pvalue, group=1)) +
 ### variant types 
 
 ```{r, echo=F, message=F, warning=F}
-ASC_new_sample%>% filter(!str_detect(Consequence, 'UTR')) %>%count(by=Consequence) %>% mutate(prop=round(n/nrow(ASC_new_sample),6))%>%
+ASC_new_sample%>% filter(!str_detect(Consequence, 'UTR')) %>%count(by=Consequence) %>% mutate(prop=round(n/nrow(ASC_new_sample),6)) %>% arrange(desc(prop))%>%
 datatable(extensions = 'Buttons',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
