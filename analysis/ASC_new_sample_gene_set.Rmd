@@ -484,13 +484,49 @@ ggplot(data=gamma_pvalue, aes(x=gamma, y=pvalue, group=1)) +
 ### variant types 
 
 ```{r, echo=F, message=F, warning=F}
-ASC_new_sample%>% filter(!str_detect(Consequence, 'UTR')) %>%count(Consequence) %>% mutate(prop=round(n/nrow(ASC_new_sample),6)) %>% arrange(desc(prop))%>%
+ASC_new_sample%>% filter(!str_detect(Consequence, 'UTR') & Gnomad_non_neuro_AF<0.05) %>%count(Consequence) %>% mutate(prop=round(n/nrow(ASC_new_sample),6)) %>% arrange(desc(prop))%>%
 datatable(extensions = 'Buttons',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                            lengthMenu = list(c(10,25,50,-1),
                                              c(10,25,50,"All"))))
 ```
+
+
+### AF distribution 
+
+```{r, echo=F, message=F, warning=F}
+ASC_new_sample_AF=ASC_new_sample%>% filter(!str_detect(Consequence, 'UTR')& Gnomad_non_neuro_AF<0.05)
+  f1=ggplot(ASC_new_sample_AF, aes(x = Gnomad_non_neuro_AF)) + 
+  geom_histogram()+
+  geom_vline(aes(xintercept=mean(Gnomad_non_neuro_AF)),
+            color="red", linetype="dashed", size=1)
+
+a=ASC_new_sample_AF %>% filter(Gnomad_non_neuro_AF<0.001) %>% nrow() #%>%pull() 
+b=ASC_new_sample_AF %>% filter(0.001<Gnomad_non_neuro_AF & Gnomad_non_neuro_AF<0.01) %>% nrow() 
+c=ASC_new_sample_AF %>% filter(0.01<Gnomad_non_neuro_AF & Gnomad_non_neuro_AF<0.05) %>% nrow() 
+
+var_count_by_AF=tibble(count=c(a,b,c), cate=c("(1) AF<0.1%", "(2) 0.1%<AF<1%", "(3) 1%<AF<5%"))
+f2=ggplot(data=var_count_by_AF, aes(x=cate, y=count)) +
+  geom_bar(stat="identity", width=0.5, fill="blue")+
+  #ggtitle("Variant count in every category by AF")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+ # center the title
+  geom_text(aes(label=count), position=position_dodge(width=0.6), vjust=-0.25)
+figure=ggarrange(f1, f2, common.legend = TRUE, legend="right") 
+annotate_figure(figure,
+                top = text_grob("AF distribution", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Datasource: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+
+summary(ASC_new_sample_AF$Gnomad_non_neuro_AF)
+rm("ASC_new_sample_AF") # remove variables temporarily available in this chunk 
+```
+
+
 
 
 
