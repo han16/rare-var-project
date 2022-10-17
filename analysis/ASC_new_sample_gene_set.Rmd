@@ -530,7 +530,7 @@ rm("ASC_new_sample_AF") # remove variables temporarily available in this chunk
 
 
 
-### parameter estimate 
+### MIRAGE analysis on  6 variant groups 
 
 * Run mirage on all 17850 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 
@@ -539,6 +539,8 @@ rm("ASC_new_sample_AF") # remove variables temporarily available in this chunk
 * `isSyn=="FALSE"`
 
 * `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+
+* this result is based on data including introns and UTRs. 
 
 ```{r, echo=F, eval=F}
 ##!!!!!!!!!!!!!!!!! Do not run !!!!!!!!!!!!!!!!!!!
@@ -551,6 +553,8 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
 #write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_0830_2022.csv")
 ```
+
+#### parameter estimate 
 
 | variant category    | parameter |   estimate   | p value |
 | :---        |    :----:   |         :----: |   ---: |
@@ -579,12 +583,20 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=var.group)) +
 
 
 
-Below are top ranked genes. 
+#### top ranked genes
+
+
+
 ```{r, echo=F}
 BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_0830_2022.csv"))
 BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
 #length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
-BF_proband_AllGene_sorted
+data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:100], BF=round(BF_proband_AllGene_sorted$BF[1:100], 4), post.prob=round(BF_proband_AllGene_sorted$post.prob[1:100],4))%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
 #BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
 ```
 
@@ -594,6 +606,90 @@ BF_proband_AllGene_sorted
 * [TXNDC2](https://www.nature.com/articles/s41598-021-00123-x)
 
 
+### MIRAGE analysis on 15 variant groups
+
+```{r, echo=F, message=F, warning=F, eval=F}
+
+# add one column of variant group index 
+ASC_new_sample_GI2=ASC_new_sample %>% filter(!str_detect(Consequence, 'UTR')& Gnomad_non_neuro_AF<0.05)%>% add_column(Group_Index=NA)
+
+############# LOF variants 
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$pLI>=0.995 & ASC_new_sample_GI2$isPTV==T & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.01)]=1
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$pLI>=0.995 & ASC_new_sample_GI2$isPTV==T & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.01)]=2
+
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$pLI>=0.5 & ASC_new_sample_GI2$pLI<0.995 & ASC_new_sample_GI2$isPTV==T & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.01)]=3
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$pLI>=0.5 & ASC_new_sample_GI2$pLI<0.995 & ASC_new_sample_GI2$isPTV==T & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.01)]=4
+
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$pLI<0.5 & ASC_new_sample_GI2$isPTV==T & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.01)]=5
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$pLI<0.5 & ASC_new_sample_GI2$isPTV==T & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.01)]=6
+########## missense variants 
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC>=2 & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.001)]=7
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC>=2 & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.001 & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.01)]=8
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC>=2 & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.01 )]=9
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC>=1 & ASC_new_sample_GI2$MPC<2 & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.001)]=10
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC>=1 & ASC_new_sample_GI2$MPC<2 & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.001 & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.01)]=11
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC>=1 & ASC_new_sample_GI2$MPC<2 & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.01)]=12
+
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC<1 & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.001)]=13
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC<1 & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.001 & ASC_new_sample_GI2$Gnomad_non_neuro_AF<0.01)]=14
+ASC_new_sample_GI2$Group_Index[which(ASC_new_sample_GI2$MPC<1 & ASC_new_sample_GI2$Gnomad_non_neuro_AF>=0.01)]=15
+num.family=7291
+
+
+gene_set=ASC_new_sample_GI2 %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na() # drop all variants neither LoF nor missense variants 
+mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(rep(6,6), rep(3,9))) # input data must be dataframe 
+######### It takes more than one hour to finish running mirage function 
+
+#res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
+#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_1015_2022.csv")
+```
+
+#### parameter estimate 
+
+
+```{r, echo=F, message=F, warning=F}
+pvalue_adjust=function(p_value)
+{
+  p_value_adjust=numeric()
+for (i in 1:length(p_value))
+{
+  if (is.na(p_value[i])==T)
+    p_value_adjust[i]=p_value[i]
+  if (is.na(p_value[i])==F & p_value[i]<1e-10)
+    p_value_adjust[i]="<1e-10"
+  if (is.na(p_value[i])==F & p_value[i]>1e-10)
+    p_value_adjust[i]=round(p_value[i],10)
+}
+  return(p_value_adjust)
+}
+
+p_value=c(1.407778e-111, 1.243930e-03, 1.000000e+00, 1.520364e-02, 1.000000e+00, 3.754382e-01, 1.000000e+00, 1.076301e-08, 1.000000e+00, 1.000000e+00, 1.635885e-21, 1.000000e+00, 7.048646e-10, 2.874112e-72, 1.132749e-16, 1.689324e-01)
+
+
+mirage_para_est=data.frame(variant_groups=c("delta:proportion of risk genes","PTV_PLI>=0.995_AF<0.01", "PTV_PLI>=0.995_0.01<AF<0.05", "PTV_0.5=<PLI<0.995_AF<0.01", "PTV_0.5=<PLI<0.995_0.01<AF<0.05", "PTV_PLI<0.5_AF<0.01", "PTV_PLI<0.5_0.01<AF<0.05", "MPC>=2_AF<0.001", "MPC>=2_0.001=<AF<0.01", "MPC>=2_0.01=<AF<0.05", "1=<MPC<2_AF<0.001", "1=<MPC<2_0.001=<AF<0.01", "1=<MPC<2_0.01=<AF<0.05", "MPC<1_AF<0.001", "MPC<1_0.001=<AF<0.01", "MPC<1_0.01=<AF<0.05"), parameter_estimate=round(c(0.4984, 2.402658e-01,  0.000000e+00,  1.514065e-01,  0.000000e+00,  1.063114e-02,  0.000000e+00,  1.505522e-01, 1.185758e-322, 1.976263e-323,  8.274313e-02, 7.410985e-323,  1.048833e-02,  4.259534e-02,  2.777784e-04,  5.524852e-04),4), p_value=pvalue_adjust(p_value))
+mirage_para_est%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+```
+
+#### Top genes 
+
+
+```{r, echo=F}
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1015_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:100], BF=round(BF_proband_AllGene_sorted$BF[1:100], 4), post.prob=round(BF_proband_AllGene_sorted$post.prob[1:100],4))%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
 
 
 
