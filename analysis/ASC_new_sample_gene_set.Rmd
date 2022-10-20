@@ -24,6 +24,57 @@ library(DT)
 library(mirage)
 ```
 
+```{r, echo=F, message=F, warning=F}
+########## use fixed parameter estimate to calculate BF, this is very useful because it doesn't need to re-run analysis to BF of every gene which takes a long time and large space to store that information 
+intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+
+  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+  BF.var <- marglik1.CC/marglik0.CC
+
+  return(BF.var)
+}
+
+fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
+{
+  #######################
+  beta.k=beta
+  full.info.genevar=list()
+  gene.list=new.data$Gene; unique.gene=unique(gene.list) # find the gene list
+  num.gene=length(unique.gene)
+  BF.gene=numeric()
+  ########################
+  for (i in 1:num.gene)
+  {
+#    cat(i, "th gene of ", "\t", num.gene, "\t", "is running", "\n")
+    var.index.list=which(gene.list==unique.gene[i])
+    indi.gene=new.data[var.index.list,]   # note var.index.list matches new.data
+    bb=1; var.BF=numeric()
+    if (length(var.index.list)>0) # calculate Bayes factor for variant (i,j)
+      for (j in 1:length(var.index.list))
+      {
+        if (new.data$group.index[var.index.list[j]]<=6)   # note here bar.gamma is group specific, attention what bar.gamma goes to which group 
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=6, sig=sigma, N1, N0)
+        if (new.data$group.index[var.index.list[j]]>6)
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=3, sig=sigma, N1, N0)
+        bb=bb*((1-beta.k[new.data$group.index[var.index.list[j]]])+beta.k[new.data$group.index[var.index.list[j]]]*var.BF[j])
+      }
+    full.info.genevar[[i]]=cbind(indi.gene, var.BF)
+    BF.gene[i]=bb
+  }
+  
+  return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
+}
+```
+
+
 
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into new sample 
@@ -608,8 +659,7 @@ datatable(extensions = 'Buttons',
 
 ### MIRAGE analysis on 15 variant groups
 
-```{r, echo=F, message=F, warning=F, eval=F}
-
+```{r, echo=F, message=F, warning=F, eval=T}
 # add one column of variant group index 
 ASC_new_sample_GI2=ASC_new_sample %>% filter(!str_detect(Consequence, 'UTR')& Gnomad_non_neuro_AF<0.05)%>% add_column(Group_Index=NA)
 
@@ -637,6 +687,11 @@ num.family=7291
 
 
 gene_set=ASC_new_sample_GI2 %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na() # drop all variants neither LoF nor missense variants 
+```
+
+
+```{r, echo=F, message=F, warning=F, eval=F}
+################ !!!!!!!!!!! DO NOT RUN #######################################
 mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(rep(6,6), rep(3,9))) # input data must be dataframe 
 ######### It takes more than one hour to finish running mirage function 
 
@@ -678,17 +733,116 @@ datatable(extensions = 'Buttons',
 #### Top genes 
 
 
-```{r, echo=F}
+```{r, echo=F, message=F, warning=F}
 BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1015_2022.csv"))
 BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
 #length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
-data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:100], BF=round(BF_proband_AllGene_sorted$BF[1:100], 4), post.prob=round(BF_proband_AllGene_sorted$post.prob[1:100],4))%>%
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+
+num_gene_to_display=100
+gene_to_display=BF_proband_AllGene_sorted$Gene[1:num_gene_to_display]
+Transmitted_proband=numeric()
+Untransmitted_proband=numeric()
+OR=numeric()
+SFARI_score=rep("NA", num_gene_to_display)
+for (i in 1:length(gene_to_display))
+{
+  Transmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Transmitted_proband) %>% pull)
+  
+  Untransmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Untransmitted_proband) %>% pull)
+  
+  burden_test=fisher.test(matrix(c(Transmitted_proband[i],num.family, Untransmitted_proband[i], num.family), nrow=2))
+OR[i]=burden_test$estimate
+
+if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),]$gene.score
+#if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])==0) 
+# SFARI_score[i]="NA"
+
+}
+
+
+data.frame(Gene=gene_to_display, BF=round(BF_proband_AllGene_sorted$BF[1:num_gene_to_display], 4), post.prob=round(BF_proband_AllGene_sorted$post.prob[1:num_gene_to_display],4), SFARI_score=SFARI_score, Trans=Transmitted_proband, Untrans=Untransmitted_proband, OR=round(OR, 4))%>%
 datatable(extensions = 'Buttons',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                            lengthMenu = list(c(10,25,50,-1),
                                              c(10,25,50,"All"))))
 #BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
+
+
+
+#### BF in variant groups 
+
+```{r, echo=F, message=F, warning=F}
+interest_gene=BF_proband_AllGene_sorted$Gene[1:10]
+beta=c(2.402658e-01,  0.000000e+00,  1.514065e-01,  0.000000e+00,  1.063114e-02,  0.000000e+00,  1.505522e-01, 1.185758e-322, 1.976263e-323,  8.274313e-02, 7.410985e-323,  1.048833e-02,  4.259534e-02,  2.777784e-04,  5.524852e-04)
+new.data=ASC_new_sample_GI2 %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% interest_gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+colnames(new.data)[3:5]=c("No.case", "No.contr", "group.index")
+result=fixed.beta.func(new.data, N1=7291, N0=7291, gamma.mean=c(rep(6,6),rep(3,9)),sigma=2, beta=beta) # use fixed beta to calculate Bayes factors
+
+############## verify the calculations 
+#gene_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="SSC5D")]]
+#group.index=gene_variant_BF$group.index
+#gene_BF=prod(1-beta[group.index]+beta[group.index]*gene_variant_BF$var.BF)
+#gene_BF
+#result$BayesFactor[result$BayesFactor$Gene=="SSC5D",]
+##############
+variant_BF=matrix(nrow=length(interest_gene), ncol=16)
+variant_count=matrix(nrow=length(interest_gene), ncol=16)
+for (i in 1:length(interest_gene))
+{
+  variant_BF[i,1]=result$BayesFactor$BF[which(result$BayesFactor$Gene==interest_gene[i])]
+  var_full=result$full.info[[which(result$BayesFactor$Gene==interest_gene[i])]]
+  variant_count[i,1]=paste(paste(sum(var_full$No.case)),"vs", paste(sum(var_full$No.contr)), sep=" ")
+   for (j in 1:15)
+   {
+     if (nrow(var_full %>% filter(group.index==j))==0) # no variants in this group
+      { 
+        variant_BF[i,j+1]="-"
+        variant_count[i,j+1]="-"
+     }
+     
+     if (nrow(var_full %>% filter(group.index==j))>0) # variants exist in this group
+      { 
+       variant_BF[i,j+1]=prod(1-beta[j]+beta[j]*var_full[which(var_full$group.index==j),]$var.BF) # product of BF of variants within that variant group 
+       variant_count[i,j+1]=paste(paste(sum(var_full[which(var_full$group.index==j),]$No.case)),"vs", paste(sum(var_full[which(var_full$group.index==j),]$No.contr)), sep=" ")
+     }
+     
+   }
+  
+  
+}
+
+data.frame(Gene=interest_gene, BF=format(round(as.numeric(variant_BF[,1]), 2),scientific = T), g1_BF=round(as.numeric(variant_BF[,2]), 2), g2_BF=round(as.numeric(variant_BF[,3]), 2), g3_BF=round(as.numeric(variant_BF[,4]), 2), g4_BF=round(as.numeric(variant_BF[,5]), 2), g5_BF=format(round(as.numeric(variant_BF[,6]), 2),scientific = T), g6_BF=round(as.numeric(variant_BF[,7]), 2))%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+data.frame(Gene=interest_gene, Trans_vs_Untrans=variant_count[,1], g1_count=variant_count[,2], g2_count=variant_count[,3], g3_count=variant_count[,4], g4_count=variant_count[,5], g5_count=variant_count[,6], g6_count=variant_count[,7])%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+           
+data.frame(Gene=interest_gene, BF=format(round(as.numeric(variant_BF[,1]), 2),scientific = T),           g7_BF=format(round(as.numeric(variant_BF[,8]), 2),scientific = T), g8_BF=round(as.numeric(variant_BF[,9]), 2), g9_BF=round(as.numeric(variant_BF[,10]), 2), g10_BF=format(round(as.numeric(variant_BF[,11]), 2),scientific = T), g11_BF=round(as.numeric(variant_BF[,12]), 2), g12_BF=format(round(as.numeric(variant_BF[,13]), 2),scientific = T), g13_BF=format(round(as.numeric(variant_BF[,14]), 2),scientific = T), g14_BF=format(round(as.numeric(variant_BF[,15]), 2),scientific = T),  g15_BF=format(round(as.numeric(variant_BF[,16]), 2),scientific = T))%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+data.frame(Gene=interest_gene, Trans_vs_Untrans=variant_count[,1], g7_count=variant_count[,8], g8_count=variant_count[,9], g9_count=variant_count[,10], g10_count=variant_count[,11], g11_count=variant_count[,12], g12_count=variant_count[,13], g13_count=variant_count[,14], g14_count=variant_count[,15], g15_count=variant_count[,16])%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
 ```
 
 
@@ -1164,70 +1318,27 @@ BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
 ### use fixed $\widehat{\eta}$ to compute BF 
 
 
-```{r, echo=F, message=F, warning=F, eval=T}
-############ DO NOT RUN #############
-########## use fixed parameter estimate to calculate BF
-intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
-{
-  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
-  return(ff)
-}
-# calculate the bayes factor of a single variant via integration
-BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
-{
-  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+```{r, echo=F, message=F, warning=F, eval=F}
 
-  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
-  BF.var <- marglik1.CC/marglik0.CC
-
-  return(BF.var)
-}
-
-fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
-{
-  #######################
-  beta.k=beta
-  full.info.genevar=list()
-  gene.list=new.data$Gene; unique.gene=unique(gene.list) # find the gene list
-  num.gene=length(unique.gene)
-  BF.gene=numeric()
-  ########################
-  for (i in 1:num.gene)
-  {
-#    cat(i, "th gene of ", "\t", num.gene, "\t", "is running", "\n")
-    var.index.list=which(gene.list==unique.gene[i])
-    indi.gene=new.data[var.index.list,]   # note var.index.list matches new.data
-    bb=1; var.BF=numeric()
-    if (length(var.index.list)>0) # calculate Bayes factor for variant (i,j)
-      for (j in 1:length(var.index.list))
-      {
-        if (new.data$group.index[var.index.list[j]]<=3)
-          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=6, sig=sigma, N1, N0)
-        if (new.data$group.index[var.index.list[j]]>3)
-          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=gamma.mean, sig=sigma, N1, N0)
-        bb=bb*((1-beta.k[new.data$group.index[var.index.list[j]]])+beta.k[new.data$group.index[var.index.list[j]]]*var.BF[j])
-      }
-    full.info.genevar[[i]]=cbind(indi.gene, var.BF)
-    BF.gene[i]=bb
-  }
-  
-  return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
-}
-###########################
-#beta=c(0.41, 0, 0, 0.16, 0, 0)
-#new.data=ASC_new_sample_GI %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% Constraint_Gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
-#colnames(new.data)[3:5]=c("No.case", "No.contr", "group.index")
-#result=fixed.beta.func(new.data, N1=7291, N0=7291, gamma.mean=c(6,6,6,3,3,3),sigma=2, beta=beta) # use fixed beta to calculate Bayes factors
+beta=c(2.402658e-01,  0.000000e+00,  1.514065e-01,  0.000000e+00,  1.063114e-02,  0.000000e+00,  1.505522e-01, 1.185758e-322, 1.976263e-323,  8.274313e-02, 7.410985e-323,  1.048833e-02,  4.259534e-02,  2.777784e-04,  5.524852e-04)
+new.data=ASC_new_sample_GI2 %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% gene_to_display) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+colnames(new.data)[3:5]=c("No.case", "No.contr", "group.index")
+result=fixed.beta.func(new.data, N1=7291, N0=7291, gamma.mean=c(rep(6,6),rep(3,9)),sigma=2, beta=beta) # use fixed beta to calculate Bayes factors
 
 ############## verify the calculations 
-#gene_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="ACACA")]]
-#group.index=gene_variant_BF$group.index
-#gene_BF=prod(1-beta[group.index]+beta[group.index]*gene_variant_BF$var.BF)
+gene_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="SSC5D")]]
+group.index=gene_variant_BF$group.index
+gene_BF=prod(1-beta[group.index]+beta[group.index]*gene_variant_BF$var.BF)
+gene_BF
+result$BayesFactor[result$BayesFactor$Gene=="SSC5D",]
 ##############
 
 #write.csv(result$BayesFactor, file="../output/KyleData/BF.with.fixed.parameter.Constraint.Gene_1011_2022.csv")
+```
 
 
+
+```{r, echo=F, message=F, warning=F}
 BayesFactor=read.csv("../output/KyleData/BF.with.fixed.parameter.Constraint.Gene_1011_2022.csv", header=T)
 constraint_gene_BF=BayesFactor[order(BayesFactor$BF, decreasing = TRUE),]
 constraint_gene_BF$BF=round(constraint_gene_BF$BF,4)
