@@ -132,7 +132,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
     }  # end of i
     ############## EM algorithm: M step
    # delta.est[iter]=sum(EUi)/num.gene
-      delta.est[iter]=0.1 # use fixed proportion of risk genes 
+      delta.est[iter]=delta # use fixed proportion of risk genes 
     for (g in 1:num.group)
     {
       if (sum(total.Ui[,g])!=0)
@@ -198,7 +198,7 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
   } # end of g
   sum.lkhd=sum(cate.stat)
   ##############################################
-  return(result=list(delta.est=delta.est[iter-1], delta.pvalue=pvalue[length(pvalue)], beta.est=beta.k[(iter-1),], beta.stat=cate.stat, beta.pvalue=cate.pvalue, BF.gene=data.frame(Gene=unique.gene, BF=BF.gene[(iter-1),]), full.info=full.info.genevar, Eui=EUi))
+  return(result=list(total.lkhd=total.lkhd, delta.est=delta.est[iter-1], delta.pvalue=pvalue[length(pvalue)], beta.est=beta.k[(iter-1),], beta.stat=cate.stat, beta.pvalue=cate.pvalue, BF.gene=data.frame(Gene=unique.gene, BF=BF.gene[(iter-1),]), full.info=full.info.genevar, Eui=EUi))
 }
 
 #########################################
@@ -264,4 +264,4 @@ new.data=ASC_new_sample_GI2 %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Vari
 delta=0.1  # use fixed proportion of risk genes 
 beta.init=rep(0.1, 15)
 colnames(new.data)[3:5]=c("No.case", "No.contrl", "group.index")
-para.est=multi.group.func(new.data, N1, N0, gamma.mean=3, sigma=2, delta=0.2, beta.init, actu.num.group)
+para.est=multi.group.func(new.data, N1, N0, gamma.mean=3, sigma=2, delta=0.3, beta.init, actu.num.group)
