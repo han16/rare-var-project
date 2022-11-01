@@ -202,6 +202,188 @@ multi.group.func=function(new.data, N1, N0, gamma.mean, sigma, delta, beta.init,
 }
 
 #########################################
+mirage_function=function (data, n1, n2, gamma = 3, sigma = 2, eta.init = 0.1, 
+          delta.init = 0.1, estimate.delta = TRUE, max.iter = 10000, 
+          tol = 1e-05, verbose = TRUE) 
+{
+  if (ncol(data) == 4) 
+    data = cbind(seq(1, nrow(data)), data)
+  if (ncol(data) != 5) 
+    stop("Input data should have 4 or 5 columns!")
+  names(data) = c("ID", "Gene", "No.case", 
+                  "No.contr", "category")
+  data = data[order(data$category, decreasing = F), ]
+  original.group.index = unique(data$category)
+  for (i in 1:length(original.group.index)) data[data$category == 
+                                                   original.group.index[i], ]$category = i
+  gene.list = data$Gene
+  unique.gene = unique(gene.list)
+  num.gene = length(unique.gene)
+  groups = unique(data$category)
+  num.group = length(groups)
+  data[, 5] = match(data[, 5], groups)
+  eta.k = matrix(nrow = max.iter, ncol = num.group)
+  colnames(eta.k) = groups
+  eta.k[1, ] = rep(eta.init, num.group)
+  delta.est = delta.init
+  BF.gene = matrix(1, nrow = max.iter, ncol = num.gene)
+  BF.genevar = list()
+  full.info.genevar = list()
+  if (verbose && num.gene > 1) {
+    pb = progress_bar$new(format = "[:spin] Initial analysis of unit :unit out of :total :elapsed", 
+                          clear = FALSE, total = num.gene, show_after = 0.5)
+  }
+  else {
+    pb = null_progress_bar$new()
+  }
+  for (i in 1:num.gene) {
+    var.index.list = which(gene.list == unique.gene[i])
+    indi.gene = data[var.index.list, ]
+    indi.gene.BF = 1
+    var.BF = numeric()
+    original.index = numeric()
+    if (length(var.index.list) > 0) 
+      for (j in 1:length(var.index.list)) {
+        var.index = var.index.list[j]
+        category = data$category[var.index]
+        original.index[j] = original.group.index[category]
+        var.BF[j] = BF.var.inte(data$No.case[var.index], 
+                                data$No.contr[var.index], ifelse(length(gamma) > 
+                                                                   1, gamma[original.index[j]], gamma), ifelse(length(sigma) > 
+                                                                                                                 1, sigma[original.index[j]], sigma), n1, 
+                                n2)
+        indi.gene.BF = indi.gene.BF * ((1 - eta.k[1, 
+                                                  category]) + eta.k[1, category] * var.BF[j])
+      }
+    full.info.genevar[[i]] = cbind(indi.gene, var.BF, original.index)
+    indi.gene.BF = ifelse(indi.gene.BF == Inf, 3 * 10^300, 
+                          indi.gene.BF)
+    BF.gene[1, i] = indi.gene.BF
+    pb$tick(tokens = list(total = num.gene, unit = i))
+  }
+  if (verbose) {
+    pb = progress_bar$new(format = "[:spin] Iteration :iteration (diff = :delta) :elapsed", 
+                          clear = TRUE, total = max.iter, show_after = 0.5)
+  }
+  else {
+    pb = null_progress_bar$new()
+  }
+  for (iter in 2:max.iter) {
+    prev_iter = iter - 1
+    EUiZij = list()
+    EUi = numeric()
+    total.Zij = matrix(nrow = num.gene, ncol = num.group)
+    total.Ui = matrix(nrow = num.gene, ncol = num.group)
+    for (i in 1:num.gene) {
+      info.single.gene = full.info.genevar[[i]]
+      bb = 1
+      UiZij = numeric()
+      if (nrow(info.single.gene) > 0) 
+        for (j in 1:nrow(info.single.gene)) {
+          category = info.single.gene$category[j]
+          numer = info.single.gene$var.BF[j] * eta.k[prev_iter, 
+                                                     category] * delta.est[prev_iter]
+          denom = (delta.est[prev_iter] + (1 - delta.est[prev_iter])/BF.gene[prev_iter, 
+                                                                             i]) * (eta.k[prev_iter, category] * info.single.gene$var.BF[j] + 
+                                                                                      (1 - eta.k[prev_iter, category]))
+          UiZij[j] = numer/denom
+          bb = bb * ((1 - eta.k[prev_iter, category]) + 
+                       eta.k[prev_iter, category] * info.single.gene$var.BF[j])
+        }
+      EUiZij[[i]] = UiZij
+      bb = ifelse(bb == Inf, 3 * 10^300, bb)
+      BF.gene[iter, i] = bb
+      EUi[i] = delta.est[prev_iter] * bb/(delta.est[prev_iter] * 
+                                            bb + 1 - delta.est[prev_iter])
+      tt = EUiZij[[i]]
+      tt[is.na(tt)] = 0
+      for (g in 1:num.group) {
+        total.Zij[i, g] = sum(tt[which(info.single.gene$category == 
+                                         g)])
+        total.Ui[i, g] = sum(sum(tt[which(info.single.gene$category == 
+                                            g)] > 0) * EUi[i])
+      }
+    }
+   # delta.est[iter] = ifelse(estimate.delta == T, sum(EUi)/num.gene, 
+    #                         delta.init)
+    delta.est[iter]=delta.init
+    for (g in 1:num.group) {
+      if (sum(total.Ui[, g]) != 0) 
+        eta.k[iter, g] = sum(total.Zij[, g])/sum(total.Ui[, 
+                                                          g])
+      if (sum(total.Ui[, g]) == 0) 
+        eta.k[iter, g] = 0
+    }
+    diff = sum(abs(eta.k[iter, ] - eta.k[prev_iter, ]))
+    if (diff < tol || iter >= max.iter) {
+      pb$tick(max.iter)
+      max.iter = iter
+      break
+    }
+    pb$tick(tokens = list(delta = sprintf(diff, fmt = "%#.1e"), 
+                          iteration = iter))
+  }
+  eta.k = eta.k[1:max.iter, , drop = FALSE]
+  if (verbose) 
+    cat("Computing gene level LRT statistics and p-values ...\n")
+  lkhd = rep(1, num.gene)
+  total.lkhd = 0
+  teststat = numeric()
+  pvalue = numeric()
+  for (i in 1:num.gene) {
+    single.gene = full.info.genevar[[i]]
+    if (nrow(single.gene) > 0) 
+      for (j in 1:nrow(single.gene)) {
+        category = single.gene$category[j]
+        lkhd[i] = lkhd[i] * ((1 - eta.k[max.iter, category]) + 
+                               eta.k[max.iter, category] * single.gene$var.BF[j])
+      }
+    teststat[i] = 2 * log((1 - delta.est[max.iter]) + delta.est[max.iter] * 
+                            lkhd[i])
+    total.lkhd = total.lkhd + log((1 - delta.est[max.iter]) + 
+                                    delta.est[max.iter] * lkhd[i])
+    pvalue[i] = pchisq(teststat[i], 2, lower.tail = F)
+  }
+  teststat[num.gene + 1] = 2 * total.lkhd
+  pvalue[num.gene + 1] = pchisq(teststat[num.gene + 1], (1 + 
+                                                           num.group), lower.tail = F)
+  if (verbose) 
+    cat("Computing LRT statistics and p-values by categories ...\n")
+  cate.lkhd = rep(1, num.group)
+  cate.stat = numeric()
+  cate.pvalue = numeric(num.group)
+  sum.lkhd = 0
+  for (g in 1:num.group) {
+    total.lkhd = 0
+    lkhd.gene = rep(1, num.gene)
+    for (i in 1:num.gene) {
+      single.gene = full.info.genevar[[i]]
+      if (nrow(single.gene) > 0) 
+        for (j in 1:nrow(single.gene)) if (single.gene$category[j] == 
+                                           g) {
+          lkhd.gene[i] = lkhd.gene[i] * ((1 - eta.k[max.iter, 
+                                                    g]) + eta.k[max.iter, g] * single.gene$var.BF[j])
+          cate.lkhd[g] = cate.lkhd[g] * ((1 - eta.k[max.iter, 
+                                                    g]) + eta.k[max.iter, g] * single.gene$var.BF[j])
+        }
+      total.lkhd = total.lkhd + log((1 - delta.est[max.iter]) + 
+                                      delta.est[max.iter] * lkhd.gene[i])
+    }
+    cate.stat[g] = 2 * total.lkhd
+    cate.pvalue[g] = pchisq(2 * total.lkhd, 1, lower.tail = F)
+  }
+  sum.lkhd = sum(cate.stat)
+  colnames(eta.k) = original.group.index
+  return(result = list(delta.est = delta.est[max.iter], delta.pvalue = pvalue[length(pvalue)], 
+                       eta.est = eta.k[max.iter, ], eta.pvalue = cate.pvalue, 
+                       BF.PP.gene = data.frame(Gene = unique.gene, BF = BF.gene[max.iter, 
+                       ], post.prob = (delta.est[max.iter] * BF.gene[max.iter, 
+                       ])/(delta.est[max.iter] * BF.gene[max.iter, ] + 1 - 
+                             delta.est[max.iter])), BF.all = full.info.genevar, 
+                       Eui = EUi))
+}
+
+#########################################
 
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into new sample 
@@ -264,4 +446,10 @@ new.data=ASC_new_sample_GI2 %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Vari
 delta=0.1  # use fixed proportion of risk genes 
 beta.init=rep(0.1, 15)
 colnames(new.data)[3:5]=c("No.case", "No.contrl", "group.index")
-para.est=multi.group.func(new.data, N1, N0, gamma.mean=3, sigma=2, delta=0.3, beta.init, actu.num.group)
+#para.est=multi.group.func(new.data, N1, N0, gamma.mean=3, sigma=2, delta=0.3, beta.init, actu.num.group)
+para.est=mirage(data, n1=num.family, n2=num.family, gamma = 3, sigma = 2, eta.init = 0.1, 
+                        delta.init = 0.1, estimate.delta = TRUE, max.iter = 10000, 
+                        tol = 1e-05, verbose = TRUE)
+para.est=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(rep(6,6), rep(3,9)), sigma = 2, eta.init = 0.1, 
+                delta.init = 0.1, estimate.delta = FALSE, max.iter = 10000, 
+                tol = 1e-05, verbose = TRUE) # input data must be dataframe

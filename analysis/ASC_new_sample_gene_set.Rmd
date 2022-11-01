@@ -894,6 +894,41 @@ datatable(extensions = 'Buttons',
 
 
 
+#### Top genes overlapping with SFARI genes 
+
+
+```{r, echo=F, message=F, warning=F}
+BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1015_2022.csv"))
+
+sort_BF=BF_para_all_est %>% arrange(desc(BF))
+top10genes=as.character(sort_BF$Gene[1:10])
+all.gene=as.character(sort_BF$Gene)
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+## Top 10 genes 
+##top10genes
+######################
+
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
+overlap1=length(intersect(top10genes, strong.ASD.gene))
+overlap2=length(intersect(all.gene, strong.ASD.gene))
+fisher.test(matrix(c(overlap1, overlap2, 10, length(all.gene)), nrow=2))
+
+
+##########################
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
+overlap1=length(intersect(top10genes, strong.ASD.gene))
+overlap2=length(intersect(all.gene, strong.ASD.gene))
+fisher.test(matrix(c(overlap1, overlap2, 10, length(all.gene)), nrow=2))
+
+
+```
+
+strong ASD gene score 1,2,3 : enrichment is 8/10 vs 76/1003 gives OR 10.5058 and p value $1.98\times 10^{-5}$
+
+strong ASD gene score 1,2: enrichment is 4/10 vs 31/1003 gives OR 12.8417 and p value $8.24\times 10^{-4}$
+
+
+
 ## 102 ASD genes in cell paper
 
 ```{r, echo=F}
@@ -1290,33 +1325,34 @@ annotate_figure(figure,
 
 ```
 
-```{r, echo=F, warning=F, message=F}
-#Below are top ranked genes. 
-BF_all=readRDS("../output/KyleData/BF.proband.ConstraintGene.BF.all.rds")
-BF_proband_ConstraintGene=as_tibble(read.csv("../output/kyleData/BF.proband.ConstraintGene_0830_2022.csv"))
-BF_proband_ConstraintGene_sorted=BF_proband_ConstraintGene%>%arrange(desc(post.prob))
-#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
-#BF_proband_ConstraintGene_sorted
-#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
-```
 
 #### Top genes with burden 
 
 *  top genes with large BF don't have heavy burden. 
 
 
-```{r, echo=F}
+```{r, echo=F, message=F, warning=F}
+BF_all=readRDS("../output/KyleData/BF.proband.ConstraintGene.BF.all.rds")
+BF_proband_ConstraintGene=as_tibble(read.csv("../output/kyleData/BF.proband.ConstraintGene_0830_2022.csv"))
+BF_proband_ConstraintGene_sorted=BF_proband_ConstraintGene%>%arrange(desc(post.prob))
 num_gene=100
 topgene=BF_proband_ConstraintGene_sorted$Gene[1:num_gene]
 Transmitted_proband=numeric(); Untransmitted_proband=numeric(); OR=numeric()
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+
+SFARI_score=rep("NA", num_gene)
 for (i in 1:length(topgene))
 {
 Transmitted_proband[i]=sum(ASC_new_sample_GI%>%filter(Gene==topgene[i] & Gnomad_non_neuro_AF<=0.5)%>%select(Transmitted_proband)%>%pull())
 Untransmitted_proband[i]=sum(ASC_new_sample_GI%>%filter(Gene==topgene[i] & Gnomad_non_neuro_AF<=0.5)%>%select(Untransmitted_proband)%>%pull())
 burden_test=fisher.test(matrix(c(Transmitted_proband[i],num.family, Untransmitted_proband[i], num.family), nrow=2))
 OR[i]=burden_test$estimate
+
+if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==topgene[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==topgene[i]),]$gene.score
+
 }
-topgene_summary=tibble(Gene=topgene, BF=round(BF_proband_ConstraintGene_sorted$BF[1:num_gene],4), Transmitted_proband=Transmitted_proband, Untransmitted_proband=Untransmitted_proband, OR=round(OR,4))
+topgene_summary=tibble(Gene=topgene, BF=round(BF_proband_ConstraintGene_sorted$BF[1:num_gene],4), Transmitted_proband=Transmitted_proband, Untransmitted_proband=Untransmitted_proband, OR=round(OR,4), SFARI_score=SFARI_score)
 topgene_summary%>%
 datatable(extensions = 'Buttons',
             options = list(dom = 'Blfrtip',
