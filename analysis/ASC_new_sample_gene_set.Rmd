@@ -771,6 +771,7 @@ p_value=c(5.20272e-93, 1.155983e-02, 1.000000e+00, 7.411113e-03, 1.000000e+00,3.
 mirage_para_est=data.frame(variant_groups=c("delta:proportion of risk genes","PTV_PLI>=0.995_AF<0.01", "PTV_PLI>=0.995_0.01<AF<0.05", "PTV_0.5=<PLI<0.995_AF<0.01", "PTV_0.5=<PLI<0.995_0.01<AF<0.05", "PTV_PLI<0.5_AF<0.01", "PTV_PLI<0.5_0.01<AF<0.05", "MPC>=2_AF<0.001", "MPC>=2_0.001=<AF<0.01", "MPC>=2_0.01=<AF<0.05", "1=<MPC<2_AF<0.001", "1=<MPC<2_0.001=<AF<0.01", "1=<MPC<2_0.01=<AF<0.05", "MPC<1_AF<0.001", "MPC<1_0.001=<AF<0.01", "MPC<1_0.01=<AF<0.05"), parameter_estimate=round(c(0.1, 5.429148e-01,  0.000000e+00,  6.458158e-01,  0.000000e+00,  5.420754e-02,  3.952525e-323,  4.859705e-01, 5.665391e-103, 9.881313e-323,  2.126305e-01, 1.258156e-113,  5.170850e-02,  1.337174e-01,  1.258930e-03,  3.710886e-03),4), p_value=pvalue_adjust(p_value))
 mirage_para_est%>%
 datatable(extensions = 'Buttons',
+          caption = 'parameter estimates when delta was fixed at 0.1',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                            lengthMenu = list(c(10,25,50,-1),
