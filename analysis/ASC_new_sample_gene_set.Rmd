@@ -708,7 +708,7 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(
 ######### It takes more than one hour to finish running mirage function 
 
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
-#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_1015_2022.csv")
+#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_1031_2022.csv")
 ```
 
 ```{r, echo=F, message=F, warning=F, eval=F}
@@ -811,6 +811,46 @@ if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0)
 
 data.frame(Gene=gene_to_display, BF=round(BF_proband_AllGene_sorted$BF[1:num_gene_to_display], 4), post.prob=round(BF_proband_AllGene_sorted$post.prob[1:num_gene_to_display],4), SFARI_score=SFARI_score, Trans=Transmitted_proband, Untrans=Untransmitted_proband, OR=round(OR, 4))%>%
 datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+#BF_proband_AllGene_sorted %>% filter(Gene %in% ASD_102_Gene) %>% print(n=102)
+```
+
+
+```{r, echo=F, message=F, warning=F}
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1031_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+
+num_gene_to_display=100
+gene_to_display=BF_proband_AllGene_sorted$Gene[1:num_gene_to_display]
+Transmitted_proband=numeric()
+Untransmitted_proband=numeric()
+OR=numeric()
+SFARI_score=rep("NA", num_gene_to_display)
+for (i in 1:length(gene_to_display))
+{
+  Transmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Transmitted_proband) %>% pull)
+  
+  Untransmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Untransmitted_proband) %>% pull)
+  
+  burden_test=fisher.test(matrix(c(Transmitted_proband[i],num.family, Untransmitted_proband[i], num.family), nrow=2))
+OR[i]=burden_test$estimate
+
+if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),]$gene.score
+#if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])==0) 
+# SFARI_score[i]="NA"
+
+}
+
+
+data.frame(Gene=gene_to_display, BF=round(BF_proband_AllGene_sorted$BF[1:num_gene_to_display], 4), post.prob=round(BF_proband_AllGene_sorted$post.prob[1:num_gene_to_display],4), SFARI_score=SFARI_score, Trans=Transmitted_proband, Untrans=Untransmitted_proband, OR=round(OR, 4))%>%
+datatable(extensions = 'Buttons',
+          caption = 'Top genes when propotion of risk genes was fixed at 0.1',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                            lengthMenu = list(c(10,25,50,-1),

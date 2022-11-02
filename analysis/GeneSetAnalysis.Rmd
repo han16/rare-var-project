@@ -451,9 +451,9 @@ fisher.test(matrix(c(overlap1, overlap2, 10, 1003), nrow=2))
 
 ```
 
-strong ASD gene score 1,2,3 : enrichemnt is 8/10 vs 76/1003 gives OR 10.5058 and p value $1.98\times 10^{-5}$
+strong ASD gene score 1,2,3 : enrichment is 8/10 vs 76/1003 gives OR 10.5058 and p value $1.98\times 10^{-5}$
 
-strong ASD gene score 1,2: enrichemnt is 4/10 vs 31/1003 gives OR 12.8417 and p value $8.24\times 10^{-4}$
+strong ASD gene score 1,2: enrichment is 4/10 vs 31/1003 gives OR 12.8417 and p value $8.24\times 10^{-4}$
 
 #### Bayesian FDR 
 
