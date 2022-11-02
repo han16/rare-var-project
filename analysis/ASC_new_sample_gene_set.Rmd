@@ -938,7 +938,7 @@ datatable(extensions = 'Buttons',
 #### Top genes overlapping with SFARI genes 
 
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=F, message=F, warning=F, eval=F}
 BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1015_2022.csv"))
 
 sort_BF=BF_para_all_est %>% arrange(desc(BF))
@@ -964,9 +964,6 @@ fisher.test(matrix(c(overlap1, overlap2, 10, length(all.gene)), nrow=2))
 
 ```
 
-strong ASD gene score 1,2,3 : enrichment is 8/10 vs 76/1003 gives OR 10.5058 and p value $1.98\times 10^{-5}$
-
-strong ASD gene score 1,2: enrichment is 4/10 vs 31/1003 gives OR 12.8417 and p value $8.24\times 10^{-4}$
 
 
 
