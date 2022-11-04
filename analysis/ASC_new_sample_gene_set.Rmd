@@ -863,7 +863,7 @@ datatable(extensions = 'Buttons',
 
 #### BF in variant groups 
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=F, message=F, warning=F, eval=F}
 interest_gene=BF_proband_AllGene_sorted$Gene[1:10]
 beta=c(2.402658e-01,  0.000000e+00,  1.514065e-01,  0.000000e+00,  1.063114e-02,  0.000000e+00,  1.505522e-01, 1.185758e-322, 1.976263e-323,  8.274313e-02, 7.410985e-323,  1.048833e-02,  4.259534e-02,  2.777784e-04,  5.524852e-04)
 new.data=ASC_new_sample_GI2 %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% interest_gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
@@ -934,6 +934,62 @@ datatable(extensions = 'Buttons',
 ```
 
 
+
+```{r, echo=F, message=F, warning=F, eval=F}
+################# when delta=0.1, calculate BF in each group 
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1031_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+interest_gene=BF_proband_AllGene_sorted$Gene  # use all genes 
+beta=c(5.429148e-01,  0.000000e+00,  6.458158e-01,  0.000000e+00,  5.420754e-02,  3.952525e-323,  4.859705e-01, 5.665391e-103, 9.881313e-323,  2.126305e-01, 1.258156e-113,  5.170850e-02,  1.337174e-01,  1.258930e-03,  3.710886e-03)
+new.data=ASC_new_sample_GI2 %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% interest_gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+colnames(new.data)[3:5]=c("No.case", "No.contr", "group.index")
+result=fixed.beta.func(new.data, N1=7291, N0=7291, gamma.mean=c(rep(6,6),rep(3,9)),sigma=2, beta=beta) # use fixed beta to calculate Bayes factors
+
+############## verify the calculations 
+#gene_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="SSC5D")]]
+#group.index=gene_variant_BF$group.index
+#gene_BF=prod(1-beta[group.index]+beta[group.index]*gene_variant_BF$var.BF)
+#gene_BF
+#result$BayesFactor[result$BayesFactor$Gene=="SSC5D",]
+##############
+variant_BF=matrix(nrow=length(interest_gene), ncol=16)
+variant_count=matrix(nrow=length(interest_gene), ncol=16)
+SFARI_score=rep("NA", length(interest_gene))
+for (i in 1:length(interest_gene))
+{
+  cat(i, "th gene is running", "\n")
+  variant_BF[i,1]=result$BayesFactor$BF[which(result$BayesFactor$Gene==interest_gene[i])]
+  var_full=result$full.info[[which(result$BayesFactor$Gene==interest_gene[i])]]
+  variant_count[i,1]=paste(paste(sum(var_full$No.case)),"vs", paste(sum(var_full$No.contr)), sep=" ")
+   for (j in 1:15)
+   {
+     if (nrow(var_full %>% filter(group.index==j))==0) # no variants in this group
+      { 
+        variant_BF[i,j+1]="-"
+        variant_count[i,j+1]="-"
+     }
+     
+     if (nrow(var_full %>% filter(group.index==j))>0) # variants exist in this group
+      { 
+       variant_BF[i,j+1]=prod(1-beta[j]+beta[j]*var_full[which(var_full$group.index==j),]$var.BF) # product of BF of variants within that variant group 
+       variant_count[i,j+1]=paste(paste(sum(var_full[which(var_full$group.index==j),]$No.case)),"vs", paste(sum(var_full[which(var_full$group.index==j),]$No.contr)), sep=" ")
+     }
+     
+   }  #### end of 
+  if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==interest_gene[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==interest_gene[i]),]$gene.score
+  
+  
+}
+BF_var_count_combine_15groups=data.frame(Gene=interest_gene, BF=round(as.numeric(variant_BF[,1]),4),  SFARI_score=SFARI_score, total_count=variant_count[,1], g1_count=variant_count[,2], g1_BF=round(as.numeric(variant_BF[,2]),2), g2_count=variant_count[,3], g2_BF=round(as.numeric(variant_BF[,3]),2), g3_count=variant_count[,4], g3_BF=round(as.numeric(variant_BF[,4]),2), g4_count=variant_count[,5], g4_BF=round(as.numeric(variant_BF[,5]),2), g5_count=variant_count[,6], g5_BF=round(as.numeric(variant_BF[,6]),2), g6_count=variant_count[,7], g6_BF=round(as.numeric(variant_BF[,7]),2), g8_count=variant_count[,9], g8_BF=round(as.numeric(variant_BF[,9]),2), g9_count=variant_count[,10], g9_BF=round(as.numeric(variant_BF[,10]),2), g10_count=variant_count[,11], g10_BF=round(as.numeric(variant_BF[,11]),2), g11_count=variant_count[,12], g11_BF=round(as.numeric(variant_BF[,12]),2), g12_count=variant_count[,13], g12_BF=round(as.numeric(variant_BF[,13]),2), g13_count=variant_count[,14], g13_BF=round(as.numeric(variant_BF[,14]),2), g14_count=variant_count[,15], g4_BF=round(as.numeric(variant_BF[,15]),2), g15_count=variant_count[,16], g15_BF=round(as.numeric(variant_BF[,16]),2))                                          
+
+#write.csv(BF_var_count_combine_15groups, file="../output/KyleData/BF.proband.AllGene_deltafixed0.1_1104_2022.csv")
+```
+
+
+* [BF's when delta was fixed at 0.1](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/EXLTsKW_SZdJkLIMXosQtz8BnRHKvOhh3v5JDAGBjEcepg?e=owqLgw)
 
 #### Top genes overlapping with SFARI genes 
 
@@ -1084,6 +1140,7 @@ Use below filters and stated otherwise
 * `isSyn=="FALSE"`
 
 * `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
+
 * `filter(!str_detect(Consequence, 'intron_variant'))`  exclude intron 
 
 
