@@ -644,6 +644,35 @@ href="https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/
 with 6 variant groups</a></li>
 </ul>
 </div>
+<div id="variants-driving-signal-in-top-genes" class="section level4">
+<h4>Variants driving signal in top genes</h4>
+<pre><code>&gt; result$full.info[[14663]]
+          Variant     Gene No.case No.contr group.index       var.BF
+1  6:32580781:C:A HLA-DRB1       0        0           5 1.000000e+00
+2  6:32581584:C:G HLA-DRB1      56      152           6 1.008106e+05
+3  6:32581672:A:C HLA-DRB1       0        1           5 5.479161e-01
+4  6:32581730:C:A HLA-DRB1       1        0           4 1.452084e+00
+5  6:32581733:C:G HLA-DRB1       1        0           5 1.452084e+00
+6  6:32581836:G:A HLA-DRB1       0        2           3 9.846160e-02
+7  6:32584246:G:A HLA-DRB1       0        1           5 5.479161e-01
+8  6:32584283:A:C HLA-DRB1       1        1           6 7.666583e-01
+9  6:32584294:T:A HLA-DRB1       0        1           5 5.479161e-01
+10 6:32584303:T:A HLA-DRB1      76      262           6 1.185888e+12
+11 6:32584314:G:T HLA-DRB1       5       32           6 2.010501e+00
+12 6:32584344:A:T HLA-DRB1       5        4           6 5.512252e-01
+13 6:32584363:T:A HLA-DRB1     278      490           6 9.815683e+03
+14 6:32584366:C:T HLA-DRB1     240      373           3 4.213022e-01</code></pre>
+<pre><code>&gt; BF.var.inte(No.case=76, No.contr=262, bar.gamma=3, sig=2, N1=7291, N0=7291)
+[1] 1.185888e+12
+&gt; </code></pre>
+<p>When calculating BF for single variant, under null hypothesis of
+relative risk of <span class="math inline">\(\gamma=1\)</span>, the
+denominator, <span class="math inline">\(Bin (x_1|x_1+x_0,
+\frac{N_1}{N_1+N_0})\)</span> could be very small with a large number of
+total variant counts and too unbalanced numbers in cases and control
+(could be less counts in case and more in control), driving the BF to be
+a big number.</p>
+</div>
 </div>
 <div id="mirage-analysis-on-15-variant-groups" class="section level3">
 <h3>MIRAGE analysis on 15 variant groups</h3>
