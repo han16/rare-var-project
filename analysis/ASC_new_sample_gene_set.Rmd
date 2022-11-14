@@ -601,7 +601,7 @@ mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(
 ######### It takes more than one hour to finish running mirage function 
 
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
-#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_0830_2022.csv")
+#write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_0830_2022.csv") this is the results with introns 
 #write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_1105_2022.csv") # this is the result without introns 
 
 ```
@@ -817,6 +817,77 @@ BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(
 When calculating BF for single variant, under null hypothesis of relative risk of $\gamma=1$, the denominator, $Bin (x_1|x_1+x_0, \frac{N_1}{N_1+N_0})$  could be very small with a large number of total variant counts and too unbalanced numbers in cases and control (could be less counts in case and more in control), driving the BF to be a big number. 
 
 
+
+#### Enrichment of top genes 
+
+```{r, echo=F, warning=F, message=F}
+BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1105_2022.csv"))
+
+sort_BF=BF_para_all_est %>% arrange(desc(BF))
+topgene_number=20
+topgenes=as.character(sort_BF$Gene[1:topgene_number])
+all.gene=as.character(sort_BF$Gene)
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+## Top 10 genes 
+##top10genes
+###################### strong ASD genes 
+
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2
+overlap1=length(intersect(topgenes, strong.ASD.gene))
+overlap2=length(intersect(all.gene, strong.ASD.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+
+########################## plausible ASD genes 
+
+plausible.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  
+overlap1=length(intersect(topgenes, plausible.ASD.gene))
+overlap2=length(intersect(all.gene, plausible.ASD.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+############### DNM genes 
+denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
+top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
+overlap1=length(intersect(topgenes, top1000.denovo.gene))
+overlap2=length(intersect(all.gene, top1000.denovo.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+######################## draw the enrichment 
+topmirage.percent=c(length(intersect(topgenes, strong.ASD.gene)), length(intersect(topgenes, plausible.ASD.gene)), length(intersect(topgenes, top1000.denovo.gene)))/topgene_number
+#top20mirage.percent=c(length(intersect(top20genes, strong.ASD.gene)), length(intersect(top20genes, plausible.ASD.gene)), length(intersect(top20genes, top1000.denovo.gene)))/20
+all.gene.percent=c(length(intersect(all.gene, strong.ASD.gene)), length(intersect(all.gene, plausible.ASD.gene)), length(intersect(all.gene, top1000.denovo.gene)))/length(all.gene)
+topmirage.enrichment=tibble(class=c("Top20 MIRAGE Gene", "All Genes"), Strong.ASD=c(topmirage.percent[1], all.gene.percent[1]), Plausible.ASD=c(topmirage.percent[2], all.gene.percent[2]), DNM=c(topmirage.percent[3], all.gene.percent[3]))
+topmirage.enrichment.tidy=topmirage.enrichment %>% gather( group, percent,2:4)
+
+topmirage.enrichment.tidy$group =factor(topmirage.enrichment.tidy$group, levels=c("Strong.ASD", "Plausible.ASD", "DNM")) # re order lables in x axis 
+
+
+topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
+  geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+  theme_classic()+
+  xlab("")+ylab("Proportion of putative ASD genes")+
+  ylim(c(0, 0.3))+
+  theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
+  ggtitle("Enrichment of top 20 ASD genes by MIRAGE")+
+  #theme(plot.title = element_text(size=12))
+   theme(legend.title = element_blank())+
+  geom_signif(annotations ="p=0.0960", y_position = 0.08  ,xmin=0.7, xmax=1.2, size=2, vjust=-0.5, textsize=5)+ # textsize is for text over the bar 
+  geom_signif(annotations ="p=0.2059", y_position = 0.08  ,xmin=1.7, xmax=2.2, size=2, vjust=-0.5, textsize=5)+
+  geom_signif(annotations ="p=0.1041", y_position = 0.18  ,xmin=2.7, xmax=3.2, size=2, vjust=-0.5, textsize=5)+
+  #geom_signif(annotations =0.000825, y_position = 0.45  ,xmin=0.7, xmax=1.2)+
+   theme(legend.position="bottom")+
+theme(text = element_text(size=15))+ # size is for labels on x axis 
+theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+topmirage_enrichment
+```
+
+
+* strong ASD: SFARI score 1 or 2
+
+* plausible ASD: SFARI score 3
+
+* DNM: TADA denovo genes  
 
 
 ### MIRAGE analysis on 15 variant groups
@@ -1153,32 +1224,69 @@ BF_var_count_combine_15groups=data.frame(Gene=interest_gene, BF=round(as.numeric
 
 * [BF's when delta was fixed at 0.1](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/EXLTsKW_SZdJkLIMXosQtz8BnRHKvOhh3v5JDAGBjEcepg?e=owqLgw)
 
-#### Top genes overlapping with SFARI genes 
+#### Enrichment of top genes  with other gene sets 
 
 
-```{r, echo=F, message=F, warning=F, eval=F}
-BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1015_2022.csv"))
+```{r, echo=F, message=F, warning=F, eval=T}
+BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1031_2022.csv"))
 
 sort_BF=BF_para_all_est %>% arrange(desc(BF))
-top10genes=as.character(sort_BF$Gene[1:10])
+topgene_number=20
+topgenes=as.character(sort_BF$Gene[1:topgene_number])
 all.gene=as.character(sort_BF$Gene)
 SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
 ## Top 10 genes 
 ##top10genes
-######################
+###################### strong ASD genes 
 
-strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
-overlap1=length(intersect(top10genes, strong.ASD.gene))
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2
+overlap1=length(intersect(topgenes, strong.ASD.gene))
 overlap2=length(intersect(all.gene, strong.ASD.gene))
-fisher.test(matrix(c(overlap1, overlap2, 10, length(all.gene)), nrow=2))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
 
 
-##########################
-strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2,3
-overlap1=length(intersect(top10genes, strong.ASD.gene))
-overlap2=length(intersect(all.gene, strong.ASD.gene))
-fisher.test(matrix(c(overlap1, overlap2, 10, length(all.gene)), nrow=2))
+########################## plausible ASD genes 
 
+plausible.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  
+overlap1=length(intersect(topgenes, plausible.ASD.gene))
+overlap2=length(intersect(all.gene, plausible.ASD.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+############### DNM genes 
+denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
+top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
+overlap1=length(intersect(topgenes, top1000.denovo.gene))
+overlap2=length(intersect(all.gene, top1000.denovo.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+######################## draw the enrichment 
+topmirage.percent=c(length(intersect(topgenes, strong.ASD.gene)), length(intersect(topgenes, plausible.ASD.gene)), length(intersect(topgenes, top1000.denovo.gene)))/topgene_number
+#top20mirage.percent=c(length(intersect(top20genes, strong.ASD.gene)), length(intersect(top20genes, plausible.ASD.gene)), length(intersect(top20genes, top1000.denovo.gene)))/20
+all.gene.percent=c(length(intersect(all.gene, strong.ASD.gene)), length(intersect(all.gene, plausible.ASD.gene)), length(intersect(all.gene, top1000.denovo.gene)))/length(all.gene)
+topmirage.enrichment=tibble(class=c("Top20 MIRAGE Gene", "All Genes"), Strong.ASD=c(topmirage.percent[1], all.gene.percent[1]), Plausible.ASD=c(topmirage.percent[2], all.gene.percent[2]), DNM=c(topmirage.percent[3], all.gene.percent[3]))
+topmirage.enrichment.tidy=topmirage.enrichment %>% gather( group, percent,2:4)
+
+topmirage.enrichment.tidy$group =factor(topmirage.enrichment.tidy$group, levels=c("Strong.ASD", "Plausible.ASD", "DNM")) # re order lables in x axis 
+
+
+topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
+  geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+  theme_classic()+
+  xlab("")+ylab("Proportion of putative ASD genes")+
+  ylim(c(0, 0.3))+
+  theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
+  ggtitle("Enrichment of top 20 ASD genes by MIRAGE")+
+  #theme(plot.title = element_text(size=12))
+   theme(legend.title = element_blank())+
+  geom_signif(annotations ="p=1.0000", y_position = 0.05  ,xmin=0.7, xmax=1.2, size=2, vjust=-0.5, textsize=5)+ # textsize is for text over the bar 
+  geom_signif(annotations ="p=0.2059", y_position = 0.08  ,xmin=1.7, xmax=2.2, size=2, vjust=-0.5, textsize=5)+
+  geom_signif(annotations ="p=0.2998", y_position = 0.15  ,xmin=2.7, xmax=3.2, size=2, vjust=-0.5, textsize=5)+
+  #geom_signif(annotations =0.000825, y_position = 0.45  ,xmin=0.7, xmax=1.2)+
+   theme(legend.position="bottom")+
+theme(text = element_text(size=15))+ # size is for labels on x axis 
+theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+topmirage_enrichment
 
 ```
 
