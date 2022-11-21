@@ -1097,6 +1097,7 @@ colnames(Incidence_gene)=Gene_Set
 
 Incidence_gene%>%
 datatable(extensions = 'Buttons',
+          caption = 'Occurrence of top 20 genes in various gene sets',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                            lengthMenu = list(c(10,25,50,-1),
