@@ -944,6 +944,292 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 
 
 
+#### filtering variant groups with negative burden and large BF
+
+
+```{r, echo=F, message=F, warning=F, eval=F}
+################# calculate BF in each group 
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1105_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+interest_gene=BF_proband_AllGene_sorted$Gene  # use all genes 
+beta=c(0.83382753, 0.85448876, 0.02985442,  0.47471948,  0.11521000, 0.01201084)
+new.data=ASC_new_sample_GI %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% interest_gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+colnames(new.data)[3:5]=c("No.case", "No.contr", "group.index")
+result=fixed.beta.func(new.data, N1=7291, N0=7291, gamma.mean=c(rep(6,3),rep(3,3)),sigma=2, beta=beta) # use fixed beta to calculate Bayes factors
+
+############## verify the calculations 
+#gene_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="SSC5D")]]
+#group.index=gene_variant_BF$group.index
+#gene_BF=prod(1-beta[group.index]+beta[group.index]*gene_variant_BF$var.BF)
+#gene_BF
+#result$BayesFactor[result$BayesFactor$Gene=="SSC5D",]
+##############
+variant_BF=matrix(nrow=length(interest_gene), ncol=8)
+variant_count=matrix(nrow=length(interest_gene), ncol=7)
+SFARI_score=rep("NA", length(interest_gene))
+for (i in 1:length(interest_gene))
+{
+  cat(i, "th gene is running", "\n")
+  variant_BF[i,1]=result$BayesFactor$BF[which(result$BayesFactor$Gene==interest_gene[i])]
+  var_full=result$full.info[[which(result$BayesFactor$Gene==interest_gene[i])]]
+  variant_count[i,1]=paste(paste(sum(var_full$No.case)),"vs", paste(sum(var_full$No.contr)), sep=" ")
+  variant_BF_modified=1
+   for (j in 1:6)
+   {
+     if (nrow(var_full %>% filter(group.index==j))==0) # no variants in this group
+      { 
+        variant_BF[i,j+1]="-"
+        variant_count[i,j+1]="-"
+     }
+     
+     if (nrow(var_full %>% filter(group.index==j))>0) # variants exist in this group
+      { 
+       variant_BF[i,j+1]=prod(1-beta[j]+beta[j]*var_full[which(var_full$group.index==j),]$var.BF) # product of BF of variants within that variant group 
+       variant_count[i,j+1]=paste(paste(sum(var_full[which(var_full$group.index==j),]$No.case)),"vs", paste(sum(var_full[which(var_full$group.index==j),]$No.contr)), sep=" ")
+       
+       ############## filter out variants with negative burden and large BF
+       if (sum(var_full[which(var_full$group.index==j),]$No.case) > sum(var_full[which(var_full$group.index==j),]$No.contr) & variant_BF[i,j+1]>1.1) # filter out variant with negative burden and BF>1.1
+         variant_BF_modified=variant_BF_modified*as.numeric(variant_BF[i,j+1])
+       
+       if (sum(var_full[which(var_full$group.index==j),]$No.case) < sum(var_full[which(var_full$group.index==j),]$No.contr) & variant_BF[i,j+1]<1.1) # filter out variant with negative burden and BF>1.1
+         variant_BF_modified=variant_BF_modified*as.numeric(variant_BF[i,j+1])
+       
+     } # end of if (nrow(var_full %>% filter(group.index==j))>0) # variants exist in this group
+     
+   }  #### end of  for (j in 1:6)
+  
+  variant_BF[i,8]=variant_BF_modified
+  
+  
+  if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==interest_gene[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==interest_gene[i]),]$gene.score
+  
+  
+}
+BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(variant_BF[,1]),4), BF_filtered=round(as.numeric(variant_BF[,8]),4), SFARI_score=SFARI_score, total_count=variant_count[,1], g1_count=variant_count[,2], g1_BF=round(as.numeric(variant_BF[,2]),2), g2_count=variant_count[,3], g2_BF=round(as.numeric(variant_BF[,3]),2), g3_count=variant_count[,4], g3_BF=round(as.numeric(variant_BF[,4]),2), g4_count=variant_count[,5], g4_BF=round(as.numeric(variant_BF[,5]),2), g5_count=variant_count[,6], g5_BF=round(as.numeric(variant_BF[,6]),2), g6_count=variant_count[,7], g6_BF=round(as.numeric(variant_BF[,7]),2))                                          
+
+#write.csv(BF_var_count_combine_6groups[order(BF_var_count_combine_6groups$BF_filtered, decreasing = T),], file="../output/KyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv") # filter out variant groups with negative burden and BF>1.1 
+```
+
+
+
+
+
+```{r, echo=F, message=F, warning=F, eval=T}
+gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+################ top genes 
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+
+num_gene_to_display=100
+gene_to_display=BF_proband_AllGene_sorted$Gene[1:num_gene_to_display]
+Transmitted_proband=numeric()
+Untransmitted_proband=numeric()
+OR=numeric()
+SFARI_score=rep("NA", num_gene_to_display)
+
+for (i in 1:length(gene_to_display))
+{
+  Transmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Transmitted_proband) %>% pull)
+  
+  Untransmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Untransmitted_proband) %>% pull)
+  
+  burden_test=fisher.test(matrix(c(Transmitted_proband[i],num.family, Untransmitted_proband[i], num.family), nrow=2))
+OR[i]=burden_test$estimate
+
+if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),]$gene.score
+#if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])==0) 
+# SFARI_score[i]="NA"
+
+}
+
+
+data.frame(Gene=gene_to_display, BF=round(BF_proband_AllGene_sorted$BF[1:num_gene_to_display], 4), 
+           BF_filtered=round(BF_proband_AllGene_sorted$BF_filtered[1:num_gene_to_display], 4), 
+           SFARI_score=SFARI_score, Trans=Transmitted_proband, Untrans=Untransmitted_proband, OR=round(OR, 4))%>%
+datatable(extensions = 'Buttons',
+          caption = 'Top genes with adjusted BF',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+
+```
+
+
+* `BF_filtered` if the product of BF taking out the groups with negative burden but with BF>1.1, `BF` is original BF with all variant groups 
+
+
+* [BF's adjusted with 6 variant groups](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/Ec3b10WIx9pOm3cjz-WBipYBYXPM5gHYh_w2yycJts4Nlg?e=xbvpDd) 
+
+
+
+
+```{r, echo=F, message=F, warning=F, eval=T}
+#gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+################ top genes 
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+
+num_gene_to_display=20
+gene_to_display=BF_proband_AllGene_sorted$Gene[1:num_gene_to_display]
+SFARI_score=rep("NA", num_gene_to_display)
+Incidence_gene=matrix(nrow=num_gene_to_display, ncol=10)
+for (i in 1:length(gene_to_display))
+{
+
+
+if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),]$gene.score
+for (j in 1:10)
+ Incidence_gene[i,j]=as.numeric(gene_to_display[i]%in% Gene_Set_List[[j]])
+
+}
+rownames(Incidence_gene)=gene_to_display
+colnames(Incidence_gene)=Gene_Set
+
+Incidence_gene%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+
+```
+
+
+* 1 indicates genes in rows belong to gene set in column. 
+
+
+```{r, echo=F, warning=F, message=F}
+BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
+
+sort_BF=BF_para_all_est %>% arrange(desc(BF_filtered))
+topgene_number=20
+topgenes=as.character(sort_BF$Gene[1:topgene_number])
+all.gene=as.character(sort_BF$Gene)
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+## Top 10 genes 
+##top10genes
+###################### strong ASD genes 
+
+strong.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol))  # define strong ASD gene with score 1,2
+overlap1=length(intersect(topgenes, strong.ASD.gene))
+overlap2=length(intersect(all.gene, strong.ASD.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+
+########################## plausible ASD genes 
+
+plausible.ASD.gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol))  
+overlap1=length(intersect(topgenes, plausible.ASD.gene))
+overlap2=length(intersect(all.gene, plausible.ASD.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+############### DNM genes 
+denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
+top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
+overlap1=length(intersect(topgenes, top1000.denovo.gene))
+overlap2=length(intersect(all.gene, top1000.denovo.gene))
+#fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
+
+######################## draw the enrichment 
+topmirage.percent=c(length(intersect(topgenes, strong.ASD.gene)), length(intersect(topgenes, plausible.ASD.gene)), length(intersect(topgenes, top1000.denovo.gene)))/topgene_number
+#top20mirage.percent=c(length(intersect(top20genes, strong.ASD.gene)), length(intersect(top20genes, plausible.ASD.gene)), length(intersect(top20genes, top1000.denovo.gene)))/20
+all.gene.percent=c(length(intersect(all.gene, strong.ASD.gene)), length(intersect(all.gene, plausible.ASD.gene)), length(intersect(all.gene, top1000.denovo.gene)))/length(all.gene)
+topmirage.enrichment=tibble(class=c("Top20 MIRAGE Gene", "All Genes"), Strong.ASD=c(topmirage.percent[1], all.gene.percent[1]), Plausible.ASD=c(topmirage.percent[2], all.gene.percent[2]), DNM=c(topmirage.percent[3], all.gene.percent[3]))
+topmirage.enrichment.tidy=topmirage.enrichment %>% gather( group, percent,2:4)
+
+topmirage.enrichment.tidy$group =factor(topmirage.enrichment.tidy$group, levels=c("Strong.ASD", "Plausible.ASD", "DNM")) # re order lables in x axis 
+
+
+topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
+  geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+  theme_classic()+
+  xlab("")+ylab("Proportion of putative ASD genes")+
+  ylim(c(0, 0.3))+
+  theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
+  ggtitle("Enrichment of top 20 ASD genes by MIRAGE")+
+  #theme(plot.title = element_text(size=12))
+   theme(legend.title = element_blank())+
+  geom_signif(annotations ="p=0.0960", y_position = 0.08  ,xmin=0.7, xmax=1.2, size=2, vjust=-0.5, textsize=5)+ # textsize is for text over the bar 
+  geom_signif(annotations ="p=0.2059", y_position = 0.08  ,xmin=1.7, xmax=2.2, size=2, vjust=-0.5, textsize=5)+
+  geom_signif(annotations ="p=0.1041", y_position = 0.18  ,xmin=2.7, xmax=3.2, size=2, vjust=-0.5, textsize=5)+
+  #geom_signif(annotations =0.000825, y_position = 0.45  ,xmin=0.7, xmax=1.2)+
+   theme(legend.position="bottom")+
+theme(text = element_text(size=15))+ # size is for labels on x axis 
+theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+topmirage_enrichment
+```
+
+
+
+```{r, echo=F, warning=F, message=F}
+BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
+
+sort_BF=BF_para_all_est %>% arrange(desc(BF_filtered))
+topgene_number=20
+topgenes=as.character(sort_BF$Gene[1:topgene_number])
+all.gene=as.character(sort_BF$Gene)
+topmirage.percent=numeric(); all.gene.percent=numeric()
+pvalue=numeric()
+for ( i in 1:length(Gene_Set))
+{
+  overlap1=length(intersect(topgenes, Gene_Set_List[[i]]))
+  topmirage.percent[i]=overlap1/topgene_number
+  
+  overlap2=length(intersect(all.gene, Gene_Set_List[[i]]))
+  all.gene.percent[i]=overlap2/length(all.gene)
+  
+  pvalue[i]=fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))$p.value
+  
+}
+topmirage.enrichment.tidy=data.frame(class=c(rep("Top20 MIRAGE Gene",length(Gene_Set)), rep("All Genes", length(Gene_Set))), group=rep(Gene_Set,2), percent=c(topmirage.percent, all.gene.percent))
+
+topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
+   geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+   theme_classic()+
+   xlab("")+ylab("Proportion of putative ASD genes")+
+  theme(axis.text.y = element_text(size = 10))+ 
+   ylim(c(0, 0.5))+
+   theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
+   ggtitle("Enrichment of top 20 ASD genes by MIRAGE")+
+   #theme(plot.title = element_text(size=12))
+    theme(legend.title = element_blank())+
+   geom_signif(annotations ="0.016", y_position = 0.115  ,xmin=0.7, xmax=1.2, size=1, vjust=-0.5, textsize=3.5)+ # textsize is for text over the bar; size is for width of lines 
+   geom_signif(annotations ="3.32e-6", y_position = 0.47  ,xmin=1.7, xmax=2.2, size=1, vjust=-0.5, textsize=3.5)+
+   geom_signif(annotations ="6.09e-5", y_position = 0.37  ,xmin=2.7, xmax=3.2, size=1, vjust=-0.5, textsize=3.5)+
+   geom_signif(annotations ="8.53e-3", y_position = 0.32  ,xmin=3.7, xmax=4.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="0.069", y_position = 0.07,xmin=4.7, xmax=5.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="0.223", y_position = 0.07,xmin=5.7, xmax=6.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="0.247", y_position = 0.07,xmin=6.7, xmax=7.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="0.041", y_position = 0.17,xmin=7.7, xmax=8.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="2.02e-6", y_position = 0.47,xmin=8.7, xmax=9.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="5.06e-4", y_position = 0.47,xmin=9.7, xmax=10.2, size=1, vjust=-0.5, textsize=3.5)+
+    theme(legend.position="bottom")+
+   theme(axis.text.x = element_text(angle = 15, vjust = 0.5, size=13))+
+ theme(text = element_text(size=15))+ # size is for labels on x axis 
+ theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+ topmirage_enrichment
+# pvalue
+# [1] 2.232156e-01 6.913626e-02 2.471987e-01 4.121511e-02 6.088691e-05 1.592053e-02 3.323435e-06
+# [8] 2.016024e-06 8.532949e-03 5.064991e-04
+ 
+# > Gene_Set
+# [1] "ID gene"         "High"            "Mod"             "PSD"             "FMRP"           
+# [6] "AutismKB"        "constraint gene" "RVIS"            "Haploinsuff"     "SCZ #gene
+
+```
+
 
 ### MIRAGE analysis on 15 variant groups
 
