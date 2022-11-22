@@ -76,6 +76,8 @@ fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data h
 
 
 
+
+
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into new sample 
 path="C:\\Shengtong\\research\\rare-var\\"
