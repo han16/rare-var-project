@@ -76,8 +76,6 @@ fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data h
 
 
 
-
-
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into new sample 
 path="C:\\Shengtong\\research\\rare-var\\"
@@ -782,6 +780,7 @@ for (i in 1:length(interest_gene))
 BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(variant_BF[,1]),4),  SFARI_score=SFARI_score, total_count=variant_count[,1], g1_count=variant_count[,2], g1_BF=round(as.numeric(variant_BF[,2]),2), g2_count=variant_count[,3], g2_BF=round(as.numeric(variant_BF[,3]),2), g3_count=variant_count[,4], g3_BF=round(as.numeric(variant_BF[,4]),2), g4_count=variant_count[,5], g4_BF=round(as.numeric(variant_BF[,5]),2), g5_count=variant_count[,6], g5_BF=round(as.numeric(variant_BF[,6]),2), g6_count=variant_count[,7], g6_BF=round(as.numeric(variant_BF[,7]),2))                                          
 
 #write.csv(BF_var_count_combine_6groups, file="../output/KyleData/BF.proband.AllGene_6vargroups_1105_2022.csv")
+
 ```
 
 
@@ -848,7 +847,7 @@ overlap2=length(intersect(all.gene, plausible.ASD.gene))
 #fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
 
 ############### DNM genes 
-denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+denovo.gene=read.table("..\\..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
 rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
 top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
 overlap1=length(intersect(topgenes, top1000.denovo.gene))
@@ -1011,7 +1010,15 @@ for (i in 1:length(interest_gene))
 }
 BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(variant_BF[,1]),4), BF_filtered=round(as.numeric(variant_BF[,8]),4), SFARI_score=SFARI_score, total_count=variant_count[,1], g1_count=variant_count[,2], g1_BF=round(as.numeric(variant_BF[,2]),2), g2_count=variant_count[,3], g2_BF=round(as.numeric(variant_BF[,3]),2), g3_count=variant_count[,4], g3_BF=round(as.numeric(variant_BF[,4]),2), g4_count=variant_count[,5], g4_BF=round(as.numeric(variant_BF[,5]),2), g5_count=variant_count[,6], g5_BF=round(as.numeric(variant_BF[,6]),2), g6_count=variant_count[,7], g6_BF=round(as.numeric(variant_BF[,7]),2))                                          
 
-#write.csv(BF_var_count_combine_6groups[order(BF_var_count_combine_6groups$BF_filtered, decreasing = T),], file="../output/KyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv") # filter out variant groups with negative burden and BF>1.1 
+#write.csv(BF_var_count_combine_6groups[order(BF_var_count_combine_6groups$BF_filtered, decreasing = T),], file="../output/KyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv") # filter out variant groups with negative burden and BF>1.1
+
+
+#write.csv(result$full.info[[3368]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_NRXN2_1122_2022.csv") # output gene NRXN2
+#write.csv(result$full.info[[6920]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_DPH1_1122_2022.csv") # output gene DPH1
+
+#write.csv(result$full.info[[which(result$BayesFactor$Gene=="CTNNA2")]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_CTNNA2_1122_2022.csv") # output gene CTNNA2
+
+#write.csv(result$full.info[[which(result$BayesFactor$Gene=="DNM2")]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_DNM2_1122_2022.csv") # output gene DNM2
 ```
 
 
@@ -1083,7 +1090,7 @@ SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-20
 num_gene_to_display=20
 gene_to_display=BF_proband_AllGene_sorted$Gene[1:num_gene_to_display]
 SFARI_score=rep("NA", num_gene_to_display)
-Incidence_gene=matrix(nrow=num_gene_to_display, ncol=10)
+Incidence_gene=matrix(nrow=num_gene_to_display, ncol=11)
 for (i in 1:length(gene_to_display))
 {
 
@@ -1091,12 +1098,12 @@ for (i in 1:length(gene_to_display))
 if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0) 
  SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),]$gene.score
 for (j in 1:10)
- Incidence_gene[i,j]=as.numeric(gene_to_display[i]%in% Gene_Set_List[[j]])
+ Incidence_gene[i,1+j]=as.numeric(gene_to_display[i]%in% Gene_Set_List[[j]])
 
 }
 rownames(Incidence_gene)=gene_to_display
-colnames(Incidence_gene)=Gene_Set
-
+colnames(Incidence_gene)=c("BF_filtered",Gene_Set)
+Incidence_gene[,1]=BF_proband_AllGene_sorted$BF_filtered[1:num_gene_to_display]
 Incidence_gene%>%
 datatable(extensions = 'Buttons',
           caption = 'Occurrence of top 20 genes in various gene sets',
@@ -1110,6 +1117,16 @@ datatable(extensions = 'Buttons',
 
 
 * 1 indicates genes in rows belong to gene set in column. 
+
+*  several top genes driven by one single variant 
+
+1.  [NRXN2](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/Ed9BRptUJDNGgmp4VZ_xXykBxtCIBOI8-KDgX-ikD9UR2g?e=eVDeM1) `11:64651517:C:T	NRXN2	12(T)	1(UT)	5	66.4923272(BF)`
+
+2. [CTNNA2](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/ESreMlNVT2FPjNPQ5nCl1dgBOKCg9M0jYPyuDCj-IFamnA?e=AyBYNJ)  `2:80647639:G:A	CTNNA2	15(T)	5(UT)	4	10.55319601(BF)`
+3.  [DNM2](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/EX9eZHeVmzNHlbw22wmEAvsBXuAZBGeqIYm6OdfHgwRmAA?e=tpMiD9)   `19:10783059:C:T	DNM2	17(T)	6(UT)	4	11.62929522(BF)`
+4.  [DPH1](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/ESrgp6Eeb_pJkfP3VO4iDmIBZzRUkfR0ys9Tw_GF1eU6Wg?e=AIpquJ)  `17:2041487:G:C	DPH1	18(T)	1(UT)	6	1050.851519(BF)`
+
+
 
 
 ```{r, echo=F, warning=F, message=F}
@@ -1138,7 +1155,7 @@ overlap2=length(intersect(all.gene, plausible.ASD.gene))
 #fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
 
 ############### DNM genes 
-denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+denovo.gene=read.table("..\\..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
 rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
 top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
 overlap1=length(intersect(topgenes, top1000.denovo.gene))
@@ -1232,6 +1249,10 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 # [6] "AutismKB"        "constraint gene" "RVIS"            "Haploinsuff"     "SCZ #gene
 
 ```
+
+
+
+
 
 
 ### MIRAGE analysis on 15 variant groups
@@ -1599,7 +1620,7 @@ overlap2=length(intersect(all.gene, plausible.ASD.gene))
 #fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))
 
 ############### DNM genes 
-denovo.gene=read.table("..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
+denovo.gene=read.table("..\\..\\..\\GeneSet\\TADA_SNV_CNV_combined\\TADA_SNV_CNV_combined_Feb7.txt", header=T)
 rank.denovo.gene=denovo.gene[order(denovo.gene$qvalue.combined),]
 top1000.denovo.gene=rank.denovo.gene$RefSeqName[1:1000]
 overlap1=length(intersect(topgenes, top1000.denovo.gene))
@@ -1695,7 +1716,7 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 ## 102 ASD genes in cell paper
 
 ```{r, echo=F}
-ASD_Gene_Cell=as_tibble(read.csv("../../AutismDatafromASC_Cellpaper/1-s2.0-S0092867419313984-mmc2.csv", header = TRUE))
+ASD_Gene_Cell=as_tibble(read.csv("../../../AutismDatafromASC_Cellpaper/1-s2.0-S0092867419313984-mmc2.csv", header = TRUE))
 ASD_102_Gene=ASD_Gene_Cell[1:102,1] %>% pull()
 ```
 
