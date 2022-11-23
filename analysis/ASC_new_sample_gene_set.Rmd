@@ -585,11 +585,6 @@ rm("ASC_new_sample_AF") # remove variables temporarily available in this chunk
 
 * Run mirage on all 17850 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 
-* `Gnomad_non_neuro_AF<0.05` 
-
-* `isSyn=="FALSE"`
-
-* `isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8`
 
 
 ```{r, echo=F, eval=F}
