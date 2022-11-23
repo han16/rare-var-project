@@ -583,6 +583,9 @@ rm("ASC_new_sample_AF") # remove variables temporarily available in this chunk
 
 ### MIRAGE analysis on  6 variant groups 
 
+
+* [Burden analysis for 6 variant groups](ASC_new_sample_6variant_groups.html)
+
 * Run mirage on all 17850 genes and $\gamma=6$ for 3  PLI variant groups   and $\gamma=3$ for 3  MPC groups. 
 
 

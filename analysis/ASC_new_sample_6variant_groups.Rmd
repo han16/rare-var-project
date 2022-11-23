@@ -194,13 +194,17 @@ new_data=ASC_new_sample_GI %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene
 LoF_burden_005=matrix(nrow=length(interest_gene), ncol=4)
 Missense_burden_005=matrix(nrow=length(interest_gene), ncol=4)
 LoF_Missense_burden_005=matrix(nrow=length(interest_gene), ncol=4)
+p_value_005=matrix(nrow=length(interest_gene), ncol=3)
 
 LoF_burden_001=matrix(nrow=length(interest_gene), ncol=4)
 Missense_burden_001=matrix(nrow=length(interest_gene), ncol=4)
 LoF_Missense_burden_001=matrix(nrow=length(interest_gene), ncol=4)
+p_value_001=matrix(nrow=length(interest_gene), ncol=3)
+threshold=1e-100
 
 for (i in 1:length(interest_gene))
 {
+ # i=1143
   cat(i, "th gene is running", "\n")
   single_gene_data=new_data %>% filter(Gene==interest_gene[i])
   
@@ -210,6 +214,7 @@ for (i in 1:length(interest_gene))
   burden_test=fisher.test(matrix(c(LoF_burden_005[i,1],num.family, LoF_burden_005[i,2], num.family), nrow=2))
   LoF_burden_005[i,3]=burden_test$estimate
   LoF_burden_005[i,4]=burden_test$p.value
+  p_value_005[i,1]=LoF_burden_005[i,4]
   
   ########## missense variants 
   Missense_burden_005[i,1]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.05 & Group_Index>3) %>% select(Transmitted_proband)%>% pull)  
@@ -217,6 +222,16 @@ for (i in 1:length(interest_gene))
   burden_test=fisher.test(matrix(c(Missense_burden_005[i,1],num.family, Missense_burden_005[i,2], num.family), nrow=2))
   Missense_burden_005[i,3]=burden_test$estimate
   Missense_burden_005[i,4]=burden_test$p.value
+  ############## avoid p value of 0 or 1 
+  if (LoF_burden_005[i,4]==0)
+     LoF_burden_005[i,4]=threshold
+  if (LoF_burden_005[i,4]>0.9999)
+     LoF_burden_005[i,4]=1-threshold
+  if (Missense_burden_005[i,4]==0)
+     Missense_burden_005[i,4]=threshold
+  if (Missense_burden_005[i,4]>0.9999)
+     Missense_burden_005[i,4]=1-threshold
+    p_value_005[i,3]=fisher(c(LoF_burden_005[i,4], Missense_burden_005[i,4]))$p
   
   ########## LoF+missense variants 
   LoF_Missense_burden_005[i,1]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Transmitted_proband)%>% pull)  
@@ -224,13 +239,68 @@ for (i in 1:length(interest_gene))
   burden_test=fisher.test(matrix(c(LoF_Missense_burden_005[i,1],num.family, LoF_Missense_burden_005[i,2], num.family), nrow=2))
   LoF_Missense_burden_005[i,3]=burden_test$estimate
   LoF_Missense_burden_005[i,4]=burden_test$p.value
+  p_value_005[i,2]=LoF_Missense_burden_005[i,4]
+  
+  ############################################################
+  ########## LoF variants 
+  LoF_burden_001[i,1]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.01 & Group_Index<4) %>% select(Transmitted_proband)%>% pull)  
+  LoF_burden_001[i,2]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.01 & Group_Index<4) %>% select(Untransmitted_proband)%>% pull)
+  burden_test=fisher.test(matrix(c(LoF_burden_001[i,1],num.family, LoF_burden_001[i,2], num.family), nrow=2))
+  LoF_burden_001[i,3]=burden_test$estimate
+  LoF_burden_001[i,4]=burden_test$p.value
+  p_value_001[i,1]=LoF_burden_001[i,4]
+  
+  ########## missense variants 
+  Missense_burden_001[i,1]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.01 & Group_Index>3) %>% select(Transmitted_proband)%>% pull)  
+  Missense_burden_001[i,2]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.01 & Group_Index>3) %>% select(Untransmitted_proband)%>% pull)
+  burden_test=fisher.test(matrix(c(Missense_burden_001[i,1],num.family, Missense_burden_001[i,2], num.family), nrow=2))
+  Missense_burden_001[i,3]=burden_test$estimate
+  Missense_burden_001[i,4]=burden_test$p.value
+   ############## avoid p value of 0 or 1 
+  if (LoF_burden_001[i,4]==0)
+     LoF_burden_001[i,4]=threshold
+  if (LoF_burden_001[i,4]>0.9999)
+     LoF_burden_001[i,4]=1-threshold
+  if (Missense_burden_001[i,4]==0)
+     Missense_burden_001[i,4]=threshold
+  if (Missense_burden_001[i,4]>0.9999)
+     Missense_burden_001[i,4]=1-threshold
+    p_value_001[i,3]=fisher(c(LoF_burden_001[i,4], Missense_burden_001[i,4]))$p
+  
+  ########## LoF+missense variants 
+  LoF_Missense_burden_001[i,1]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.01) %>% select(Transmitted_proband)%>% pull)  
+  LoF_Missense_burden_001[i,2]=sum(single_gene_data %>% filter(Gnomad_non_neuro_AF<0.01) %>% select(Untransmitted_proband)%>% pull)
+  burden_test=fisher.test(matrix(c(LoF_Missense_burden_001[i,1],num.family, LoF_Missense_burden_001[i,2], num.family), nrow=2))
+  LoF_Missense_burden_001[i,3]=burden_test$estimate
+  LoF_Missense_burden_001[i,4]=burden_test$p.value
+  p_value_001[i,2]=LoF_Missense_burden_001[i,4]
   ################
-  
-  
   
 } # end of for (i in 1:length(interest_gene))
 
+################
+  rownames(p_value_005)=interest_gene
+  colnames(p_value_005)=c("LoF", "Missense", "fisher_combine")
+  
+  combine_005=cbind(LoF_burden_005, Missense_burden_005, LoF_Missense_burden_005)
+  rownames(combine_005)=interest_gene
+  colnames(combine_005)=paste(rep(c("LoF", "Missense", "LoF+Missense"), each=4), c("T", "UT", "OR", "P_value"), sep="_")
+  #write.csv(p_value_005, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.05_1123_2022.csv")
+  #write.csv(combine_005, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_AF0.05_1123_2022.csv")
 
-#write.csv(BF_var_count_combine_6groups, file="../output/KyleData/BF.proband.AllGene_6vargroups_1105_2022.csv")
+################
+  rownames(p_value_001)=interest_gene
+  colnames(p_value_001)=c("LoF", "Missense", "fisher_combine")
+  
+  
+  rownames(p_value_001)=interest_gene
+  colnames(p_value_001)=c("LoF", "Missense", "fisher_combine")
+  
+  combine_001=cbind(LoF_burden_001, Missense_burden_001, LoF_Missense_burden_001)
+  rownames(combine_001)=interest_gene
+  colnames(combine_001)=paste(rep(c("LoF", "Missense", "LoF+Missense"), each=4), c("T", "UT", "OR", "P_value"), sep="_")
+ # write.csv(p_value_001, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.01_1123_2022.csv")
+#  write.csv(combine_001, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_AF0.01_1123_2022.csv")
+
 
 ```
