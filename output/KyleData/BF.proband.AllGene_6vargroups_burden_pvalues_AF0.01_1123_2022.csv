@@ -1,4 +1,4 @@
-"","LoF","Missense","fisher_combine"
+"","LoF_pvalue","LoF+Missense_pvalue","fisher_combine_pvalue"
 "HLA-DRB1",0.49996572290589,4.73782875803452e-37,4.6630749596532e-35
 "SSC5D",0.0520257152083319,0.000238313725198266,0.000361685546704252
 "GSTM1",1,1,1

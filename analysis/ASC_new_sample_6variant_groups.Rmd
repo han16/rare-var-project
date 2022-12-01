@@ -18,6 +18,7 @@ library(tidyverse)
 library(gridExtra)
 library(ggpubr)
 library(DT)
+library(poolr) # use fisher method to combine p values 
 #library("devtools")
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
@@ -280,27 +281,135 @@ for (i in 1:length(interest_gene))
 
 ################
   rownames(p_value_005)=interest_gene
-  colnames(p_value_005)=c("LoF", "Missense", "fisher_combine")
+  colnames(p_value_005)=c("LoF_pvalue", "LoF+Missense_pvalue", "fisher_combine_pvalue")
   
   combine_005=cbind(LoF_burden_005, Missense_burden_005, LoF_Missense_burden_005)
   rownames(combine_005)=interest_gene
   colnames(combine_005)=paste(rep(c("LoF", "Missense", "LoF+Missense"), each=4), c("T", "UT", "OR", "P_value"), sep="_")
-  #write.csv(p_value_005, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.05_1123_2022.csv")
-  #write.csv(combine_005, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_AF0.05_1123_2022.csv")
+ # write.csv(p_value_005, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.05_1123_2022.csv")
+#  write.csv(combine_005, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_AF0.05_1123_2022.csv")
 
 ################
   rownames(p_value_001)=interest_gene
-  colnames(p_value_001)=c("LoF", "Missense", "fisher_combine")
-  
-  
-  rownames(p_value_001)=interest_gene
-  colnames(p_value_001)=c("LoF", "Missense", "fisher_combine")
+  colnames(p_value_001)=c("LoF_pvalue", "LoF+Missense_pvalue", "fisher_combine_pvalue")
   
   combine_001=cbind(LoF_burden_001, Missense_burden_001, LoF_Missense_burden_001)
   rownames(combine_001)=interest_gene
   colnames(combine_001)=paste(rep(c("LoF", "Missense", "LoF+Missense"), each=4), c("T", "UT", "OR", "P_value"), sep="_")
- # write.csv(p_value_001, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.01_1123_2022.csv")
+#  write.csv(p_value_001, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.01_1123_2022.csv")
 #  write.csv(combine_001, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_AF0.01_1123_2022.csv")
 
 
+```
+
+
+
+```{r, echo=F, message=F, warning=F}
+plotQQ.unif <- function(p.obs) {
+  obs <- (p.obs)
+  theo <- (ppoints(length(obs)))
+  qqplot(-log(theo, base=10), -log(obs, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="A")
+  abline(0,1,col='red')
+}
+
+```
+
+
+
+
+
+```{r, echo=F, message=F, warning=F}
+burden_pvalues_005=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.05_1123_2022.csv"))
+burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.01_1123_2022.csv"))
+
+#######################   John storey's q value 
+#### install qvalue package 
+#install.packages("devtools")
+#library("devtools")
+#install_github("jdstorey/qvalue")   https://github.com/StoreyLab/qvalue
+
+#library(qvalue)
+#qobj.burden=qvalue(Burden.pvalue)
+#localFDR.burden <- qobj.burden$lfdr
+#min(localFDR.burden, na.rm=T)
+
+#qobj.SKATO=qvalue(SKATO.pvalue)
+#localFDR.SKATO <- qobj.SKATO$lfdr
+#min(localFDR.SKATO, na.rm=T)
+#######################
+
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf")
+#par(mfrow=c(1,2))
+theo <- (ppoints(length(burden_pvalues_001$LoF_pvalue)))
+  #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="(A) Burden", frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col='red', lwd=2)
+
+#################  use ggplot draw qq plot 
+sx <- sort(-log(theo, base=10)); sy <- sort(-log(burden_pvalues_001$LoF_pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+burden=tibble(sx=sx, sy=sy)
+ qqplot_burden_LoF=ggplot(burden) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face="bold"))+  #center the title+
+   ggtitle("LoF")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=10))
+ #qqplot_burden_LoF
+
+#################
+theo <- (ppoints(length(burden_pvalues_001$LoF.Missense_pvalue)))
+
+ sx <- sort(-log(theo, base=10)); sy <- sort(-log(burden_pvalues_001$LoF.Missense_pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+ LoF.Missense=tibble(sx=sx, sy=sy)
+ qqplot_burden_LoF.Missense=ggplot(LoF.Missense) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   #ylab("")+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face="bold"))+  #center the title+
+   ggtitle("LoF+Missense")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=10))
+#qqplot_burden_LoF.Missense
+ 
+ 
+ ################################
+ theo <- (ppoints(length(burden_pvalues_001$fisher_combine_pvalue)))
+
+ sx <- sort(-log(theo, base=10)); sy <- sort(-log(burden_pvalues_001$fisher_combine_pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+ fisher.combine=tibble(sx=sx, sy=sy)
+ qqplot_burden_fisher.combine=ggplot(fisher.combine) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   #ylab("")+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face="bold"))+  #center the title+
+   ggtitle("Fisher combine LoF+Missense")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=10))
+#qqplot_burden_fisher.combine
+
+#png("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_ASD_topconstgene_enrichemnt.png") 
+ggarrange(qqplot_burden_LoF, qqplot_burden_LoF.Missense,  qqplot_burden_fisher.combine, nrow=1)
+#dev.off()
 ```
