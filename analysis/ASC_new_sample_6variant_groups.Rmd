@@ -321,6 +321,7 @@ plotQQ.unif <- function(p.obs) {
 ```{r, echo=F, message=F, warning=F}
 burden_pvalues_005=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.05_1123_2022.csv"))
 burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_pvalues_AF0.01_1123_2022.csv"))
+combine_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_AF0.01_1123_2022.csv"))
 
 #######################   John storey's q value 
 #### install qvalue package 
@@ -410,6 +411,19 @@ theme(text = element_text(size=10))
 #qqplot_burden_fisher.combine
 
 #png("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_ASD_topconstgene_enrichemnt.png") 
-ggarrange(qqplot_burden_LoF, qqplot_burden_LoF.Missense,  qqplot_burden_fisher.combine, nrow=1)
+figure=ggarrange(qqplot_burden_LoF, qqplot_burden_LoF.Missense,  qqplot_burden_fisher.combine, nrow=1)
+annotate_figure(figure,
+                top = text_grob("AF<0.01", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Datasource: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+
 #dev.off()
 ```
+
+
+* extremely small p values are from variants with unbalancedly more variants in controls than in cases. 
+
