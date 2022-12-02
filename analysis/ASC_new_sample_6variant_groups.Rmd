@@ -430,6 +430,8 @@ annotate_figure(figure,
 
 * extremely small p values are from variants with overwhelmingly more variants in controls than in cases. 
 
+* patterns for p values of all variants is similar to p values by fisher method that combines LoF p values and missense p values 
+
 
 ### Enrichment of top genes 
 
@@ -475,6 +477,8 @@ datatable(extensions = 'Buttons',
 
 
 ```
+
+* `burden_pvalue` is the p value for all variants including LoF and missense.  
 
 
 ```{r, echo=F, warning=F, message=F}
