@@ -1558,6 +1558,10 @@ datatable(extensions = 'Buttons',
 ```
 
 
+* `All_variants`: LoF+MPC>2 
+
+
+
 ```{r, echo=F, warning=F, message=F}
 burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv"))
 
@@ -1682,7 +1686,7 @@ topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 ```
 
 
-### Fisher combined LoF+Missense>2: enrichment of top genes 
+### Fisher combined LoF+MPC>2: enrichment of top genes 
 
 
 ```{r, echo=F, message=F, warning=F}
