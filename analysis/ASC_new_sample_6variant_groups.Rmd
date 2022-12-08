@@ -1322,7 +1322,7 @@ if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
    ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
    #ylab("")+
    theme(plot.title = element_text(hjust = 0.5, size=10,face="bold"))+  #center the title+
-   ggtitle("Fisher combine LoF+Missense")+
+   ggtitle("Fisher combine LoF+MPC>2")+
    geom_abline(intercept = 0, slope = 1, color="red", 
                  linetype="solid", size=1.5)+
 theme(text = element_text(size=10))
