@@ -1343,7 +1343,7 @@ annotate_figure(figure,
 ```
 
 * use one side binomial test 
-* `All Variants`: LoF+Missense>2 
+* `All Variants`: LoF+MPC>2 
 
 ### LoF: enrichment of top genes 
 
