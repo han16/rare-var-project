@@ -1861,6 +1861,9 @@ topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 ## Summary 
 
 
+### Enrichment of top 20 genes 
+
+
 ```{r, echo=F, warning=F, message=F}
 BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
 burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv")) # call top genes by burden 
@@ -1955,7 +1958,19 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 * Top 20 MIRAGE genes selection: based on 6 variant groups, use MIRAGE to estimate parameters and calculate BF for each variant group, multiply group-wise BF when it has burden or negative burden but with BF<1.1 and ignore it otherwise, rank genes according to adjusted BF and choose top 20 genes. 
 
 
+* Top 20 genes by burden (LoF+MPC>2): use one side Binomial test to calculate the p value of each gene containing 3 LoF variant groups and one missense variant group MPC>2, rank genes by p value and choose top 20 genes. 
 
+
+### Top genes with evidence 
+
+
+```{r, echo=F, message=F, warning=F}
+################ top genes 
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
+delta_estimate=0.0671 # the estimate of delta, proportion of risk genes 
+post_prob=BF_proband_AllGene_sorted$BF_filtered*delta_estimate/(BF_proband_AllGene_sorted$BF_filtered*delta_estimate+1-delta_estimate) # calculate post probability by definition
+```
 
 
 

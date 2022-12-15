@@ -1069,7 +1069,7 @@ datatable(extensions = 'Buttons',
 ```
 
 
-* `BF_filtered` if the product of BF taking out the groups with negative burden but with BF>1.1, `BF` is original BF with all variant groups 
+* `BF_filtered` is the product of BF taking out the groups with negative burden but with BF>1.1, `BF` is original BF with all variant groups 
 
 
 * [BF's adjusted with 6 variant groups](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/Ec3b10WIx9pOm3cjz-WBipYBYXPM5gHYh_w2yycJts4Nlg?e=xbvpDd) 

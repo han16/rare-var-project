@@ -468,14 +468,24 @@ class="section level3">
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
+<div id="enrichment-of-top-20-genes" class="section level3">
+<h3>Enrichment of top 20 genes</h3>
 <p><img src="ASC_new_sample_6variant_groups_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <ul>
-<li>Top 20 MIRAGE genes selection: based on 6 variant groups, use MIRAGE
-to estimate parameters and calculate BF for each variant group, multiply
-group-wise BF when it has burden or negative burden but with BF&lt;1.1
-and ignore it otherwise, rank genes according to adjusted BF and choose
-top 20 genes.</li>
+<li><p>Top 20 MIRAGE genes selection: based on 6 variant groups, use
+MIRAGE to estimate parameters and calculate BF for each variant group,
+multiply group-wise BF when it has burden or negative burden but with
+BF&lt;1.1 and ignore it otherwise, rank genes according to adjusted BF
+and choose top 20 genes.</p></li>
+<li><p>Top 20 genes by burden (LoF+MPC&gt;2): use one side Binomial test
+to calculate the p value of each gene containing 3 LoF variant groups
+and one missense variant group MPC&gt;2, rank genes by p value and
+choose top 20 genes.</p></li>
 </ul>
+</div>
+<div id="top-genes-with-evidence" class="section level3">
+<h3>Top genes with evidence</h3>
+</div>
 </div>
 
 <hr>
