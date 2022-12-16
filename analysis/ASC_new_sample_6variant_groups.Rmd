@@ -1969,8 +1969,25 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
 BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
 delta_estimate=0.0671 # the estimate of delta, proportion of risk genes 
+top_gene_number=10
+
 post_prob=BF_proband_AllGene_sorted$BF_filtered*delta_estimate/(BF_proband_AllGene_sorted$BF_filtered*delta_estimate+1-delta_estimate) # calculate post probability by definition
+Evidence=c("-", "High; FMRP; AutismKB; SCZ", "constraint gene; RVIS", "Haploinsuff", "ID gene; FMRP; SCZ", "-", "-", "-", "FMRP; AutismKB; constraint gene; RVIS; SCZ", "constraint gene; RVIS; Haploinsuff")
+Fu_gene_list=as_tibble(read.csv("../../../GeneSet/Fu 2022 Suppl-41588_2022_1104_MOESM3_ESM.csv"))
+ASC_gene=Fu_gene_list %>% filter(ASD185=="TRUE") %>% select(gene_gencodeV33) %>% pull
+ASC_gene_status=BF_proband_AllGene_sorted$Gene[1:top_gene_number] %in% ASC_gene 
+
+
+top_gene_summary=data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:top_gene_number], BF=BF_proband_AllGene_sorted$BF_filtered[1:top_gene_number], posterior=round(post_prob[1:top_gene_number],4),Evidence=Evidence, ASC_gene=ASC_gene_status)
+top_gene_summary%>% datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
 ```
 
+* BF: this is filtered BF removing variant groups with negative burden and BF>1.1, for those top 10 genes, their filter BF is their actual BF without filtering 
 
+* ASC_gene: 185 ASC genes with FDR<0.05, published in [NG 2022](https://www.nature.com/articles/s41588-022-01104-0#MOESM3)
 
