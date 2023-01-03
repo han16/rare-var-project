@@ -1017,6 +1017,12 @@ BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(
 #write.csv(result$full.info[[which(result$BayesFactor$Gene=="CTNNA2")]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_CTNNA2_1122_2022.csv") # output gene CTNNA2
 
 #write.csv(result$full.info[[which(result$BayesFactor$Gene=="DNM2")]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_DNM2_1122_2022.csv") # output gene DNM2
+
+#write.csv(result$full.info[[which(result$BayesFactor$Gene=="PTEN")]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_PTEN_0103_2023.csv") # output gene PTEN
+
+#write.csv(result$full.info[[which(result$BayesFactor$Gene=="SUPT5H")]], file="../output/KyleData/BF.proband.AllGene_6vargroups_gene_SUPT5H_0103_2023.csv") # output gene SUPT5H
+
+
 ```
 
 
@@ -1123,6 +1129,9 @@ datatable(extensions = 'Buttons',
 2. [CTNNA2](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/ESreMlNVT2FPjNPQ5nCl1dgBOKCg9M0jYPyuDCj-IFamnA?e=AyBYNJ)  `2:80647639:G:A	CTNNA2	15(T)	5(UT)	4	10.55319601(BF)`
 3.  [DNM2](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/EX9eZHeVmzNHlbw22wmEAvsBXuAZBGeqIYm6OdfHgwRmAA?e=tpMiD9)   `19:10783059:C:T	DNM2	17(T)	6(UT)	4	11.62929522(BF)`
 4.  [DPH1](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/ESrgp6Eeb_pJkfP3VO4iDmIBZzRUkfR0ys9Tw_GF1eU6Wg?e=AIpquJ)  `17:2041487:G:C	DPH1	18(T)	1(UT)	6	1050.851519(BF)`
+5. [PTEN](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/EbMhsZg-1kdBhdZvUpCVJ9kBw8Yj-XysfUKDupcQDTDo6A?e=TDAaVx)
+6. [SUPT5H](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/EX9tMzKEj6NAlopRWs1-N2gByBNHYmhRKtSh02D9mq-SBA?e=KyqfyZ) `19:39465003:C:T SUPT5H       6(T)        0(UT)           5 11.1279598`
+
 
 
 

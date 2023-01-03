@@ -19,7 +19,7 @@ library(gridExtra)
 library(ggpubr)
 library(DT)
 library(poolr) # use fisher method to combine p values 
-#library("devtools")
+library("devtools")
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
 library(mirage)
@@ -1976,9 +1976,10 @@ Evidence=c("-", "High; FMRP; AutismKB; SCZ", "constraint gene; RVIS", "Haploinsu
 Fu_gene_list=as_tibble(read.csv("../../../GeneSet/Fu 2022 Suppl-41588_2022_1104_MOESM3_ESM.csv"))
 ASC_gene=Fu_gene_list %>% filter(ASD185=="TRUE") %>% select(gene_gencodeV33) %>% pull
 ASC_gene_status=BF_proband_AllGene_sorted$Gene[1:top_gene_number] %in% ASC_gene 
+#ASC_gene_status[ASC_gene_status=="FALSE"]="X"; ASC_gene_status[ASC_gene_status=="TRUE"]="V"
+Function=c("zinc ion binding", "regulate synaptic function", "putative chromatin structure regulator", "-", "zinc ion binding", "metal ion binding", "protein binding", "protein binding", "metal ion binding; neuroligin family protein binding", "protein binding" )# these information from Genecard 
 
-
-top_gene_summary=data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:top_gene_number], BF=BF_proband_AllGene_sorted$BF_filtered[1:top_gene_number], posterior=round(post_prob[1:top_gene_number],4),Evidence=Evidence, ASC_gene=ASC_gene_status)
+top_gene_summary=data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:top_gene_number], BF=BF_proband_AllGene_sorted$BF_filtered[1:top_gene_number], posterior=round(post_prob[1:top_gene_number],4),Evidence=Evidence, ASC_gene=ASC_gene_status, Function=Function)
 top_gene_summary%>% datatable(extensions = 'Buttons',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
@@ -1991,3 +1992,123 @@ top_gene_summary%>% datatable(extensions = 'Buttons',
 
 * ASC_gene: 185 ASC genes with FDR<0.05, published in [NG 2022](https://www.nature.com/articles/s41588-022-01104-0#MOESM3)
 
+
+### gene Manhattan plot
+
+```{r, echo=F, message=F, warning=F, }
+BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
+delta_estimate=0.0671 # the estimate of delta, proportion of risk genes 
+post_prob=BF_proband_AllGene_sorted$BF_filtered*delta_estimate/(BF_proband_AllGene_sorted$BF_filtered*delta_estimate+1-delta_estimate) # calculate post probability by definition
+
+
+#install.packages("remotes")
+#remotes::install_github("kevinlkx/mapgen")  # download kevin's package 
+#library(mapgen)
+
+
+#' @title Make gene manhattan plot
+#'
+#' @param gene.pip.res Gene level finemapping result
+#' @param chr Name of the chr column in the gene finemapping summary statistics data
+#' @param pos Name of the pos column in the gene finemapping summary statistics data
+#' @param gene_name Name of the gene name column in the gene finemapping summary statistics data
+#' @param gene_pip Name of the gene PIP column in the gene finemapping summary statistics data
+#' @param sig.pip Signficant gene PIP (default: 0.8)
+#' @param highlight Highlight genes with gene PIP > sig.pip
+#' @param ylim Truncate gene PIP to ylim value in the plot (default: 1.25).
+#' @param point.size Size of the points.
+#' @param label.size Size of the labels.
+#' @param font.size Font size of the text.
+#' @param title Title of the plot
+#' @param max.overlaps Exclude text labels that overlap too many things (default: 10).
+#' @import ggplot2
+#' @importFrom magrittr %>%
+#' @export
+#'
+gene_manhattan_plot <- function(gene.pip.res,
+                                chr='chr',
+                                pos='pos',
+                                gene_name='gene_name',
+                                gene_pip='gene_pip',
+                                sig.pip = 0.8,
+                                highlight = TRUE,
+                                ylim = 1.25,
+                                point.size = 2,
+                                label.size = point.size*2,
+                                font.size = 15,
+                                max.overlaps = 10,
+                                title = '') {
+
+  gene.pip.res <- gene.pip.res %>% dplyr::rename(chr = all_of(chr),
+                                                 pos = all_of(pos),
+                                                 gene_name = all_of(gene_name),
+                                                 gene_pip = all_of(gene_pip))
+
+  # Highlight genes
+  gene.pip.res <- gene.pip.res %>%
+    dplyr::mutate( is_highlight=(gene_pip >= sig.pip))
+
+  df <- gene.pip.res %>%
+
+    # Compute chromosome size
+    dplyr::group_by(chr) %>%
+    dplyr::summarise(chr_len = max(as.numeric(pos))) %>%
+
+    # Calculate cumulative position of each chromosome
+    dplyr::mutate(tot=cumsum(chr_len)-chr_len) %>%
+    dplyr::select(-chr_len) %>%
+
+    # Add this info to the initial dataset
+    dplyr::left_join(gene.pip.res, ., by=c("chr"="chr")) %>%
+
+    # Add a cumulative position of each SNP
+    dplyr::arrange(chr, pos) %>%
+    dplyr::mutate( pos_cum=pos+tot)
+
+  axis.df <- df %>%
+    dplyr::group_by(chr) %>%
+    dplyr::summarize(center=( max(pos_cum) + min(pos_cum) ) / 2 )
+
+  p <- ggplot(df,
+              aes(x = pos_cum, y = gene_pip)) +
+
+    # Show all points
+    ggrastr::geom_point_rast( aes(color=as.factor(chr)), size=point.size) +
+    scale_color_manual(values = rep(c("grey", "skyblue"), 22 )) +
+
+    # custom X axis:
+    scale_x_continuous(label = gsub("chr","", axis.df$chr, ignore.case = TRUE), breaks= axis.df$center) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0,ylim)) +     # remove space between plot area and x axis
+
+    # Add highlighted points
+    ggrastr::geom_point_rast(data=subset(df, is_highlight==TRUE), color="orange", size=point.size) +
+
+    # Add label using ggrepel to avoid overlapping
+    ggrepel::geom_label_repel( data=subset(df, is_highlight==TRUE),
+                               aes(label=gene_name),
+                               size=label.size,
+                               min.segment.length = 0,
+                               label.size = NA,
+                               fill = alpha(c("white"),0),
+                               max.overlaps = max.overlaps) +
+
+    # Custom the theme:
+    theme_bw() +
+    theme(
+      text = element_text(size = font.size),
+      legend.position="none",
+      panel.border = element_blank(),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      plot.title = element_text(hjust = 0.5)
+    ) +
+    ggtitle(title) +
+    theme() +
+    xlab("Chromosome") +
+    ylab("Gene PIP")
+
+  return(p)
+
+}
+```
