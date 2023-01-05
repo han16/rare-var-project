@@ -1996,12 +1996,26 @@ top_gene_summary%>% datatable(extensions = 'Buttons',
 ### gene Manhattan plot
 
 ```{r, echo=F, message=F, warning=F, }
-BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
-BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
-delta_estimate=0.0671 # the estimate of delta, proportion of risk genes 
-post_prob=BF_proband_AllGene_sorted$BF_filtered*delta_estimate/(BF_proband_AllGene_sorted$BF_filtered*delta_estimate+1-delta_estimate) # calculate post probability by definition
-
-
+############## run once to get the data for plot 
+#BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
+#BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
+#delta_estimate=0.0671 # the estimate of delta, proportion of risk genes 
+#post_prob=BF_proband_AllGene_sorted$BF_filtered*delta_estimate/(BF_proband_AllGene_sorted$BF_filtered*delta_estimate+1-delta_estimate) # calculate post probability by definition
+#data_for_plot=data.frame(Gene=BF_proband_AllGene_sorted$Gene, BF=BF_proband_AllGene_sorted$BF, BF_filtered=BF_proband_AllGene_sorted$BF_filtered, post_prob=post_prob)
+##### extrat chr and position for each gene 
+#chr=numeric(); pos=numeric()
+#for (i in 1:nrow(data_for_plot))
+#for (i in 1:2)  
+#{
+#  cat(i, "is running", "\n")
+#  variant=ASC_new_sample %>% filter(Gene==data_for_plot$Gene[i]) %>% select(Variant)%>% pull() # find all variants for a gene 
+#  colon_pos=unlist(gregexpr(":", variant[1])) # location positions of ":"
+#  chr[i]=substr(variant[1], 1,colon_pos[1]-1)
+#  pos[i]=substr(variant[1], colon_pos[1]+1, colon_pos[2]-1)
+#}
+#data_manhattan_plot=data_for_plot%>%mutate(chr=as.numeric(chr), pos=as.numeric(pos))
+#write.csv(data_manhattan_plot, file="../output/KyleData/data_manhattan_plot_0105_2023.csv")
+data_manhattan_plot=read.csv("../output/KyleData/data_manhattan_plot_0105_2023.csv", header=T)
 #install.packages("remotes")
 #remotes::install_github("kevinlkx/mapgen")  # download kevin's package 
 #library(mapgen)
@@ -2106,9 +2120,29 @@ gene_manhattan_plot <- function(gene.pip.res,
     ggtitle(title) +
     theme() +
     xlab("Chromosome") +
-    ylab("Gene PIP")
+    #ylab("Gene PIP")
+    ylab("Posterior probability")
 
   return(p)
 
 }
+
+
+data_manhattan_plot=data_manhattan_plot[complete.cases(data_manhattan_plot), ] # remove rows with NA
+
+#gene_manhattan_plot(data_manhattan_plot, chr=data_manhattan_plot$chr, pos=data_manhattan_plot$pos, gene_name=data_manhattan_plot$Gene, gene_pip = data_manhattan_plot$post_prob)
+gene_manhattan_plot(
+  data_manhattan_plot,
+  chr = "chr",
+  pos = "pos",
+  gene_name = "Gene",
+  gene_pip = "post_prob", 
+  sig.pip = 0.5,
+  highlight = TRUE,
+  ylim = 0.8,
+  point.size = 2,
+  label.size = 4,
+  font.size = 10,
+  max.overlaps = 10,
+  title = "Manhattan plot of posterior probability")
 ```
