@@ -1978,8 +1978,9 @@ ASC_gene=Fu_gene_list %>% filter(ASD185=="TRUE") %>% select(gene_gencodeV33) %>%
 ASC_gene_status=BF_proband_AllGene_sorted$Gene[1:top_gene_number] %in% ASC_gene 
 #ASC_gene_status[ASC_gene_status=="FALSE"]="X"; ASC_gene_status[ASC_gene_status=="TRUE"]="V"
 Function=c("zinc ion binding", "regulate synaptic function", "putative chromatin structure regulator", "-", "zinc ion binding", "metal ion binding", "protein binding", "protein binding", "metal ion binding; neuroligin family protein binding", "protein binding" )# these information from Genecard 
+Supporting_Variants=c("MPC<1, missense (28.53)", "Medium PLI, LoF (6.47); MPC>=2 missense (2.64)", "High PLI LoF (2.5); MPC>=2 missense (3.45); 1<=MPC<2 missense (1.72)", "High PLI LoF (6.73); 1<=MPC<2 missense (2.09)", "Medium PLI LoF (1.59); 1<=MPC<2 missense (6.84)", "MPC<1 missense (13.27)", "1<=MPC<2 missense (13.46)", "MPC>=2 missense (4.25); 1<=MPC<2 missense (2.95)", "MPC>=2 missense (2.6); 1<=MPC<=2 missense (11.13)", "High PLI LoF (2.5); MPC>=2 missense (4.52)")
 
-top_gene_summary=data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:top_gene_number], BF=BF_proband_AllGene_sorted$BF_filtered[1:top_gene_number], posterior=round(post_prob[1:top_gene_number],4),Evidence=Evidence, ASC_gene=ASC_gene_status, Function=Function)
+top_gene_summary=data.frame(Gene=BF_proband_AllGene_sorted$Gene[1:top_gene_number], BF=BF_proband_AllGene_sorted$BF_filtered[1:top_gene_number], Supporting_Variants=Supporting_Variants, posterior=round(post_prob[1:top_gene_number],4),Evidence=Evidence, ASC_gene=ASC_gene_status, Function=Function)
 top_gene_summary%>% datatable(extensions = 'Buttons',
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
@@ -1991,6 +1992,8 @@ top_gene_summary%>% datatable(extensions = 'Buttons',
 * BF: this is filtered BF removing variant groups with negative burden and BF>1.1, for those top 10 genes, their filter BF is their actual BF without filtering 
 
 * ASC_gene: 185 ASC genes with FDR<0.05, published in [NG 2022](https://www.nature.com/articles/s41588-022-01104-0#MOESM3)
+
+* Supporting_Variants: variant groups with BF>1.5 are shown. 
 
 
 ### gene Manhattan plot
@@ -2137,7 +2140,7 @@ gene_manhattan_plot(
   pos = "pos",
   gene_name = "Gene",
   gene_pip = "post_prob", 
-  sig.pip = 0.5,
+  sig.pip = 0.442,  # top 10 genes sort(data_manhattan_plot$post_prob)[17830:17840]
   highlight = TRUE,
   ylim = 0.8,
   point.size = 2,
@@ -2145,4 +2148,13 @@ gene_manhattan_plot(
   font.size = 10,
   max.overlaps = 10,
   title = "Manhattan plot of posterior probability")
+```
+
+
+
+### gene examples 
+
+```{r, echo=F, message=F, warning=F}
+gene_PTEN=read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_gene_PTEN_0103_2023.csv", header=T)
+gene_PTEN_for_mutplot=right_join(ASC_new_sample, gene_PTEN) %>% select(Variant, Gene, Consequence)
 ```

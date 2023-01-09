@@ -487,7 +487,7 @@ choose top 20 genes.</p></li>
 <div id="top-genes-with-evidence" class="section level3">
 <h3>Top genes with evidence</h3>
 <div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2514ce28ae593bde0f73" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-2514ce28ae593bde0f73">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"data":[["1","2","3","4","5","6","7","8","9","10"],["ENPP7","PTEN","SUPT5H","MICAL3","SKI","DPH1","TOE1","MSTO1","NRXN2","ACACA"],[28.5312,14.9069,14.4258,13.8889,13.3934,13.2728,13.1836,12.5556,11.1218,11.043],[0.6724,0.5174,0.5092,0.4997,0.4907,0.4884,0.4867,0.4745,0.4444,0.4427],["-","High; FMRP; AutismKB; SCZ","constraint gene; RVIS","Haploinsuff","ID gene; FMRP; SCZ","-","-","-","FMRP; AutismKB; constraint gene; RVIS; SCZ","constraint gene; RVIS; Haploinsuff"],[false,true,false,false,true,false,false,false,false,false],["zinc ion binding","regulate synaptic function","putative chromatin structure regulator","-","zinc ion binding","metal ion binding","protein binding","protein binding","metal ion binding; neuroligin family protein binding","protein binding"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Gene<\/th>\n      <th>BF<\/th>\n      <th>posterior<\/th>\n      <th>Evidence<\/th>\n      <th>ASC_gene<\/th>\n      <th>Function<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-2514ce28ae593bde0f73">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"data":[["1","2","3","4","5","6","7","8","9","10"],["ENPP7","PTEN","SUPT5H","MICAL3","SKI","DPH1","TOE1","MSTO1","NRXN2","ACACA"],[28.5312,14.9069,14.4258,13.8889,13.3934,13.2728,13.1836,12.5556,11.1218,11.043],["MPC&lt;1, missense (28.53)","Medium PLI, LoF (6.47); MPC&gt;=2 missense (2.64)","High PLI LoF (2.5); MPC&gt;=2 missense (3.45); 1&lt;=MPC&lt;2 missense (1.72)","High PLI LoF (6.73); 1&lt;=MPC&lt;2 missense (2.09)","Medium PLI LoF (1.59); 1&lt;=MPC&lt;2 missense (6.84)","MPC&lt;1 missense (13.27)","1&lt;=MPC&lt;2 missense (13.46)","MPC&gt;=2 missense (4.25); 1&lt;=MPC&lt;2 missense (2.95)","MPC&gt;=2 missense (2.6); 1&lt;=MPC&lt;=2 missense (11.13)","High PLI LoF (2.5); MPC&gt;=2 missense (4.52)"],[0.6724,0.5174,0.5092,0.4997,0.4907,0.4884,0.4867,0.4745,0.4444,0.4427],["-","High; FMRP; AutismKB; SCZ","constraint gene; RVIS","Haploinsuff","ID gene; FMRP; SCZ","-","-","-","FMRP; AutismKB; constraint gene; RVIS; SCZ","constraint gene; RVIS; Haploinsuff"],[false,true,false,false,true,false,false,false,false,false],["zinc ion binding","regulate synaptic function","putative chromatin structure regulator","-","zinc ion binding","metal ion binding","protein binding","protein binding","metal ion binding; neuroligin family protein binding","protein binding"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Gene<\/th>\n      <th>BF<\/th>\n      <th>Supporting_Variants<\/th>\n      <th>posterior<\/th>\n      <th>Evidence<\/th>\n      <th>ASC_gene<\/th>\n      <th>Function<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[2,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <ul>
 <li><p>BF: this is filtered BF removing variant groups with negative
 burden and BF&gt;1.1, for those top 10 genes, their filter BF is their
@@ -495,11 +495,16 @@ actual BF without filtering</p></li>
 <li><p>ASC_gene: 185 ASC genes with FDR&lt;0.05, published in <a
 href="https://www.nature.com/articles/s41588-022-01104-0#MOESM3">NG
 2022</a></p></li>
+<li><p>Supporting_Variants: variant groups with BF&gt;1.5 are
+shown.</p></li>
 </ul>
 </div>
 <div id="gene-manhattan-plot" class="section level3">
 <h3>gene Manhattan plot</h3>
 <p><img src="ASC_new_sample_6variant_groups_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+</div>
+<div id="gene-examples" class="section level3">
+<h3>gene examples</h3>
 </div>
 </div>
 
