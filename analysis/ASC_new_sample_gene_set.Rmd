@@ -324,8 +324,8 @@ ggplot(summary, aes(x=var.group, y=pvalue, fill=method)) +
 para_est=matrix(nrow=180, ncol=7)
 rownames(para_est)=paste(rep(paste(rep(Gene_Set,each=6), c("PLI>=0.995", "pLI within (0.5,0.995)", "pLI<0.5", "MPC>=2", "MPC within (1,2)", "MPC<1"), sep="_"), each=3), c("0.001<AF<0.01", "0.0001<AF<0.001", "AF<0.0001"), sep="_")
 colnames(para_est)=c("No_case", "No_contr", "OR", "pval", "eta_est", "eta_pval", "cate_index")
-for (i in 6:6) # for each gene set
-  for (j in 6:6) # for each variant group
+for (i in 1:10) # for each gene set
+  for (j in 1:6) # for each variant group
 { 
 #i=1  
  cat(i, "is running", "\n")
@@ -374,15 +374,17 @@ for (i in 6:6) # for each gene set
  para_est[k+3,7]=j  # group index need to be recorded regardless of having variants or not
 } # end of  for (j in 1:6) # for each variant group
 #as_tibble(para_est)
-#write.csv(para_est, file="../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0829_2022.csv")
+#write.csv(para_est, file="../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0829_2022.csv") # This one may not exclude introns 
 
-para_est[complete.cases(para_est), ]
+#write.csv(para_est, file="../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0112_2023.csv")  # this one DOES exclude introns 
+#para_est[complete.cases(para_est), ]
 ```
 
 
 ```{r, echo=F, message=F, warning=F}
 
-para_est=read.csv("../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0829_2022.csv", header=T)
+#para_est=read.csv("../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0829_2022.csv", header=T)  # This one may not exclude introns
+para_est=read.csv("../output/KyleData/MIRAGE_VS.for.180.variant.group.proband_0112_2023.csv", header=T)  # This one DOES exclude introns
 ############### plot the results 
 #para_est_withoutNA=as_tibble(para_est) %>% drop_na()
 para_est_withoutNA=para_est[complete.cases(para_est), ]
@@ -460,6 +462,7 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")
 ```
 
 * exclude syn variants `isSyn=="FALSE"`
+* exlude introns `!str_detect(Consequence, 'intron_variant')`
 
 * 6 variant groups X 3 AF categories (0.001<AF<0.01, 0.0001<AF<0.001, AF<0.0001) X 10 gene sets=180 variant groups 
 

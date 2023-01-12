@@ -557,6 +557,8 @@ groups when running mirage_vs. </p>
 <p><img src="ASC_new_sample_gene_set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <ul>
 <li><p>exclude syn variants <code>isSyn=="FALSE"</code></p></li>
+<li><p>exlude introns
+<code>!str_detect(Consequence, 'intron_variant')</code></p></li>
 <li><p>6 variant groups X 3 AF categories (0.001&lt;AF&lt;0.01,
 0.0001&lt;AF&lt;0.001, AF&lt;0.0001) X 10 gene sets=180 variant
 groups</p></li>
