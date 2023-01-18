@@ -2156,5 +2156,25 @@ gene_manhattan_plot(
 
 ```{r, echo=F, message=F, warning=F}
 gene_PTEN=read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_gene_PTEN_0103_2023.csv", header=T)
+PTEN_protein_change=read.table("../output/KyleData/PTEN_protein_change.txt", header=T)
+colnames(PTEN_protein_change)[1]="Variant"
 gene_PTEN_for_mutplot=right_join(ASC_new_sample, gene_PTEN) %>% select(Variant, Gene, Consequence)
+gene_PTEN_for_mutplot_data=right_join(PTEN_protein_change, gene_PTEN_for_mutplot) %>% select(Variant, Gene, Consequence, protein_change)
+row_picked=c(1,3,5,7,9,11,13,16,19,22,25,28,31,34,37,40,43,46,49,52,53) # manually pick one transcript for each gene 
+gene_PTEN_for_mutplot_data=gene_PTEN_for_mutplot_data[c(row_picked),]
+gene_PTEN_for_mutplot_data=gene_PTEN_for_mutplot_data[complete.cases(gene_PTEN_for_mutplot_data), ] # remove rows with NA 
+
+#write.table(data.frame(Hugo_Symbol=rep("PTEN", nrow(gene_PTEN_for_mutplot_data)), Sample_ID=seq(1,nrow(gene_PTEN_for_mutplot_data)), Protein_Change=gene_PTEN_for_mutplot_data$protein_change, Mutation_Type=gene_PTEN_for_mutplot_data$Consequence), file="../output/KyleData/gene_PTEN_for_mutplot_data_0118_2023.txt",row.names=F,  quote=F, sep="\t") # all arguments are needed, especially Sep="\t", otherwise it won't work for Mutplot!!!!!!!!
+#write.csv(gene_PTEN_for_mutplot_data, file="../output/KyleData/gene_PTEN_for_mutplot_data.csv")
+
+figure_data=read.csv("../output/KyleData/new.gene_PTEN_for_mutplot_data_0118_2023.txt.csv", header=T) # read into data generating the figure by Mutplot 
+colnames(gene_PTEN_for_mutplot_data)[4]="Protein_Change"
+gene_PTEN_for_Illustrator=right_join(right_join(figure_data, gene_PTEN_for_mutplot_data), gene_PTEN, by="Variant") %>% select(Variant, Hugo_Symbol, Protein_Change, Mutation_Type, var.aanum, No.case, No.contr, group.index, var.BF)
+gene_PTEN_for_Illustrator %>% datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
 ```
+
+
