@@ -1923,6 +1923,35 @@ topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 ### All missense variants 
 
 
+
+```{r, echo=F, message=F, warning=F}
+ACAT_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_0208_2023.csv"))
+theo <- (ppoints(length(ACAT_pvalues_001$Missense_ACAT_pvalue)))
+  #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="(A) Burden", frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col='red', lwd=2)
+
+#################  use ggplot draw qq plot 
+sx <- sort(-log(theo, base=10)); sy <- sort(-log(ACAT_pvalues_001$Missense_ACAT_pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+burden=tibble(sx=sx, sy=sy)
+ ggplot(burden) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face="bold"))+  #center the title+
+   ggtitle("missense")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=10))
+ #qqplot_burden_LoF
+```
+
+
+
 ```{r, echo=F, message=F, warning=F}
 
 gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.01) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
@@ -2039,6 +2068,36 @@ topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 
 * combine LoF variants in every gene by ACAT 
 * AF<1%
+
+
+
+
+```{r, echo=F, message=F, warning=F}
+ACAT_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_0208_2023.csv"))
+theo <- (ppoints(length(ACAT_pvalues_001$LoF_ACAT_pvalue)))
+  #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="(A) Burden", frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col='red', lwd=2)
+
+#################  use ggplot draw qq plot 
+sx <- sort(-log(theo, base=10)); sy <- sort(-log(ACAT_pvalues_001$LoF_ACAT_pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+burden=tibble(sx=sx, sy=sy)
+ ggplot(burden) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face="bold"))+  #center the title+
+   ggtitle("LoF")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=10))
+ #qqplot_burden_LoF
+```
+
 
 ```{r, echo=F, message=F, warning=F}
 
