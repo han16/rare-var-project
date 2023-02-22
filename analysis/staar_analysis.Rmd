@@ -1,0 +1,200 @@
+---
+title: "staar analysis"
+output: html_document
+date: "2023-02-20"
+---
+
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+library(DT)
+library(poolr) # use fisher method to combine p values 
+library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+
+#############
+#devtools::install_github("yaowuliu/ACAT")  # install package ACAT once 
+library(ACAT)
+
+devtools::install_github("xihaoli/STAAR")
+```
+
+
+
+```{r, echo=F, message=F, warning=F}
+########## use fixed parameter estimate to calculate BF, this is very useful because it doesn't need to re-run analysis to BF of every gene which takes a long time and large space to store that information 
+intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+
+  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+  BF.var <- marglik1.CC/marglik0.CC
+
+  return(BF.var)
+}
+
+fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
+{
+  #######################
+  beta.k=beta
+  full.info.genevar=list()
+  gene.list=new.data$Gene; unique.gene=unique(gene.list) # find the gene list
+  num.gene=length(unique.gene)
+  BF.gene=numeric()
+  ########################
+  for (i in 1:num.gene)
+  {
+#    cat(i, "th gene of ", "\t", num.gene, "\t", "is running", "\n")
+    var.index.list=which(gene.list==unique.gene[i])
+    indi.gene=new.data[var.index.list,]   # note var.index.list matches new.data
+    bb=1; var.BF=numeric()
+    if (length(var.index.list)>0) # calculate Bayes factor for variant (i,j)
+      for (j in 1:length(var.index.list))
+      {
+        if (new.data$group.index[var.index.list[j]]<=3)   # note here bar.gamma is group specific, attention what bar.gamma goes to which group 
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=6, sig=sigma, N1, N0)
+        if (new.data$group.index[var.index.list[j]]>3)
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=3, sig=sigma, N1, N0)
+        bb=bb*((1-beta.k[new.data$group.index[var.index.list[j]]])+beta.k[new.data$group.index[var.index.list[j]]]*var.BF[j])
+      }
+    full.info.genevar[[i]]=cbind(indi.gene, var.BF)
+    BF.gene[i]=bb
+  }
+  
+  return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
+}
+```
+
+
+
+```{r, echo=F, cache=T, warning=F, message=F}
+### read into new sample 
+path="C:\\Shengtong\\research\\rare-var\\"
+ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way that Kyle read the data
+ASC_new_sample3=ASC_new_sample3 %>% filter(isSyn=="FALSE") # filter syn variants first 
+```
+
+
+```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
+# read into gene set 
+path="C:\\Shengtong\\Research\\rare-var\\"
+GeneDB=src_sqlite(path=paste(path, "gene.list.db", sep=""), create=F)
+#GeneDB=src_sqlite(path="../../gene.list.db", create=F)
+gene_cate1=data.frame(collect(tbl(GeneDB, "SFARI_HighConf")))
+gene_cate2=data.frame(collect(tbl(GeneDB, "SFARI_StrongCand")))
+gene_cate3=data.frame(collect(tbl(GeneDB, "SFARI_cate3_gene")))
+gene_cate4=data.frame(collect(tbl(GeneDB, "SFARI_cate4_gene")))
+gene_cate5=data.frame(collect(tbl(GeneDB, "SFARI_cate5_gene")))
+gene_cate6=data.frame(collect(tbl(GeneDB, "SFARI_cate6_gene")))
+gene_cateS=data.frame(collect(tbl(GeneDB, "SFARI_cateS_gene")))
+TADAGene=data.frame(collect(tbl(GeneDB, "TADAGenelist")))
+Qlessthan5percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.05]
+Qlessthan20percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.2]
+Qlessthan30percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.3]
+Qlessthan40percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.4]
+Qlessthan50percentgene=TADAGene$TadaName[TADAGene$qvalue.combined<0.5]
+Qlargerthan90percentgene=TADAGene$TadaName[TADAGene$qvalue.combined>0.9]
+###### ID gene ######
+ID_Gene=as.character(data.frame(collect(tbl(GeneDB, "Pinto14AJHG_IDgene")))$GeneID)
+#### high confidence gene 
+High_Confidence_Gene=union(union(gene_cate1$GeneID, gene_cate2$GeneID),Qlessthan5percentgene)
+#### moderate confidence gene 
+Moderate_Confidence_Gene=setdiff(union(union(gene_cate3$GeneID, gene_cateS$GeneID), Qlessthan30percentgene),Qlessthan5percentgene)
+#### psd gene 
+purcell.genelist=data.frame(collect(tbl(GeneDB, "Purcell2014_genelist"))) ## PSD gene, SCZdenovo gene 
+PSD_Gene=purcell.genelist$Gene_symbol[purcell.genelist$PSD=="Y"]
+#### FMRP gene 
+FMRP_Gene=purcell.genelist$Gene_symbol[purcell.genelist$FMRP.target=="Y"]
+#### Autism KB gene 
+ASD_KB_Gene=as.character(data.frame(collect(tbl(GeneDB, "AutismKB_gene")))$GeneID)
+#### constraint gene 
+Constraint_Gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
+### RVIS gene 
+RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
+RVIS_Gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene
+#### Haplo insufficient gene 
+Haploinsufficient_Gene=as.character(data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))$GeneID)
+#### SCZ data 
+SCZ_Gene=purcell.genelist$Gene_symbol
+Gene_Set=c("ID gene","High", "Mod", "PSD", "FMRP", "AutismKB", "constraint gene", "RVIS", "Haploinsuff", "SCZ gene")
+Gene_Set_List=list()
+Gene_Set_List[[1]]=ID_Gene
+Gene_Set_List[[2]]=High_Confidence_Gene
+Gene_Set_List[[3]]=Moderate_Confidence_Gene
+Gene_Set_List[[4]]=PSD_Gene
+Gene_Set_List[[5]]=FMRP_Gene
+Gene_Set_List[[6]]=ASD_KB_Gene
+Gene_Set_List[[7]]=Constraint_Gene
+Gene_Set_List[[8]]=RVIS_Gene
+Gene_Set_List[[9]]=Haploinsufficient_Gene
+Gene_Set_List[[10]]=SCZ_Gene
+```
+
+
+```{r, echo=F, warning=F, message=F}
+
+##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
+######### use ASC_new_sample3 rather than ASC_new_sample2
+Transmitted_proband=ASC_new_sample3%>% select(starts_with("t_proband"))%>%  mutate(Transmitted_proband = select(., t_proband_male_dad:t_proband_female_ind) %>% rowSums())%>% select(Transmitted_proband) # extract transmitted variants for proband 
+
+Untransmitted_proband=ASC_new_sample3%>% select(starts_with("u_proband"))%>%  mutate(Untransmitted_proband = select(., u_proband_male_dad:u_proband_female_ind) %>% rowSums())%>% select(Untransmitted_proband) # extract untransmitted variants for proband 
+
+Transmitted_sibling=ASC_new_sample3%>% select(starts_with("t_sibling"))%>%  mutate(Transmitted_sibling = select(., t_sibling_male_dad:t_sibling_female_ind) %>% rowSums())%>% select(Transmitted_sibling) # extract transmitted variants for sibling 
+
+Untransmitted_sibling=ASC_new_sample3%>% select(starts_with("u_sibling"))%>%  mutate(Untransmitted_sibling = select(., u_sibling_male_dad:u_sibling_female_ind) %>% rowSums())%>% select(Untransmitted_sibling) # extract untransmitted variants for sibling
+
+##### add new columns of total transmitted and non-transmitted variants 
+#ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & VQSLOD<9) # exclude indel & VQSLOD filter 
+
+################################################
+
+
+ASC_new_sample=ASC_new_sample3%>%mutate(Transmitted_proband=Transmitted_proband$Transmitted_proband, Untransmitted_proband=Untransmitted_proband$Untransmitted_proband, Transmitted_sibling=Transmitted_sibling$Transmitted_sibling, Untransmitted_sibling=Untransmitted_sibling$Untransmitted_sibling) %>% filter(isIndel=="FALSE" & QD >= 10 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8)%>%filter(!str_detect(Consequence, 'intron_variant'))# exclude indel & apply other filters for SNP's 
+
+##################
+#AF_cutoff=0.001
+#sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff) %>% select(Transmitted_proband) %>% pull)   
+#sum(ASC_new_sample %>% filter(pLI>=0.995 & isPTV==T & Gnomad_non_neuro_AF<AF_cutoff) %>% select(Untransmitted_proband) %>% pull)   
+########### 1164 vs 1413 not 695 vs 557 in cell paper 
+
+
+# add one column of variant group index 
+ASC_new_sample_GI=ASC_new_sample %>% add_column(Group_Index=NA)
+
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$pLI>=0.995 & ASC_new_sample_GI$isPTV==T)]=1
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$pLI>=0.5 & ASC_new_sample_GI$pLI<0.995 & ASC_new_sample_GI$isPTV==T)]=2
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$pLI<0.5 & ASC_new_sample_GI$isPTV==T)]=3
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC>=2)]=4
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC>=1 & ASC_new_sample_GI$MPC<2)]=5
+ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC<1)]=6
+
+num.family=7291
+## test 
+```
+
+
+## staar example 
+
+```{r, echo=F, message=F, warning=F}
+pvalues <- c(2e-02, 4e-04, 0.2, 0.1, 0.8)
+CCT(pvals = pvalues)
+```

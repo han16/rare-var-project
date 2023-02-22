@@ -62,6 +62,8 @@ output:
 
 * [liftover samples](liftover_files.html)
 
+* [STARR analysis](starr_analysis.html)
+
 
 
 [project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf
