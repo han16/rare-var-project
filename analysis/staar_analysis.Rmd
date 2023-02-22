@@ -29,7 +29,8 @@ library(mirage)
 #devtools::install_github("yaowuliu/ACAT")  # install package ACAT once 
 library(ACAT)
 
-devtools::install_github("xihaoli/STAAR")
+#devtools::install_github("xihaoli/STAAR")
+library(STAAR)
 ```
 
 
@@ -91,6 +92,9 @@ fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data h
 path="C:\\Shengtong\\research\\rare-var\\"
 ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way that Kyle read the data
 ASC_new_sample3=ASC_new_sample3 %>% filter(isSyn=="FALSE") # filter syn variants first 
+
+ASC_new_sample3_annovar_annotated=as_tibble(read.table("C:\\Shengtong\\research\\rare-var\\ASC\\annovar_annotation_2023_0222.txt", header=T)) # annovar annotations under hg38 assembly and whole exome annotation 
+
 ```
 
 
@@ -189,6 +193,12 @@ ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC<1)]=6
 
 num.family=7291
 ## test 
+```
+
+```{r, echo=F, message=F, warning=F}
+# incorporate annovar annotations to the data 
+colnames(ASC_new_sample3_annovar_annotated)[1]=colnames(ASC_new_sample_GI)[1]
+ASC_new_sample_GI_annovar_annotated=ASC_new_sample_GI %>% left_join(ASC_new_sample3_annovar_annotated, by="Variant") 
 ```
 
 
