@@ -14,7 +14,7 @@
 
 <title>Simulation study</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -66,6 +66,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -86,6 +87,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -143,11 +147,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -176,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -185,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -311,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -355,95 +356,345 @@ div.tocify {
 <!-- Add your analysis here -->
 <div id="data-generation" class="section level2">
 <h2>Data Generation</h2>
-<p>Basically, there are two sequential levels when generating the data. First under null hypothesis, generate total number of variants in cases and controls, i.e., AF <span class="math inline">\(q_{ij}^{(0)} \sim Beta(\alpha_0, \beta_0)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois (N1+N0, q_{ij}^{(0)})\)</span>, filter out variants will null mutations, then re-distribute all mutations in effective variants into cases and controls depending on the risk status via conditional binomial distribution.</p>
+<p>Basically, there are two sequential levels when generating the data.
+First under null hypothesis, generate total number of variants in cases
+and controls, i.e., AF <span class="math inline">\(q_{ij}^{(0)} \sim
+Beta(\alpha_0, \beta_0)\)</span>, <span
+class="math inline">\(X_{1ij}+X_{0ij} \sim Pois (N1+N0,
+q_{ij}^{(0)})\)</span>, filter out variants will null mutations, then
+re-distribute all mutations in effective variants into cases and
+controls depending on the risk status via conditional binomial
+distribution.</p>
 <ul>
-<li>gene level: <span class="math inline">\(U_i\)</span> denote the risk status of gene <span class="math inline">\(i\)</span>, <span class="math inline">\(U_i \sim Ber(1, \delta)\)</span>. All genes share the same risk probability <span class="math inline">\(\delta\)</span>.</li>
+<li>gene level: <span class="math inline">\(U_i\)</span> denote the risk
+status of gene <span class="math inline">\(i\)</span>, <span
+class="math inline">\(U_i \sim Ber(1, \delta)\)</span>. All genes share
+the same risk probability <span
+class="math inline">\(\delta\)</span>.</li>
 <li>variant level:
 <ul>
-<li><span class="math inline">\(U_i=0\)</span>, all variants for gene <span class="math inline">\(i\)</span> are non-causal, which is under null hypothesis. Given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span><br />
+<li><span class="math inline">\(U_i=0\)</span>, all variants for gene
+<span class="math inline">\(i\)</span> are non-causal, which is under
+null hypothesis. Given the generated <span
+class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and
+controls by conditional binomial distribution, with <span
+class="math inline">\(p=\frac{N1}{N1+N0}\)</span><br />
 </li>
-<li><span class="math inline">\(U_i=1\)</span>, gene <span class="math inline">\(i\)</span> is a causal gene, the variant <span class="math inline">\((i,j)\)</span> whose risk status is denoted by <span class="math inline">\(Z_{ij}\)</span> is generated as <span class="math inline">\(Z_{ij} \sim Ber(1, \pi(\eta))\)</span>, <span class="math inline">\(\pi(\eta)\)</span> is a function linking annotations to the probability of being causal. * <span class="math inline">\(Z_{ij}=0\)</span> (which is under null), given the generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and controls by conditional binomial distribution, with <span class="math inline">\(p=\frac{N1}{N1+N0}\)</span> * <span class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF <span class="math inline">\(q_{ij}^{(1)} \sim Beta(\alpha, \beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, <span class="math inline">\(X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})\)</span>, split into case and control by conditional binomial distribution with <span class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
+<li><span class="math inline">\(U_i=1\)</span>, gene <span
+class="math inline">\(i\)</span> is a causal gene, the variant <span
+class="math inline">\((i,j)\)</span> whose risk status is denoted by
+<span class="math inline">\(Z_{ij}\)</span> is generated as <span
+class="math inline">\(Z_{ij} \sim Ber(1, \pi(\eta))\)</span>, <span
+class="math inline">\(\pi(\eta)\)</span> is a function linking
+annotations to the probability of being causal. * <span
+class="math inline">\(Z_{ij}=0\)</span> (which is under null), given the
+generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split
+into case and controls by conditional binomial distribution, with <span
+class="math inline">\(p=\frac{N1}{N1+N0}\)</span> * <span
+class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF
+<span class="math inline">\(q_{ij}^{(1)} \sim Beta(\alpha,
+\beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim
+Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, <span
+class="math inline">\(X_{1ij}+X_{0ij} \sim Pois(N1+N0,
+q_{ij}^{(1)})\)</span>, split into case and control by conditional
+binomial distribution with <span
+class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
 </ul></li>
 </ul>
-<p>Filtering step: filter variants that have null variant counts in both cases and controls.</p>
+<p>Filtering step: filter variants that have null variant counts in both
+cases and controls.</p>
 <p>Notations:</p>
 <ul>
 <li>N1, N0 are sample sizes in cases and controls</li>
-<li><span class="math inline">\(q_{ij}\)</span> is allele frequency for variant <span class="math inline">\((i,j)\)</span></li>
+<li><span class="math inline">\(q_{ij}\)</span> is allele frequency for
+variant <span class="math inline">\((i,j)\)</span></li>
 <li><span class="math inline">\(\bar{\gamma}\)</span> relative risk</li>
 </ul>
-<p><span class="math inline">\(\pi(\eta)\)</span> is the link function between annotations and prior probability and the interest is in estimating <span class="math inline">\(\eta\)</span>.</p>
+<p><span class="math inline">\(\pi(\eta)\)</span> is the link function
+between annotations and prior probability and the interest is in
+estimating <span class="math inline">\(\eta\)</span>.</p>
 </div>
 <div id="disjoint-group-priors" class="section level2">
 <h2>Disjoint group priors</h2>
-<div id="comparison-between-mirage-vs-and-other-methods" class="section level3">
+<div id="comparison-between-mirage-vs-and-other-methods"
+class="section level3">
 <h3>Comparison between MIRAGE-VS and other methods</h3>
-<p>We simulated 100 variants in one category. <span class="math inline">\(N1=N0=1000, 3000, 5000\)</span>, <span class="math inline">\(\eta=0.1, 0.2, 0.3, 0.4\)</span>, <span class="math inline">\(\bar{\gamma}=5\)</span>, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. We independetly run Monte Carlo 100 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO. Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants <span class="math inline">\(\hat{\eta}\)</span>, and performs the likelihood ratio test to get p value.</p>
+<p>We simulated 100 variants in one category. <span
+class="math inline">\(N1=N0=1000, 3000, 5000\)</span>, <span
+class="math inline">\(\eta=0.1, 0.2, 0.3, 0.4\)</span>, <span
+class="math inline">\(\bar{\gamma}=5\)</span>, <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. We independetly
+run Monte Carlo 100 times and calculate the true positive rate for
+MIRAGE-VS, burden test and SKATO. Note here there is no gene
+information. MIRAGE-VS basically estimates the proportion of risk
+variants <span class="math inline">\(\hat{\eta}\)</span>, and performs
+the likelihood ratio test to get p value.</p>
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <div id="sensitivity-analysis-of-bargamma" class="section level4">
-<h4>Sensitivity analysis of <span class="math inline">\(\bar{\gamma}\)</span></h4>
-<p>We simulated 100 variants in one category. <span class="math inline">\(\eta= 0.4\)</span>, true <span class="math inline">\(\bar{\gamma}=5\)</span>, and we vary <span class="math inline">\(\bar{\gamma}=3,4,5,6\)</span> and <span class="math inline">\(N1=N0=1000, 3000, 5000\)</span>,, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. We independetly run Monte Carlo 1000 times and calculate the true positive rate for MIRAGE-VS, burden test and SKATO. Note here there is no gene information. MIRAGE-VS basically estimates the proportion of risk variants <span class="math inline">\(\hat{\eta}\)</span>, and performs the likelihood ratio test to get p value.</p>
+<h4>Sensitivity analysis of <span
+class="math inline">\(\bar{\gamma}\)</span></h4>
+<p>We simulated 100 variants in one category. <span
+class="math inline">\(\eta= 0.4\)</span>, true <span
+class="math inline">\(\bar{\gamma}=5\)</span>, and we vary <span
+class="math inline">\(\bar{\gamma}=3,4,5,6\)</span> and <span
+class="math inline">\(N1=N0=1000, 3000, 5000\)</span>,, <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. We independetly
+run Monte Carlo 1000 times and calculate the true positive rate for
+MIRAGE-VS, burden test and SKATO. Note here there is no gene
+information. MIRAGE-VS basically estimates the proportion of risk
+variants <span class="math inline">\(\hat{\eta}\)</span>, and performs
+the likelihood ratio test to get p value.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="type-one-error" class="section level4">
 <h4>Type one error</h4>
-<p>To investigate the type one error, we simulated 1000 independent data sets, with varying sample size <span class="math inline">\(N1=N0=1000, 3000, 5000\)</span>, 100 variants in one group; no risk variants, i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1\)</span>. The basic idea is to see the proportion of significant test under null.</p>
+<p>To investigate the type one error, we simulated 1000 independent data
+sets, with varying sample size <span class="math inline">\(N1=N0=1000,
+3000, 5000\)</span>, 100 variants in one group; no risk variants, i.e.,
+<span class="math inline">\(\eta=0\)</span> and other parameters are
+pretty the same as before <span class="math inline">\(\alpha_0=0.1,
+\beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=5,\sigma= 1\)</span>.
+The basic idea is to see the proportion of significant test under
+null.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>Burden test: use fisher exact test MIRAGE: first estimate parameter <span class="math inline">\(\eta\)</span>, then do likelihood ratio test</p>
+<p>Burden test: use fisher exact test MIRAGE: first estimate parameter
+<span class="math inline">\(\eta\)</span>, then do likelihood ratio
+test</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>This is to test how sensitive is the effect of mis-specified <span class="math inline">\(\bar{\gamma}\)</span> on type one error.</p>
-<p>The same parameter settings. The only diffrence is that <span class="math inline">\(\bar{\gamma}=5\)</span> when generating the data and different mis-specified <span class="math inline">\(\bar{\gamma}\)</span> (on x axis) is used to make inference. N1=N0=3000.</p>
+<p>This is to test how sensitive is the effect of mis-specified <span
+class="math inline">\(\bar{\gamma}\)</span> on type one error.</p>
+<p>The same parameter settings. The only diffrence is that <span
+class="math inline">\(\bar{\gamma}=5\)</span> when generating the data
+and different mis-specified <span
+class="math inline">\(\bar{\gamma}\)</span> (on x axis) is used to make
+inference. N1=N0=3000.</p>
 </div>
 </div>
-<div id="all-genes-are-risk-genes-fix-delta1-only-estimate-eta" class="section level3">
-<h3>All genes are risk genes, fix <span class="math inline">\(\delta=1\)</span>, only estimate <span class="math inline">\(\eta\)</span></h3>
+<div id="all-genes-are-risk-genes-fix-delta1-only-estimate-eta"
+class="section level3">
+<h3>All genes are risk genes, fix <span
+class="math inline">\(\delta=1\)</span>, only estimate <span
+class="math inline">\(\eta\)</span></h3>
 <ul>
-<li>parameter estimate: (I) relative risk effect, <span class="math inline">\(\bar{\gamma}\)</span> on estimating <span class="math inline">\(\eta\)</span></li>
+<li>parameter estimate: (I) relative risk effect, <span
+class="math inline">\(\bar{\gamma}\)</span> on estimating <span
+class="math inline">\(\eta\)</span></li>
 </ul>
-<p>Since variant groups are assumed to be independent, it suffices to demonstrate the parameter estimate only for one risk variant group.</p>
-<p>Parameter settings: N1=N0=3000, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta_i=0.1\)</span> risk variants, but the actural <span class="math inline">\(\eta_i\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\bar{\gamma}=2,3,4,5\)</span> and with each <span class="math inline">\(\bar{\gamma}\)</span>, perform 100 independent runs.</p>
+<p>Since variant groups are assumed to be independent, it suffices to
+demonstrate the parameter estimate only for one risk variant group.</p>
+<p>Parameter settings: N1=N0=3000, <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each
+having 1000 variants with <span
+class="math inline">\(\eta_i=0.1\)</span> risk variants, but the actural
+<span class="math inline">\(\eta_i\)</span> is varying for each
+generated data set because of the filtering. <span
+class="math inline">\(\bar{\gamma}=2,3,4,5\)</span> and with each <span
+class="math inline">\(\bar{\gamma}\)</span>, perform 100 independent
+runs.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <ul>
-<li>Parameter estimate (II): sample size effect on estimating <span class="math inline">\(\eta\)</span></li>
+<li>Parameter estimate (II): sample size effect on estimating <span
+class="math inline">\(\eta\)</span></li>
 </ul>
-<p>Parameter settings: N1=N0=1000, 3000, 5000, <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta_i=0.1\)</span> risk variants, but the actural <span class="math inline">\(\eta_i\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\bar{\gamma}=5\)</span>. For each fixed sample size, perform 100 independent runs.</p>
+<p>Parameter settings: N1=N0=1000, 3000, 5000, <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each
+having 1000 variants with <span
+class="math inline">\(\eta_i=0.1\)</span> risk variants, but the actural
+<span class="math inline">\(\eta_i\)</span> is varying for each
+generated data set because of the filtering. <span
+class="math inline">\(\bar{\gamma}=5\)</span>. For each fixed sample
+size, perform 100 independent runs.</p>
 <ul>
 <li>power comparison with other methods</li>
 </ul>
-<p>For every simulated risk gene, three different methods are used to test the power of detecting risk genes. Significance level of 0.05 is used as cutoff. Burnden test looks at the variants in cases and controls and performs the enrichment analysis for every gene. SKATO tests the significance of effect size and generate p value without covariates. MIRAGE-LRT first estimates the parameter <span class="math inline">\(\eta\)</span>, then does a likelihood ratio test and returns p value by <span class="math inline">\(\chi^2_k\)</span> (<span class="math inline">\(k\)</span> is the number of unknown parameters <span class="math inline">\(\eta\)</span>).</p>
-<p><strong>Case 1: every risk gene only has one risk variant group with the proportion of <span class="math inline">\(\eta\)</span> and fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
-<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta=0.1, 0.2, 0.3\)</span> risk variants, but the actural <span class="math inline">\(\eta\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\bar{\gamma}=5\)</span>. For every <span class="math inline">\(\eta\)</span>, perform 100 independent runs.</p>
+<p>For every simulated risk gene, three different methods are used to
+test the power of detecting risk genes. Significance level of 0.05 is
+used as cutoff. Burnden test looks at the variants in cases and controls
+and performs the enrichment analysis for every gene. SKATO tests the
+significance of effect size and generate p value without covariates.
+MIRAGE-LRT first estimates the parameter <span
+class="math inline">\(\eta\)</span>, then does a likelihood ratio test
+and returns p value by <span class="math inline">\(\chi^2_k\)</span>
+(<span class="math inline">\(k\)</span> is the number of unknown
+parameters <span class="math inline">\(\eta\)</span>).</p>
+<p><strong>Case 1: every risk gene only has one risk variant group with
+the proportion of <span class="math inline">\(\eta\)</span> and fixed
+<span class="math inline">\(\bar{\gamma}\)</span></strong></p>
+<p>Parameter settings: N1=N0=3000 <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each
+having 1000 variants with <span class="math inline">\(\eta=0.1, 0.2,
+0.3\)</span> risk variants, but the actural <span
+class="math inline">\(\eta\)</span> is varying for each generated data
+set because of the filtering. <span
+class="math inline">\(\bar{\gamma}=5\)</span>. For every <span
+class="math inline">\(\eta\)</span>, perform 100 independent runs.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p><strong>Case 2: every risk gene has multiple risk variant groups with varying proportion of <span class="math inline">\(\eta\)</span> and fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
-<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variant, the second has 40% and the rest 30% are in the third group. In each group of every gene, the proportion of risk genes <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 respectively. <span class="math inline">\(\bar{\gamma}=2, 3,4, 5\)</span>. For every <span class="math inline">\(\bar{\gamma}\)</span>, perform 100 independent runs.</p>
+<p><strong>Case 2: every risk gene has multiple risk variant groups with
+varying proportion of <span class="math inline">\(\eta\)</span> and
+fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
+<p>Parameter settings: N1=N0=3000 <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each
+having 1000 variants in three different groups, the first group has 30%
+variant, the second has 40% and the rest 30% are in the third group. In
+each group of every gene, the proportion of risk genes <span
+class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1
+respectively. <span class="math inline">\(\bar{\gamma}=2, 3,4,
+5\)</span>. For every <span class="math inline">\(\bar{\gamma}\)</span>,
+perform 100 independent runs.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p><strong>Case 3: every risk gene has multiple risk variant groups with varying proportion of <span class="math inline">\(\eta\)</span> and varying <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
-<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and every risk category has its own <span class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have. Perform 100 independent runs.</p>
+<p><strong>Case 3: every risk gene has multiple risk variant groups with
+varying proportion of <span class="math inline">\(\eta\)</span> and
+varying <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
+<p>Parameter settings: N1=N0=3000 <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each
+having 1000 variants in three different groups, the first group has 30%
+variants, the second has 40% and the rest 30% are in the third group. In
+each variant group of every gene, the proportion of risk variants <span
+class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and
+every risk category has its own <span
+class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The
+basic idea is that the rarer the varinat is, the more effect size it
+tends to have. Perform 100 independent runs.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
-<div id="mixture-of-risk-genes-and-non-risk-genes-0delta1-estimate-both-eta-delta" class="section level3">
-<h3>Mixture of risk genes and non-risk genes <span class="math inline">\(0&lt;\delta&lt;1\)</span>, estimate both <span class="math inline">\(\eta, \delta\)</span></h3>
-<p>Since the simulated data is a mixture of risk genes and non-risk genes, drawing ROC curve is one way to test the power of discriminating risk genes of different methods. For MIRAGE, Bayes factor of every gene was calculated and used to plot ROC, called MIRAGE-BF.</p>
+<div
+id="mixture-of-risk-genes-and-non-risk-genes-0delta1-estimate-both-eta-delta"
+class="section level3">
+<h3>Mixture of risk genes and non-risk genes <span
+class="math inline">\(0&lt;\delta&lt;1\)</span>, estimate both <span
+class="math inline">\(\eta, \delta\)</span></h3>
+<p>Since the simulated data is a mixture of risk genes and non-risk
+genes, drawing ROC curve is one way to test the power of discriminating
+risk genes of different methods. For MIRAGE, Bayes factor of every gene
+was calculated and used to plot ROC, called MIRAGE-BF.</p>
 <div id="power-comparison" class="section level4">
 <h4>Power comparison</h4>
-<p><strong>case 1: one risk gene has only one risk variant category with fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
-<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each having 1000 variants with <span class="math inline">\(\eta=0.03, 0.07, 0.1, 0.2\)</span> risk variants, but the actural <span class="math inline">\(\eta\)</span> is varying for each generated data set because of the filtering. <span class="math inline">\(\delta=0.5\)</span>, i.e. half genes are risk genes and the rest half are nonrisk genes. <span class="math inline">\(\bar{\gamma}=5\)</span>.</p>
+<p><strong>case 1: one risk gene has only one risk variant category with
+fixed <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
+<p>Parameter settings: N1=N0=3000 <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>. 100 genes, each
+having 1000 variants with <span class="math inline">\(\eta=0.03, 0.07,
+0.1, 0.2\)</span> risk variants, but the actural <span
+class="math inline">\(\eta\)</span> is varying for each generated data
+set because of the filtering. <span
+class="math inline">\(\delta=0.5\)</span>, i.e. half genes are risk
+genes and the rest half are nonrisk genes. <span
+class="math inline">\(\bar{\gamma}=5\)</span>.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<p><strong>case2: one risk gene has multiple risk variant categories with group specific <span class="math inline">\(\bar{\gamma}\)</span></strong></p>
-<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.5\)</span>. 100 genes, each having 1000 variants in three different groups, the first group has 30% variants, the second has 40% and the rest 30% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and every risk category has its own <span class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
+<p><strong>case2: one risk gene has multiple risk variant categories
+with group specific <span
+class="math inline">\(\bar{\gamma}\)</span></strong></p>
+<p>Parameter settings: N1=N0=3000 <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span
+class="math inline">\(\delta=0.5\)</span>. 100 genes, each having 1000
+variants in three different groups, the first group has 30% variants,
+the second has 40% and the rest 30% are in the third group. In each
+variant group of every gene, the proportion of risk variants <span
+class="math inline">\(\eta\)</span> is varying at 0.01, 0.05, 0.1 and
+every risk category has its own <span
+class="math inline">\(\bar{\gamma}=5, 3,1\)</span> respectively. The
+basic idea is that the rarer the varinat is, the more effect size it
+tends to have.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<p>Parameter settings: N1=N0=3000 <span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span class="math inline">\(\delta=0.1, 0.2, 0.3, 0.4\)</span>. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion of risk variants <span class="math inline">\(\eta\)</span> is varying at 0.05, 0.2, 0.5 and every risk category has its own <span class="math inline">\(\bar{\gamma}\)</span> respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have.</p>
-<p><strong>burden test: for every gene, use all variants in cases and control</strong></p>
+<p>Parameter settings: N1=N0=3000 <span
+class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=2000, \beta_0=1000\)</span>, <span
+class="math inline">\(\delta=0.1, 0.2, 0.3, 0.4\)</span>. 1000 genes,
+each having 100 variants in three different groups, the first group has
+60% variants, the second has 30% and the rest 10% are in the third
+group. In each variant group of every gene, the proportion of risk
+variants <span class="math inline">\(\eta\)</span> is varying at 0.05,
+0.2, 0.5 and every risk category has its own <span
+class="math inline">\(\bar{\gamma}\)</span> respectively. The basic idea
+is that the rarer the varinat is, the more effect size it tends to
+have.</p>
+<p><strong>burden test: for every gene, use all variants in cases and
+control</strong></p>
 <p><span class="math inline">\(\bar{\gamma}=1, 3,5\)</span></p>
+<pre><code>## Warning: The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre><code>## Warning: The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<p><strong>burden-adj: for every gene, compute p values for 3 variant categories, adjust p values by bonferroni correction and take the minimum</strong></p>
-<p><span class="math inline">\(\bar{\gamma}=3,3,5\)</span>. burden-comb: use Fisher method to comine p values from 3 independent tests.</p>
+<p><strong>burden-adj: for every gene, compute p values for 3 variant
+categories, adjust p values by bonferroni correction and take the
+minimum</strong></p>
+<p><span class="math inline">\(\bar{\gamma}=3,3,5\)</span>. burden-comb:
+use Fisher method to comine p values from 3 independent tests.</p>
+<pre><code>## Warning: The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>Comparisons among three burden tests</p>
+<pre><code>## Warning: The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?
+## The following aesthetics were dropped during statistical transformation: d, m
+## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+##   the data.
+## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+##   variable into a factor?</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 <p><strong>Parameter estimate</strong></p>
-<p><span class="math inline">\(\beta_1=0.05,\beta_2=0.2, \beta_3=0.5, \delta=0.1\)</span></p>
+<p><span class="math inline">\(\beta_1=0.05,\beta_2=0.2, \beta_3=0.5,
+\delta=0.1\)</span></p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 </div>
 </div>
@@ -451,11 +702,28 @@ div.tocify {
 <h3>type I error</h3>
 <div id="only-variant-level-no-gene-level" class="section level4">
 <h4>Only variant level, no gene level</h4>
-<p>To investigate the type one error, we simulated 100 independent data sets, each with <span class="math inline">\(N1=N0=3000\)</span>, 100 variants in one group; no risk variants, i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma= 1\)</span>.</p>
+<p>To investigate the type one error, we simulated 100 independent data
+sets, each with <span class="math inline">\(N1=N0=3000\)</span>, 100
+variants in one group; no risk variants, i.e., <span
+class="math inline">\(\eta=0\)</span> and other parameters are pretty
+the same as before <span class="math inline">\(\alpha_0=0.1,
+\beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma=
+1\)</span>.</p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
-<p>Burden test: use fisher exact test MIRAGE: first estimate parameter <span class="math inline">\(\eta\)</span>, then do likelihood ratio test</p>
-<p>To investigate the type one error, we simulated one independent data set, with <span class="math inline">\(N1=N0=3000\)</span>, 1000 genes are all non-risk genes. Every gene has 100 variants in three non-risk variant groups; no risk variant groups i.e., <span class="math inline">\(\eta=0\)</span> and other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=3,4,5,\sigma= 1\)</span>.</p>
+<p>Burden test: use fisher exact test MIRAGE: first estimate parameter
+<span class="math inline">\(\eta\)</span>, then do likelihood ratio
+test</p>
+<p>To investigate the type one error, we simulated one independent data
+set, with <span class="math inline">\(N1=N0=3000\)</span>, 1000 genes
+are all non-risk genes. Every gene has 100 variants in three non-risk
+variant groups; no risk variant groups i.e., <span
+class="math inline">\(\eta=0\)</span> and other parameters are pretty
+the same as before <span class="math inline">\(\alpha_0=0.1,
+\beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=3,4,5,\sigma=
+1\)</span>.</p>
+<pre><code>## Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
+## ℹ Please use `after_stat(count)` instead.</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
@@ -468,13 +736,32 @@ div.tocify {
 <h3>Bayesian FDR control</h3>
 <div id="bayesian-fdr-vs-actual-fdr" class="section level4">
 <h4>Bayesian FDR vs actual FDR</h4>
-<p>Simulated one data set, <span class="math inline">\(N1=N0=1000, 3000, 5000\)</span>, 10% of 1000 genes are risk genes. Every gene has 100 variants in three variant groups with <span class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and <span class="math inline">\(\bar{\gamma}=3,3,5\)</span> respectively and the proportion of variants are 60%, 30% and 10%. Other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1\)</span>.</p>
+<p>Simulated one data set, <span class="math inline">\(N1=N0=1000, 3000,
+5000\)</span>, 10% of 1000 genes are risk genes. Every gene has 100
+variants in three variant groups with <span
+class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and
+<span class="math inline">\(\bar{\gamma}=3,3,5\)</span> respectively and
+the proportion of variants are 60%, 30% and 10%. Other parameters are
+pretty the same as before <span class="math inline">\(\alpha_0=0.1,
+\beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1\)</span>.</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 </div>
-<div id="robustness-of-bayesian-fdr-for-bargamma" class="section level4">
-<h4>Robustness of Bayesian FDR for <span class="math inline">\(\bar{\gamma}\)</span></h4>
-<p>Simulated one data set, <span class="math inline">\(N1=N0=3000\)</span>, 10% of 1000 genes are risk genes. Every gene has 100 variants in three variant groups with <span class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and the proportion of variants are 30%, 40% and 30%. Each data set has one fixed <span class="math inline">\(\bar{\gamma}\)</span> and it is varied at <span class="math inline">\(\bar{\gamma}=3,4,5,6\)</span>. Other parameters are pretty the same as before <span class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1\)</span>.</p>
-<p>Repeat the simulation 20 times. When Bayesian FDR=0.05, what is the distribution of actual FDR.</p>
+<div id="robustness-of-bayesian-fdr-for-bargamma"
+class="section level4">
+<h4>Robustness of Bayesian FDR for <span
+class="math inline">\(\bar{\gamma}\)</span></h4>
+<p>Simulated one data set, <span
+class="math inline">\(N1=N0=3000\)</span>, 10% of 1000 genes are risk
+genes. Every gene has 100 variants in three variant groups with <span
+class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and
+the proportion of variants are 30%, 40% and 30%. Each data set has one
+fixed <span class="math inline">\(\bar{\gamma}\)</span> and it is varied
+at <span class="math inline">\(\bar{\gamma}=3,4,5,6\)</span>. Other
+parameters are pretty the same as before <span
+class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1,
+\beta=2000,\sigma= 1\)</span>.</p>
+<p>Repeat the simulation 20 times. When Bayesian FDR=0.05, what is the
+distribution of actual FDR.</p>
 <pre><code>## Warning in rm(&quot;all.delta.est&quot;, &quot;all.BF.gene&quot;, &quot;all.mirage.pvalue&quot;,
 ## &quot;all.skat.pvalue&quot;, : object &#39;all.delta.est&#39; not found</code></pre>
 <pre><code>## Warning in rm(&quot;all.delta.est&quot;, &quot;all.BF.gene&quot;, &quot;all.mirage.pvalue&quot;,
@@ -500,24 +787,46 @@ div.tocify {
 <ul>
 <li><span class="math inline">\(\delta=1\)</span></li>
 <li><span class="math inline">\(N1=N0=5000\)</span></li>
-<li>number of genes <span class="math inline">\(I=1000\)</span>, number of variants per gene <span class="math inline">\(m=200\)</span> before filtering.</li>
-<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta_0=1000, \beta=2000\)</span>.</li>
-<li><span class="math inline">\(\beta_{true}=0.5\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span></li>
+<li>number of genes <span class="math inline">\(I=1000\)</span>, number
+of variants per gene <span class="math inline">\(m=200\)</span> before
+filtering.</li>
+<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta_0=1000, \beta=2000\)</span>.</li>
+<li><span class="math inline">\(\beta_{true}=0.5\)</span>, <span
+class="math inline">\(\bar{\gamma}=10\)</span></li>
 <li>80% elements of of Ajk are 1</li>
 </ul>
-<p>This is the simplest case in that every variant has one annotation feature if any.</p>
+<p>This is the simplest case in that every variant has one annotation
+feature if any.</p>
 </div>
 <div id="likelihood-function" class="section level4">
 <h4>likelihood function:</h4>
-<p>If the feature has one dimension, the objective likelihood function would be simple to be optimized using common R packages. The log likelihood as a function of <span class="math inline">\(\beta\)</span> (true <span class="math inline">\(\beta=0.5\)</span>)is as</p>
+<p>If the feature has one dimension, the objective likelihood function
+would be simple to be optimized using common R packages. The log
+likelihood as a function of <span class="math inline">\(\beta\)</span>
+(true <span class="math inline">\(\beta=0.5\)</span>)is as</p>
 <p><img src="figure/loglikelihood.png" alt="loglikelihood" />.</p>
-<p>This plot tells us the likelihood only has one mode in one dimension case. It looks like <span class="math inline">\(\beta\)</span> is overestimated by R package-BFGS. With the fixed randomly generated data, run BFGS 50 times with random initials. The mean of <span class="math inline">\(\hat{\beta}_{MLE}=0.7631\)</span> and SD=2.344796e-05.</p>
+<p>This plot tells us the likelihood only has one mode in one dimension
+case. It looks like <span class="math inline">\(\beta\)</span> is
+overestimated by R package-BFGS. With the fixed randomly generated data,
+run BFGS 50 times with random initials. The mean of <span
+class="math inline">\(\hat{\beta}_{MLE}=0.7631\)</span> and
+SD=2.344796e-05.</p>
 </div>
-<div id="effect-of-sparsity-of-a_jk-k-is-the-number-of-features-here-k1-on-mle-of-beta" class="section level4">
-<h4>Effect of Sparsity of <span class="math inline">\(A_{jk}\)</span> (<span class="math inline">\(k\)</span> is the number of features, here <span class="math inline">\(k=1\)</span>) on MLE of <span class="math inline">\(\beta\)</span></h4>
-<p>Set <span class="math inline">\(\beta_{true}=0.5\)</span>, vary the sparsity of <span class="math inline">\(A_{jk}\)</span>, i.e., the ratio of 0’s in <span class="math inline">\(A_{jk}\)</span>. Define sparsity rate as the ratio of 0’s in each feature category.</p>
+<div
+id="effect-of-sparsity-of-a_jk-k-is-the-number-of-features-here-k1-on-mle-of-beta"
+class="section level4">
+<h4>Effect of Sparsity of <span class="math inline">\(A_{jk}\)</span>
+(<span class="math inline">\(k\)</span> is the number of features, here
+<span class="math inline">\(k=1\)</span>) on MLE of <span
+class="math inline">\(\beta\)</span></h4>
+<p>Set <span class="math inline">\(\beta_{true}=0.5\)</span>, vary the
+sparsity of <span class="math inline">\(A_{jk}\)</span>, i.e., the ratio
+of 0’s in <span class="math inline">\(A_{jk}\)</span>. Define sparsity
+rate as the ratio of 0’s in each feature category.</p>
 <table style="width:100%;">
-<caption>MLE at different sparsity rate <span class="math inline">\(\beta_{true}=0.5\)</span></caption>
+<caption>MLE at different sparsity rate <span
+class="math inline">\(\beta_{true}=0.5\)</span></caption>
 <colgroup>
 <col width="16%" />
 <col width="8%" />
@@ -562,10 +871,16 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-<p>When All entries of <span class="math inline">\(A_{jk}\)</span> are zero, <span class="math inline">\(\tau_j=\frac{1}{2}\)</span>, regardless of whatever values of <span class="math inline">\(\beta\)</span> and the likelihood function is a constant of <span class="math inline">\(\beta\)</span>. Thus <span class="math inline">\(\widehat{\beta}\)</span> can be anywhere.</p>
+<p>When All entries of <span class="math inline">\(A_{jk}\)</span> are
+zero, <span class="math inline">\(\tau_j=\frac{1}{2}\)</span>,
+regardless of whatever values of <span
+class="math inline">\(\beta\)</span> and the likelihood function is a
+constant of <span class="math inline">\(\beta\)</span>. Thus <span
+class="math inline">\(\widehat{\beta}\)</span> can be anywhere.</p>
 <p>Set <span class="math inline">\(\beta_{true}=0.2\)</span>.</p>
 <table>
-<caption>MLE at different sparsity rate with <span class="math inline">\(\beta_{true}=0.2\)</span>.</caption>
+<caption>MLE at different sparsity rate with <span
+class="math inline">\(\beta_{true}=0.2\)</span>.</caption>
 <colgroup>
 <col width="14%" />
 <col width="8%" />
@@ -616,18 +931,46 @@ div.tocify {
 </div>
 <div id="important-note" class="section level4">
 <h4>Important Note:</h4>
-<p>There are two variables affecting estimate of <span class="math inline">\(\beta\)</span>, sparsity of <span class="math inline">\(A_{jk}\)</span> and <span class="math inline">\(\beta_{true}\)</span>. (1) <span class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10 because it controls the probability of a variant of being causal. Consider an extreme case where all variants are truly causal risk variants. The likelihood of the data is close to the product of Bayes factor of every variant, free of <span class="math inline">\(\beta\)</span> value. Any large enough <span class="math inline">\(\beta\)</span> will give the same likelihood. (2) Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly influences the estimate of <span class="math inline">\(\beta\)</span>. The less sparsity, the more information will be used, the more accurate the estimate will be. (3) AF cannot be too large because for common variants with large odds ratio (large <span class="math inline">\(\bar{\gamma}\)</span>), Bayes factor will become overflow of being Inf.</p>
+<p>There are two variables affecting estimate of <span
+class="math inline">\(\beta\)</span>, sparsity of <span
+class="math inline">\(A_{jk}\)</span> and <span
+class="math inline">\(\beta_{true}\)</span>. (1) <span
+class="math inline">\(\beta\)</span> cannot be set too large, say &gt;10
+because it controls the probability of a variant of being causal.
+Consider an extreme case where all variants are truly causal risk
+variants. The likelihood of the data is close to the product of Bayes
+factor of every variant, free of <span
+class="math inline">\(\beta\)</span> value. Any large enough <span
+class="math inline">\(\beta\)</span> will give the same likelihood. (2)
+Sparsity of <span class="math inline">\(A_{jk}\)</span> will certainly
+influences the estimate of <span class="math inline">\(\beta\)</span>.
+The less sparsity, the more information will be used, the more accurate
+the estimate will be. (3) AF cannot be too large because for common
+variants with large odds ratio (large <span
+class="math inline">\(\bar{\gamma}\)</span>), Bayes factor will become
+overflow of being Inf.</p>
 </div>
-<div id="parameter-setting-2-increasing-sample-size" class="section level4">
+<div id="parameter-setting-2-increasing-sample-size"
+class="section level4">
 <h4>Parameter setting 2-increasing sample size</h4>
 <ul>
 <li><span class="math inline">\(\delta=1\)</span></li>
-<li><span class="math inline">\(\beta_{true}=2\)</span>, <span class="math inline">\(\bar{\gamma}=10\)</span></li>
-<li>all entries of <span class="math inline">\(A_{jk}\)</span> are 1</li>
-<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=1000, \beta_0=2000\)</span></li>
+<li><span class="math inline">\(\beta_{true}=2\)</span>, <span
+class="math inline">\(\bar{\gamma}=10\)</span></li>
+<li>all entries of <span class="math inline">\(A_{jk}\)</span> are
+1</li>
+<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=1000, \beta_0=2000\)</span></li>
 </ul>
 <table>
-<caption>MLE averaging across 10 replicates with different sample size</caption>
+<caption>MLE averaging across 10 replicates with different sample
+size</caption>
+<colgroup>
+<col width="12%" />
+<col width="10%" />
+<col width="12%" />
+<col width="64%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>N1=N0</th>
@@ -638,34 +981,50 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span> by Optim</td>
+<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span> by
+Optim</td>
 <td>2.7810 (0.0362)</td>
 <td>2.4413 (0.0161)</td>
 <td>2.3420</td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span> by GLM</td>
+<td><span class="math inline">\(\widehat{\beta}_{MLE}\)</span> by
+GLM</td>
 <td>2.0016 (0.0126)</td>
 <td></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<p>To use GLM, <span class="math inline">\(Z_{ij}\)</span> is treated as response (but in practice, <span class="math inline">\(Z_{ij}\)</span> is unknown) and each column of <span class="math inline">\(A_{jk}\)</span> is a predictor, but without intercept.</p>
-<p>Use function GLM to estimate <span class="math inline">\(\beta\)</span>.</p>
+<p>To use GLM, <span class="math inline">\(Z_{ij}\)</span> is treated as
+response (but in practice, <span class="math inline">\(Z_{ij}\)</span>
+is unknown) and each column of <span
+class="math inline">\(A_{jk}\)</span> is a predictor, but without
+intercept.</p>
+<p>Use function GLM to estimate <span
+class="math inline">\(\beta\)</span>.</p>
 </div>
 </div>
 <div id="case-2-two-annotation-features" class="section level3">
 <h3>Case 2: Two Annotation features</h3>
-<p><span class="math inline">\(K=2\)</span>. Set <span class="math inline">\(\beta_1=0.05, \beta_2=2\)</span>. Other parameters are</p>
+<p><span class="math inline">\(K=2\)</span>. Set <span
+class="math inline">\(\beta_1=0.05, \beta_2=2\)</span>. Other parameters
+are</p>
 <ul>
 <li><span class="math inline">\(\delta=1\)</span></li>
 <li><span class="math inline">\(\bar{\gamma}=10\)</span></li>
-<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span class="math inline">\(\beta=1000, \beta_0=2000\)</span></li>
+<li><span class="math inline">\(\alpha=\alpha_0=0.1\)</span>, <span
+class="math inline">\(\beta=1000, \beta_0=2000\)</span></li>
 </ul>
-<p>When there are more than 2 groups, <span class="math inline">\(A_{ij}\)</span> must be designed carefully such that all columns (all annotations) have as little overlap as possible. Otherwise, the method have difficulty in distinguishing between them, leading to poor estimate. In simulations below, these two factures have no overlap.</p>
+<p>When there are more than 2 groups, <span
+class="math inline">\(A_{ij}\)</span> must be designed carefully such
+that all columns (all annotations) have as little overlap as possible.
+Otherwise, the method have difficulty in distinguishing between them,
+leading to poor estimate. In simulations below, these two factures have
+no overlap.</p>
 <table>
-<caption>MLE averaging across 10 replicates with different sample size</caption>
+<caption>MLE averaging across 10 replicates with different sample
+size</caption>
 <colgroup>
 <col width="12%" />
 <col width="10%" />
@@ -682,25 +1041,29 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\widehat{\beta_1}_{MLE}\)</span> by Optim</td>
+<td><span class="math inline">\(\widehat{\beta_1}_{MLE}\)</span> by
+Optim</td>
 <td>0.3472 (0.0239)</td>
 <td>0.2287 (0.0252)</td>
 <td>0.2371 (0.0193)</td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\widehat{\beta_2}_{MLE}\)</span> by Optim</td>
+<td><span class="math inline">\(\widehat{\beta_2}_{MLE}\)</span> by
+Optim</td>
 <td>2.7807 (0.0919)</td>
 <td>2.4239 (0.0211)</td>
 <td>2.3636 (0.0243)</td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\(\widehat{\beta_1}_{MLE}\)</span> by GLM</td>
+<td><span class="math inline">\(\widehat{\beta_1}_{MLE}\)</span> by
+GLM</td>
 <td>0.0517 (0.0159)</td>
 <td></td>
 <td></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\widehat{\beta_2}_{MLE}\)</span> by GLM</td>
+<td><span class="math inline">\(\widehat{\beta_2}_{MLE}\)</span> by
+GLM</td>
 <td>1.9952 (0.0177)</td>
 <td></td>
 <td></td>

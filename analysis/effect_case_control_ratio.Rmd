@@ -1,0 +1,68 @@
+---
+title: "effect of case control ratio"
+output: html_document
+date: "2023-03-02"
+---
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+library(ggplot2)
+library(gridExtra)
+library(matrixStats)
+library(plotROC)
+library(grid)
+library(tidyverse)
+library(cowplot)
+library(ggplot2)
+library(ggpubr)
+```
+
+
+```{r, echo=F}
+loadRData <- function(fileName){
+#loads an RData file, and returns it
+    load(fileName)
+    get(ls()[ls() != "fileName"])
+}
+```
+
+
+```{r, echo=F, message=F, warning=F}
+case1=read.csv("../output/CaseControlRatioEffect/3000case_3000_control_0302_2023.csv", header=T)
+case2=read.csv("../output/CaseControlRatioEffect/3000case_6000_control_0302_2023.csv", header=T)
+case3=read.csv("../output/CaseControlRatioEffect/3000case_9000_control_0302_2023.csv", header=T)
+
+beta=data.frame(estimate=c(mean(case1[,2]), mean(case2[,2]), mean(case3[,2])), sd=c(sd(case1[,2]), sd(case2[,2]), sd(case3[,2])), control=c("3000", "6000", "9000"))
+
+f1=ggplot(beta, aes(x=control, y=estimate, fill=control)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=estimate-sd, ymax=estimate+sd), width=.2,
+                 position=position_dodge(.9))+
+  theme(legend.title=element_blank())+
+  ylab(expression(paste(hat(beta))))+
+  geom_hline(yintercept = 0.1, color="red")
+
+
+delta=data.frame(estimate=c(mean(case1[,3]), mean(case2[,3]), mean(case3[,3])), sd=c(sd(case1[,3]), sd(case2[,3]), sd(case3[,3])), control=c("3000", "6000", "9000"))
+
+f2=ggplot(delta, aes(x=control, y=estimate, fill=control)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=estimate-sd, ymax=estimate+sd), width=.2,
+                 position=position_dodge(.9))+
+  theme(legend.title=element_blank())+
+  ylab(expression(paste(hat(delta))))+
+  geom_hline(yintercept = 1, color="red")
+
+ figure=ggarrange(f1, f2, common.legend = TRUE, legend="right") 
+annotate_figure(figure,
+                top = text_grob("", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Data source: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+
+```

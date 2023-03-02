@@ -202,9 +202,136 @@ ASC_new_sample_GI_annovar_annotated=ASC_new_sample_GI %>% left_join(ASC_new_samp
 ```
 
 
-## staar example 
+## [staar example](https://htmlpreview.github.io/?https://github.com/xihaoli/STAAR/blob/master/docs/STAAR_vignette.html) 
 
 ```{r, echo=F, message=F, warning=F}
-pvalues <- c(2e-02, 4e-04, 0.2, 0.1, 0.8)
-CCT(pvals = pvalues)
+## example is from here https://htmlpreview.github.io/?https://github.com/xihaoli/STAAR/blob/master/docs/STAAR_vignette.html
+
+
+
+library(Matrix)
+library(STAAR)
+library(kinship2) # for related samples
+
+
+library(MASS)
+library(matrixStats) 
+library(rje) 
+
+genotype <- example$genotype
+maf <- example$maf
+snploc <- example$snploc
+sum((maf>0)*(maf<0.05))
+
+
+
+## kinship
+grid <- 1
+Npercell <- 10000
+ndiv <- 1
+vfam <- 0.5
+N <- round(grid*grid*Npercell/ndiv)
+
+unitmat <- matrix(0.5, 4, 4)
+diag(unitmat) <- 1
+unitmat[1,2] <- unitmat[2,1] <- 0
+ped <- data.frame(famid = rep(as.integer(1:2500), each=4), id = as.integer(1:10000L), fa = rep(0, 10000), mo = rep(0, 10000))
+for(i in 1:2500) {
+  ped$fa[4*i-(0:1)] <- ped$id[4*i-3]
+    ped$mo[4*i-(0:1)] <- ped$id[4*i-2]
+}
+kins <- makekinship(ped$famid, ped$id, ped$fa, ped$mo)
+
+
+set.seed(600)
+X1 <- rnorm(N)
+X2 <- rbinom(N,1,0.5)
+eps <- rnorm(N)
+
+
+numVar <- dim(snploc)[1]
+Z1 <- rnorm(numVar)
+Z2 <- rnorm(numVar)
+Z3 <- rnorm(numVar)
+Z4 <- rnorm(numVar)
+Z5 <- rnorm(numVar)
+Z6 <- rnorm(numVar)
+Z7 <- rnorm(numVar)
+Z8 <- rnorm(numVar)
+Z9 <- rnorm(numVar)
+Z10 <- rnorm(numVar)
+Z <- cbind(Z1,Z2,Z3,Z4,Z5,Z6,Z7,Z8,Z9,Z10)
+
+
+rank <- colRanks(Z,preserveShape = TRUE)
+PHRED <- -10*log10(1-rank/dim(rank)[1])
+
+# Length of the sequence
+maxLength <- 1000000
+# Length of the signal region
+sigLength <- 5000
+# Location of the signal region
+startloc <- sample(1:(maxLength-sigLength+1),1)
+endloc <- startloc + sigLength - 1
+# Extract the signal region from snploc
+snplist <- which(snploc$CHROM_POS >= startloc & snploc$CHROM_POS <= endloc)
+snpRegion <- snploc[snplist,]
+# number of variants in the signal region
+numSNPs <- dim(snpRegion)[1]
+# genotype of the signal region
+Geno <- genotype[,snplist]
+
+
+# Simulate causal variants from this region
+b0 <- rje::logit(0.015)
+b <- rep(log(5),10)
+
+causalprob <- apply(Z[snplist,],1,function(z){
+  ind <- sample(1:10,5)
+  rje::expit(b0 + b[ind] %*% z[ind])
+})
+isCausal <- rbinom(numSNPs,1,causalprob)
+
+############# Analyzing the simulated data using STAAR
+
+# effects size of covariates 
+alpha0 <- 0
+alpha1 <- 0.5
+alpha2 <- 0.5
+# effect size of causal variants
+c0 <- 0.13
+beta <- -c0 * log10(maf[snplist][which(isCausal==1)])
+# generate phenotype data
+Y <- alpha0 + alpha1 * X1 + alpha2 * X2 + as.matrix(genotype)[,snplist][,which(isCausal==1)] %*% beta + eps
+
+
+# Fitting STAAR null model for unrelated samples using fit_null_glm()
+pheno <- data.frame(Y=Y,X1=X1,X2=X2)
+obj_nullmodel <- fit_null_glm(Y~X1+X2,data=pheno,family="gaussian")
+pvalues <- STAAR(genotype=Geno,obj_nullmodel=obj_nullmodel,annotation_phred=PHRED[snplist,],rare_maf_cutoff=0.05)
+```
+
+
+```{r, echo=F, message=F, warning=F}
+## Related samples 
+## random effect
+randomfam <- mvrnorm(N/4, rep(0, 4), vfam * unitmat)
+randomfam <- as.vector(t(randomfam))
+id0 <- 1:N
+
+# generate phenotype data
+Y <- alpha0 + alpha1 * X1 + alpha2 * X2 + as.matrix(genotype)[,snplist][,which(isCausal==1)] %*% beta + randomfam + eps 
+
+# Fitting STAAR null model for related samples using fit_null_glmmkin()
+pheno <- data.frame(Y=Y,X1=X1,X2=X2,id=id0)
+obj_nullmodel <- fit_null_glmmkin(Y~X1+X2,data=pheno,family=gaussian(link="identity"),id="id",kins=kins)
+
+
+pvalues <- STAAR(genotype=Geno,obj_nullmodel=obj_nullmodel,annotation_phred=PHRED[snplist,],rare_maf_cutoff=0.05)
+```
+
+```{r, echo=F, message=F, warning=F}
+kins <- as.matrix(kins)
+obj_nullmodel <- fit_null_glmmkin(Y~X1+X2,data=pheno,family=gaussian(link="identity"),id="id",kins=kins)
+pvalues <- STAAR(genotype=Geno,obj_nullmodel=obj_nullmodel,annotation_phred=PHRED[snplist,],rare_maf_cutoff=0.05)
 ```
