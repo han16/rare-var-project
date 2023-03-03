@@ -28,6 +28,9 @@ loadRData <- function(fileName){
 
 
 ```{r, echo=F, message=F, warning=F}
+# run the code: C:/Shengtong/Research/rare-var/RCode/FullModelEM_OneGroup.R
+#write.csv(all.pi, file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\CaseControlRatioEffect\\3000case_6000_control_0302_2023.csv") # save R output 
+
 case1=read.csv("../output/CaseControlRatioEffect/3000case_3000_control_0302_2023.csv", header=T)
 case2=read.csv("../output/CaseControlRatioEffect/3000case_6000_control_0302_2023.csv", header=T)
 case3=read.csv("../output/CaseControlRatioEffect/3000case_9000_control_0302_2023.csv", header=T)
