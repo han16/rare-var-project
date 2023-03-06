@@ -27,6 +27,8 @@ loadRData <- function(fileName){
 ```
 
 
+## one risk variant group only 
+
 ```{r, echo=F, message=F, warning=F}
 # run the code: C:/Shengtong/Research/rare-var/RCode/FullModelEM_OneGroup.R
 #write.csv(all.pi, file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\CaseControlRatioEffect\\3000case_6000_control_0302_2023.csv") # save R output 
@@ -43,7 +45,7 @@ f1=ggplot(beta, aes(x=control, y=estimate, fill=control)) +
   geom_errorbar(aes(ymin=estimate-sd, ymax=estimate+sd), width=.2,
                  position=position_dodge(.9))+
   theme(legend.title=element_blank())+
-  ylab(expression(paste(hat(beta))))+
+  ylab(expression(paste(hat(eta))))+
   geom_hline(yintercept = 0.1, color="red")
 
 
@@ -69,3 +71,73 @@ annotate_figure(figure,
 )
 
 ```
+
+
+* cases $N0=3000$. 
+
+* one risk variant group with $\eta=0.1, \delta=1$
+
+
+
+## multiple risk variant groups 
+
+
+```{r, echo=F, message=F, warning=F}
+# run the code: C:/Shengtong/Research/rare-var/RCode/FullModelEM_OneGroup.R
+#write.csv(all.pi, file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\CaseControlRatioEffect\\3000case_6000_control_0302_2023.csv") # save R output 
+
+case1=read.csv("../output/CaseControlRatioEffect/3000case_3000_control_multiple_variant_groups_0303_2023.csv", header=T)
+case2=read.csv("../output/CaseControlRatioEffect/3000case_6000_control_multiple_variant_groups_0303_2023.csv", header=T)
+case3=read.csv("../output/CaseControlRatioEffect/3000case_9000_control_multiple_variant_groups_0303_2023.csv", header=T)
+
+beta1=data.frame(estimate=c(mean(case1[,2]), mean(case2[,2]), mean(case3[,2])), sd=c(sd(case1[,2]), sd(case2[,2]), sd(case3[,2])), control=c("3000", "6000", "9000"))
+
+f1=ggplot(beta, aes(x=control, y=estimate, fill=control)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=estimate-sd, ymax=estimate+sd), width=.2,
+                 position=position_dodge(.9))+
+  theme(legend.title=element_blank())+
+  ylab(expression(paste(hat(eta[1]))))+
+  geom_hline(yintercept = 0.1, color="red")
+
+
+beta2=data.frame(estimate=c(mean(case1[,3]), mean(case2[,3]), mean(case3[,3])), sd=c(sd(case1[,3]), sd(case2[,3]), sd(case3[,3])), control=c("3000", "6000", "9000"))
+
+f2=ggplot(beta2, aes(x=control, y=estimate, fill=control)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=estimate-sd, ymax=estimate+sd), width=.2,
+                 position=position_dodge(.9))+
+  theme(legend.title=element_blank())+
+  ylab(expression(paste(hat(eta[2]))))+
+  geom_hline(yintercept = 0.4, color="red")
+
+beta3=data.frame(estimate=c(mean(case1[,4]), mean(case2[,4]), mean(case3[,4])), sd=c(sd(case1[,4]), sd(case2[,4]), sd(case3[,4])), control=c("3000", "6000", "9000"))
+
+f3=ggplot(beta3, aes(x=control, y=estimate, fill=control)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=estimate-sd, ymax=estimate+sd), width=.2,
+                 position=position_dodge(.9))+
+  theme(legend.title=element_blank())+
+  ylab(expression(paste(hat(eta[3]))))+
+  geom_hline(yintercept = 0.8, color="red")
+
+ figure=ggarrange(f1, f2, f3, common.legend = TRUE, legend="right") 
+annotate_figure(figure,
+                top = text_grob("", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Data source: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+
+```
+
+
+
+* cases $N0=3000$. 
+
+* one risk variant group with $\eta_1=0.1, \eta_2=0.4, \eta_3=0.8, \delta=1$
