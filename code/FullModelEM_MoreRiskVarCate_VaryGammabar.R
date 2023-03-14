@@ -5,8 +5,9 @@
 # num.gene: number of genes in the sample 
 ##################################
 rm(list=ls())
-set.seed(123)
+#set.seed(123)
 library(SKAT)
+library(ACAT)
 start.time=date()
 cat("program starts at", date(),"\n\n")
 ptm <- proc.time()
@@ -64,7 +65,7 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
 num.gene=1000
 m=100
 N0=3000; N1=3000
-delta=0.1
+delta=0.2
 alpha0 <- 0.1
 beta0 <- 1000
 alpha <- 0.1
@@ -97,6 +98,7 @@ CMC.pvalue=list()
 ASUM.pvalue=list()
 Fisher.separate.pvalue=list()
 Regres.pvalue=list()
+ACAT.pvalue=list()
 ########################  generate data 
 for (run in 1:max.run) {
 actu.no.var=matrix(nrow=num.gene, ncol=num.group)
@@ -108,12 +110,13 @@ stop.cond=0; iter=1
 thrshd=1e-5
 max.iter=1000
 beta.k=matrix(nrow=max.iter, ncol=num.group)
-beta.k[1, 1]=0.7; beta.k[1, 2]=0.2; beta.k[1,3]=0.2
+beta.k[1, 1]=0.7; beta.k[1, 2]=0.2; beta.k[1,3]=0.2 # initial settings 
 delta.est=numeric(); delta.est[1]=0.8
 BF.gene=matrix(nrow=max.iter, ncol=num.gene)
 final.causal.var=matrix(nrow=num.gene, ncol=num.group)
 conti.matx=list()
 skat.pvalue=numeric()
+acat_gene_pvalue=numeric()
 ########################
 for (i in 1:num.gene)
 {
@@ -122,6 +125,7 @@ for (i in 1:num.gene)
   all.data[[i]]=data
   causal.var.index[i,]=data$Zij
   conti.gene.wide=list()
+  acat_var_group_pvalue=numeric()
   for (k in 1:num.group)
   {
     from=split.ratio[k]*m+1; to=split.ratio[k+1]*m 
@@ -130,13 +134,84 @@ for (i in 1:num.gene)
     actu.no.var[i,k]=length(yy); zz=intersect(xx, yy) # zz; causal variant after filtering
     final.causal.var[i,k]=length(zz) 
     
+    #################### fisher exact test 
     conti.table=matrix(nrow=2,ncol=2)  # used for fisher exact test 
-    conti.table[1,1]=sum(data$geno[(data$pheno==1),which(yy%in%data$var.index)]) 
-    conti.table[1,2]=sum(data$pheno==1)*length(yy)-conti.table[1,1]
-    conti.table[2,1]=sum(data$geno[(data$pheno==0),which(yy%in%data$var.index)])
+    conti.table[1,1]=sum(data$geno[(data$pheno==1),which(data$var.index %in% yy)]) # number of variants in cases 
+    conti.table[1,2]=sum(data$pheno==1)*length(yy)-conti.table[1,1]                
+    conti.table[2,1]=sum(data$geno[(data$pheno==0),which(data$var.index %in% yy)])  # number of variants in control 
     conti.table[2,2]=sum(data$pheno==0)*length(yy)-conti.table[2,1]
     conti.gene.wide[[k]]=conti.table  
-  }
+    ##################### ACAT test 
+    acat_var_pvalue=numeric()
+    if (length(yy)>1)
+      yy_less_than10=yy[which(colSums(data$geno[,which(data$var.index %in% yy)])<10)] # find var index that has MAC<10 and put them together 
+    if (length(yy)==1)
+      yy_less_than10=yy[which(sum(data$geno[,which(data$var.index %in% yy)])<10)] # find var index that has MAC<10 and put them together 
+    
+    
+    if (length(yy_less_than10)==length(yy)) #case1:  all single variants has MAC<10, then pool them together to do binomial test
+      { 
+      acat_var_pvalue=fisher.test(conti.table)$p.value # pool all variants together, which is conti.table for burden test
+      acat_var_group_pvalue[k]=acat_var_pvalue
+    }
+    if (length(yy_less_than10)==0) # case2: no variants has MAC<10
+    {
+      ## do burden test for all the rest one by one 
+      yy_more_than10=yy
+      
+      for (t in 1:length(yy_more_than10))
+      {
+        conti.table=matrix(nrow=2,ncol=2)  # used for fisher exact test 
+        conti.table[1,1]=sum(data$geno[(data$pheno==1),which(data$var.index ==yy_more_than10[t])]) # number of variants in cases 
+        conti.table[1,2]=sum(data$pheno==1)-conti.table[1,1]                
+        conti.table[2,1]=sum(data$geno[(data$pheno==0),which(data$var.index ==yy_more_than10[t])])  # number of variants in control 
+        conti.table[2,2]=sum(data$pheno==0)-conti.table[2,1]
+        acat_var_pvalue[t]=fisher.test(conti.table)$p.value 
+      }
+      if (max(acat_var_pvalue)>=1)
+        acat_var_group_pvalue[k]=1-1/(length(acat_var_pvalue))
+      if (max(acat_var_pvalue)<1)
+        acat_var_group_pvalue[k]=ACAT(acat_var_pvalue)
+      
+    }
+    
+    if ( length(yy_less_than10)>0 & length(yy_less_than10)<length(yy)) # case3: some not all variants that have MAC<10
+    {
+      ## combine all variants with MAC<10 into one variant, then do burden test 
+      conti.table=matrix(nrow=2,ncol=2)  # used for fisher exact test 
+      conti.table[1,1]=sum(data$geno[(data$pheno==1),which(data$var.index %in% yy_less_than10)]) # number of variants in cases 
+      conti.table[1,2]=sum(data$pheno==1)*length(yy_less_than10)-conti.table[1,1]                
+      conti.table[2,1]=sum(data$geno[(data$pheno==0),which(data$var.index %in% yy_less_than10)])  # number of variants in control 
+      conti.table[2,2]=sum(data$pheno==0)*length(yy_less_than10)-conti.table[2,1]
+      acat_var_pvalue[1]=fisher.test(conti.table)$p.value # pool all variants together, which is conti.table for burden test
+      ## do burden test for all the rest one by one 
+      yy_more_than10=yy[which(colSums(data$geno[,which(data$var.index %in% yy)])>=10)]
+      for (t in 1:length(yy_more_than10))
+      {
+        conti.table=matrix(nrow=2,ncol=2)  # used for fisher exact test 
+        conti.table[1,1]=sum(data$geno[(data$pheno==1),which(data$var.index ==yy_more_than10[t])]) # number of variants in cases 
+        conti.table[1,2]=sum(data$pheno==1)-conti.table[1,1]                
+        conti.table[2,1]=sum(data$geno[(data$pheno==0),which(data$var.index ==yy_more_than10[t])])  # number of variants in control 
+        conti.table[2,2]=sum(data$pheno==0)-conti.table[2,1]
+        acat_var_pvalue[1+t]=fisher.test(conti.table)$p.value 
+      }
+      if (max(acat_var_pvalue)>=1)
+        acat_var_group_pvalue[k]=1-1/(length(acat_var_pvalue))
+      if (max(acat_var_pvalue)<1)
+        acat_var_group_pvalue[k]=ACAT(acat_var_pvalue)
+      
+    } # end of  if (length(yy_less_than10)<length(yy)) # exist variants that have MAC>=10
+    
+    
+  }  # end of  for (k in 1:num.group)
+  ################ ACAT; combine p value from group pvalues 
+  acat_var_group_pvalue=acat_var_group_pvalue[!is.na(acat_var_group_pvalue)] # remove NA which is caused by no variants in the group after filtering
+  if (max(acat_var_group_pvalue)>=1)
+    acat_gene_pvalue[i]=1-1/length(acat_var_group_pvalue)
+  if (max(acat_var_group_pvalue)<1)
+    acat_gene_pvalue[i]=ACAT(acat_var_group_pvalue)
+  ###############
+  
   conti.matx[[i]]=conti.gene.wide
   
   #############  SKAT
@@ -161,10 +236,12 @@ for (i in 1:num.gene)
     }
   BF.gene[1, i]=bb
 }  ### end of i 
+
 ################
 for (k in 1:num.group)
  actu.pi[run,k]=sum(final.causal.var[Ui==1,k])/sum(actu.no.var[Ui==1,k])
-########################## EM algorithm
+########################## EM algorithm ############################
+
 ########################
 while (stop.cond==0)
 {
@@ -265,7 +342,6 @@ for (i in 1:num.gene)
   fisher.separate.odds.ratio[i,ii]=fish.separate.test$estimate
   fisher.separate.pvalue[i,ii]=fish.separate.test$p.value
   }
-  
   ############ regress on group specific variants by logit regression
   no.var=c(conti.matx[[i]][[1]][1,1], conti.matx[[i]][[2]][1,1], conti.matx[[i]][[3]][1,1])
   risk.status=Ui[i]
@@ -320,8 +396,13 @@ CMC.pvalue[[run]]=cmc.pvalue
 ASUM.pvalue[[run]]=asum.pvalue
 Fisher.separate.pvalue[[run]]=fisher.separate.pvalue
 Regres.pvalue[[run]]=regres.pvalue
+ACAT.pvalue[[run]]=acat_gene_pvalue
 
 } # end of run
+
+save(Gene.Risk.Status, MIRAGE.pvalue, MIRAGE.BF, Fisher.pvalue, SKATO.pvalue, CMC.pvalue, 
+    ASUM.pvalue, Fisher.separate.pvalue, ACAT.pvalue, 
+     file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\Var_specific_bargamma_MixedGene_MixtureVariant\\7methods_delta0.05_gammamean335.RData")
 ######################
 end.time=date()
 cat("program ends at", date(),"\n\n")
