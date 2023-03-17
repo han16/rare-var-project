@@ -1210,8 +1210,12 @@ theme(axis.text.y= element_text(size=6))+
 ```{r,echo=F, message=F, warning=F}
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
 # this is from the code C:/Shengtong/Research/rare-var/RareVariant/rare-var-project/code/FullModelEM_MoreRiskVarCate_VaryGammabar.R
-load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.1_gammamean335.RData")
-i=1
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.1_gammamean335_5rep.RData")
+AUC_summary_0.1=matrix(nrow=5, ncol=6)
+colnames(AUC_summary_0.1)=c("ACAT", "ASUM", "Burden", "CMC", "MIRAGE", "SKAT-O")
+#for (i in 1:5)
+{
+  i=4
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
 mirage_BF=MIRAGE.BF[[i]]
@@ -1223,11 +1227,11 @@ fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 acat.pvalue=ACAT.pvalue[[i]]
 fisher.adj.pvalue=numeric()
 fisher.combine.pvalue=numeric()
-for (i in 1:nrow(fisher.separate.pvalue))
+for (j in 1:nrow(fisher.separate.pvalue))
 {
-  fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
+  fisher.adj.pvalue[j]=min(p.adjust(fisher.separate.pvalue[j,], method = "bonferroni", n = length(fisher.separate.pvalue[j,])))
   # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
-   fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+   fisher.combine.pvalue[j]=pchisq(-sum(log(fisher.separate.pvalue[j,])), df=6, ncp = 0, lower.tail = TRUE)
    
 }
   
@@ -1235,7 +1239,7 @@ num_run=length(mirage_pvalue)
 
 ####### to find which AUC is for which method: enter p.basic, find the order of methods in legend, this order should match AUC order in calc_auc(p.basic)$AUC 
 
-method=rep(c( "Burden(0.683)", "SKAT-O(0.732)", "MIRAGE(0.856)", "CMC(0.744)", "ASUM(0.646)", "ACAT(0.602)"), each=num_run)
+method=rep(c( "Burden(0.709)", "SKAT-O(0.770)", "MIRAGE(0.868)", "CMC(0.785)", "ASUM(0.684)", "ACAT(0.618)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
 p.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1253,7 +1257,9 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.title=element_blank())+   # nol legend title 
   theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
   theme(legend.text = element_text(size = 5)) # adjust legend text size 
+AUC_summary_0.1[i,]=calc_auc(p.basic)$AUC
 #p_delta0.1
+} # end of for (i in 1:nrow(fisher.separate.pvalue))
 
 ################## comparison among three burden p values ##########
 method=rep(c( "Burden(0.556)", "Burden-adj(0.565)", "Burden-combine(0.437)"), each=num_run)
@@ -1282,9 +1288,13 @@ theme(axis.text.y= element_text(size=6))+
 
 
 ```{r,echo=F, message=F, warning=F}
-rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
-load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.01_gammamean335.RData")
-i=2
+rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue")
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.01_gammamean335_3.RData")
+AUC_summary_0.01=matrix(nrow=10, ncol=6)
+colnames(AUC_summary_0.01)=c("ACAT", "ASUM", "Burden", "CMC", "MIRAGE", "SKAT-O")
+#for (i in 1:10)
+{
+  i=10
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
 mirage_BF=MIRAGE.BF[[i]]
@@ -1296,17 +1306,17 @@ fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 acat.pvalue=ACAT.pvalue[[i]]
 fisher.adj.pvalue=numeric()
 fisher.combine.pvalue=numeric()
-for (i in 1:nrow(fisher.separate.pvalue))
+for (ii in 1:nrow(fisher.separate.pvalue))
 {
-  fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
-  fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = "bonferroni", n = length(fisher.separate.pvalue[ii,])))
+  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
 }  
   # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
 
 num_run=length(mirage_pvalue)
 
 
-method=rep(c("Burden(0.734)", "SKAT-O(0.670)", "MIRAGE(0.818)", "CMC(0.766)", "ASUM(0.670)", "ACAT(0.655)"), each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
+method=rep(c("Burden(0.719)", "SKAT-O(0.759)", "MIRAGE(0.883)", "CMC(0.732)", "ASUM(0.703)", "ACAT(0.504)"), each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
 
@@ -1327,7 +1337,9 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.justification=c(1,0), legend.position=c(1,0))+
   theme(legend.text = element_text(size = 5)) # adjust legend text size 
 #p1_delta0.01
-
+#calc_auc(p1.basic)$AUC
+AUC_summary_0.01[i,]=calc_auc(p1.basic)$AUC
+}
 
 ################## comparison among three burden p values ##########
 method=rep(c( "Burden(0.446)", "Burden-adj(0.386)", "Burden-combine(0.607)"), each=num_run)
@@ -1352,8 +1364,12 @@ theme(axis.text.y= element_text(size=6))+
 ############################################################################################################
 ################################ delta=0.05
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
-load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.05_gammamean335.RData")
-i=1
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.05_gammamean335_5rep.RData")
+AUC_summary_0.05=matrix(nrow=5, ncol=6)
+colnames(AUC_summary_0.05)=c("ACAT", "ASUM", "Burden", "CMC", "MIRAGE", "SKAT-O")
+#for (i in 1:5)
+{
+  i=4
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
 mirage_BF=MIRAGE.BF[[i]]
@@ -1365,17 +1381,17 @@ fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 acat.pvalue=ACAT.pvalue[[i]]
 fisher.adj.pvalue=numeric()
 fisher.combine.pvalue=numeric()
-for (i in 1:nrow(fisher.separate.pvalue))
+for (ii in 1:nrow(fisher.separate.pvalue))
 {
-  fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
-  fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = "bonferroni", n = length(fisher.separate.pvalue[ii,])))
+  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
 }  
   # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
 
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden(0.687)", "SKAT-O(0.739)", "MIRAGE(0.857)", "CMC(0.768)", "ASUM(0.671)", "ACAT(0.553)"), each=num_run)
+method=rep(c( "Burden(0.673)", "SKAT-O(0.768)", "MIRAGE(0.885)", "CMC(0.801)", "ASUM(0.657)", "ACAT(0.761)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1396,6 +1412,10 @@ geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line
   theme(legend.justification=c(1,0), legend.position=c(1,0))+
   theme(legend.text = element_text(size = 5))+ # adjust legend text size 
   theme(axis.title.y = element_blank())  # remove labels on y axis 
+
+AUC_summary_0.05[i,]=calc_auc(p2.basic)$AUC
+}
+
 #p2_delta0.05
 #grid.arrange(p1, p2, top=grid.text("ROC curves"), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000"))), nrow=1)
 #dev.off()
@@ -1424,8 +1444,13 @@ theme(axis.text.y= element_text(size=6))+
 ######################################################################################################
 ############################# delta=0.2
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue")
-load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.2_gammamean335.RData")
-i=1
+load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.2_gammamean335_5rep2.RData")
+
+AUC_summary_0.2=matrix(nrow=5, ncol=6)
+colnames(AUC_summary_0.2)=c("ACAT", "ASUM", "Burden", "CMC", "MIRAGE", "SKAT-O")
+#for (i in 1:5)
+{
+i=4
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
 mirage_BF=MIRAGE.BF[[i]]
@@ -1437,10 +1462,10 @@ fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
 acat.pvalue=ACAT.pvalue[[i]]
 fisher.adj.pvalue=numeric()
 fisher.combine.pvalue=numeric()
-for (i in 1:nrow(fisher.separate.pvalue))
+for (ii in 1:nrow(fisher.separate.pvalue))
 {
-  fisher.adj.pvalue[i]=min(p.adjust(fisher.separate.pvalue[i,], method = "bonferroni", n = length(fisher.separate.pvalue[i,])))
-  fisher.combine.pvalue[i]=pchisq(-sum(log(fisher.separate.pvalue[i,])), df=6, ncp = 0, lower.tail = TRUE)
+  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = "bonferroni", n = length(fisher.separate.pvalue[ii,])))
+  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
   
 }  
   # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
@@ -1448,7 +1473,7 @@ for (i in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden(0.755)", "SKAT-O(0.811)", "MIRAGE(0.875)", "CMC(0.803)", "ASUM(0.705)", "ACAT(0.661)"), each=num_run)
+method=rep(c( "Burden(0.707)", "SKAT-O(0.782)", "MIRAGE(0.884)", "CMC(0.797)", "ASUM(0.672)", "ACAT(0.629)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -1469,9 +1494,12 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
   theme(legend.text = element_text(size = 5))+ # adjust legend text size 
   theme(axis.title.y = element_blank())  # remove labels on y axis 
+
+AUC_summary_0.2[i,]=calc_auc(p2.basic)$AUC
+}
 #p_delta0.2
 ################## comparison among three burdens ########
-method=rep(c( "Burden(0.543)", "Burden-adj(0.526)", "Burden-combine(0.464)"), each=num_run)
+method=rep(c( "Burden(0.)", "Burden-adj(0.526)", "Burden-combine(0.464)"), each=num_run)
 
 roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, fisher.combine.pvalue), method=method)
 p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
@@ -1495,9 +1523,9 @@ theme(axis.text.y= element_text(size=6))+
 ```
 
 ```{r, echo=F, message=F, warning=F}
-#pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0314.pdf")
+pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0317.pdf")
 grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
-#dev.off()
+dev.off()
 
 ```
 
