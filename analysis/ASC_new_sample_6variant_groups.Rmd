@@ -617,7 +617,7 @@ topmirage_enrichment
 
 * plausible ASD: SFARI score 3
 
-* DNM: TADA denovo genes 
+* DNM: TADA de novo genes 
 
 * top 20 genes are selected by small p values, but may with burden in opposite direction. 
 
@@ -1058,6 +1058,8 @@ theme(text = element_text(size=15))+ # size is for labels on x axis
 theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
 topmirage_enrichment1
 ```
+
+
 
 ```{r, echo=F, warning=F, message=F}
 

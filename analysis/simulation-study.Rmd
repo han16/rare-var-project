@@ -1523,9 +1523,9 @@ theme(axis.text.y= element_text(size=6))+
 ```
 
 ```{r, echo=F, message=F, warning=F}
-pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0317.pdf")
+#pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0317.pdf")
 grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
-dev.off()
+#dev.off()
 
 ```
 

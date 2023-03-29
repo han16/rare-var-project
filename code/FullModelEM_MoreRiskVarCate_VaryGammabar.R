@@ -400,9 +400,9 @@ ACAT.pvalue[[run]]=acat_gene_pvalue
 
 } # end of run
 
-save(Gene.Risk.Status, MIRAGE.pvalue, MIRAGE.BF, Fisher.pvalue, SKATO.pvalue, CMC.pvalue, 
-    ASUM.pvalue, Fisher.separate.pvalue, ACAT.pvalue, 
-     file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\Var_specific_bargamma_MixedGene_MixtureVariant\\7methods_delta0.01_gammamean335_5rep.RData")
+#save(Gene.Risk.Status, MIRAGE.pvalue, MIRAGE.BF, Fisher.pvalue, SKATO.pvalue, CMC.pvalue, 
+#    ASUM.pvalue, Fisher.separate.pvalue, ACAT.pvalue, 
+#     file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\Var_specific_bargamma_MixedGene_MixtureVariant\\7methods_delta0.2_gammamean335_5rep2.RData")
 ######################
 end.time=date()
 cat("program ends at", date(),"\n\n")
