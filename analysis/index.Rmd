@@ -62,7 +62,7 @@ output:
 
 * [liftover samples](liftover_files.html)
 
-* [STAAR analysis](starr_analysis.html)
+* [STAAR analysis](staar_analysis.html)
 
 
 
