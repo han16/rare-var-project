@@ -92,6 +92,7 @@ ASC_new_sample3=ASC_new_sample3 %>% filter(isSyn=="FALSE") # filter syn variants
 
 
 
+
 ```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
 # read into gene set 
 path="C:\\Shengtong\\Research\\rare-var\\"
@@ -278,9 +279,11 @@ for (i in 1:length(interest_gene))
       
     }  # end of if (nrow(single_gene_data)>1) # case 2: multiple variants in one group
   ##################### 
-    if (max(acat_var_pvalue)==1)
+    if (max(acat_var_pvalue)==1 & length(acat_var_pvalue)>1)
       acat_var_pvalue[acat_var_pvalue==1]=1-1/(length(acat_var_pvalue)) # adjust pvalues https://github.com/yaowuliu/ACAT
-    
+    if (max(acat_var_pvalue)==1 & length(acat_var_pvalue)==1)
+      acat_var_pvalue[acat_var_pvalue==1]=1-1e-300
+      
     acat_gene_pvalue[i]=ACAT(acat_var_pvalue, acat_var_weight)
     
   } # end of if (length(num_var_group)==1) # only one variant group
@@ -361,15 +364,19 @@ for (i in 1:length(interest_gene))
       
     }  # end of if (nrow(single_gene_data)>1) # case 2: multiple variants in one group
   ##################### 
-     if (max(acat_var_pvalue)==1)
+     if (max(acat_var_pvalue)==1 & length(acat_var_pvalue)>1)
       acat_var_pvalue[acat_var_pvalue==1]=1-1/(length(acat_var_pvalue))
+      if (max(acat_var_pvalue)==1 & length(acat_var_pvalue)==1)  # avoid enforcing singular p values to be 0
+        acat_var_pvalue[acat_var_pvalue==1]=1-1e-300
      
    acat_group_pvalue[g]=ACAT(acat_var_pvalue, acat_var_weight)  
       
     } # end of for (g in length(num_var_group))
     
-    if (max(acat_group_pvalue)==1)
-      acat_group_pvalue[cat_group_pvalue==1]=1-1/(length(acat_group_pvalue))
+    if (max(acat_group_pvalue)==1 & length(acat_group_pvalue)>1)
+      acat_group_pvalue[acat_group_pvalue==1]=1-1/(length(acat_group_pvalue))
+    if (max(acat_group_pvalue)==1 & length(acat_group_pvalue)==1)
+      acat_group_pvalue[acat_group_pvalue==1]=1-1e-300
     
    acat_gene_pvalue[i]=ACAT(acat_group_pvalue) # use ACAT to combine group level p values with equal weights 
     
@@ -380,17 +387,17 @@ for (i in 1:length(interest_gene))
 } # end of   for (i in 1:length(interest_gene))
 
 
- # write.csv(data.frame(Gene=interest_gene, ACAT_pvalue=acat_gene_pvalue), file="../output/KyleData/AllGene_6vargroups_ACAT_pvalue_0328_2023.csv")
+#  write.csv(data.frame(Gene=interest_gene, ACAT_pvalue=acat_gene_pvalue), file="../output/KyleData/AllGene_6vargroups_ACAT_pvalue_0403_2023.csv")
  # write.csv(combine_001, file="../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv")
 
 
 ```
 
 
-## 
+## qqplot of p values 
 
 ```{r, echo=F, message=F, warning=F}
-staar_pvalue=as_tibble(read.csv("../output/KyleData/AllGene_6vargroups_ACAT_pvalue_0328_2023.csv"))
+staar_pvalue=as_tibble(read.csv("../output/KyleData/AllGene_6vargroups_ACAT_pvalue_0403_2023.csv"))
 theo <- (ppoints(length(staar_pvalue$ACAT_pvalue)))
   #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="(A) Burden", frame=F, cex.lab=0.8, pch=20)
   #abline(0,1,col='red', lwd=2)
@@ -414,4 +421,122 @@ burden=tibble(sx=sx, sy=sy)
 theme(text = element_text(size=10))
  #qqplot_burden_LoF
 ```
+
+for STAAR analysis 
+
+* apply AF filter $AF<5\%$
+
+* within each of 6 variant groups, use ACAT-V to combine single variant p values of binomial test using weights in the paper $w_{i, ACAT-V}=Beta(MAF_i, a1=1, a2=25)*\sqrt{MAF_i(1-MAF_i)}$. Variants with MAC<10 are collapsed for burden test, with weight $w_{0, ACAT-V}$. 
+
+* use ACAT-O to combine 6 group level ACAT p values in the last step with equal weight as in the paper, as STAAR p value for each gene.  
+
+
+## top genes by STAAR 
+
+
+```{r, echo=F, message=F, warning=F}
+
+gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+
+ACAT_pvalues=as_tibble(read.csv("../output/KyleData/AllGene_6vargroups_ACAT_pvalue_0403_2023.csv"))
+ACAT_pvalues_sorted=ACAT_pvalues%>%arrange(ACAT_pvalue)
+#length(intersect(BF_proband_AllGene_sorted$Gene[1:100], ASD_102_Gene))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+
+num_gene_to_display=100
+gene_to_display=ACAT_pvalues_sorted$Gene[1:num_gene_to_display]
+Transmitted_proband=numeric()
+Untransmitted_proband=numeric()
+OR=numeric(); STAAR_pvalue=numeric()
+SFARI_score=rep("NA", num_gene_to_display)
+
+for (i in 1:length(gene_to_display))
+{
+  Transmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Transmitted_proband) %>% pull)
+  
+  Untransmitted_proband[i]=sum(gene_set %>% filter(Gene==gene_to_display[i]) %>% select(Untransmitted_proband) %>% pull)
+  
+  burden_test=fisher.test(matrix(c(Transmitted_proband[i],num.family, Untransmitted_proband[i], num.family), nrow=2))
+OR[i]=burden_test$estimate
+STAAR_pvalue[i]=ACAT_pvalues_sorted$ACAT_pvalue[i]
+
+if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),]$gene.score
+#if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])==0) 
+# SFARI_score[i]="NA"
+
+}
+
+
+data.frame(Gene=gene_to_display, SFARI_score=SFARI_score, Trans=Transmitted_proband, Untrans=Untransmitted_proband, OR=round(OR, 4), STAAR_pvalue=round(STAAR_pvalue,5))%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+
+```
+
+
+```{r, echo=F, warning=F, message=F}
+ACAT_pvalues=as_tibble(read.csv("../output/KyleData/AllGene_6vargroups_ACAT_pvalue_0403_2023.csv"))
+
+sort_pvalue=ACAT_pvalues%>% arrange(ACAT_pvalue)
+topgene_number=20
+topgenes=as.character(sort_pvalue$Gene[1:topgene_number])
+all.gene=as.character(sort_pvalue$Gene)
+topmirage.percent=numeric(); all.gene.percent=numeric()
+pvalue=numeric()
+for ( i in 1:length(Gene_Set))
+{
+  overlap1=length(intersect(topgenes, Gene_Set_List[[i]]))
+  topmirage.percent[i]=overlap1/topgene_number
+  
+  overlap2=length(intersect(all.gene, Gene_Set_List[[i]]))
+  all.gene.percent[i]=overlap2/length(all.gene)
+  
+  pvalue[i]=fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))$p.value
+  
+}
+topmirage.enrichment.tidy=data.frame(class=c(rep("Top20 Genes by ACAT p value",length(Gene_Set)), rep("All Genes", length(Gene_Set))), group=rep(Gene_Set,2), percent=c(topmirage.percent, all.gene.percent))
+
+topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
+   geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
+   theme_classic()+
+   xlab("")+ylab("Proportion of putative ASD genes")+
+  theme(axis.text.y = element_text(size = 10))+ 
+   ylim(c(0, 0.2))+
+   theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
+   ggtitle("Enrichment of top 20 ASD genes by ACAT p values")+
+   #theme(plot.title = element_text(size=12))
+    theme(legend.title = element_blank())+
+   geom_signif(annotations ="1.000", y_position = 0.015  ,xmin=0.7, xmax=1.2, size=1, vjust=-0.5, textsize=3.5)+ # textsize is for text over the bar; size is for width of lines 
+   geom_signif(annotations ="1.000", y_position = 0.05  ,xmin=1.7, xmax=2.2, size=1, vjust=-0.5, textsize=3.5)+
+   geom_signif(annotations ="1.000", y_position = 0.045  ,xmin=2.7, xmax=3.2, size=1, vjust=-0.5, textsize=3.5)+
+   geom_signif(annotations ="0.395", y_position = 0.08  ,xmin=3.7, xmax=4.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="1.000", y_position = 0.008,xmin=4.7, xmax=5.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="1.000", y_position = 0.015,xmin=5.7, xmax=6.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="1.000", y_position = 0.018,xmin=6.7, xmax=7.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="0.513", y_position = 0.055,xmin=7.7, xmax=8.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="1.000", y_position = 0.048,xmin=8.7, xmax=9.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="1.000", y_position = 0.095,xmin=9.7, xmax=10.2, size=1, vjust=-0.5, textsize=3.5)+
+    theme(legend.position="bottom")+
+   theme(axis.text.x = element_text(angle = 15, vjust = 0.5, size=13))+
+ theme(text = element_text(size=15))+ # size is for labels on x axis 
+ theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+ topmirage_enrichment2
+
+ #figure=ggarrange(topmirage_enrichment1, topmirage_enrichment2, nrow=1)
+#annotate_figure(figure,
+#                top = text_grob("AF<0.01", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Datasource: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+#)
+
+```
+
 
