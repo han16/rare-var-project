@@ -499,7 +499,7 @@ for ( i in 1:length(Gene_Set))
   pvalue[i]=fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))$p.value
   
 }
-topmirage.enrichment.tidy=data.frame(class=c(rep("Top20 Genes by ACAT p value",length(Gene_Set)), rep("All Genes", length(Gene_Set))), group=rep(Gene_Set,2), percent=c(topmirage.percent, all.gene.percent))
+topmirage.enrichment.tidy=data.frame(class=c(rep("Top20 Genes by STAAR p value",length(Gene_Set)), rep("All Genes", length(Gene_Set))), group=rep(Gene_Set,2), percent=c(topmirage.percent, all.gene.percent))
 
 topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
    geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
@@ -518,9 +518,9 @@ topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
   geom_signif(annotations ="1.000", y_position = 0.008,xmin=4.7, xmax=5.2, size=1, vjust=-0.5, textsize=3.5)+
   geom_signif(annotations ="1.000", y_position = 0.015,xmin=5.7, xmax=6.2, size=1, vjust=-0.5, textsize=3.5)+
   geom_signif(annotations ="1.000", y_position = 0.018,xmin=6.7, xmax=7.2, size=1, vjust=-0.5, textsize=3.5)+
-  geom_signif(annotations ="0.513", y_position = 0.055,xmin=7.7, xmax=8.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="1.000", y_position = 0.04,xmin=7.7, xmax=8.2, size=1, vjust=-0.5, textsize=3.5)+
   geom_signif(annotations ="1.000", y_position = 0.048,xmin=8.7, xmax=9.2, size=1, vjust=-0.5, textsize=3.5)+
-  geom_signif(annotations ="1.000", y_position = 0.095,xmin=9.7, xmax=10.2, size=1, vjust=-0.5, textsize=3.5)+
+  geom_signif(annotations ="0.409", y_position = 0.1,xmin=9.7, xmax=10.2, size=1, vjust=-0.5, textsize=3.5)+
     theme(legend.position="bottom")+
    theme(axis.text.x = element_text(angle = 15, vjust = 0.5, size=13))+
  theme(text = element_text(size=15))+ # size is for labels on x axis 
