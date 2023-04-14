@@ -5,6 +5,7 @@ output: html_document
 ---
 
 ```{r, echo=F, warning=F, message=F}
+rm(list=ls())
 library(ggplot2)
 library(gridExtra)
 library(matrixStats)
@@ -1523,8 +1524,9 @@ theme(axis.text.y= element_text(size=6))+
 ```
 
 ```{r, echo=F, message=F, warning=F}
-#pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0317.pdf")
-grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
+#pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0413.pdf")
+#grid.arrange(p1_delta0.01, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
+grid.arrange(p2_delta0.05, p_delta0.1,nrow=1) 
 #dev.off()
 
 ```
