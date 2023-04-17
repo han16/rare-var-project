@@ -65,7 +65,7 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
 num.gene=1000
 m=100
 N0=3000; N1=3000
-delta=0.2
+delta=0.1
 alpha0 <- 0.1
 beta0 <- 1000
 alpha <- 0.1
@@ -77,6 +77,7 @@ split.ratio=c(0, 0.6, 0.9, 1)
 pi=numeric(num.group)
 pi[1]=0.05; pi[2]=0.2; pi[3]=0.5
 max.run=5
+MAC_threshold=0
 all.pi=matrix(nrow=max.run, ncol=(num.group+1))
 all.teststat=matrix(nrow=max.run, ncol=num.group)
 actu.pi=matrix(nrow=max.run, ncol=num.group)
@@ -144,9 +145,9 @@ for (i in 1:num.gene)
     ##################### ACAT test 
     acat_var_pvalue=numeric()
     if (length(yy)>1)
-      yy_less_than10=yy[which(colSums(data$geno[,which(data$var.index %in% yy)])<10)] # find var index that has MAC<10 and put them together 
+      yy_less_than10=yy[which(colSums(data$geno[,which(data$var.index %in% yy)])<MAC_threshold)] # find var index that has MAC<10 and put them together 
     if (length(yy)==1)
-      yy_less_than10=yy[which(sum(data$geno[,which(data$var.index %in% yy)])<10)] # find var index that has MAC<10 and put them together 
+      yy_less_than10=yy[which(sum(data$geno[,which(data$var.index %in% yy)])<MAC_threshold)] # find var index that has MAC<10 and put them together 
     
     
     if (length(yy_less_than10)==length(yy)) #case1:  all single variants has MAC<10, then pool them together to do binomial test
@@ -185,7 +186,7 @@ for (i in 1:num.gene)
       conti.table[2,2]=sum(data$pheno==0)*length(yy_less_than10)-conti.table[2,1]
       acat_var_pvalue[1]=fisher.test(conti.table)$p.value # pool all variants together, which is conti.table for burden test
       ## do burden test for all the rest one by one 
-      yy_more_than10=yy[which(colSums(data$geno[,which(data$var.index %in% yy)])>=10)]
+      yy_more_than10=yy[which(colSums(data$geno[,which(data$var.index %in% yy)])>=MAC_threshold)]
       for (t in 1:length(yy_more_than10))
       {
         conti.table=matrix(nrow=2,ncol=2)  # used for fisher exact test 
@@ -402,7 +403,7 @@ ACAT.pvalue[[run]]=acat_gene_pvalue
 
 #save(Gene.Risk.Status, MIRAGE.pvalue, MIRAGE.BF, Fisher.pvalue, SKATO.pvalue, CMC.pvalue, 
 #    ASUM.pvalue, Fisher.separate.pvalue, ACAT.pvalue, 
-#     file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\Var_specific_bargamma_MixedGene_MixtureVariant\\7methods_delta0.2_gammamean335_5rep2.RData")
+#     file="C:\\Shengtong\\Research\\rare-var\\RareVariant\\rare-var-project\\output\\Var_specific_bargamma_MixedGene_MixtureVariant\\7methods_delta0.1_MAC_threshold0.gammamean335_5rep1.RData")
 ######################
 end.time=date()
 cat("program ends at", date(),"\n\n")
