@@ -2038,7 +2038,7 @@ Simulated one data set, $N1=N0=1000, 3000, 5000$, 10\% of 1000 genes are risk ge
 $\alpha_0=0.1, \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1$.
 
 
-```{r, echo=F}
+```{r, echo=F, message=F, warning=F}
 num.run=2; delta.index=4
 bayes.fdr=seq(0, 0.5, length=100)
 ################## true gamma.bar=5, use true value  sample size 1000 ###############
@@ -2203,7 +2203,7 @@ Repeat the simulation 20 times. When Bayesian FDR=0.05, what is the distribution
 
 
 
-```{r, echo=F}
+```{r, echo=F, message=F, warning=F}
 
 ##################### true gamma.bar=3 ##########
 gene.prior=0.1 # use true value
@@ -2517,7 +2517,7 @@ p4=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
 
 
 
-#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-MIRAGE_gene_Bayes_FDR_misspecified_gammabar.pdf")
+#pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig-MIRAGE_gene_Bayes_FDR_misspecified_gammabar.pdf")
 grid.arrange(p1, p2, p3, p4, nrow=2)
 #dev.off()
 
