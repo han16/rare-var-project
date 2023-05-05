@@ -660,6 +660,8 @@ ggplot(tau_fdr)+
   xlab(expression(paste(tau)))+ylab("FDR")
 ```
 
+
+
 ```{r, echo=F}
 const.gene.BF=loadRData("../output/const.gene.BF.MIRAGE.RData")
 const.gene.pvalue=loadRData("../output/const.gene.pvalue.other.methods.include.CALPHA.RData")
@@ -675,6 +677,8 @@ const.gene.pvalue.adj=const.gene.pvalue%>%mutate("SKATO.pvalue.adj"=p.adjust(SKA
 const.gene.BF.pvalue.combine=full_join(const.gene.BF, const.gene.pvalue.adj, by="Gene")
 const.gene.BF.pvalue.combine %>% filter(ASUM.pvalue.adj==0)%>%select(SKATO.pvalue.adj:Fisher.adj.pvalue.adj)
 ```
+
+
 
 ```{r, echo=T}
 MIRAGE_gene=const.gene.BF.pvalue.combine %>% filter(post_prob>0.72)%>%select(Gene, BF, post_prob)

@@ -2213,10 +2213,121 @@ topmirage_enrichment2=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 ## Summary 
 
 
+### QQ plot of p values 
+
+
+```{r, echo=F, message=F, warning=F}
+#burden_pvalues_005=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_AF0.05_1205_2022.csv"))
+burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv"))
+
+
+
+#pdf("C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf")
+#par(mfrow=c(1,2))
+
+#################
+theo <- (ppoints(length(burden_pvalues_001$All_variants_pvalue)))
+
+ sx <- sort(-log(theo, base=10)); sy <- sort(-log(burden_pvalues_001$All_variants_pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+ LoF.Missense=tibble(sx=sx, sy=sy)
+ qqplot_burden_LoF.Missense=ggplot(LoF.Missense) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   #ylab("")+
+   theme(plot.title = element_text(hjust = 0.5, size=20,face="bold"))+  #center the title+
+   ggtitle("(A) Burden")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=20))
+#qqplot_burden_LoF.Missense
+ 
+ ###################################################
+ staar_pvalue=as_tibble(read.csv("../output/KyleData/AllGene_6vargroups_ACAT_pvalue_0403_2023.csv"))
+theo <- (ppoints(length(staar_pvalue$ACAT_pvalue)))
+  #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste("Theoretical ",-log[10], "(p-values)")), ylab=expression(paste("Observed ", -log[10], "(p-values)")), main="(A) Burden", frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col='red', lwd=2)
+
+#################  use ggplot draw qq plot 
+sx <- sort(-log(theo, base=10)); sy <- sort(-log(staar_pvalue$ACAT_pvalue, base=10))
+lenx <- length(sx)
+leny <- length(sy)
+if (leny < lenx)sx <- approx(1L:lenx, sx, n = leny)$y
+if (leny > lenx)sy <- approx(1L:leny, sy, n = lenx)$y
+
+ACAT=tibble(sx=sx, sy=sy)
+ qqplot_staar=ggplot(ACAT) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   theme(plot.title = element_text(hjust = 0.5, size=20,face="bold"))+  #center the title+
+   ggtitle("(B) ACAT")+
+   geom_abline(intercept = 0, slope = 1, color="red", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=20))
+ 
+ ################
+# pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig-pvalue_QQplot.pdf") 
+#png("C:/Shengtong/Research/rare-var/RareVariant/2023_0413_Figure_for_paper/Fig-pvalue_QQplot_ACAT.png")
+ #qqplot_burden_LoF.Missense
+# qqplot_staar
+#figure=ggarrange(qqplot_burden_LoF.Missense,  qqplot_staar, nrow=1)
+#annotate_figure(figure,
+#                top = text_grob("", color = "red", face = "bold", size = 14),
+#                bottom = text_grob("Datasource: \n ToothGrowth data set", color = "blue",
+#                                   hjust = 1, x = 1, face = "italic", size = 10),
+#                left = text_grob("Tooth length", color = "green", rot = 90),
+#                right = "I'm done, thanks :-)!",
+#                fig.lab = "Figure 1", fig.lab.face = "bold"
+#)
+
+#dev.off()
+ ################# marge two QQ plot into one plot 
+ burden_ACAT=tibble(sx=c(LoF.Missense$sx, ACAT$sx), sy=c(LoF.Missense$sy, sy_ACAT=ACAT$sy), methods=c(rep("Burden", nrow(LoF.Missense)), rep("ACAT", nrow(ACAT))))
+ qqplot_merge=ggplot(burden_ACAT) + geom_point(aes(x=sx, y=sy, color=methods))+
+   theme_classic()+
+   xlab(expression(paste("Theoretical ",-log[10], "(p-values)")))+
+   ylab(expression(paste("Observed ", -log[10], "(p-values)")))+
+   theme(plot.title = element_text(hjust = 0.5, size=20,face="bold"))+  #center the title+
+   ggtitle("QQ plot")+
+   geom_abline(intercept = 0, slope = 1, color="black", 
+                 linetype="solid", size=1.5)+
+theme(text = element_text(size=20))+
+   theme(legend.title=element_blank())
+ 
+ #png("C:/Shengtong/Research/rare-var/RareVariant/2023_0413_Figure_for_paper/Fig-pvalue_QQplot_merge_2.png")
+ qqplot_merge
+ #dev.off()
+```
+
+
+
+Burden test 
+
+* LoF+MPC>2, with AF<0.01
+
+* one side binomial test was used 
+
+ACAT test 
+
+* apply AF filter $AF<5\%$
+
+* within each of 6 variant groups, use ACAT-V to combine single variant p values of binomial test using weights in the paper $w_{i, ACAT-V}=Beta(MAF_i, a1=1, a2=25)*\sqrt{MAF_i(1-MAF_i)}$. Variants with MAC<10 are collapsed for burden test, with weight $w_{0, ACAT-V}$. 
+
+* use ACAT-O to combine 6 group level ACAT p values in the last step with equal weight as in the paper, as STAAR p value for each gene.  
+
+
+
 ### Enrichment of top 20 genes 
 
 
 ```{r, echo=F, warning=F, message=F}
+topgene_number=20
 BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
 burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv")) # call top genes by burden 
 sort_pvalue=burden_pvalues_001 %>% arrange(All_variants_pvalue) # rank genes by p values 
@@ -2233,7 +2344,6 @@ SFARI_gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.sym
 ################
 
 sort_BF=BF_para_all_est %>% arrange(desc(BF_filtered))
-topgene_number=20
 topgenes=as.character(sort_BF$Gene[1:topgene_number])
 all.gene=as.character(sort_BF$Gene)
 topmirage.percent=numeric(); all.gene.percent=numeric()
@@ -2270,7 +2380,7 @@ topmirage.enrichment.tidy=data.frame(class=c(rep("MIRAGE",length(Gene_Set)+1), r
 topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
    geom_bar(aes(fill = class), stat = "identity", position = "dodge")+
    theme_classic()+
-   xlab("")+ylab("Proportion of putative ASD genes")+
+   xlab("")+ylab("Proportion of genes in the gene set")+
   theme(axis.text.y = element_text(size = 10))+ # this is for numbers on y axis 
    ylim(c(0, 0.5))+
    theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
@@ -2303,8 +2413,12 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
  theme(text = element_text(size=13))+ # size is for labels on x axis 
   theme(axis.title = element_text(size = 13))+ # Font Size of Axis Titles
  theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
- topmirage_enrichment
 
+
+ 
+ #png("C:/Shengtong/Research/rare-var/RareVariant/2023_0413_Figure_for_paper/Fig-enrichment_of_top_genes.png")
+ topmirage_enrichment
+ #dev.off()
 ```
 
 * Top 20 MIRAGE genes selection: based on 6 variant groups, use MIRAGE to estimate parameters and calculate BF for each variant group, multiply group-wise BF when it has burden or negative burden but with BF<1.1 and ignore it otherwise, rank genes according to adjusted BF and choose top 20 genes. 
@@ -2350,7 +2464,7 @@ top_gene_summary%>% datatable(extensions = 'Buttons',
 
 ### gene Manhattan plot
 
-```{r, echo=F, message=F, warning=F, }
+```{r, echo=F, message=F, warning=F}
 ############## run once to get the data for plot 
 #BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
 #BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF_filtered))
@@ -2486,6 +2600,8 @@ gene_manhattan_plot <- function(gene.pip.res,
 data_manhattan_plot=data_manhattan_plot[complete.cases(data_manhattan_plot), ] # remove rows with NA
 
 #gene_manhattan_plot(data_manhattan_plot, chr=data_manhattan_plot$chr, pos=data_manhattan_plot$pos, gene_name=data_manhattan_plot$Gene, gene_pip = data_manhattan_plot$post_prob)
+png("C:\\Shengtong\\Research\\rare-var\\RareVariant\\2023_0413_Figure_for_paper\\Fig_top_gene_manhattan_plot.png")
+
 gene_manhattan_plot(
   data_manhattan_plot,
   chr = "chr",
@@ -2500,8 +2616,48 @@ gene_manhattan_plot(
   font.size = 10,
   max.overlaps = 10,
   title = "Manhattan plot of posterior probability")
+dev.off()
 ```
 
+
+### Bayesian FDR
+
+
+```{r, echo=F, message=F, warning=F}
+data_manhattan_plot=read.csv("../output/KyleData/data_manhattan_plot_0105_2023.csv", header=T)
+
+fdr_function=function(fdr_threshold, data)
+{
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(data$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-data$post_prob)*ifelse(data$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr=tibble(tau=tau, fdr=FDR)%>%drop_na()  # drop rows with NA
+tau_at_threshold=tau_fdr%>%filter(fdr<=fdr_threshold)
+if (nrow(tau_at_threshold)==0)
+  return("No gene is selected")
+if (nrow(tau_at_threshold)>0)
+{
+  tau_threshold=tau_at_threshold$tau[1]
+  return(data%>% filter(post_prob>tau_threshold))
+}
+
+}
+```
+
+```{r, echo=T, message=F, warning=F}
+fdr_function(fdr_threshold = 0.05, data_manhattan_plot)
+fdr_function(fdr_threshold = 0.45, data_manhattan_plot)
+fdr_function(fdr_threshold = 0.5, data_manhattan_plot)
+```
+
+* at FDR 0.45, top 3 genes are selected, and FDR 0.5, 10 genes are chosen. 
 
 
 ### gene examples 
