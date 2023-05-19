@@ -598,14 +598,18 @@ rm("ASC_new_sample_AF") # remove variables temporarily available in this chunk
 ############  gene set 
 num.family=7291
 gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+#write.csv(gene_set, file="C:/Shengtong/Research/rare-var/ASC/mirage_input_20230519.csv")  # input data fpr MIRAGE 
 mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(6,6,6,3,3,3)) # input data must be dataframe 
 ######### It takes more than one hour to finish running mirage function 
 
 #res=mirage(mirage_toy,n1=4315,n2=4315) # test mirage function 
+
 #write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_0830_2022.csv") this is the results with introns 
 #write.csv(mirage_result$BF.PP.gene, file="../output/KyleData/BF.proband.AllGene_1105_2022.csv") # this is the result without introns 
 
 ```
+
+
 
 ```{r, echo=F, eval=F}
 #### parameter estimate this is the result with introns included
