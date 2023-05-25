@@ -10,8 +10,9 @@
 
 
 
+<meta name="date" content="2023-05-24" />
 
-<title>Statistical rare variant analysis for autism</title>
+<title>Laura analysis</title>
 
 <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -29,6 +30,9 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -221,6 +225,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -228,6 +295,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -270,83 +347,17 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Statistical rare variant analysis for
-autism</h1>
+<h1 class="title toc-ignore">Laura analysis</h1>
+<h4 class="date">2023-05-24</h4>
 
 </div>
 
 
-<p><a
-href="https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf">This
-is the project</a></p>
-<div id="mirage-with-logistic-prior" class="section level2">
-<h2>MIRAGE with logistic prior</h2>
-<ul>
-<li><a href="model_logistic_prior.html">modeling with logistic
-prior</a></li>
-<li><a href="simulation_logistic_prior.html">simulation
-experiments</a></li>
-</ul>
-</div>
-<div id="simulation-studies" class="section level2">
-<h2>Simulation studies</h2>
-<ul>
-<li><a href="simulation-study.html">numerical simulation
-studies</a></li>
-<li><a href="effect_case_control_ratio.html">effect of case control
-ratio</a></li>
-</ul>
-</div>
-<div id="whole-exome-sequencing-wes-data-analysis-for-old-sample"
-class="section level2">
-<h2>Whole exome sequencing (WES) data analysis for old sample</h2>
-<ul>
-<li><p><a href="ASD.html">Quality control (QC)</a></p></li>
-<li><p><a href="variant_set_analysis.html">Variant Set (VS)
-analysis</a></p></li>
-<li><p><a href="GeneSetAnalysis.html">Gene set analysis</a></p></li>
-</ul>
-</div>
-<div id="cell-data-downloaded-from-dbgap" class="section level2">
-<h2>Cell data downloaded from dbGaP</h2>
-<ul>
-<li><p><a href="ASD_dbGaP.html">analysis for ASD data dowloaded from
-dbGaP</a></p></li>
-<li><p><a href="SCZ-analysis.html">analysis for Schizophrenia
-data</a></p></li>
-<li><p><a href="ASD_dbGaP_code.html">code for merging annotation
-features and sample data from dbGap</a></p></li>
-</ul>
-</div>
-<div id="analysis-for-transmitted-variants-from-asc-cell-paper"
-class="section level2">
-<h2>Analysis for transmitted variants from ASC cell paper</h2>
-<ul>
-<li><p><a href="ASC_cell_data.html">Quality control (QC) and annotate
-variants in Cell data</a></p></li>
-<li><p><a href="VS-ASC.html">Variant set (VS) analysis for transmitted
-variants in ASC cell paper</a></p></li>
-<li><p><a href="gene_set_analysis_cell_data.html">Gene set analysis for
-transmitted variants in ASC cell paper</a></p></li>
-</ul>
-</div>
-<div id="analysis-for-transmitted-variant-from-new-unpublished-sample"
-class="section level2">
-<h2>Analysis for transmitted variant from new (unpublished) sample</h2>
-<ul>
-<li><p><a href="ASC_new_sample.html">Quality control (QC) for new
-sample</a></p></li>
-<li><p><a href="ASC_new_sample_syn_var.html">Synonymous
-variants</a></p></li>
-<li><p><a href="ASC_new_sample_variant_set.html">Variant set (VS)
-analysis</a></p></li>
-<li><p><a href="ASC_new_sample_gene_set.html">gene set analsyis for new
-sample</a></p></li>
-<li><p><a href="variant_from_kyle.html">Kyle’s variants</a></p></li>
-<li><p><a href="liftover_files.html">liftover samples</a></p></li>
-<li><p><a href="staar_analysis.html">STAAR analysis</a></p></li>
-<li><p><a href="Laura_analysis.html">Laura’s result</a></p></li>
-</ul>
+<div id="gene-set-overlapping" class="section level2">
+<h2>gene set overlapping</h2>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-5-2.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-5-3.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-5-4.png" width="672" /></p>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 
 <hr>
@@ -375,6 +386,8 @@ sample</a></p></li>
 -->
 
 
+</div>
+</div>
 
 </div>
 
@@ -407,6 +420,35 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
