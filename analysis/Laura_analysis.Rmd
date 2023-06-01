@@ -195,7 +195,7 @@ num.family=7291
 
 * `han_v17` ASCv17 from Kyle 
 
-* `laura_v17`, additional filters applied to `han_v17`, Laura ran MIRAGE to get parameter estimate that are close to parameter estimate in `han_v17`. 
+* `laura_v17`, additional filters applied to `han_v17`, with 85% overlapping, Laura ran MIRAGE to get parameter estimate that are close to parameter estimate in `han_v17`. 
 
 * `laura_all` combined all dataset, including two SPARK data sets, `laura_v17`, and ASC_B15_B16 
 
