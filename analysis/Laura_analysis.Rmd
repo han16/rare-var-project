@@ -92,6 +92,9 @@ ASC_new_sample3=ASC_new_sample3 %>% filter(isSyn=="FALSE") # filter syn variants
 ```
 
 
+
+
+
 ```{r burdern analysis-gene level, results='hide', echo=F, warning=F, message=F}
 # read into gene set 
 path="C:\\Shengtong\\Research\\rare-var\\"
@@ -148,6 +151,7 @@ Gene_Set_List[[10]]=SCZ_Gene
 ```
 
 
+
 ```{r, echo=F, warning=F, message=F}
 
 ##### count transmitted variants and untransmitted in proband by summing over male, female, dad, mom and ind 
@@ -188,6 +192,43 @@ ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC<1)]=6
 num.family=7291
 ## test 
 ```
+
+
+```{r, echo=F, message=F, warning=F, cache=T}
+Laura_input_v17=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\Laura_result\\mirage_input_v17.txt", header=T))
+
+num.family=7291
+Han_input_v17=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+#write.csv(gene_set, file="C:/Shengtong/Research/rare-var/ASC/mirage_input_20230519.csv")  # input data fpr MIRAGE 
+#mirage_result=mirage(data.frame(gene_set),n1=num.family, n2=num.family, gamma=c(6,6,6,3,3,3)) # input data must be dataframe 
+
+Laura_Han_combine_v17=Laura_input_v17 %>% full_join(Han_input_v17)
+
+############ transmitted variants 
+
+g1=ggplot(Laura_Han_combine_v17, aes(x=No.case, y=Transmitted_proband))+geom_point()+
+   xlim(c(0,30))+ylim(c(0,30))+
+  xlab("Laura_v17")+ylab("Han_v17")+
+  geom_abline(intercept =0, slope = 1, color="red", size=1)+
+   ggtitle("overlapping transmitted alleles")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
+
+g2=ggplot(Laura_Han_combine_v17, aes(x=No.contr, y=Untransmitted_proband))+geom_point()+
+   xlim(c(0,30))+ylim(c(0,30))+
+  xlab("Laura_v17")+ylab("Han_v17")+
+  geom_abline(intercept =0, slope = 1, color="red", size=1)+
+   ggtitle("overlapping untransmitted alleles")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
+
+ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")
+```
+
+* for overlapping variants  (89.1% of Laura's data, 78.9% of Han's data), they share same number of transmitted variants and untransmitted ones 
+
+
+
 
 
 ## gene set overlapping 
