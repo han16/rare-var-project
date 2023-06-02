@@ -228,7 +228,12 @@ ggarrange(g1, g2,nrow=1, common.legend = TRUE, legend="bottom")
 * for overlapping variants  (89.1% of Laura's data, 78.9% of Han's data), they share same number of transmitted variants and untransmitted ones 
 
 
+```{r, echo=T, message=F, warning=F}
+Laura_Han_combine_v17 %>% filter(is.na(No.case)==T & is.na(Transmitted_proband)==F) # variants not in  Laura's data, but in mine 
 
+Laura_Han_combine_v17 %>% filter(is.na(No.case)==F & is.na(Transmitted_proband)==T) # variants  in Laura's data, but not in mine
+
+```
 
 
 ## gene set overlapping 

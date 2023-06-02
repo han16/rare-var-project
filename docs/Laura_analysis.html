@@ -359,6 +359,38 @@ div.tocify {
 data), they share same number of transmitted variants and untransmitted
 ones</li>
 </ul>
+<pre class="r"><code>Laura_Han_combine_v17 %&gt;% filter(is.na(No.case)==T &amp; is.na(Transmitted_proband)==F) # variants not in  Laura&#39;s data, but in mine </code></pre>
+<pre><code>## # A tibble: 215,249 × 8
+##    Variant         Gene    No.case No.contr group.index Transm…¹ Untra…² Group…³
+##    &lt;chr&gt;           &lt;chr&gt;     &lt;int&gt;    &lt;int&gt;       &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 1:100011430:G:C SLC35A3      NA       NA          NA       17      19       6
+##  2 1:100059932:G:A MFSD14A      NA       NA          NA        0       1       5
+##  3 1:100060000:C:A MFSD14A      NA       NA          NA        0       1       4
+##  4 1:100061912:T:C MFSD14A      NA       NA          NA        0       1       4
+##  5 1:100068032:T:C MFSD14A      NA       NA          NA        1       0       4
+##  6 1:100068061:G:A MFSD14A      NA       NA          NA        1       0       4
+##  7 1:100068062:T:C MFSD14A      NA       NA          NA        1       0       4
+##  8 1:100068103:A:G MFSD14A      NA       NA          NA        1       0       5
+##  9 1:100068127:T:A MFSD14A      NA       NA          NA        0       1       5
+## 10 1:100068152:C:G MFSD14A      NA       NA          NA        1       0       5
+## # … with 215,239 more rows, and abbreviated variable names
+## #   ¹​Transmitted_proband, ²​Untransmitted_proband, ³​Group_Index</code></pre>
+<pre class="r"><code>Laura_Han_combine_v17 %&gt;% filter(is.na(No.case)==F &amp; is.na(Transmitted_proband)==T) # variants  in Laura&#39;s data, but not in mine</code></pre>
+<pre><code>## # A tibble: 98,570 × 8
+##    Variant                 Gene  No.case No.co…¹ group…² Trans…³ Untra…⁴ Group…⁵
+##    &lt;chr&gt;                   &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 16:53454840:AAGGTG:A    RBL2        0       1       1      NA      NA      NA
+##  2 19:5215597:T:C          PTPRS       0       1       1      NA      NA      NA
+##  3 3:70959303:CT:C         FOXP1       0       1       1      NA      NA      NA
+##  4 17:7323050:CT:C         NEUR…       1       0       1      NA      NA      NA
+##  5 9:117291486:G:T         ASTN2       0       1       1      NA      NA      NA
+##  6 14:71699102:T:TA        SIPA…       1       0       1      NA      NA      NA
+##  7 4:3131725:CT:C          HTT         0       1       1      NA      NA      NA
+##  8 6:43132689:T:C          PTK7        0       0       1      NA      NA      NA
+##  9 11:79064863:AGCACC:A    TENM4       1       0       1      NA      NA      NA
+## 10 6:107635302:A:ATGCTGCC… SOBP        1       0       1      NA      NA      NA
+## # … with 98,560 more rows, and abbreviated variable names ¹​No.contr,
+## #   ²​group.index, ³​Transmitted_proband, ⁴​Untransmitted_proband, ⁵​Group_Index</code></pre>
 <div id="gene-set-overlapping" class="section level2">
 <h2>gene set overlapping</h2>
 <ul>
@@ -370,9 +402,9 @@ parameter estimate that are close to parameter estimate in
 <li><p><code>laura_all</code> combined all dataset, including two SPARK
 data sets, <code>laura_v17</code>, and ASC_B15_B16</p></li>
 </ul>
-<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-6-2.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-6-3.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-6-4.png" width="672" /></p>
-<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-7-2.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-7-3.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-7-4.png" width="672" /></p>
 <p><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 
 <hr>
