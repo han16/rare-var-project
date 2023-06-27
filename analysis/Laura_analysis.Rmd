@@ -87,11 +87,40 @@ fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data h
 ```{r, echo=F, cache=T, warning=F, message=F}
 ### read into new sample 
 path="C:\\Shengtong\\research\\rare-var\\"
-ASC_new_sample3=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way that Kyle read the data
-ASC_new_sample3=ASC_new_sample3 %>% filter(isSyn=="FALSE") # filter syn variants first 
+ASC_new_sample33=as_tibble(read.table(paste(path, "ASC\\ASC_v17_raw_TDT_by_parent_2021-05-10.txt", sep=""), sep='\t',  header=T, fill=T)) # this is the correct way that Kyle read the data # 2,732,526 variants, 
+ASC_new_sample3=ASC_new_sample33 %>% filter(isSyn=="FALSE") # filter syn variants first 
 ```
 
 
+
+```{r, echo=F, message=F, warning=F, eval=F}
+###### from my v17 to laura's v17
+
+############## below is Kyle's filters 
+# Determine rarity threshold
+#rarity_threshold = 0.001
+
+# Apply rarity threshold... in gnomad
+#tdt = subset(tdt, is.na(Gnomad_non_neuro_AF) | (Gnomad_non_neuro_AF <= rarity_threshold)) # 2,543,183
+# ...and in this data:
+#tdt = subset(tdt, AF <= rarity_threshold) # 2,521,044
+
+# Apply VQSLOD threshold I used
+#tdt = subset(tdt, VQSLOD >= 5.13) # 2,094,224
+
+# Also apply additional filters used for this dataset
+#tdt = subset(tdt, (isIndel & QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8) |
+#               (!isIndel & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8))
+# 1,777,785
+################# to replicate laura's v17
+ASC_new_sample33 %>% filter(Gnomad_non_neuro_AF <=0.001) # 2,543,183
+
+ASC_new_sample33 %>% filter(Gnomad_non_neuro_AF <=0.001 & AF<=0.001) # 2,521,044
+
+ASC_new_sample33 %>% filter(Gnomad_non_neuro_AF <=0.001 & AF<=0.001 & VQSLOD >= 5.13) # 2,094,224
+ASC_new_sample33 %>% filter(Gnomad_non_neuro_AF <=0.001 & AF<=0.001 & VQSLOD >= 5.13) %>% filter((isIndel & QD >= 3 & AS_SOR <= 3 & AS_ReadPosRankSum >= -8)| (!isIndel & QD >= 1 & AS_SOR <= 3 & AS_ReadPosRankSum >= -0.8)) # 1,777,785
+
+```
 
 
 
@@ -194,6 +223,11 @@ num.family=7291
 ```
 
 
+
+
+
+
+
 ```{r, echo=F, message=F, warning=F, cache=T}
 Laura_input_v17=as_tibble(read.table("C:\\Shengtong\\Research\\rare-var\\ASC\\Laura_result\\mirage_input_v17.txt", header=T))
 
@@ -244,6 +278,8 @@ Laura_Han_combine_v17 %>% filter(is.na(No.case)==F & is.na(Transmitted_proband)=
 * `laura_v17`, additional filters applied to `han_v17`, with 85% overlapping, Laura ran MIRAGE to get parameter estimate that are close to parameter estimate in `han_v17`. 
 
 * `laura_all` combined all dataset, including two SPARK data sets, `laura_v17`, and ASC_B15_B16 
+
+
 
 
 ```{r echo=F, message=F, warning=F}
@@ -317,6 +353,7 @@ ggplot(data.frame(Gene=rep(mirage_topgenes[1:19],3), logBF=c(log(han_BF), log(la
 
 ```
 
+
 ```{r, echo=F, message=F, warning=F}
 han_BF=laura_ASCv17_BF=laura_allcombined_BF=numeric()
 for (i in 1:(length(laura_result_sort_by_ASCv17_top_genes)))
@@ -365,6 +402,7 @@ ggplot(data.frame(Gene=rep(laura_result_sort_by_AllData_top_genes,3), logBF=c(lo
 ```
 
 
+
 ```{r, echo=F, message=F, warning=F}
 topgene_number=20
 BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
@@ -373,6 +411,10 @@ sort_pvalue=burden_pvalues_001 %>% arrange(All_variants_pvalue) # rank genes by 
 topgenes_burden=as.character(sort_pvalue$X[1:topgene_number])
 all.gene_burden=as.character(sort_pvalue$X)
 topmirage.percent_burden=numeric()
+
+all_combined=as_tibble(read.table(paste(path, "ASC\\Laura_result\\ALL_combined.combinedBF.txt", sep=""), header=T))
+all_combined_sort=all_combined %>% arrange(desc(BF_with_dn))
+all_combined_top_gene=all_combined_sort$gene[1:topgene_number]
 
 ################
 SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
@@ -387,6 +429,7 @@ topgenes_han_v17=as.character(sort_BF$Gene[1:topgene_number])
 all.gene=as.character(sort_BF$Gene)
 han_v17_percent=numeric(); all_gene_percent=numeric()
 laura_v17_percent=numeric(); laura_all_percent=numeric()
+all_combined_percent=numeric()
 pvalue=numeric()
 for ( i in 1:length(Gene_Set))
 {
@@ -401,6 +444,9 @@ for ( i in 1:length(Gene_Set))
   
   overlap4=length(intersect(laura_result_sort_by_AllData_top_genes, Gene_Set_List[[i]]))
   laura_all_percent[i]=overlap4/topgene_number
+  
+  overlap5=length(intersect(all_combined_top_gene, Gene_Set_List[[i]]))
+  all_combined_percent[i]=overlap5/topgene_number
   
   #pvalue[i]=fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))$p.value
   ####################
@@ -420,8 +466,10 @@ overlap1=length(intersect(topgenes_han_v17, SFARI_gene))
   overlap4=length(intersect(laura_result_sort_by_AllData_top_genes, SFARI_gene))
   laura_all_percent[i+1]=overlap4/topgene_number
   
+  overlap5=length(intersect(all_combined_top_gene, SFARI_gene))
+  all_combined_percent[i+1]=overlap5/topgene_number
 
-topmirage.enrichment.tidy=data.frame(class=c(rep("han_v17",length(Gene_Set)+1), rep("All Genes", length(Gene_Set)+1), rep("laura_v17", length(Gene_Set)+1), rep("laura_all", length(Gene_Set)+1)), group=rep(c(Gene_Set, "SFARI"),4), percent=c(han_v17_percent, all_gene_percent, laura_v17_percent, laura_all_percent))
+topmirage.enrichment.tidy=data.frame(class=c(rep("han_v17",length(Gene_Set)+1), rep("All Genes", length(Gene_Set)+1), rep("laura_v17", length(Gene_Set)+1), rep("laura_all", length(Gene_Set)+1), rep("all_combined", length(Gene_Set)+1)), group=rep(c(Gene_Set, "SFARI"),5), percent=c(han_v17_percent, all_gene_percent, laura_v17_percent, laura_all_percent, all_combined_percent))
 ######################
 
 
@@ -431,10 +479,10 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
    theme_classic()+
    xlab("")+ylab("Proportion of genes in the gene set")+
   theme(axis.text.y = element_text(size = 10))+ # this is for numbers on y axis 
-   ylim(c(0, 0.5))+
+   ylim(c(0, 1))+
    theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
    ggtitle("Enrichment of top 20 ASD genes by MIRAGE across different samples")+
-    theme(legend.title = element_blank())+
+    theme(legend.title = element_blank(), legend.text=element_text(size=9))+
    #geom_signif(annotations ="0.016", y_position = 0.115  ,xmin=0.7, xmax=1.3, size=1, vjust=-0.5, textsize=3.0)+ # textsize is for text over the bar; size is for width of lines 
   #geom_signif(annotations ="0.169", y_position = 0.065  ,xmin=0.7, xmax=1.0, size=1, vjust=-0.5, textsize=3.0)+
   # geom_signif(annotations ="3.32e-6", y_position = 0.465  ,xmin=1.7, xmax=2.3, size=1, vjust=-0.5, textsize=3.0)+
@@ -461,7 +509,7 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
    theme(axis.text.x = element_text(angle = 15, vjust = 0.5, size=13))+
  theme(text = element_text(size=13))+ # size is for labels on x axis 
   theme(axis.title = element_text(size = 13))+ # Font Size of Axis Titles
- theme(legend.spacing.x = unit(1.0, 'cm')) # add space between symbols in legend 
+ theme(legend.spacing.x = unit(0.5, 'cm')) # add space between symbols in legend 
 
 
  
@@ -469,3 +517,7 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
  topmirage_enrichment
  #dev.off()
 ```
+
+* `all_combined`: combine de novo mutation (TADA BF), and transmitted, case control (MIRAGE BF). 
+
+
