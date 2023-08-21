@@ -405,14 +405,27 @@ every variant, aggregate all variant counts across 4 data sets, two
 SPARK data sets, ASCv17 and ASC_B15_B16. Then run MIRAGE to estimate
 parameters, and calculate BF.</p></li>
 </ul>
-<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-3.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-4.png" width="672" /></p>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-3.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-4.png" width="672" /><img src="Laura_analysis_files/figure-html/unnamed-chunk-8-5.png" width="672" /></p>
 <p><img src="Laura_analysis_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p><img src="Laura_analysis_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p><img src="Laura_analysis_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <ul>
-<li><code>all_combined</code>: combine de novo mutation (TADA BF), and
-transmitted, case control (MIRAGE BF).</li>
+<li><p><code>all_combined</code>: combine de novo mutation (TADA BF),
+and transmitted, case control (MIRAGE BF).</p></li>
+<li><p>only difference of <code>laura_all2</code> to
+<code>laura_all</code> is that parameters are estimated in
+<code>laura_all2</code>.</p></li>
 </ul>
+</div>
+<div id="analysis-of-all-transmitted-variants-aggregated"
+class="section level2">
+<h2>Analysis of all transmitted variants aggregated</h2>
+<div id="bayesian-fdr" class="section level3">
+<h3>Bayesian FDR</h3>
+<pre class="r"><code>fdr_function(fdr_threshold = 0.05, data_manhattan_plot)
+fdr_function(fdr_threshold = 0.45, data_manhattan_plot)
+fdr_function(fdr_threshold = 0.5, data_manhattan_plot)</code></pre>
+</div>
 </div>
 
 <hr>

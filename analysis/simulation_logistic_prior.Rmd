@@ -35,5 +35,14 @@ ggplot(beta_estimate_summary, aes(x=var, y=estimate, fill=var)) + # draw the OR 
 * run 10 replicates 
 * one annotation group with true $\beta=2$
 
+
+
 ## multiple annotation groups 
+
+
+
+
+## more power of logistic prior over disjoint group prior 
+
+
 

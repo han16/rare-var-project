@@ -292,11 +292,18 @@ topgenes=as.character(sort_BF$Gene[1:topgene_number])
 laura_result=as_tibble(read.csv(paste(path, "ASC\\Laura_result\\Comparing Shengtong and Laura's inputs_2023_0524.csv", sep="")))
 laura_result=laura_result %>% select(Gene, BF.ALL_combined, BF.ASC_v17_TDT_by_variant_2020.09.16) %>% mutate(BF.ASC_v17=as.numeric(BF.ASC_v17_TDT_by_variant_2020.09.16)) %>% drop_na()
 
+###########   this is the result with parameteres estimated 
+laura_result2=as_tibble(read.table(paste(path, "ASC\\Laura_result\\ALL_combined.combinedBF_2023_0729.txt", sep=""), header=T))
+
+
 laura_result_sort_by_ASCv17=laura_result%>% arrange(desc(BF.ASC_v17))
 laura_result_sort_by_ASCv17_top_genes=laura_result_sort_by_ASCv17$Gene[1:topgene_number]
 
 laura_result_sort_by_AllData=laura_result%>% arrange(desc(BF.ALL_combined))
 laura_result_sort_by_AllData_top_genes=laura_result_sort_by_AllData$Gene[1:topgene_number]
+
+laura_result_sort_by_AllData2=laura_result2%>% arrange(desc(BF_mirage))
+laura_result_sort_by_AllData_top_genes2=laura_result_sort_by_AllData2$gene[1:topgene_number]
 
 sort_BF=BF_para_all_est %>% arrange(desc(BF_filtered))
 mirage_topgenes=as.character(sort_BF$Gene[1:topgene_number])
@@ -329,18 +336,29 @@ ggvenn(x)+
   ggtitle("overlap of top 20 genes")+
   theme(plot.title = element_text(hjust = 0.5, size=20, color = 2)) #center the title 
 
+x=list(
+  laura_all=laura_result_sort_by_AllData_top_genes,
+  laura_all2=laura_result_sort_by_AllData_top_genes2
+)
+ggvenn(x)+
+  ggtitle("overlap of top 20 genes")+
+  theme(plot.title = element_text(hjust = 0.5, size=20, color = 2)) #center the title 
+
+
+
 
 #############
-han_BF=laura_ASCv17_BF=laura_allcombined_BF=numeric()
+han_BF=laura_ASCv17_BF=laura_allcombined_BF=laura_allcombined_BF2=numeric()
 for (i in 1:(length(mirage_topgenes)-1))
 {
   han_BF[i]=BF_para_all_est %>% filter(Gene==mirage_topgenes[i]) %>% select(BF_filtered) %>% pull()
   laura_ASCv17_BF[i]=laura_result%>% filter(Gene==mirage_topgenes[i]) %>% select(BF.ASC_v17) %>% pull()
   laura_allcombined_BF[i]=laura_result%>% filter(Gene==mirage_topgenes[i]) %>% select(BF.ALL_combined) %>% pull()
+  laura_allcombined_BF2[i]=laura_result2%>% filter(gene==mirage_topgenes[i]) %>% select(BF_mirage) %>% pull()
 }
 
 
-ggplot(data.frame(Gene=rep(mirage_topgenes[1:19],3), logBF=c(log(han_BF), log(laura_ASCv17_BF), log(laura_allcombined_BF)), sample=rep(c("han_v17", "laura_v17", "laura_all"), each=19)), aes(x=Gene, y=logBF, fill=sample)) + 
+ggplot(data.frame(Gene=rep(mirage_topgenes[1:19],4), logBF=c(log(han_BF), log(laura_ASCv17_BF), log(laura_allcombined_BF), log(laura_allcombined_BF2)), sample=rep(c("han_v17", "laura_v17", "laura_all", "laura_all2"), each=19)), aes(x=Gene, y=logBF, fill=sample)) + 
   geom_bar(stat="identity", color="black", 
            position=position_dodge())+ 
   theme(legend.title=element_blank())+
@@ -416,6 +434,8 @@ all_combined=as_tibble(read.table(paste(path, "ASC\\Laura_result\\ALL_combined.c
 all_combined_sort=all_combined %>% arrange(desc(BF_with_dn))
 all_combined_top_gene=all_combined_sort$gene[1:topgene_number]
 
+
+
 ################
 SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
 ###################### strong ASD genes 
@@ -428,7 +448,7 @@ sort_BF=BF_para_all_est %>% arrange(desc(BF_filtered))
 topgenes_han_v17=as.character(sort_BF$Gene[1:topgene_number])
 all.gene=as.character(sort_BF$Gene)
 han_v17_percent=numeric(); all_gene_percent=numeric()
-laura_v17_percent=numeric(); laura_all_percent=numeric()
+laura_v17_percent=numeric(); laura_all_percent=numeric(); laura_all_percent2=numeric()
 all_combined_percent=numeric()
 pvalue=numeric()
 for ( i in 1:length(Gene_Set))
@@ -444,6 +464,9 @@ for ( i in 1:length(Gene_Set))
   
   overlap4=length(intersect(laura_result_sort_by_AllData_top_genes, Gene_Set_List[[i]]))
   laura_all_percent[i]=overlap4/topgene_number
+  
+  overlap6=length(intersect(laura_result_sort_by_AllData_top_genes2, Gene_Set_List[[i]]))
+  laura_all_percent2[i]=overlap6/topgene_number
   
   overlap5=length(intersect(all_combined_top_gene, Gene_Set_List[[i]]))
   all_combined_percent[i]=overlap5/topgene_number
@@ -468,8 +491,11 @@ overlap1=length(intersect(topgenes_han_v17, SFARI_gene))
   
   overlap5=length(intersect(all_combined_top_gene, SFARI_gene))
   all_combined_percent[i+1]=overlap5/topgene_number
+  
+  overlap6=length(intersect(laura_result_sort_by_AllData_top_genes2, SFARI_gene))
+  laura_all_percent2[i+1]=overlap6/topgene_number
 
-topmirage.enrichment.tidy=data.frame(class=c(rep("han_v17",length(Gene_Set)+1), rep("All Genes", length(Gene_Set)+1), rep("laura_v17", length(Gene_Set)+1), rep("laura_all", length(Gene_Set)+1), rep("all_combined", length(Gene_Set)+1)), group=rep(c(Gene_Set, "SFARI"),5), percent=c(han_v17_percent, all_gene_percent, laura_v17_percent, laura_all_percent, all_combined_percent))
+topmirage.enrichment.tidy=data.frame(class=c(rep("han_v17",length(Gene_Set)+1), rep("All Genes", length(Gene_Set)+1), rep("laura_v17", length(Gene_Set)+1), rep("laura_all", length(Gene_Set)+1), rep("all_combined", length(Gene_Set)+1), rep("laura_all2", length(Gene_Set)+1)), group=rep(c(Gene_Set, "SFARI"),6), percent=c(han_v17_percent, all_gene_percent, laura_v17_percent, laura_all_percent, all_combined_percent, laura_all_percent2))
 ######################
 
 
@@ -520,4 +546,53 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 
 * `all_combined`: combine de novo mutation (TADA BF), and transmitted, case control (MIRAGE BF). 
 
+* only difference of `laura_all2` to `laura_all` is that parameters are estimated in `laura_all2`.  
 
+## Analysis of all transmitted variants aggregated
+
+
+
+### Bayesian FDR
+
+
+```{r, echo=F, message=F, warning=F, eval=F}
+#data_manhattan_plot=read.csv("../output/KyleData/data_manhattan_plot_0105_2023.csv", header=T)
+
+laura_result=as_tibble(read.csv(paste(path, "ASC\\Laura_result\\Comparing Shengtong and Laura's inputs_2023_0524.csv", sep="")))
+laura_result=laura_result %>% select(Gene, BF.ALL_combined) %>% drop_na()
+
+laura_result_sort_by_ASCv17=laura_result%>% arrange(desc(BF.ASC_v17))
+laura_result_sort_by_ASCv17_top_genes=laura_result_sort_by_ASCv17$Gene[1:topgene_number]
+
+
+
+fdr_function=function(fdr_threshold, data)
+{
+tau=seq(0, 0.999, by=0.001)
+num_pred=NULL
+false_disc=NULL
+FDR=NULL
+for (i in 1:length(tau))
+{
+num_pred[i]=sum(ifelse(data$post_prob>tau[i], 1, 0))
+false_disc[i]=sum((1-data$post_prob)*ifelse(data$post_prob>tau[i], 1, 0))
+FDR[i]=false_disc[i]/num_pred[i]
+}
+tau_fdr=tibble(tau=tau, fdr=FDR)%>%drop_na()  # drop rows with NA
+tau_at_threshold=tau_fdr%>%filter(fdr<=fdr_threshold)
+if (nrow(tau_at_threshold)==0)
+  return("No gene is selected")
+if (nrow(tau_at_threshold)>0)
+{
+  tau_threshold=tau_at_threshold$tau[1]
+  return(data%>% filter(post_prob>tau_threshold))
+}
+
+}
+```
+
+```{r, echo=T, message=F, warning=F, eval=F}
+fdr_function(fdr_threshold = 0.05, data_manhattan_plot)
+fdr_function(fdr_threshold = 0.45, data_manhattan_plot)
+fdr_function(fdr_threshold = 0.5, data_manhattan_plot)
+```
