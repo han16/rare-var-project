@@ -188,6 +188,8 @@ ASC_new_sample_GI$Group_Index[which(ASC_new_sample_GI$MPC<1)]=6
 
 num.family=7291
 ## test 
+
+#write.table(ASC_new_sample_GI, file="C:\\Shengtong\\Research\\rare-var\\ASC\\Laura_result\\ASC_new_sample_GI_2023_0901.txt")
 ```
 
 

@@ -159,7 +159,7 @@ for (rep in 1:max.rep)
   cat(rep, "th replicate is running", "\n")  
   Ui=rbinom(num.gene, 1, delta)
   all.data=list(); var.orig.index=numeric(); var.orig.index[1]=NA
-  for (i in 1:num.gene)  # for each gene, generate sample including genoptype, phenotype, etc 
+  for (i in 1:num.gene)  # for each gene, generate sample including genotype, phenotype, etc 
   {
     data=gene.simu(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi=tau.true[((i-1)*m+1):(i*m)], Ui[i], num.group, split.ratio)
     all.data[[i]]=data

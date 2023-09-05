@@ -548,8 +548,43 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 
 * only difference of `laura_all2` to `laura_all` is that parameters are estimated in `laura_all2`.  
 
+
+
 ## Analysis of all transmitted variants aggregated
 
+
+
+### Parameter estimates 
+
+
+```{r, echo=F, message=F, warning=F}
+
+#mirage_para_est=data.frame(variant_groups=c("delta:proportion of risk genes","PTV_PLI>=0.995", "PTV_0.5=<PLI<0.995", "PTV_PLI<0.5",  "MPC>=2",  "1=<MPC<2", "MPC<1"), parameter_estimate=round(c(0.06713907, 0.83382753,0.85448876,0.02985442,0.47471948, 0.11521000, 0.01201084),4), p_value=pvalue_adjust(p_value))
+
+
+var_group=rep(c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1"),2)
+estimate=c(0.83382753,0.85448876,0.02985442,0.47471948, 0.11521000, 0.01201084,0.353828740524254,
+0.157066593507005,
+0.0215284458160296,
+0.0912380102963087,
+0.033530954375487,
+0.00664397682712002)
+sample=rep(c("ASC_v17", "all_inherited"), each=6)
+summary=data.frame(var.group=var_group, estimate=estimate, sample=sample)
+ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) + 
+   geom_bar(stat="identity", position=position_dodge())+
+  theme(legend.title=element_blank())+
+  xlab("variant groups")+ylab(expression(paste(hat(eta))))+
+  ggtitle("")+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, size=10))
+  
+```  
+
+
+* [parameter estimates by MIRAGE for all inherited variants](https://www.dropbox.com/scl/fi/42yulompgjmiaf7jxg3vi/MIRAGE-parameters-072023.docx?rlkey=dnt8cb5e5y0jdkvobrjnaadgd&dl=0) 
+
+* $\widehat{\delta}=0.307$ for all inherited variants and  $\widehat{\delta}=0.067$ for ASC_v17.  
 
 
 ### Bayesian FDR
