@@ -39,7 +39,32 @@ ggplot(beta_estimate_summary, aes(x=var, y=estimate, fill=var)) + # draw the OR 
 
 ## multiple annotation groups 
 
+```{r, echo=F, message=F, warning=F}
+beta_estimate=c(0.4822893, 2.000852, 0.4909131, 1.976159, 0.5044987, 2.000259, 0.4988077, 1.980916, 0.4992905, 2.009325, 0.4908483,  2.003779, 0.5031419, 2.015141,0.5085360, 2.005088,0.5025723, 1.995207, 0.4998137, 2.019582) 
+# this estimate is obtained by running code:C:\Shengtong\Research\rare-var\RareVariant\rare-var-project\code\LogisticPriorManyAnnoFeature.R 
 
+beta1_estimate_index=c(1,3,5,7,9,11,13,15,17,19)
+beta2_estimate_index=beta1_estimate_index+1
+
+beta_estimate_summary=data.frame(
+  estimate=c(mean(beta_estimate[beta1_estimate_index]), mean(beta_estimate[beta2_estimate_index])),  lower=c(mean(beta_estimate[beta1_estimate_index])-sd(beta_estimate[beta1_estimate_index]), mean(beta_estimate[beta2_estimate_index])-sd(beta_estimate[beta2_estimate_index])), upper=c(mean(beta_estimate[beta1_estimate_index])+sd(beta_estimate[beta1_estimate_index]), mean(beta_estimate[beta2_estimate_index])+sd(beta_estimate[beta2_estimate_index])), var=c("beta1", "beta2"))
+
+ggplot(beta_estimate_summary, aes(x=var, y=estimate, fill=var)) + # draw the OR plot 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+ # geom_hline(yintercept = 2,linetype="dashed", 
+  #              color = "red", size=1)+
+  xlab("")+
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.2,
+                 position=position_dodge(.9)) 
+
+```
+
+* covariates $A_1, A_2$ are binary, and they need to be non-correlated as much as possible, otherwise $\widehat{\beta}_1, \widehat{\beta}_2$ will be messed up.  
+
+* 10 repetitions 
+
+* true $\beta_1=0.5, \beta_2=2$
 
 
 ## more power of logistic prior over disjoint group prior 

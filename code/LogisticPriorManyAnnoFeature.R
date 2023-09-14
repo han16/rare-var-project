@@ -130,16 +130,21 @@ gamma.mean <- 10
 sigma <- 1
 split.ratio=c(0,1)
 num.group=length(split.ratio)-1
-anno.num=1 # number of annotation groups 
+anno.num=3 # number of annotation groups 
+risk.var.prop=0.2
+
 ############  generate feature covariates 
 Ajk=matrix(0, nrow=(num.gene*m), ncol=anno.num) # Ajk are indicator matrix with elements of being 0, or 1
-for (i in 1:ncol(Ajk))
-  Ajk[sample(nrow(Ajk), (0.5*nrow(Ajk))),i]=1 # half of variants across all genes are "1", i.e. risk variants 
+#for (i in 1:ncol(Ajk))
+#  Ajk[sample(nrow(Ajk), (risk.var.prop*nrow(Ajk))),i]=1 # half of variants across all genes are "1", i.e. risk variants 
+Ajk[1:(0.5*nrow(Ajk)),1]=1
+Ajk[(0.5*nrow(Ajk)+1): nrow(Ajk),2]=1
+Ajk[sample(nrow(Ajk), (risk.var.prop*nrow(Ajk))),3]=rnorm(nrow(Ajk), 0.5, 0.1)
 ############## generate beta 
 beta.true=numeric(anno.num) # beta coefficients for all annotation groups 
-beta.true[1]=1
-#beta.true[2]=2
-#beta.true[3]=3.5
+beta.true[1]=0.5
+beta.true[2]=2
+beta.true[3]=1
 #beta.true[4:anno.num]=runif(anno.num-4+1)
 ############# compute eta: risk of every variant being a  risk variant
 eta.true=exp(Ajk%*%beta.true)/(1+exp(Ajk%*%beta.true)) 
@@ -184,8 +189,8 @@ for (rep in 1:max.rep)
   for (i in 1:length(all.data))
     Y=c(Y, all.data[[i]]$Zij)
   Response=Y[-1]
-  #fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2],family=binomial())
-  fit <- glm(Response~0+Ajk.effect,family=binomial())
+  fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2]+Ajk.effect[,3],family=binomial())
+  #fit <- glm(Response~0+Ajk.effect,family=binomial())
   #fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2]+Ajk.effect[,3]+Ajk.effect[,4]+Ajk.effect[,5]+Ajk.effect[,6]+Ajk.effect[,7]
   #           +Ajk.effect[,8]+Ajk.effect[,9]+Ajk.effect[,10],family=binomial())
   all.beta[rep,]=fit$coefficients 
