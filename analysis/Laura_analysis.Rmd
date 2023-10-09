@@ -283,6 +283,9 @@ Laura_Han_combine_v17 %>% filter(is.na(No.case)==F & is.na(Transmitted_proband)=
 
 
 ```{r echo=F, message=F, warning=F}
+
+path="C:\\Shengtong\\research\\rare-var\\"
+
 topgene_number=20
 
 BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
@@ -295,6 +298,9 @@ laura_result=laura_result %>% select(Gene, BF.ALL_combined, BF.ASC_v17_TDT_by_va
 ###########   this is the result with parameteres estimated 
 laura_result2=as_tibble(read.table(paste(path, "ASC\\Laura_result\\ALL_combined.combinedBF_2023_0729.txt", sep=""), header=T))
 
+########## this is the result with parameteres fixed at 5% 
+laura_result3=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
+
 
 laura_result_sort_by_ASCv17=laura_result%>% arrange(desc(BF.ASC_v17))
 laura_result_sort_by_ASCv17_top_genes=laura_result_sort_by_ASCv17$Gene[1:topgene_number]
@@ -304,6 +310,9 @@ laura_result_sort_by_AllData_top_genes=laura_result_sort_by_AllData$Gene[1:topge
 
 laura_result_sort_by_AllData2=laura_result2%>% arrange(desc(BF_mirage))
 laura_result_sort_by_AllData_top_genes2=laura_result_sort_by_AllData2$gene[1:topgene_number]
+
+laura_result_sort_by_AllData3=laura_result3%>% arrange(desc(BF))
+laura_result_sort_by_AllData_top_genes3=laura_result_sort_by_AllData3$Gene[1:topgene_number]
 
 sort_BF=BF_para_all_est %>% arrange(desc(BF_filtered))
 mirage_topgenes=as.character(sort_BF$Gene[1:topgene_number])
@@ -422,6 +431,7 @@ ggplot(data.frame(Gene=rep(laura_result_sort_by_AllData_top_genes,3), logBF=c(lo
 
 
 ```{r, echo=F, message=F, warning=F}
+path="C:\\Shengtong\\research\\rare-var\\"
 topgene_number=20
 BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
 burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv")) # call top genes by burden 
@@ -448,7 +458,7 @@ sort_BF=BF_para_all_est %>% arrange(desc(BF_filtered))
 topgenes_han_v17=as.character(sort_BF$Gene[1:topgene_number])
 all.gene=as.character(sort_BF$Gene)
 han_v17_percent=numeric(); all_gene_percent=numeric()
-laura_v17_percent=numeric(); laura_all_percent=numeric(); laura_all_percent2=numeric()
+laura_v17_percent=numeric(); laura_all_percent=numeric(); laura_all_percent2=numeric(); laura_all_percent3=numeric()
 all_combined_percent=numeric()
 pvalue=numeric()
 for ( i in 1:length(Gene_Set))
@@ -467,6 +477,9 @@ for ( i in 1:length(Gene_Set))
   
   overlap6=length(intersect(laura_result_sort_by_AllData_top_genes2, Gene_Set_List[[i]]))
   laura_all_percent2[i]=overlap6/topgene_number
+  
+  overlap7=length(intersect(laura_result_sort_by_AllData_top_genes3, Gene_Set_List[[i]]))
+  laura_all_percent3[i]=overlap7/topgene_number
   
   overlap5=length(intersect(all_combined_top_gene, Gene_Set_List[[i]]))
   all_combined_percent[i]=overlap5/topgene_number
@@ -494,8 +507,13 @@ overlap1=length(intersect(topgenes_han_v17, SFARI_gene))
   
   overlap6=length(intersect(laura_result_sort_by_AllData_top_genes2, SFARI_gene))
   laura_all_percent2[i+1]=overlap6/topgene_number
+  
+  overlap7=length(intersect(laura_result_sort_by_AllData_top_genes3, SFARI_gene))
+  laura_all_percent3[i+1]=overlap7/topgene_number
 
-topmirage.enrichment.tidy=data.frame(class=c(rep("han_v17",length(Gene_Set)+1), rep("All Genes", length(Gene_Set)+1), rep("laura_v17", length(Gene_Set)+1), rep("laura_all", length(Gene_Set)+1), rep("all_combined", length(Gene_Set)+1), rep("laura_all2", length(Gene_Set)+1)), group=rep(c(Gene_Set, "SFARI"),6), percent=c(han_v17_percent, all_gene_percent, laura_v17_percent, laura_all_percent, all_combined_percent, laura_all_percent2))
+#topmirage.enrichment.tidy=data.frame(class=c(rep("han_v17",length(Gene_Set)+1), rep("All Genes", length(Gene_Set)+1), rep("laura_v17", length(Gene_Set)+1), rep("laura_all", length(Gene_Set)+1), rep("all_combined", length(Gene_Set)+1), rep("laura_all2", length(Gene_Set)+1), rep("laura_all3", length(Gene_Set)+1)), group=rep(c(Gene_Set, "SFARI"),7), percent=c(han_v17_percent, all_gene_percent, laura_v17_percent, laura_all_percent, all_combined_percent, laura_all_percent2, laura_all_percent3))
+  
+  topmirage.enrichment.tidy=data.frame(class=c(rep("han_v17",length(Gene_Set)+1), rep("All Genes", length(Gene_Set)+1),  rep("laura_all", length(Gene_Set)+1), rep("laura_all2", length(Gene_Set)+1), rep("laura_all3", length(Gene_Set)+1)), group=rep(c(Gene_Set, "SFARI"),5), percent=c(han_v17_percent, all_gene_percent,  laura_all_percent,  laura_all_percent2, laura_all_percent3))
 ######################
 
 
@@ -505,7 +523,7 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
    theme_classic()+
    xlab("")+ylab("Proportion of genes in the gene set")+
   theme(axis.text.y = element_text(size = 10))+ # this is for numbers on y axis 
-   ylim(c(0, 1))+
+   ylim(c(0, 0.75))+
    theme(plot.title = element_text(hjust = 0.5, size=15, face="bold"))+
    ggtitle("Enrichment of top 20 ASD genes by MIRAGE across different samples")+
     theme(legend.title = element_blank(), legend.text=element_text(size=9))+
@@ -548,6 +566,10 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 
 * only difference of `laura_all2` to `laura_all` is that parameters are estimated in `laura_all2`.  
 
+* `laura_all3` fixed delta=0.05. 
+
+* `laura_all` fixed delta=0.067. 
+
 
 
 ## Analysis of all transmitted variants aggregated
@@ -562,14 +584,21 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 #mirage_para_est=data.frame(variant_groups=c("delta:proportion of risk genes","PTV_PLI>=0.995", "PTV_0.5=<PLI<0.995", "PTV_PLI<0.5",  "MPC>=2",  "1=<MPC<2", "MPC<1"), parameter_estimate=round(c(0.06713907, 0.83382753,0.85448876,0.02985442,0.47471948, 0.11521000, 0.01201084),4), p_value=pvalue_adjust(p_value))
 
 
-var_group=rep(c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1"),2)
+var_group=rep(c("(1):PLI>=0.995", "(2):pLI>=0.5&pLI<0.995", "(3):pLI<0.5", "(4):MPC>=2", "(5):MPC>=1&MPC<2", "(6):MPC<1"),3)
 estimate=c(0.83382753,0.85448876,0.02985442,0.47471948, 0.11521000, 0.01201084,0.353828740524254,
 0.157066593507005,
 0.0215284458160296,
 0.0912380102963087,
 0.033530954375487,
-0.00664397682712002)
-sample=rep(c("ASC_v17", "all_inherited"), each=6)
+0.00664397682712002, 
+0.738664291977854,
+0.701330924907413,
+0.0931459290392402,
+0.366135847737628,
+0.0731974976958973,
+0.0386167362363095
+)
+sample=rep(c("ASC_v17_estimate_delta", "all_inherited_estimate_delta", "all_inherited_fixed_delta"), each=6)
 summary=data.frame(var.group=var_group, estimate=estimate, sample=sample)
 ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) + 
    geom_bar(stat="identity", position=position_dodge())+
@@ -583,6 +612,8 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 
 
 * [parameter estimates by MIRAGE for all inherited variants](https://www.dropbox.com/scl/fi/42yulompgjmiaf7jxg3vi/MIRAGE-parameters-072023.docx?rlkey=dnt8cb5e5y0jdkvobrjnaadgd&dl=0) 
+
+* [parameter estimates by MIRAGE for all inherited variants with fixed delta=5%](https://www.dropbox.com/scl/fo/33polh7c3tx2lu7mi8qzh/h/ALL_combined?dl=0&preview=eta.est.txt&rlkey=geomwls9yq1vrw87rpm0tnrxk&subfolder_nav_tracking=1)
 
 * $\widehat{\delta}=0.307$ for all inherited variants and  $\widehat{\delta}=0.067$ for ASC_v17.  
 

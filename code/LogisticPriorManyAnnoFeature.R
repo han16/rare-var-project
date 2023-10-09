@@ -131,15 +131,19 @@ sigma <- 1
 split.ratio=c(0,1)
 num.group=length(split.ratio)-1
 anno.num=3 # number of annotation groups 
-risk.var.prop=0.2
+risk.var.prop=1
 
 ############  generate feature covariates 
 Ajk=matrix(0, nrow=(num.gene*m), ncol=anno.num) # Ajk are indicator matrix with elements of being 0, or 1
 #for (i in 1:ncol(Ajk))
 #  Ajk[sample(nrow(Ajk), (risk.var.prop*nrow(Ajk))),i]=1 # half of variants across all genes are "1", i.e. risk variants 
-Ajk[1:(0.5*nrow(Ajk)),1]=1
-Ajk[(0.5*nrow(Ajk)+1): nrow(Ajk),2]=1
-Ajk[sample(nrow(Ajk), (risk.var.prop*nrow(Ajk))),3]=rnorm(nrow(Ajk), 0.5, 0.1)
+############# discrete covariates 
+#Ajk[1:(0.5*nrow(Ajk)),1]=1
+#Ajk[(0.5*nrow(Ajk)+1): nrow(Ajk),2]=1
+########### continuous covariates 
+Ajk[sample(nrow(Ajk), (risk.var.prop*nrow(Ajk))),1]=rnorm(risk.var.prop*nrow(Ajk), -0.5, 0.05)
+Ajk[sample(nrow(Ajk), (risk.var.prop*nrow(Ajk))),2]=rnorm(risk.var.prop*nrow(Ajk), 0, 0.05)
+Ajk[sample(nrow(Ajk), (risk.var.prop*nrow(Ajk))),3]=rnorm(risk.var.prop*nrow(Ajk), 0.5, 0.05)
 ############## generate beta 
 beta.true=numeric(anno.num) # beta coefficients for all annotation groups 
 beta.true[1]=0.5
@@ -150,7 +154,7 @@ beta.true[3]=1
 eta.true=exp(Ajk%*%beta.true)/(1+exp(Ajk%*%beta.true)) 
 # eta.true is variant specific, could be very big number 
 ######################
-max.rep=10
+max.rep=1
 all.beta=matrix(nrow=max.rep, ncol=anno.num)
 for (rep in 1:max.rep)
 {  
@@ -190,7 +194,7 @@ for (rep in 1:max.rep)
     Y=c(Y, all.data[[i]]$Zij)
   Response=Y[-1]
   fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2]+Ajk.effect[,3],family=binomial())
-  #fit <- glm(Response~0+Ajk.effect,family=binomial())
+#  fit <- glm(Response~0+Ajk.effect,family=binomial())
   #fit <- glm(Response~0+Ajk.effect[,1]+Ajk.effect[,2]+Ajk.effect[,3]+Ajk.effect[,4]+Ajk.effect[,5]+Ajk.effect[,6]+Ajk.effect[,7]
   #           +Ajk.effect[,8]+Ajk.effect[,9]+Ajk.effect[,10],family=binomial())
   all.beta[rep,]=fit$coefficients 

@@ -1,0 +1,85 @@
+---
+title: "SCHEMA-analysis"
+output: html_document
+date: "2023-09-26"
+---
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+library(DT)
+#library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+```
+
+
+
+```{r, echo=F, message=F, warning=F}
+########## use fixed parameter estimate to calculate BF, this is very useful because it doesn't need to re-run analysis to BF of every gene which takes a long time and large space to store that information 
+intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+
+  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+  BF.var <- marglik1.CC/marglik0.CC
+
+  return(BF.var)
+}
+
+fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
+{
+  #######################
+  beta.k=beta
+  full.info.genevar=list()
+  gene.list=new.data$Gene; unique.gene=unique(gene.list) # find the gene list
+  num.gene=length(unique.gene)
+  BF.gene=numeric()
+  ########################
+  for (i in 1:num.gene)
+  {
+#    cat(i, "th gene of ", "\t", num.gene, "\t", "is running", "\n")
+    var.index.list=which(gene.list==unique.gene[i])
+    indi.gene=new.data[var.index.list,]   # note var.index.list matches new.data
+    bb=1; var.BF=numeric()
+    if (length(var.index.list)>0) # calculate Bayes factor for variant (i,j)
+      for (j in 1:length(var.index.list))
+      {
+        if (new.data$group.index[var.index.list[j]]<=3)   # note here bar.gamma is group specific, attention what bar.gamma goes to which group 
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=6, sig=sigma, N1, N0)
+        if (new.data$group.index[var.index.list[j]]>3)
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=3, sig=sigma, N1, N0)
+        bb=bb*((1-beta.k[new.data$group.index[var.index.list[j]]])+beta.k[new.data$group.index[var.index.list[j]]]*var.BF[j])
+      }
+    full.info.genevar[[i]]=cbind(indi.gene, var.BF)
+    BF.gene[i]=bb
+  }
+  
+  return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
+}
+```
+
+
+
+```{r, echo=F, cache=T, warning=F, message=F}
+### read into new sample 
+path="C:\\Shengtong\\research\\rare-var\\"
+SCHEMA=as_tibble(read.table(paste(path, "SCHEMA\\SCHEMA_variant_results.tsv.subset", sep=""), header = T)) 
+```
