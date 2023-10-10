@@ -661,7 +661,7 @@ if (nrow(tau_at_threshold)>0)
 }
 ```
 
-```{r, echo=T, message=F, warning=F, eval=F}
+```{r, echo=T, message=F, warning=F, eval=T}
 input_data=laura_result3
 colnames(input_data)[3]="post_prob"
 fdr_function(fdr_threshold = 0.2, input_data)
