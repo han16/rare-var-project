@@ -441,9 +441,11 @@ ASC_v17.</p></li>
 </div>
 <div id="bayesian-fdr" class="section level3">
 <h3>Bayesian FDR</h3>
-<pre class="r"><code>fdr_function(fdr_threshold = 0.05, data_manhattan_plot)
-fdr_function(fdr_threshold = 0.45, data_manhattan_plot)
-fdr_function(fdr_threshold = 0.5, data_manhattan_plot)</code></pre>
+<pre class="r"><code>input_data=laura_result3
+colnames(input_data)[3]=&quot;post_prob&quot;
+fdr_function(fdr_threshold = 0.2, input_data)
+#fdr_function(fdr_threshold = 0.45, data_manhattan_plot)
+#fdr_function(fdr_threshold = 0.5, data_manhattan_plot)</code></pre>
 </div>
 </div>
 
