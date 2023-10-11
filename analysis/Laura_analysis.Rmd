@@ -618,6 +618,14 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 * $\widehat{\delta}=0.307$ for all inherited variants and  $\widehat{\delta}=0.067$ for ASC_v17.  
 
 
+## false positive control 
+
+* Run MIRAGE to synonymous variants only, and $\widehat{\delta}=0.017$ with p value 0.086, $\widehat{\eta}=0.079$ with p value 0.027. 
+
+
+
+
+
 ### Bayesian FDR
 
 
