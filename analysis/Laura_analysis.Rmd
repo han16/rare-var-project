@@ -659,6 +659,7 @@ for (i in 1:length(syn_top_genes))
 }
 data.frame(Gene=syn_top_genes, Trans=Trans, Untrans=Untrans, OR=OR, BF=round(syn_genes[[1]][2:16,2],4), Post_prob=round(syn_genes[[1]][2:16,3],4))%>%
 datatable(extensions = 'Buttons',
+          caption = "top genes when run MIRAGE on syn mutations", 
             options = list(dom = 'Blfrtip',
                            buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
                            lengthMenu = list(c(10,25,50,-1),
