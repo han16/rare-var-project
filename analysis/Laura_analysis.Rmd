@@ -623,6 +623,58 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 * Run MIRAGE to synonymous variants only, and $\widehat{\delta}=0.017$ with p value 0.086, $\widehat{\eta}=0.079$ with p value 0.027. 
 
 
+```{r, echo=F, message=F, warning=F, results=F}
+path="C:\\Shengtong\\research\\rare-var\\"
+multiplesheets <- function(fname) {
+   
+  # getting info about all excel sheets
+  sheets <- readxl::excel_sheets(fname)
+  tibble <- lapply(sheets, function(x) readxl::read_excel(fname, sheet = x))
+  data_frame <- lapply(tibble, as.data.frame)
+    
+  # assigning names to data frames
+  names(data_frame) <- sheets
+    
+  # print data frame
+  print(data_frame)
+}
+syn_genes=multiplesheets(paste(path, "ASC\\Laura_result\\Examining highest and lowest BFs 100723.xlsx", sep=""))
+```
+
+
+```{r, echo=F, message=F, warning=F}
+
+path="C:\\Shengtong\\research\\rare-var\\"
+
+all_combined_syn=as_tibble(read.table(paste(path, "ASC\\Laura_result\\mirage_input_20231012.txt", sep=""), header=T))
+
+syn_top_genes=syn_genes[[1]][2:16,1]
+OR=numeric(); Trans=numeric(); Untrans=numeric()
+for (i in 1:length(syn_top_genes))
+{
+  Trans[i]=sum(all_combined_syn %>% filter(Gene==syn_top_genes[i]) %>% select(No.case) %>% pull)
+  Untrans[i]=sum(all_combined_syn %>% filter(Gene==syn_top_genes[i]) %>% select(No.contr) %>% pull)
+  OR[i]=round(Trans[i]/Untrans[i],4)
+  
+}
+data.frame(Gene=syn_top_genes, Trans=Trans, Untrans=Untrans, OR=OR, BF=round(syn_genes[[1]][2:16,2],4), Post_prob=round(syn_genes[[1]][2:16,3],4))%>%
+datatable(extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+
+
+ggplot(data.frame(Gene=syn_top_genes, Trans=Trans, Untrans=Untrans), aes(x=Trans, y=Untrans))+
+  geom_point()+
+ #  xlim(c(0,30))+ylim(c(0,30))+
+  xlab("T")+ylab("UT")+
+  geom_abline(intercept =0, slope = 1, color="red", size=1)+
+   ggtitle("T vs UT for syns")+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
+```
 
 
 
