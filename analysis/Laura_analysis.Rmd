@@ -575,6 +575,15 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 ## Analysis of all transmitted variants aggregated
 
 
+```{r, echo=F, message=F, warning=F, eval=F}
+path="C:\\Shengtong\\research\\rare-var\\"
+
+mirage_input=as_tibble(read.table(paste(path, "ASC\\Laura_result\\mirage_input_20231013.txt", sep=""), header=T))
+N=???
+res=mirage(mirage_input,n1=N,n2=N,gamma=c(6,6,6,3,3,3),delta.init = 0.1,estimate.delta = FALSE)
+```
+
+
 
 ### Parameter estimates 
 
