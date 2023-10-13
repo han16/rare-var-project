@@ -618,7 +618,7 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 * $\widehat{\delta}=0.307$ for all inherited variants and  $\widehat{\delta}=0.067$ for ASC_v17.  
 
 
-## false positive control 
+###  false positive control 
 
 * Run MIRAGE to synonymous variants only, and $\widehat{\delta}=0.017$ with p value 0.086, $\widehat{\eta}=0.079$ with p value 0.027. 
 
@@ -677,6 +677,54 @@ ggplot(data.frame(Gene=syn_top_genes, Trans=Trans, Untrans=Untrans), aes(x=Trans
   theme(plot.title = element_text(hjust = 0.5, size=15))  # center the title
 ```
 
+
+### BF breakdown per gene 
+
+
+```{r, echo=F, message=F, warning=F, results=F}
+path="C:\\Shengtong\\research\\rare-var\\"
+multiplesheets <- function(fname) {
+   
+  # getting info about all excel sheets
+  sheets <- readxl::excel_sheets(fname)
+  tibble <- lapply(sheets, function(x) readxl::read_excel(fname, sheet = x))
+  data_frame <- lapply(tibble, as.data.frame)
+    
+  # assigning names to data frames
+  names(data_frame) <- sheets
+    
+  # print data frame
+  print(data_frame)
+}
+BF_breakdown_gene=multiplesheets(paste(path, "ASC\\Laura_result\\Rough approximation variants for each gene for all datasets combined_20231010.xlsx", sep=""))
+```
+
+```{r, echo=F, message=F, warning=F, eval=F}
+########## this is the result with parameteres fixed at 5% 
+laura_result3=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
+var_group_BF=matrix(nrow=nrow(laura_result3), ncol=6)
+#for (g in 1:nrow(laura_result3))
+{
+  g=1
+  single_gene=BF_breakdown_gene[[1]] %>% filter(Gene...1==laura_result3$Gene[g])
+  
+  ### one variant only 
+  if (nrow(single_gene)==1)
+  var_group_BF[g, single_gene$group.index]=laura_result3$BF[g]*single_gene$norm
+  
+  ### more than one variant
+  if (nrow(single_gene)>1)
+   for (v in 1:nrow(single_gene))
+    {
+     var_group_BF[g, single_gene$group.index[v]]=laura_result3$BF[g]*single_gene$norm[v]
+    
+  }
+  
+} # end of for (g in 1:nrow(laura_result3))
+
+BF_breakdown=data.frame(Gene=laura_result3$Gene, highPLI_BF=var_group_BF[,1], medPLI_BF=var_group_BF[,2], lowPLI_BF=var_group_BF[,3], misB_BF=var_group_BF[,4], misA_BF=var_group_BF[,5], mis_BF=var_group_BF[,6], BF=laura_result3$BF, post_prob=laura_result3$post.prob)
+
+```
 
 
 ### Bayesian FDR

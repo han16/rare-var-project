@@ -455,9 +455,8 @@ class="math inline">\(\widehat{\delta}=0.067\)</span> for
 ASC_v17.</p></li>
 </ul>
 </div>
-</div>
-<div id="false-positive-control" class="section level2">
-<h2>false positive control</h2>
+<div id="false-positive-control" class="section level3">
+<h3>false positive control</h3>
 <ul>
 <li>Run MIRAGE to synonymous variants only, and <span
 class="math inline">\(\widehat{\delta}=0.017\)</span> with p value
@@ -467,6 +466,10 @@ value 0.027.</li>
 <div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9eceb20dc2a931752ae4" style="width:100%;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-9eceb20dc2a931752ae4">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"caption":"<caption>top genes when run MIRAGE on syn mutations<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],["HIST1H4B","ILK","EGR4","NLK","FLRT2","SMYD4","GCH1","NCSTN","PSD","PLA2G4D","NEB","RNF40","MCM3AP","NCKAP5L","TRPM4"],[75,37,119,67,155,138,63,107,204,184,790,173,317,236,167],[57,35,74,56,83,116,35,90,168,160,730,141,251,175,121],[1.3158,1.0571,1.6081,1.1964,1.8675,1.1897,1.8,1.1889,1.2143,1.15,1.0822,1.227,1.2629,1.3486,1.3802],[13.203,14.4552,16.3975,17.1632,17.23,19.8609,21.2146,21.9177,23.2502,25.1306,28.9546,50.6249,54.6934,73.855,658.994],[0.1825,0.1964,0.2171,0.2249,0.2256,0.2514,0.264,0.2704,0.2822,0.2982,0.3287,0.4612,0.4805,0.5553,0.9176]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Gene<\/th>\n      <th>Trans<\/th>\n      <th>Untrans<\/th>\n      <th>OR<\/th>\n      <th>BF<\/th>\n      <th>Post_prob<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
 <p><img src="Laura_analysis_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+</div>
+<div id="bf-breakdown-per-gene" class="section level3">
+<h3>BF breakdown per gene</h3>
+</div>
 <div id="bayesian-fdr" class="section level3">
 <h3>Bayesian FDR</h3>
 <pre class="r"><code>input_data=laura_result3
