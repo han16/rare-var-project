@@ -579,8 +579,8 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
 path="C:\\Shengtong\\research\\rare-var\\"
 
 mirage_input=as_tibble(read.table(paste(path, "ASC\\Laura_result\\mirage_input_20231013.txt", sep=""), header=T))
-N=???
-res=mirage(mirage_input,n1=N,n2=N,gamma=c(6,6,6,3,3,3),delta.init = 0.1,estimate.delta = FALSE)
+N_all=14578  # from Laura's script: NOTES_wrap_mirage_100323
+res=mirage(data.frame(mirage_input),n1=N_all,n2=N_all,gamma=c(6,6,6,3,3,3),delta.init = 0.05,estimate.delta = FALSE)
 ```
 
 
