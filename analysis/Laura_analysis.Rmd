@@ -627,6 +627,77 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 * $\widehat{\delta}=0.307$ for all inherited variants and  $\widehat{\delta}=0.067$ for ASC_v17.  
 
 
+#### BF in each variant group
+
+```{r, echo=F, message=F, warning=F, eval=F}
+################# calculate BF in each group 
+#BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1105_2022.csv"))
+########## this is the result with parameters fixed at 5% 
+BF_proband_AllGene=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
+
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+interest_gene=BF_proband_AllGene_sorted$Gene  # use all genes 
+beta=c(0.738664291977854,
+0.701330924907413,
+0.0931459290392402,
+0.366135847737628,
+0.0731974976958973,
+0.0386167362363095)
+#####################
+### read into input data
+#new.data=ASC_new_sample_GI %>%  filter(Gnomad_non_neuro_AF<0.05) %>% filter(Gene %in% interest_gene) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+new.data=read.table(paste(path, "ASC\\Laura_result\\mirage_input_20231013.txt", sep=""), header=T)
+N_all=14578  # from Laura's script: NOTES_wrap_mirage_100323
+#res=mirage(data.frame(mirage_input),n1=N_all,n2=N_all,gamma=c(6,6,6,3,3,3),delta.init = 0.05,estimate.delta = FALSE)
+#colnames(new.data)[3:5]=c("No.case", "No.contr", "group.index")
+result=fixed.beta.func(new.data, N1=N_all, N0=N_all, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+
+############## verify the calculations 
+#gene_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="SSC5D")]]
+#group.index=gene_variant_BF$group.index
+#gene_BF=prod(1-beta[group.index]+beta[group.index]*gene_variant_BF$var.BF)
+#gene_BF
+#result$BayesFactor[result$BayesFactor$Gene=="SSC5D",]
+##############
+variant_BF=matrix(nrow=length(interest_gene), ncol=7)
+variant_count=matrix(nrow=length(interest_gene), ncol=7)
+SFARI_score=rep("NA", length(interest_gene))
+for (i in 1:length(interest_gene))
+{
+  cat(i, "th gene is running", "\n")
+  variant_BF[i,1]=result$BayesFactor$BF[which(result$BayesFactor$Gene==interest_gene[i])]
+  var_full=result$full.info[[which(result$BayesFactor$Gene==interest_gene[i])]]
+  variant_count[i,1]=paste(paste(sum(var_full$No.case)),"vs", paste(sum(var_full$No.contr)), sep=" ")
+   for (j in 1:6)
+   {
+     if (nrow(var_full %>% filter(group.index==j))==0) # no variants in this group
+      { 
+        variant_BF[i,j+1]="-"
+        variant_count[i,j+1]="-"
+     }
+     
+     if (nrow(var_full %>% filter(group.index==j))>0) # variants exist in this group
+      { 
+       variant_BF[i,j+1]=prod(1-beta[j]+beta[j]*var_full[which(var_full$group.index==j),]$var.BF) # product of BF of variants within that variant group 
+       variant_count[i,j+1]=paste(paste(sum(var_full[which(var_full$group.index==j),]$No.case)),"vs", paste(sum(var_full[which(var_full$group.index==j),]$No.contr)), sep=" ")
+     }
+     
+   }  #### end of 
+  if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==interest_gene[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==interest_gene[i]),]$gene.score
+  
+  
+}
+BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(variant_BF[,1]),4),  SFARI_score=SFARI_score, total_count=variant_count[,1], g1_count=variant_count[,2], g1_BF=round(as.numeric(variant_BF[,2]),2), g2_count=variant_count[,3], g2_BF=round(as.numeric(variant_BF[,3]),2), g3_count=variant_count[,4], g3_BF=round(as.numeric(variant_BF[,4]),2), g4_count=variant_count[,5], g4_BF=round(as.numeric(variant_BF[,5]),2), g5_count=variant_count[,6], g5_BF=round(as.numeric(variant_BF[,6]),2), g6_count=variant_count[,7], g6_BF=round(as.numeric(variant_BF[,7]),2))                                          
+
+#write.csv(BF_var_count_combine_6groups, file="../output/LauraData/MIRAGE_all_inherited_variant_fixed_delta_2023_1023.csv")
+
+```
+
+[variant count and BF in every group](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/Ee0vmWgnInhDh5_SNQBmRFwB9b09gPto2JhX-Hk7tQFpxg?e=CLVnF7)
+
+
 ###  false positive control 
 
 * Run MIRAGE to synonymous variants only, and $\widehat{\delta}=0.017$ with p value 0.086, $\widehat{\eta}=0.079$ with p value 0.027. 
