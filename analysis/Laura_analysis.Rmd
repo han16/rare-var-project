@@ -627,7 +627,7 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 * $\widehat{\delta}=0.307$ for all inherited variants and  $\widehat{\delta}=0.067$ for ASC_v17.  
 
 
-#### BF in each variant group
+### BF in each variant group with fixed $\delta=5\%$
 
 ```{r, echo=F, message=F, warning=F, eval=F}
 ################# calculate BF in each group 
