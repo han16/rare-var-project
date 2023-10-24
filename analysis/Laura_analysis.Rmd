@@ -627,6 +627,49 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 * $\widehat{\delta}=0.307$ for all inherited variants and  $\widehat{\delta}=0.067$ for ASC_v17.  
 
 
+
+### Occurrence of top 20 ASD genes in other gene sets 
+
+
+```{r, echo=F, message=F, warning=F, eval=T}
+#gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
+################ top genes 
+BF_proband_AllGene=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
+
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
+SFARI.gene=read.csv("../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv", header=T)
+
+num_gene_to_display=20
+gene_to_display=BF_proband_AllGene_sorted$Gene[1:num_gene_to_display]
+SFARI_score=rep("NA", num_gene_to_display)
+Incidence_gene=matrix(nrow=num_gene_to_display, ncol=11)
+for (i in 1:length(gene_to_display))
+{
+
+
+if(nrow(SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),])>0) 
+ SFARI_score[i]=SFARI.gene[which(SFARI.gene$gene.symbol==gene_to_display[i]),]$gene.score
+for (j in 1:10)
+ Incidence_gene[i,1+j]=as.numeric(gene_to_display[i]%in% Gene_Set_List[[j]])
+
+}
+rownames(Incidence_gene)=gene_to_display
+colnames(Incidence_gene)=c("BF",Gene_Set)
+Incidence_gene[,1]=round(BF_proband_AllGene_sorted$BF[1:num_gene_to_display],2)
+Incidence_gene%>%
+datatable(extensions = 'Buttons',
+          caption = 'Occurrence of top 20 genes in various gene sets',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(10,25,50,-1),
+                                             c(10,25,50,"All"))))
+
+
+```
+
+
+
+
 ### BF in each variant group with fixed $\delta=5\%$
 
 ```{r, echo=F, message=F, warning=F, eval=F}
