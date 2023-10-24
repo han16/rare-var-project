@@ -667,7 +667,7 @@ datatable(extensions = 'Buttons',
 
 ```
 
-
+* top 20 ASD genes by running MIRAGE on all inherited variants with $\delta=5\%$. 
 
 
 ### BF in each variant group with fixed $\delta=5\%$
