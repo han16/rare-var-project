@@ -737,6 +737,14 @@ BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(
 
 #write.csv(BF_var_count_combine_6groups, file="../output/LauraData/MIRAGE_all_inherited_variant_fixed_delta_2023_1023.csv")
 
+
+#################### given a gene, output its variant level BF
+#Gene_MYH10_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="MYH10")]]
+#write.csv(Gene_MYH10, file=paste(path, "ASC\\Laura_result\\Gene_MYH10_T&UT_variant_BF_20231102.csv", sep=""))
+
+#Gene_PTPRF_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="PTPRF")]]
+#write.csv(Gene_PTPRF, file=paste(path, "ASC\\Laura_result\\Gene_PTPRF_T&UT_variant_BF_20231102.csv", sep=""))
+
 ```
 
 [variant count and BF in every group](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/Ee0vmWgnInhDh5_SNQBmRFwB9b09gPto2JhX-Hk7tQFpxg?e=CLVnF7)
@@ -844,6 +852,48 @@ topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) +
  topmirage_enrichment
  #dev.off()
 ```
+
+
+### Manhattan plot
+
+
+```{r, echo=F, message=F, warning=F, eval=F}
+############## run once to get the data for plot 
+path="C:\\Shengtong\\research\\rare-var\\"
+
+###### this is the input aggregating all inherited variants  
+new.data=as_tibble(read.table(paste(path, "ASC\\Laura_result\\mirage_input_20231013.txt", sep=""), header=T))
+
+
+########## this is the result with parameters fixed at 5% 
+BF_proband_AllGene=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
+BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(BF))
+#delta_estimate=0.0671 # the estimate of delta, proportion of risk genes 
+#post_prob=BF_proband_AllGene_sorted$BF_filtered*delta_estimate/(BF_proband_AllGene_sorted$BF_filtered*delta_estimate+1-delta_estimate) # calculate post probability by definition
+
+data_for_plot=data.frame(Gene=BF_proband_AllGene_sorted$Gene, BF=BF_proband_AllGene_sorted$BF, post_prob=BF_proband_AllGene_sorted$post.prob)
+##### extrat chr and position for each gene 
+chr=numeric(); pos=numeric()
+for (i in 1:nrow(data_for_plot))
+#for (i in 1:2)  
+{
+  cat(i, "is running", "\n")
+  variant=new.data %>% filter(Gene==data_for_plot$Gene[i]) %>% select(Variant)%>% pull() # find all variants for a gene 
+  colon_pos=unlist(gregexpr(":", variant[1])) # location positions of ":" # use the "first" variant in the gene 
+  chr[i]=substr(variant[1], 1,colon_pos[1]-1)
+  pos[i]=substr(variant[1], colon_pos[1]+1, colon_pos[2]-1)
+} 
+data_manhattan_plot=data_for_plot%>%mutate(chr=as.numeric(chr), pos=as.numeric(pos))
+#write.csv(data_manhattan_plot, file=paste(path, "ASC\\Laura_result\\data_manhattan_plot_AllInheritedVariant_deltafixed_20231102.csv", sep=""))
+
+Gene_MYH10=new.data %>% filter(Gene=="MYH10") 
+#write.csv(Gene_MYH10, file=paste(path, "ASC\\Laura_result\\Gene_MYH10_T&UT_20231102.csv", sep=""))
+
+Gene_PTPRF=new.data %>% filter(Gene=="PTPRF") 
+#write.csv(Gene_PTPRF, file=paste(path, "ASC\\Laura_result\\Gene_PTPRF_T&UT_20231102.csv", sep=""))
+
+```
+
 
 
 
