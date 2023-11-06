@@ -581,7 +581,9 @@ path="C:\\Shengtong\\research\\rare-var\\"
 
 mirage_input=as_tibble(read.table(paste(path, "ASC\\Laura_result\\mirage_input_20231013.txt", sep=""), header=T))
 N_all=14578  # from Laura's script: NOTES_wrap_mirage_100323
-res=mirage(data.frame(mirage_input),n1=N_all,n2=N_all,gamma=c(6,6,6,3,3,3),delta.init = 0.05,estimate.delta = FALSE)
+#res=mirage(data.frame(mirage_input),n1=N_all,n2=N_all,gamma=c(6,6,6,3,3,3),delta.init = 0.05,estimate.delta = FALSE)
+mirage_input_for_gnomAD_AF=mirage_input %>% select(Variant, Gene)
+#write.csv(mirage_input_for_gnomAD_AF, file=paste(path, "ASC\\Laura_result\\mirage_input_for_gnomAD_AF_20231106.csv", sep=""))
 ```
 
 
