@@ -102,7 +102,7 @@ mirage_input_with_gnomad_AF=right_join(ASC_v17_TDT_by_variant_20200916_gnomad, m
 #BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))
 colnames(mirage_input_with_gnomad_AF)[4:6]=c("Transmitted_proband", "Untransmitted_proband", "Group_Index")
 interest_gene=unique(mirage_input_with_gnomad_AF$Gene)  # use all genes 
-new_data=mirage_input_with_gnomad_AF %>% filter(Gene %in% interest_gene) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Group_Index) 
+new_data=mirage_input_with_gnomad_AF %>% filter(Gene %in% interest_gene) %>% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na() ##### remove variants with NA AF 
 acat_gene_pvalue=numeric()
 a1=1; a2=25
 for (i in 1:length(interest_gene))
@@ -333,7 +333,7 @@ for STAAR analysis
 
 * use ACAT-O to combine 6 group level ACAT p values in the last step with equal weight as in the paper, as STAAR p value for each gene.  
 
-
+* all variants have valid AF and those with `NA` AF are removed 
 
 
 
