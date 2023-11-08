@@ -353,7 +353,158 @@ div.tocify {
 </div>
 
 
+<div id="qq-plot-of-staar" class="section level2">
+<h2>QQ plot of STAAR</h2>
+<pre class="r"><code>staar_pvalue=as_tibble(read.csv(&quot;../output/LauraData/AllGene_6vargroups_ACAT_pvalue_2023_1107.csv&quot;))
+theo &lt;- (ppoints(length(staar_pvalue$ACAT_pvalue)))
 
+  #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)), ylab=expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)), main=&quot;(A) Burden&quot;, frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col=&#39;red&#39;, lwd=2)
+
+#################  use ggplot draw qq plot 
+sx &lt;- sort(-log(theo, base=10)); sy &lt;- sort(-log(staar_pvalue$ACAT_pvalue, base=10))
+lenx &lt;- length(sx)
+leny &lt;- length(sy)
+if (leny &lt; lenx)sx &lt;- approx(1L:lenx, sx, n = leny)$y
+if (leny &gt; lenx)sy &lt;- approx(1L:leny, sy, n = lenx)$y
+
+burden=tibble(sx=sx, sy=sy)
+ ggplot(burden) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)))+
+   ylab(expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)))+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face=&quot;bold&quot;))+  #center the title+
+   ggtitle(&quot;STAAR&quot;)+
+   geom_abline(intercept = 0, slope = 1, color=&quot;red&quot;, 
+                 linetype=&quot;solid&quot;, size=1.5)+
+theme(text = element_text(size=10))</code></pre>
+<p><img src="qqplot_burden_acat_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>for STAAR analysis</p>
+<ul>
+<li><p>apply AF filter <span
+class="math inline">\(AF&lt;5\%\)</span></p></li>
+<li><p>within each of 6 variant groups, use ACAT-V to combine single
+variant p values of binomial test using weights in the paper <span
+class="math inline">\(w_{i, ACAT-V}=Beta(MAF_i, a1=1,
+a2=25)*\sqrt{MAF_i(1-MAF_i)}\)</span>. Variants with MAC&lt;10 are
+collapsed for burden test, with weight <span class="math inline">\(w_{0,
+ACAT-V}\)</span>.</p></li>
+<li><p>use ACAT-O to combine 6 group level ACAT p values in the last
+step with equal weight as in the paper, as STAAR p value for each
+gene.</p></li>
+</ul>
+</div>
+<div id="qq-plot-of-burden" class="section level2">
+<h2>QQ plot of burden</h2>
+<pre class="r"><code>plotQQ.unif &lt;- function(p.obs) {
+  obs &lt;- (p.obs)
+  theo &lt;- (ppoints(length(obs)))
+  qqplot(-log(theo, base=10), -log(obs, base=10), xlab=expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)), ylab=expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)), main=&quot;A&quot;)
+  abline(0,1,col=&#39;red&#39;)
+}</code></pre>
+<pre class="r"><code>burden_pvalues_001=as_tibble(read.csv(&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_2023_1107.csv&quot;))
+combine_001=as_tibble(read.csv(&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_counts_binom_oneside_pvalues_MPC_larger_than2_AF0.01_2023_1107.csv&quot;))
+
+#######################   John storey&#39;s q value 
+#### install qvalue package 
+#install.packages(&quot;devtools&quot;)
+#library(&quot;devtools&quot;)
+#install_github(&quot;jdstorey/qvalue&quot;)   https://github.com/StoreyLab/qvalue
+
+#library(qvalue)
+#qobj.burden=qvalue(Burden.pvalue)
+#localFDR.burden &lt;- qobj.burden$lfdr
+#min(localFDR.burden, na.rm=T)
+
+#qobj.SKATO=qvalue(SKATO.pvalue)
+#localFDR.SKATO &lt;- qobj.SKATO$lfdr
+#min(localFDR.SKATO, na.rm=T)
+#######################
+
+
+#pdf(&quot;C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_othermethod_ASD_topconstgene.pdf&quot;)
+#par(mfrow=c(1,2))
+theo &lt;- (ppoints(length(burden_pvalues_001$LoF_pvalue)))
+  #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)), ylab=expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)), main=&quot;(A) Burden&quot;, frame=F, cex.lab=0.8, pch=20)
+  #abline(0,1,col=&#39;red&#39;, lwd=2)
+
+#################  use ggplot draw qq plot 
+sx &lt;- sort(-log(theo, base=10)); sy &lt;- sort(-log(burden_pvalues_001$LoF_pvalue, base=10))
+lenx &lt;- length(sx)
+leny &lt;- length(sy)
+if (leny &lt; lenx)sx &lt;- approx(1L:lenx, sx, n = leny)$y
+if (leny &gt; lenx)sy &lt;- approx(1L:leny, sy, n = lenx)$y
+
+burden=tibble(sx=sx, sy=sy)
+ qqplot_burden_LoF=ggplot(burden) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)))+
+   ylab(expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)))+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face=&quot;bold&quot;))+  #center the title+
+   ggtitle(&quot;LoF&quot;)+
+   geom_abline(intercept = 0, slope = 1, color=&quot;red&quot;, 
+                 linetype=&quot;solid&quot;, size=1.5)+
+theme(text = element_text(size=10))
+ #qqplot_burden_LoF
+
+#################
+theo &lt;- (ppoints(length(burden_pvalues_001$LoF.Missense_pvalue)))
+
+ sx &lt;- sort(-log(theo, base=10)); sy &lt;- sort(-log(burden_pvalues_001$LoF.Missense_pvalue, base=10))
+lenx &lt;- length(sx)
+leny &lt;- length(sy)
+if (leny &lt; lenx)sx &lt;- approx(1L:lenx, sx, n = leny)$y
+if (leny &gt; lenx)sy &lt;- approx(1L:leny, sy, n = lenx)$y
+
+ LoF.Missense=tibble(sx=sx, sy=sy)
+ qqplot_burden_LoF.Missense=ggplot(LoF.Missense) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)))+
+   ylab(expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)))+
+   #ylab(&quot;&quot;)+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face=&quot;bold&quot;))+  #center the title+
+   ggtitle(&quot;LoF+MPC&gt;2&quot;)+
+   geom_abline(intercept = 0, slope = 1, color=&quot;red&quot;, 
+                 linetype=&quot;solid&quot;, size=1.5)+
+theme(text = element_text(size=10))
+#qqplot_burden_LoF.Missense
+ 
+ 
+ ################################
+ theo &lt;- (ppoints(length(burden_pvalues_001$fisher_combine_pvalue)))
+
+ sx &lt;- sort(-log(theo, base=10)); sy &lt;- sort(-log(burden_pvalues_001$fisher_combine_pvalue, base=10))
+lenx &lt;- length(sx)
+leny &lt;- length(sy)
+if (leny &lt; lenx)sx &lt;- approx(1L:lenx, sx, n = leny)$y
+if (leny &gt; lenx)sy &lt;- approx(1L:leny, sy, n = lenx)$y
+
+ fisher.combine=tibble(sx=sx, sy=sy)
+ qqplot_burden_fisher.combine=ggplot(fisher.combine) + geom_point(aes(x=sx, y=sy))+
+   theme_classic()+
+   xlab(expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)))+
+   ylab(expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)))+
+   #ylab(&quot;&quot;)+
+   theme(plot.title = element_text(hjust = 0.5, size=10,face=&quot;bold&quot;))+  #center the title+
+   ggtitle(&quot;Fisher combine LoF+MPC&gt;2&quot;)+
+   geom_abline(intercept = 0, slope = 1, color=&quot;red&quot;, 
+                 linetype=&quot;solid&quot;, size=1.5)+
+theme(text = element_text(size=10))
+#qqplot_burden_fisher.combine
+
+#png(&quot;C:/Users/han24/OneDrive - UWM/rare-var/Figure/Supp/Fig-pvalue_QQplot_ASD_topconstgene_enrichemnt.png&quot;) 
+figure=ggarrange(qqplot_burden_LoF, qqplot_burden_LoF.Missense,  qqplot_burden_fisher.combine, nrow=1)
+annotate_figure(figure,
+                top = text_grob(&quot;&quot;, color = &quot;red&quot;, face = &quot;bold&quot;, size = 14),
+#                bottom = text_grob(&quot;Datasource: \n ToothGrowth data set&quot;, color = &quot;blue&quot;,
+#                                   hjust = 1, x = 1, face = &quot;italic&quot;, size = 10),
+#                left = text_grob(&quot;Tooth length&quot;, color = &quot;green&quot;, rot = 90),
+#                right = &quot;I&#39;m done, thanks :-)!&quot;,
+#                fig.lab = &quot;Figure 1&quot;, fig.lab.face = &quot;bold&quot;
+)</code></pre>
+<p><img src="qqplot_burden_acat_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
+</div>
 
 <hr>
 <p>
