@@ -63,7 +63,10 @@ output:
 * [liftover samples](liftover_files.html)
 
 * [STAAR analysis](staar_analysis.html)
-* [Laura's result](Laura_analysis.html)
+
+###  [Laura's result](Laura_analysis.html)
+
+* [QQ plot of burden and ACAT](qqplot_burden_acat.html)
 
 
 
