@@ -355,7 +355,7 @@ div.tocify {
 
 <div id="qq-plot-of-staar" class="section level2">
 <h2>QQ plot of STAAR</h2>
-<pre class="r"><code>staar_pvalue=as_tibble(read.csv(&quot;../output/LauraData/AllGene_6vargroups_ACAT_pvalue_2023_1107.csv&quot;))
+<pre class="r"><code>staar_pvalue=as_tibble(read.csv(&quot;../output/LauraData/AllGene_6vargroups_ACAT_pvalue_2023_1108.csv&quot;))
 theo &lt;- (ppoints(length(staar_pvalue$ACAT_pvalue)))
 
   #qqplot(-log(theo, base=10), -log(Burden.pvalue, base=10), xlab=expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)), ylab=expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)), main=&quot;(A) Burden&quot;, frame=F, cex.lab=0.8, pch=20)
@@ -402,8 +402,8 @@ gene.</p></li>
   qqplot(-log(theo, base=10), -log(obs, base=10), xlab=expression(paste(&quot;Theoretical &quot;,-log[10], &quot;(p-values)&quot;)), ylab=expression(paste(&quot;Observed &quot;, -log[10], &quot;(p-values)&quot;)), main=&quot;A&quot;)
   abline(0,1,col=&#39;red&#39;)
 }</code></pre>
-<pre class="r"><code>burden_pvalues_001=as_tibble(read.csv(&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_2023_1107.csv&quot;))
-combine_001=as_tibble(read.csv(&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_counts_binom_oneside_pvalues_MPC_larger_than2_AF0.01_2023_1107.csv&quot;))
+<pre class="r"><code>burden_pvalues_001=as_tibble(read.csv(&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_2023_1108.csv&quot;))
+combine_001=as_tibble(read.csv(&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_counts_binom_oneside_pvalues_MPC_larger_than2_2023_1108.csv&quot;))
 
 #######################   John storey&#39;s q value 
 #### install qvalue package 
