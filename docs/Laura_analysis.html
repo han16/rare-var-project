@@ -473,6 +473,111 @@ class="math inline">\(\delta=5\%\)</span></h3>
 href="https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/Ee0vmWgnInhDh5_SNQBmRFwB9b09gPto2JhX-Hk7tQFpxg?e=CLVnF7">variant
 count and BF in every group</a></p>
 </div>
+<div id="enrichment-of-top-20-genes-with-fixed-delta5"
+class="section level3">
+<h3>Enrichment of top 20 genes with fixed <span
+class="math inline">\(\delta=5\%\)</span></h3>
+<pre class="r"><code>path=&quot;C:\\Shengtong\\research\\rare-var\\&quot;
+topgene_number=20
+BF_para_all_est=as_tibble(read.table(paste(path, &quot;ASC\\Laura_result\\BF.PP.gene_2023_1009.txt&quot;, sep=&quot;&quot;), header=T))
+#burden_pvalues_001=as_tibble(read.csv(&quot;../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv&quot;)) # call top genes by burden 
+#sort_pvalue=burden_pvalues_001 %&gt;% arrange(All_variants_pvalue) # rank genes by p values 
+#topgenes_burden=as.character(sort_pvalue$X[1:topgene_number])
+#all.gene_burden=as.character(sort_pvalue$X)
+#topmirage.percent_burden=numeric()
+
+################
+SFARI.gene=read.csv(&quot;../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv&quot;, header=T)
+###################### strong ASD genes 
+
+SFARI_gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol)) 
+
+################
+
+sort_BF=BF_para_all_est %&gt;% arrange(desc(BF))
+topgenes=as.character(sort_BF$Gene[1:topgene_number])
+all.gene=as.character(sort_BF$Gene)
+topmirage.percent=numeric(); all.gene.percent=numeric()
+pvalue=numeric()
+for ( i in 1:length(Gene_Set))
+{
+  overlap1=length(intersect(topgenes, Gene_Set_List[[i]]))
+  topmirage.percent[i]=overlap1/topgene_number
+  
+  overlap2=length(intersect(all.gene, Gene_Set_List[[i]]))
+  all.gene.percent[i]=overlap2/length(all.gene)
+  
+  pvalue[i]=fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))$p.value
+  ####################
+ # overlap_burden=length(intersect(topgenes_burden, Gene_Set_List[[i]]))
+#  topmirage.percent_burden[i]=overlap_burden/topgene_number
+}
+############ include SFARI gene in gene set 
+overlap1=length(intersect(topgenes, SFARI_gene))
+  topmirage.percent[i+1]=overlap1/topgene_number
+  
+  overlap2=length(intersect(all.gene, SFARI_gene))
+  all.gene.percent[i+1]=overlap2/length(all.gene)
+  
+#  overlap_burden=length(intersect(topgenes_burden, SFARI_gene))
+#  topmirage.percent_burden[i+1]=overlap_burden/topgene_number
+  
+
+#topmirage.enrichment.tidy=data.frame(class=c(rep(&quot;MIRAGE&quot;,length(Gene_Set)+1), rep(&quot;All Genes&quot;, length(Gene_Set)+1), rep(&quot;LoF+MPC&gt;2&quot;, length(Gene_Set)+1)), group=rep(c(Gene_Set, &quot;SFARI&quot;),3), percent=c(topmirage.percent, all.gene.percent, topmirage.percent_burden))
+  
+  ######## without burden test 
+  topmirage.enrichment.tidy=data.frame(class=c(rep(&quot;MIRAGE&quot;,length(Gene_Set)+1), rep(&quot;All Genes&quot;, length(Gene_Set)+1)), group=rep(c(Gene_Set, &quot;SFARI&quot;),2), percent=c(topmirage.percent, all.gene.percent))
+######################
+
+
+
+topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
+   geom_bar(aes(fill = class), stat = &quot;identity&quot;, position = &quot;dodge&quot;)+
+   theme_classic()+
+   xlab(&quot;&quot;)+ylab(&quot;Proportion of genes in the gene set&quot;)+
+  theme(axis.text.y = element_text(size = 10))+ # this is for numbers on y axis 
+   ylim(c(0, 0.5))+
+   theme(plot.title = element_text(hjust = 0.5, size=15, face=&quot;bold&quot;))+
+   ggtitle(&quot;Enrichment of top 20 ASD genes by burden and MIRAGE&quot;)+
+    theme(legend.title = element_blank())+
+   geom_signif(annotations =&quot;0.016&quot;, y_position = 0.115  ,xmin=0.7, xmax=1.3, size=1, vjust=-0.5, textsize=3.0)+ # textsize is for text over the bar; size is for width of lines 
+  geom_signif(annotations =&quot;0.169&quot;, y_position = 0.065  ,xmin=0.7, xmax=1.0, size=1, vjust=-0.5, textsize=3.0)+
+   geom_signif(annotations =&quot;3.32e-6&quot;, y_position = 0.465  ,xmin=1.7, xmax=2.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.618&quot;, y_position = 0.065  ,xmin=1.7, xmax=2.0, size=1, vjust=-0.5, textsize=3.0)+
+   geom_signif(annotations =&quot;6.09e-5&quot;, y_position = 0.365  ,xmin=2.7, xmax=3.3, size=1, vjust=-0.5, textsize=3.0)+
+   geom_signif(annotations =&quot;0.210&quot;, y_position = 0.115  ,xmin=2.7, xmax=3.0, size=1, vjust=-0.5, textsize=3.0)+
+   geom_signif(annotations =&quot;8.53e-3&quot;, y_position = 0.315  ,xmin=3.7, xmax=4.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.029&quot;, y_position = 0.265  ,xmin=3.7, xmax=4.0, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.069&quot;, y_position = 0.065,xmin=4.7, xmax=5.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;&quot;, y_position = 0.065,xmin=4.7, xmax=5.0, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.223&quot;, y_position = 0.065,xmin=5.7, xmax=6.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;1.000&quot;, y_position = 0.025,xmin=5.7, xmax=6.0, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.247&quot;, y_position = 0.065,xmin=6.7, xmax=7.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;1.000&quot;, y_position = 0.025,xmin=6.7, xmax=7.0, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.041&quot;, y_position = 0.165,xmin=7.7, xmax=8.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.513&quot;, y_position = 0.065,xmin=7.7, xmax=8.0, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;2.02e-6&quot;, y_position = 0.465,xmin=8.7, xmax=9.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.017&quot;, y_position = 0.215,xmin=8.7, xmax=9.0, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;5.06e-4&quot;, y_position = 0.465,xmin=9.7, xmax=10.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.057&quot;, y_position = 0.265,xmin=9.7, xmax=10.0, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.046&quot;, y_position = 0.113,xmin=10.7, xmax=11.3, size=1, vjust=-0.5, textsize=3.0)+
+  geom_signif(annotations =&quot;0.280&quot;, y_position = 0.065,xmin=10.7, xmax=11.0, size=1, vjust=-0.5, textsize=3.0)+
+    theme(legend.position=&quot;bottom&quot;)+
+   theme(axis.text.x = element_text(angle = 15, vjust = 0.5, size=13))+
+ theme(text = element_text(size=13))+ # size is for labels on x axis 
+  theme(axis.title = element_text(size = 13))+ # Font Size of Axis Titles
+ theme(legend.spacing.x = unit(1.0, &#39;cm&#39;)) # add space between symbols in legend 
+
+
+ 
+ #png(&quot;C:/Shengtong/Research/rare-var/RareVariant/2023_0413_Figure_for_paper/Fig-enrichment_of_top_genes.png&quot;)
+ topmirage_enrichment</code></pre>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code> #dev.off()</code></pre>
+</div>
+<div id="manhattan-plot" class="section level3">
+<h3>Manhattan plot</h3>
+</div>
 <div id="false-positive-control" class="section level3">
 <h3>false positive control</h3>
 <ul>
@@ -483,7 +588,7 @@ value 0.027.</li>
 </ul>
 <div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f30d7598595affc4f25a" style="width:100%;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-f30d7598595affc4f25a">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"caption":"<caption>top genes when run MIRAGE on syn mutations<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],["HIST1H4B","ILK","EGR4","NLK","FLRT2","SMYD4","GCH1","NCSTN","PSD","PLA2G4D","NEB","RNF40","MCM3AP","NCKAP5L","TRPM4"],[75,37,119,67,155,138,63,107,204,184,790,173,317,236,167],[57,35,74,56,83,116,35,90,168,160,730,141,251,175,121],[1.3158,1.0571,1.6081,1.1964,1.8675,1.1897,1.8,1.1889,1.2143,1.15,1.0822,1.227,1.2629,1.3486,1.3802],[13.203,14.4552,16.3975,17.1632,17.23,19.8609,21.2146,21.9177,23.2502,25.1306,28.9546,50.6249,54.6934,73.855,658.994],[0.1825,0.1964,0.2171,0.2249,0.2256,0.2514,0.264,0.2704,0.2822,0.2982,0.3287,0.4612,0.4805,0.5553,0.9176]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Gene<\/th>\n      <th>Trans<\/th>\n      <th>Untrans<\/th>\n      <th>OR<\/th>\n      <th>BF<\/th>\n      <th>Post_prob<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
-<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<p><img src="Laura_analysis_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 </div>
 <div id="bf-breakdown-per-gene" class="section level3">
 <h3>BF breakdown per gene</h3>

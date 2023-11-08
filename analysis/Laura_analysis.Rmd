@@ -756,7 +756,7 @@ BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(
 ### Enrichment of top 20 genes with fixed $\delta=5\%$ 
 
 
-```{r, echo=F, warning=F, message=F}
+```{r, echo=T, warning=F, message=F}
 path="C:\\Shengtong\\research\\rare-var\\"
 topgene_number=20
 BF_para_all_est=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
