@@ -582,8 +582,14 @@ path="C:\\Shengtong\\research\\rare-var\\"
 mirage_input=as_tibble(read.table(paste(path, "ASC\\Laura_result\\mirage_input_20231013.txt", sep=""), header=T))
 N_all=14578  # from Laura's script: NOTES_wrap_mirage_100323
 #res=mirage(data.frame(mirage_input),n1=N_all,n2=N_all,gamma=c(6,6,6,3,3,3),delta.init = 0.05,estimate.delta = FALSE)
-mirage_input_for_gnomAD_AF=mirage_input %>% select(Variant, Gene)
+############# output subset of input data
+#mirage_input_for_gnomAD_AF=mirage_input %>% select(Variant, Gene)
 #write.csv(mirage_input_for_gnomAD_AF, file=paste(path, "ASC\\Laura_result\\mirage_input_for_gnomAD_AF_20231106.csv", sep=""))
+
+########### output top ASD genes for LD computation 
+Top_ASD_gene=BF_proband_AllGene_sorted %>% select(Gene) %>% pull()
+mirage_input_top_ASD_gene=mirage_input %>% filter(Gene %in% Top_ASD_gene[1:18]==T) # 18 genes are selected with PP>0.5
+#write.csv(mirage_input_top_ASD_gene, file="../output/LauraData/mirage_input_for_top_ASD_gene_2023_1107.csv")
 ```
 
 
@@ -635,6 +641,7 @@ ggplot(summary, aes(x=var.group, y=estimate, fill=sample)) +
 
 
 ```{r, echo=F, message=F, warning=F, eval=T}
+path="C:\\Shengtong\\research\\rare-var\\"
 #gene_set=ASC_new_sample_GI %>% filter(Gnomad_non_neuro_AF<0.05) %>% select(Variant, Gene, Transmitted_proband, Untransmitted_proband, Group_Index) %>% drop_na()
 ################ top genes 
 BF_proband_AllGene=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
@@ -756,7 +763,7 @@ BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(
 ### Enrichment of top 20 genes with fixed $\delta=5\%$ 
 
 
-```{r, echo=T, warning=F, message=F}
+```{r, echo=F, warning=F, message=F}
 path="C:\\Shengtong\\research\\rare-var\\"
 topgene_number=20
 BF_para_all_est=as_tibble(read.table(paste(path, "ASC\\Laura_result\\BF.PP.gene_2023_1009.txt", sep=""), header=T))
