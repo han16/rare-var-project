@@ -754,6 +754,12 @@ BF_var_count_combine_6groups=data.frame(Gene=interest_gene, BF=round(as.numeric(
 #Gene_PTPRF_variant_BF=result$full.info[[which(result$BayesFactor$Gene=="PTPRF")]]
 #write.csv(Gene_PTPRF, file=paste(path, "ASC\\Laura_result\\Gene_PTPRF_T&UT_variant_BF_20231102.csv", sep=""))
 
+Top_genes=result$BayesFactor[order(result$BayesFactor$BF, decreasing = T),]$Gene[1:18]
+Top_gene_variant_BF=list()
+for (i in 1:length(Top_genes))
+  Top_gene_variant_BF[[i]]=result$full.info[[which(result$BayesFactor$Gene==Top_genes[i])]]
+
+#save(Top_gene_variant_BF, file=paste(path, "ASC\\Laura_result\\top_gene_T&UT_variant_BF_20231114.RData", sep=""))
 ```
 
 [variant count and BF in every group](https://marq-my.sharepoint.com/:x:/g/personal/shengtong_han_marquette_edu/Ee0vmWgnInhDh5_SNQBmRFwB9b09gPto2JhX-Hk7tQFpxg?e=CLVnF7)
