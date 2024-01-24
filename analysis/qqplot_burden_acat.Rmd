@@ -23,6 +23,9 @@ library(DT)
 #install.packages("Rtools")
 #install_github('xinhe-lab/mirage')
 library(mirage)
+
+#install.packages("remotes")
+#remotes::install_github("yaowuliu/ACAT")
 library(ACAT)
 ```
 
@@ -77,7 +80,7 @@ fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data h
 ```
 
 
-```{r, echo=F, message=F, warning=F, eval=T}
+```{r, echo=T, message=F, warning=F, eval=T}
 ################## DO NOT RUN ########################
 path="C:\\Shengtong\\research\\rare-var\\"
 
@@ -96,7 +99,7 @@ mirage_input_with_gnomad_AF=right_join(ASC_v17_TDT_by_variant_20200916_gnomad, m
 
 ## QQ plot of STAAR 
 
-```{r, echo=F, message=F, warning=F, eval=F}
+```{r, echo=T, message=F, warning=F, eval=F}
 ################# calculate ACAT pvalue for every gene 
 #BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1105_2022.csv"))
 #BF_proband_AllGene_sorted=BF_proband_AllGene%>%arrange(desc(post.prob))

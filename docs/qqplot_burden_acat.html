@@ -14,7 +14,7 @@
 
 <title>QQ plot of burden and ACAT</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -30,14 +30,14 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -353,8 +353,217 @@ div.tocify {
 </div>
 
 
+<pre class="r"><code>################## DO NOT RUN ########################
+path=&quot;C:\\Shengtong\\research\\rare-var\\&quot;
+
+########### read into Laura&#39;s data all inherited variants aggregated 
+mirage_input=as_tibble(read.table(paste(path, &quot;ASC\\Laura_result\\mirage_input_20231013.txt&quot;, sep=&quot;&quot;), header=T))
+N_all=14578  # from Laura&#39;s script: NOTES_wrap_mirage_100323
+#res=mirage(data.frame(mirage_input),n1=N_all,n2=N_all,gamma=c(6,6,6,3,3,3),delta.init = 0.05,estimate.delta = FALSE)
+#mirage_input_for_gnomAD_AF=mirage_input %&gt;% select(Variant, Gene)
+#write.csv(mirage_input_for_gnomAD_AF, file=paste(path, &quot;ASC\\Laura_result\\mirage_input_for_gnomAD_AF_20231106.csv&quot;, sep=&quot;&quot;))
+
+########## read into gnomAD allele frequency 
+ASC_v17_TDT_by_variant_20200916_gnomad=as_tibble(read.table(paste(path, &quot;ASC\\Laura_result\\ASC_v17_TDT_by_variant_2020-09-16_gnomad.txt&quot;, sep=&quot;&quot;), header=T))
+mirage_input_with_gnomad_AF=right_join(ASC_v17_TDT_by_variant_20200916_gnomad, mirage_input, by=&quot;Variant&quot;)</code></pre>
 <div id="qq-plot-of-staar" class="section level2">
 <h2>QQ plot of STAAR</h2>
+<pre class="r"><code>################# calculate ACAT pvalue for every gene 
+#BF_proband_AllGene=as_tibble(read.csv(&quot;../output/kyleData/BF.proband.AllGene_1105_2022.csv&quot;))
+#BF_proband_AllGene_sorted=BF_proband_AllGene%&gt;%arrange(desc(post.prob))
+colnames(mirage_input_with_gnomad_AF)[4:6]=c(&quot;Transmitted_proband&quot;, &quot;Untransmitted_proband&quot;, &quot;Group_Index&quot;)
+interest_gene=unique(mirage_input_with_gnomad_AF$Gene)  # use all genes 
+new_data=mirage_input_with_gnomad_AF %&gt;% filter(Gene %in% interest_gene) %&gt;% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Group_Index) %&gt;% drop_na() ##### remove variants with NA AF 
+acat_gene_pvalue=numeric()
+a1=1; a2=25
+for (i in 1:length(interest_gene))
+{
+  #i=6819
+  cat(i, &quot;th gene is running&quot;, &quot;\n&quot;)
+  single_gene_data=new_data %&gt;% filter(Gene==interest_gene[i])
+  var_group_index=single_gene_data %&gt;% select(Group_Index) %&gt;%pull
+  num_var_group=unique(var_group_index)
+  
+  acat_var_pvalue=numeric()
+  acat_var_weight=numeric()  # give weights when use ACAT to collapse all variants 
+  #####################
+  if (length(num_var_group)==1) # only one variant group
+  {
+    if (nrow(single_gene_data)==1) # case 1: only one variant in one group
+    {
+      binom_test=binom.test(c(single_gene_data$Transmitted_proband, single_gene_data$Untransmitted_proband), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+      acat_var_pvalue[1]=binom_test$p.value
+      maf=single_gene_data$Gnomad_non_neuro_AF
+      acat_var_weight[1]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300) ##### use weight, beta density  as in ACAT paper  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6407498/pdf/main.pdf
+    } # end of   if (nrow(single_gene_data)==1) # only one variant in one group
+    
+    if (nrow(single_gene_data)&gt;1) # case 2: multiple variants in one group
+    {
+      minor_alele_count=numeric()
+      for (j in 1:nrow(single_gene_data)) # count the total number of alleles for every variant 
+        minor_alele_count[j]=single_gene_data$Transmitted_proband[j]+single_gene_data$Untransmitted_proband[j]
+      
+      minor_alele_count_lessthan10=which(minor_alele_count&lt;10) # find variants with MAC&lt;10
+      
+      #############
+      if (length(minor_alele_count_lessthan10)&lt;=1) # if only one or no variant with MAC&lt;10, no need collapsing 
+        for (j in 1:nrow(single_gene_data))
+        {
+         binom_test=binom.test(c(single_gene_data$Transmitted_proband[j], single_gene_data$Untransmitted_proband[j]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+      acat_var_pvalue[j]=binom_test$p.value  
+        maf=single_gene_data$Gnomad_non_neuro_AF[j]
+        acat_var_weight[j]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)
+        }
+    #############
+      if (length(minor_alele_count_lessthan10)&gt;1 &amp; length(minor_alele_count_lessthan10)&lt;nrow(single_gene_data)) # some, not all variants have MAC&lt;10
+      {
+        binom_test=binom.test(c(sum(single_gene_data$Transmitted_proband[minor_alele_count_lessthan10]), sum(single_gene_data$Untransmitted_proband[minor_alele_count_lessthan10])), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT ## collapse all variants with MAC&lt;10
+      acat_var_pvalue[1]=binom_test$p.value
+      maf=single_gene_data$Gnomad_non_neuro_AF[minor_alele_count_lessthan10]
+      acat_var_weight[1]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)
+      
+      minor_alele_count_morethan10=which(minor_alele_count&gt;=10) # find variants with MAC&gt;=10
+      
+      if (length(minor_alele_count_morethan10)==1)
+      {
+      binom_test=binom.test(c(single_gene_data$Transmitted_proband[minor_alele_count_morethan10], single_gene_data$Untransmitted_proband[minor_alele_count_morethan10]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+      acat_var_pvalue[2]=binom_test$p.value
+      maf=single_gene_data$Gnomad_non_neuro_AF[minor_alele_count_morethan10]
+      acat_var_weight[2]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)
+      
+      }
+      if (length(minor_alele_count_morethan10)&gt;1)  
+        for (j in 1:length(minor_alele_count_morethan10))
+        {
+         binom_test=binom.test(c(single_gene_data$Transmitted_proband[minor_alele_count_morethan10[j]], single_gene_data$Untransmitted_proband[minor_alele_count_morethan10[j]]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+        acat_var_pvalue[1+j]=binom_test$p.value  
+        maf=single_gene_data$Gnomad_non_neuro_AF[minor_alele_count_morethan10[j]]
+        acat_var_weight[1+j]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)
+        }
+      } # end of if (length(minor_alele_count_lessthan10)&gt;1 &amp; length(minor_alele_count_lessthan10)&lt;nrow(single_gene_data)) # some, not all variants have MAC&lt;10
+      
+       #############
+      if (length(minor_alele_count_lessthan10)&gt;1 &amp; length(minor_alele_count_lessthan10)==nrow(single_gene_data)) #  all variants have MAC&lt;10
+      {
+        binom_test=binom.test(c(sum(single_gene_data$Transmitted_proband[minor_alele_count_lessthan10]), sum(single_gene_data$Untransmitted_proband[minor_alele_count_lessthan10])), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT ## collapse all variants with MAC&lt;10
+      acat_var_pvalue[1]=binom_test$p.value
+      maf=mean(single_gene_data$Gnomad_non_neuro_AF[minor_alele_count_lessthan10]) # use average MAF https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6407498/pdf/main.pdf
+      acat_var_weight[1]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300) # avoid weight to be 0 
+        
+      }
+      
+    }  # end of if (nrow(single_gene_data)&gt;1) # case 2: multiple variants in one group
+  ##################### 
+    if (max(acat_var_pvalue)==1 &amp; length(acat_var_pvalue)&gt;1)
+      acat_var_pvalue[acat_var_pvalue==1]=1-1/(length(acat_var_pvalue)) # adjust pvalues https://github.com/yaowuliu/ACAT
+    if (max(acat_var_pvalue)==1 &amp; length(acat_var_pvalue)==1)
+      acat_var_pvalue[acat_var_pvalue==1]=1-1e-300
+      
+    acat_gene_pvalue[i]=ACAT(acat_var_pvalue, acat_var_weight)
+    
+  } # end of if (length(num_var_group)==1) # only one variant group
+  
+############
+  if (length(num_var_group)&gt;1) # multiple variant groups
+  {
+    acat_group_pvalue=numeric()
+    for (g in 1: length(num_var_group)) # use ACAT within every variant group 
+    {
+     #g=1
+     single_gene_single_group_data=single_gene_data %&gt;% filter(Group_Index==var_group_index[g])
+     
+     acat_var_pvalue=numeric()  # within each variant group, use ACAT
+     acat_var_weight=numeric()
+     
+     if (nrow(single_gene_single_group_data)==1) # case 1: only one variant in one group
+    {
+      binom_test=binom.test(c(single_gene_single_group_data$Transmitted_proband, single_gene_single_group_data$Untransmitted_proband), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+      acat_var_pvalue[1]=binom_test$p.value
+      maf=single_gene_single_group_data$Gnomad_non_neuro_AF
+      acat_var_weight[1]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)  ##### use weight as in ACAT paper, avoid zero weights  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6407498/pdf/main.pdf
+    } # end of   if (nrow(single_gene_data)==1) # only one variant in one group
+    
+    if (nrow(single_gene_single_group_data)&gt;1) # case 2: multiple variants in one group
+    {
+      minor_alele_count=numeric()
+      for (j in 1:nrow(single_gene_single_group_data)) # count the total number of alleles for every variant 
+        minor_alele_count[j]=single_gene_single_group_data$Transmitted_proband[j]+single_gene_single_group_data$Untransmitted_proband[j]
+      
+      minor_alele_count_lessthan10=which(minor_alele_count&lt;10) # find variants with MAC&lt;10
+      #############
+      if (length(minor_alele_count_lessthan10)&lt;=1) # if only one or no variant with MAC&lt;10, no need collapsing 
+        for (j in 1:nrow(single_gene_single_group_data))
+        {
+         binom_test=binom.test(c(single_gene_single_group_data$Transmitted_proband[j], single_gene_single_group_data$Untransmitted_proband[j]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+      acat_var_pvalue[j]=binom_test$p.value  
+        maf=single_gene_single_group_data$Gnomad_non_neuro_AF[j]
+        acat_var_weight[j]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)
+        }
+    #############
+      if (length(minor_alele_count_lessthan10)&gt;1 &amp; length(minor_alele_count_lessthan10)&lt;nrow(single_gene_single_group_data)) # some, not all variants have MAC&lt;10
+      {
+        binom_test=binom.test(c(sum(single_gene_single_group_data$Transmitted_proband[minor_alele_count_lessthan10]), sum(single_gene_single_group_data$Untransmitted_proband[minor_alele_count_lessthan10])), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT ## collapse all variants with MAC&lt;10
+      acat_var_pvalue[1]=binom_test$p.value
+      maf=mean(single_gene_single_group_data$Gnomad_non_neuro_AF[minor_alele_count_lessthan10])
+      acat_var_weight[1]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)
+      
+      minor_alele_count_morethan10=which(minor_alele_count&gt;=10) # find variants with MAC&gt;=10
+      
+      if (length(minor_alele_count_morethan10)==1)
+      {
+      binom_test=binom.test(c(single_gene_single_group_data$Transmitted_proband[minor_alele_count_morethan10], single_gene_single_group_data$Untransmitted_proband[minor_alele_count_morethan10]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+      acat_var_pvalue[2]=binom_test$p.value
+      maf=single_gene_single_group_data$Gnomad_non_neuro_AF[minor_alele_count_morethan10]
+      acat_var_weight[2]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300)
+      
+      }
+      if (length(minor_alele_count_morethan10)&gt;1)  
+        for (j in 1:length(minor_alele_count_morethan10))
+        {
+         binom_test=binom.test(c(single_gene_single_group_data$Transmitted_proband[minor_alele_count_morethan10[j]], single_gene_single_group_data$Untransmitted_proband[minor_alele_count_morethan10[j]]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+        acat_var_pvalue[1+j]=binom_test$p.value  
+        maf=single_gene_single_group_data$Gnomad_non_neuro_AF[minor_alele_count_morethan10[j]]
+        acat_var_weight[1+j]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5,1e-300)
+        }
+      } # end of if (length(minor_alele_count_lessthan10)&gt;1 &amp; length(minor_alele_count_lessthan10)&lt;nrow(single_gene_data)) # some, not all variants have MAC&lt;10
+      
+       #############
+      if (length(minor_alele_count_lessthan10)&gt;1 &amp; length(minor_alele_count_lessthan10)==nrow(single_gene_single_group_data)) #  all variants have MAC&lt;10
+      {
+        binom_test=binom.test(c(sum(single_gene_single_group_data$Transmitted_proband[minor_alele_count_lessthan10]), sum(single_gene_single_group_data$Untransmitted_proband[minor_alele_count_lessthan10])), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT ## collapse all variants with MAC&lt;10
+      acat_var_pvalue[1]=binom_test$p.value
+      maf=mean(single_gene_single_group_data$Gnomad_non_neuro_AF[minor_alele_count_lessthan10]) # use average MAF https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6407498/pdf/main.pdf
+      acat_var_weight[1]=max(dbeta(maf, a1, a2)*(maf*(1-maf))^0.5, 1e-300) # avoid weight to be 0 
+        
+      }
+      
+    }  # end of if (nrow(single_gene_data)&gt;1) # case 2: multiple variants in one group
+  ##################### 
+     if (max(acat_var_pvalue)==1 &amp; length(acat_var_pvalue)&gt;1)
+      acat_var_pvalue[acat_var_pvalue==1]=1-1/(length(acat_var_pvalue))
+      if (max(acat_var_pvalue)==1 &amp; length(acat_var_pvalue)==1)  # avoid enforcing singular p values to be 0
+        acat_var_pvalue[acat_var_pvalue==1]=1-1e-300
+     
+   acat_group_pvalue[g]=ACAT(acat_var_pvalue, acat_var_weight)  
+      
+    } # end of for (g in length(num_var_group))
+    
+    if (max(acat_group_pvalue)==1 &amp; length(acat_group_pvalue)&gt;1)
+      acat_group_pvalue[acat_group_pvalue==1]=1-1/(length(acat_group_pvalue))
+    if (max(acat_group_pvalue)==1 &amp; length(acat_group_pvalue)==1)
+      acat_group_pvalue[acat_group_pvalue==1]=1-1e-300
+    
+   acat_gene_pvalue[i]=ACAT(acat_group_pvalue) # use ACAT to combine group level p values with equal weights 
+    
+    
+  } # end of if (length(num_var_group)&gt;1) # multiple variant groups
+  
+  
+} # end of   for (i in 1:length(interest_gene))
+
+
+ # write.csv(data.frame(Gene=interest_gene[1:16344], ACAT_pvalue=acat_gene_pvalue), file=&quot;../output/LauraData/AllGene_6vargroups_ACAT_pvalue_2023_1108.csv&quot;)
+ # write.csv(combine_001, file=&quot;../output/KyleData/BF.proband.AllGene_6vargroups_burden_counts_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv&quot;)</code></pre>
 <pre class="r"><code>staar_pvalue=as_tibble(read.csv(&quot;../output/LauraData/AllGene_6vargroups_ACAT_pvalue_2023_1108.csv&quot;))
 theo &lt;- (ppoints(length(staar_pvalue$ACAT_pvalue)))
 
