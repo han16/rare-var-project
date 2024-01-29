@@ -2326,7 +2326,7 @@ ACAT test
 ### Enrichment of top 20 genes 
 
 
-```{r, echo=F, warning=F, message=F}
+```{r, echo=T, warning=F, message=F}
 topgene_number=20
 BF_para_all_est=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_6vargroups_BFFiltered_1118_2022.csv"))
 burden_pvalues_001=as_tibble(read.csv("../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv")) # call top genes by burden 
