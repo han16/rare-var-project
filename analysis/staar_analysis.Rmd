@@ -129,7 +129,8 @@ ASD_KB_Gene=as.character(data.frame(collect(tbl(GeneDB, "AutismKB_gene")))$GeneI
 Constraint_Gene=data.frame(collect(tbl(GeneDB, "Samocha_2014NG_constraintgene")))$gene
 ### RVIS gene 
 RVIS.Allgene=data.frame(collect(tbl(GeneDB, "RVIS_gene")))
-RVIS_Gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% gene
+RVIS_Gene=RVIS.Allgene$GeneID[RVIS.Allgene$RVIS.percentile<5] # top 5% percentile RVIS score of all genes in this paper https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1003709#pgen.1003709.s002
+
 #### Haplo insufficient gene 
 Haploinsufficient_Gene=as.character(data.frame(collect(tbl(GeneDB, "Petrovski_plosgen_haploinsuff_gene")))$GeneID)
 #### SCZ data 
