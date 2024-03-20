@@ -2286,7 +2286,7 @@ Repeat the simulation 20 times. When Bayesian FDR=0.05, what is the distribution
 
 
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=T, message=F, warning=F}
 
 ##################### true gamma.bar=3 ##########
 gene.prior=0.1 # use true value
