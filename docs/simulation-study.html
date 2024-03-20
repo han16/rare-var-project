@@ -14,7 +14,7 @@
 
 <title>Simulation study</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -30,14 +30,14 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -431,7 +431,10 @@ information. MIRAGE-VS basically estimates the proportion of risk
 variants <span class="math inline">\(\hat{\eta}\)</span>, and performs
 the likelihood ratio test to get p value.</p>
 <pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-## ℹ Please use `linewidth` instead.</code></pre>
+## ℹ Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <div id="sensitivity-analysis-of-bargamma" class="section level4">
 <h4>Sensitivity analysis of <span
@@ -622,27 +625,7 @@ have.</p>
 <p><strong>burden test: for every gene, use all variants in cases and
 control</strong></p>
 <p><span class="math inline">\(\bar{\gamma}=1, 3,5\)</span></p>
-<pre><code>## Warning: The following aesthetics were dropped during statistical transformation: d, m
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-## The following aesthetics were dropped during statistical transformation: d, m
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<pre><code>## Warning: The following aesthetics were dropped during statistical transformation: d, m
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-## The following aesthetics were dropped during statistical transformation: d, m
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?</code></pre>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p><strong>burden-adj: for every gene, compute p values for 3 variant
 categories, adjust p values by bonferroni correction and take the
@@ -655,23 +638,142 @@ of every single variant by burden test (collapse variant if its
 MAC&lt;10, as ACAT paper suggested) to obtain group level p value, then
 use ACAT to combine group level p value to get gene level p values</li>
 </ul>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
-<p>Comparisons among three burden tests</p>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-26-1.png" width="672" />
-* use threshold <code>MAC&lt;10</code> for variant collapsing for
-ACAT</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-27-1.png" width="672" />
+<p>Comparisons among three burden tests</p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code>rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
+load(&quot;../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.02_gammamean335_5rep1.RData&quot;)
+AUC_summary_0.02=matrix(nrow=10, ncol=6)
+colnames(AUC_summary_0.02)=c(&quot;ACAT&quot;, &quot;ASUM&quot;, &quot;Burden&quot;, &quot;CMC&quot;, &quot;MIRAGE&quot;, &quot;SKAT-O&quot;)
+#for (i in 1:10)
+{
+  i=2
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+cmc_pvalue=CMC.pvalue[[i]]
+asum_pvalue=ASUM.pvalue[[i]]
+fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
+acat.pvalue=ACAT.pvalue[[i]]
+fisher.adj.pvalue=numeric()
+fisher.combine.pvalue=numeric()
+for (ii in 1:nrow(fisher.separate.pvalue))
+{
+  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = &quot;bonferroni&quot;, n = length(fisher.separate.pvalue[ii,])))
+  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
+}  
+  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c(&quot;Burden(0.657)&quot;, &quot;SKAT-O(0.657)&quot;, &quot;MIRAGE(0.849)&quot;, &quot;CMC(0.715)&quot;, &quot;ASUM(0.544)&quot;, &quot;ACAT(0.702)&quot;), each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
+
+roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
+
+p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+p1_delta0.02=p1.basic+
+ # annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+#           label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;, &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;, &quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, &quot;=0.02&quot;)))+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=8))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=10))+
+  theme(axis.text = element_text(size = 1))+
+  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0))+
+  theme(legend.text = element_text(size = 11)) # adjust legend text size 
+#p1_delta0.01
+#calc_auc(p1.basic)$AUC
+AUC_summary_0.02[i,]=calc_auc(p1.basic)$AUC
+}
+
+############################################################################################################
+################################ delta=0.1
+rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
+load(&quot;../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.1_gammamean335_5rep.RData&quot;)
+AUC_summary_0.1=matrix(nrow=5, ncol=6)
+colnames(AUC_summary_0.1)=c(&quot;ACAT&quot;, &quot;ASUM&quot;, &quot;Burden&quot;, &quot;CMC&quot;, &quot;MIRAGE&quot;, &quot;SKAT-O&quot;)
+#for (i in 1:5)
+{
+  i=1
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+cmc_pvalue=CMC.pvalue[[i]]
+asum_pvalue=ASUM.pvalue[[i]]
+fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
+acat.pvalue=ACAT.pvalue[[i]]
+fisher.adj.pvalue=numeric()
+fisher.combine.pvalue=numeric()
+for (ii in 1:nrow(fisher.separate.pvalue))
+{
+  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = &quot;bonferroni&quot;, n = length(fisher.separate.pvalue[ii,])))
+  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
+}  
+  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c( &quot;Burden(0.682)&quot;, &quot;SKAT-O(0.751)&quot;, &quot;MIRAGE(0.859)&quot;, &quot;CMC(0.784)&quot;, &quot;ASUM(0.634)&quot;, &quot;ACAT(0.638)&quot;), each=num_run)
+
+roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
+p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+#pdf(&quot;../../Figure/power_comparison_different_methods.pdf&quot;)
+p2_delta0.1=p2.basic+
+#  annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.34, 0.4), 
+#           label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;,  &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;,&quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, &quot;=0.1&quot;)))+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=8))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=10))+
+  theme(axis.text = element_text(size = 1))+
+geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # nol legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0))+
+  theme(legend.text = element_text(size = 11))+ # adjust legend text size 
+  theme(axis.title.y = element_blank())  # remove labels on y axis 
+
+AUC_summary_0.1[i,]=calc_auc(p2.basic)$AUC
+}
+
+#p2_delta0.05
+#grid.arrange(p1, p2, top=grid.text(&quot;ROC curves&quot;), bottom=grid.text(expression(paste(alpha, &quot;=0.1,&quot;, alpha[0], &quot;=0.1,&quot;, beta, &quot;=2000,&quot;, beta[0], &quot;=1000&quot;))), nrow=1)
+#dev.off()
+#grid.arrange(p1_delta0.01, p2_delta0.05, nrow=1)
+
+#pdf(&quot;C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0417.pdf&quot;)
+#pdf(&quot;C:\\Shengtong\\Research\\rare-var\\RareVariant\\2023_0413_Figure_for_paper\\Fig3-power_comparison_MIRAGE-gene_2023_0421.pdf&quot;)
+grid.arrange(p1_delta0.02, p2_delta0.1, nrow=1) </code></pre>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<pre class="r"><code>#dev.off()</code></pre>
+<ul>
+<li>use threshold <code>MAC&lt;10</code> for variant collapsing for
+ACAT</li>
+</ul>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-28-1.png" width="672" />
 * use threshold <code>MAC&lt;5</code> for variant collapsing for
 ACAT</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <ul>
 <li>no collapsing for ACAT</li>
 </ul>
 <p><strong>Parameter estimate</strong></p>
 <p><span class="math inline">\(\beta_1=0.05,\beta_2=0.2, \beta_3=0.5,
 \delta=0.1\)</span></p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 </div>
 </div>
 <div id="type-i-error" class="section level3">
@@ -686,7 +788,7 @@ the same as before <span class="math inline">\(\alpha_0=0.1,
 \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=4,\sigma=
 1\)</span>.</p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <p>Burden test: use fisher exact test MIRAGE: first estimate parameter
 <span class="math inline">\(\eta\)</span>, then do likelihood ratio
 test</p>
@@ -699,13 +801,16 @@ the same as before <span class="math inline">\(\alpha_0=0.1,
 \beta_0=1000,\alpha= 0.1, \beta=2000,\bar{\gamma}=3,4,5,\sigma=
 1\)</span>.</p>
 <pre><code>## Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
-## ℹ Please use `after_stat(count)` instead.</code></pre>
+## ℹ Please use `after_stat(count)` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-31-2.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-32-2.png" width="672" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-31-3.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-32-3.png" width="672" /></p>
 </div>
 </div>
 <div id="bayesian-fdr-control" class="section level3">
@@ -720,7 +825,7 @@ class="math inline">\(\eta_1=0.05, \eta_2=0.2, \eta_3=0.5\)</span> and
 the proportion of variants are 60%, 30% and 10%. Other parameters are
 pretty the same as before <span class="math inline">\(\alpha_0=0.1,
 \beta_0=1000,\alpha= 0.1, \beta=2000,\sigma= 1\)</span>.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 </div>
 <div id="robustness-of-bayesian-fdr-for-bargamma"
 class="section level4">
@@ -738,7 +843,7 @@ class="math inline">\(\alpha_0=0.1, \beta_0=1000,\alpha= 0.1,
 \beta=2000,\sigma= 1\)</span>.</p>
 <p>Repeat the simulation 20 times. When Bayesian FDR=0.05, what is the
 distribution of actual FDR.</p>
-<p><img src="simulation-study_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="simulation-study_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 </div>
 </div>
 </div>

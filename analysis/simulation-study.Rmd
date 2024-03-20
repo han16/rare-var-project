@@ -1520,7 +1520,9 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.text = element_text(size = 7))+ # adjust legend text size 
   theme(axis.title.y = element_blank())  # remove labels on y axis 
 #p_delta0.2_burden
+```
 
+```{r, echo=F, message=F,warning=F}
 ######################################################################################################
 ############################# delta=0.02
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
@@ -1571,7 +1573,7 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.title=element_blank())+   # nol legend title 
   theme(legend.justification=c(1,0), legend.position=c(1,0))+
   theme(legend.text = element_text(size = 7)) # adjust legend text size 
-#p1_delta0.01
+p1_delta0.02
 #calc_auc(p1.basic)$AUC
 AUC_summary_0.02[i,]=calc_auc(p1.basic)$AUC
 
@@ -1600,6 +1602,9 @@ theme(axis.text.y= element_text(size=6))+
 
 ```
 
+
+
+
 ```{r, echo=F, message=F, warning=F}
 #pdf("C:\\Shengtong\\Research\\rare-var\\RareVariant\\2023_0413_Figure_for_paper\\Fig3-power_comparison_MIRAGE-gene_2023_0502.pdf")
 grid.arrange(p1_delta0.02, p2_delta0.05, p_delta0.1, p_delta0.2, nrow=2) 
@@ -1620,7 +1625,7 @@ grid.arrange(p_delta0.02_burden, p_delta0.05_burden, p_delta0.1_burden, p_delta0
 
 
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=T, message=F, warning=F}
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
 load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.02_gammamean335_5rep1.RData")
 AUC_summary_0.02=matrix(nrow=10, ncol=6)
@@ -1675,7 +1680,7 @@ AUC_summary_0.02[i,]=calc_auc(p1.basic)$AUC
 }
 
 ############################################################################################################
-################################ delta=0.01
+################################ delta=0.1
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
 load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.1_gammamean335_5rep.RData")
 AUC_summary_0.1=matrix(nrow=5, ncol=6)
