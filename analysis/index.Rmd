@@ -18,6 +18,7 @@ output:
  
 * [numerical simulation studies](simulation-study.html) 
 * [effect of case control ratio](effect_case_control_ratio.html)
+* [Figures](Figures.html)
 
 ## Whole exome sequencing (WES) data analysis for old sample  
 

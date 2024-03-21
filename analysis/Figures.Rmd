@@ -26,6 +26,8 @@ loadRData <- function(fileName){
 ```
 
 
+## power comparison 
+
 
 ```{r, echo=T, message=F, warning=F}
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
@@ -81,75 +83,6 @@ theme(axis.text.y= element_text(size=10))+
 AUC_summary_0.02[i,]=calc_auc(p1.basic)$AUC
 }
 
-############################################################################################################
-################################ delta=0.1
-rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
-load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.1_gammamean335_5rep.RData")
-AUC_summary_0.1=matrix(nrow=5, ncol=6)
-colnames(AUC_summary_0.1)=c("ACAT", "ASUM", "Burden", "CMC", "MIRAGE", "SKAT-O")
-#for (i in 1:5)
-{
-  i=1
-Ui=Gene.Risk.Status[[i]]
-mirage_pvalue=MIRAGE.pvalue[[i]]
-mirage_BF=MIRAGE.BF[[i]]
-fisher_pvalue=Fisher.pvalue[[i]]
-skato_pvalue=SKATO.pvalue[[i]]
-cmc_pvalue=CMC.pvalue[[i]]
-asum_pvalue=ASUM.pvalue[[i]]
-fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
-acat.pvalue=ACAT.pvalue[[i]]
-fisher.adj.pvalue=numeric()
-fisher.combine.pvalue=numeric()
-for (ii in 1:nrow(fisher.separate.pvalue))
-{
-  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = "bonferroni", n = length(fisher.separate.pvalue[ii,])))
-  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
-}  
-  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
-
-num_run=length(mirage_pvalue)
-
-
-method=rep(c( "Burden(0.682)", "SKAT-O(0.751)", "MIRAGE(0.859)", "CMC(0.784)", "ASUM(0.634)", "ACAT(0.638)"), each=num_run)
-
-roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
-p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
-  geom_roc(increasing=F, n.cuts=0)+
-  style_roc(theme = theme_grey)
-#pdf("../../Figure/power_comparison_different_methods.pdf")
-p2_delta0.1=p2.basic+
-#  annotate("text", x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.34, 0.4), 
-#           label = paste(c("ASUM:AUC", "Burden_adj:AUC",  "Burden:AUC=", "Burden_comb:AUC","CMC:AUC", "MIRAGE-BF:AUC=", "MIRAGE-LRT:AUC=", "SKATO:AUC="), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
-  ggtitle(expression(paste(delta, "=0.1")))+
-  theme_classic()+
-theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
- theme(axis.text.x= element_text(size=8))+  # custmorize the axis tick size 
-theme(axis.text.y= element_text(size=10))+
-  theme(axis.text = element_text(size = 1))+
-geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line 
-  theme(legend.title=element_blank())+   # nol legend title 
-  theme(legend.justification=c(1,0), legend.position=c(1,0))+
-  theme(legend.text = element_text(size = 11))+ # adjust legend text size 
-  theme(axis.title.y = element_blank())  # remove labels on y axis 
-
-AUC_summary_0.1[i,]=calc_auc(p2.basic)$AUC
-}
-
-#p2_delta0.05
-#grid.arrange(p1, p2, top=grid.text("ROC curves"), bottom=grid.text(expression(paste(alpha, "=0.1,", alpha[0], "=0.1,", beta, "=2000,", beta[0], "=1000"))), nrow=1)
-#dev.off()
-#grid.arrange(p1_delta0.01, p2_delta0.05, nrow=1)
-
-#pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig3-power_comparison_MIRAGE-gene_2023_0417.pdf")
-#pdf("C:\\Shengtong\\Research\\rare-var\\RareVariant\\2023_0413_Figure_for_paper\\Fig3-power_comparison_MIRAGE-gene_2023_0421.pdf")
-grid.arrange(p1_delta0.02, p2_delta0.1, nrow=1) 
-```
-
-
-
-
-```{r,echo=T, message=F, warning=F}
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
 # this is from the code C:/Shengtong/Research/rare-var/RareVariant/rare-var-project/code/FullModelEM_MoreRiskVarCate_VaryGammabar.R
 load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.1_gammamean335_5rep.RData")
@@ -236,6 +169,330 @@ geom_abline(intercept = 0, slope =1, col="black")+  # add a diagnal line
   theme(legend.justification=c(1,0), legend.position=c(1,0))+
   theme(legend.text = element_text(size = 11))+ # adjust legend text size 
   theme(axis.title.y = element_blank())  # remove labels on y axis 
-p_delta0.1
+#p_delta0.1
+grid.arrange(p1_delta0.02, p_delta0.1, nrow=1) 
+```
+
+
+## sensitivity analysis 
+
+
+```{r, echo=T, message=F, warning=F}
+##################### true gamma.bar=3 ##########
+gene.prior=0.1 # use true value
+gene.fdr=list()
+num.run=20  # there are 20 replicates 
+bayesian.fdr=0.05
+actual.fdr.range=matrix(nrow=4, ncol=num.run)
+for (i in 3:6)
+{
+  #i=3
+ ############ compute posterior probability for every gene ##########
+ rm("all.delta.est", "all.BF.gene", "all.mirage.pvalue", "all.skat.pvalue", "all.fisher.pvalue", "all.Ui")
+ load(paste("../output/BayesianFDR/Mixed_Gene_Gammamean3_", "useGammabar", i, ".delta0.1_replicate100.RData", sep="")) 
+
+ actual.fdr.range.single.run=numeric()
+ for (run in 1:num.run)
+ { #run=1
+ Bayes.factor=tibble(BF=all.BF.gene[run,])
+ gene.post=Bayes.factor %>% mutate(post.prob=gene.prior*BF/(1-gene.prior+gene.prior*BF))
+ gene.post=as_tibble(cbind(gene.post, RiskStatus=all.Ui[run,]))
+
+ ################ calculate Bayesian FDR for every post prob cutoff ###########
+tau=seq(0, 0.999, by=0.001)
+num.pred=NULL
+false.disc=NULL
+FDR=NULL
+for (ii in 1:length(tau))
+{
+num.pred[ii]=sum(ifelse(gene.post$post.prob>tau[ii], 1, 0))
+false.disc[ii]=sum((1-gene.post$post.prob)*ifelse(gene.post$post.prob>tau[ii], 1, 0))
+FDR[ii]=false.disc[ii]/num.pred[ii]
+}
+tau.fdr=tibble(tau=tau, bar.fdr=FDR)%>%drop_na()  # drop rows with NA
+
+############### calculate actual FDR #################################
+bayes.fdr=seq(0, 0.5, length=100)
+actual.fdr=numeric()
+tau.select=numeric()
+for (ii in 1:length(bayes.fdr))
+{
+  tau.select[ii]=max(tau.fdr %>% filter(bar.fdr>bayes.fdr[ii] & bar.fdr<bayes.fdr[ii]+0.1 ) %>%  pull(tau))
+  No.Disc=gene.post %>% filter(post.prob>tau.select[ii]) %>% tally() %>% pull()
+  TP=gene.post %>% filter(post.prob>tau.select[ii]) %>% filter(RiskStatus==1) %>% tally() %>% pull()
+  # pull is used to convert tibble to a vector 
+  actual.fdr[ii]=1-TP/No.Disc
+} 
+bayes.actual.fdr=tibble(Bayes.FDR=bayes.fdr, Actual.FDR=actual.fdr) %>% mutate(Gamma.bar.use=i)
+#gene.fdr[[i]]=list( gene.post=gene.post, bayes.actual.fdr=bayes.actual.fdr)
+
+actual.fdr.range.single.run[run]=bayes.actual.fdr %>% filter(Bayes.FDR<bayesian.fdr-0.0001) %>% summarize(Actual.FDR=max(Actual.FDR)) %>% pull() # calculate the actual FDR when Bayesian.FDR=0.1
+ } # end of run
+ 
+ actual.fdr.range[i-2,]=actual.fdr.range.single.run
+} # end of i
+
+
+
+fdr.mean=rowMeans(actual.fdr.range)
+fdr.sd=c(sd(actual.fdr.range[1,]), sd(actual.fdr.range[2,]), sd(actual.fdr.range[3,]), sd(actual.fdr.range[4,]))
+max.ylab=max(fdr.mean+fdr.sd)
+
+bar.gamma=3:6
+actual.fdr.summary=data.frame(mean=fdr.mean, sd=fdr.sd, bar.gamma=bar.gamma)
+p1=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  ggtitle(expression(paste("True ", bar(gamma), "=3")))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  xlab(expression(paste(bar(gamma))))+
+  ylab("False Discovery Proportion")+ylim(c(-0.01, max.ylab))+
+  guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+   geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
+  theme(axis.title.y=element_text(size=8)) # adjust text size for y labels
+
+#combine.bayes.actual.fdr=bind_rows(gene.fdr[[3]]$bayes.actual.fdr,gene.fdr[[4]]$bayes.actual.fdr,gene.fdr[[5]]$bayes.actual.fdr,gene.fdr[[6]]$bayes.actual.fdr)
+#combine.bayes.actual.fdr$Gamma.bar.use<-combine.bayes.actual.fdr$Gamma.bar.use %>% recode("3"="3", "4"="4", "5"="5", "6"="6")
+#null.pvalue.combine$Method=null.pvalue.combine$Method %>% recode(MIRAGE.pvalue="MIRAGE_VS", Fisher.pvalue="Burden", SKATO.pvalue="SKATO")
+#g1=ggplot(combine.bayes.actual.fdr, aes(x=Bayes.FDR, y=Actual.FDR, color=Gamma.bar.use))+
+#  geom_abline(intercept =0, slope =1, 
+#                 linetype="solid", size=1.5, col="black")+
+#  geom_point()+
+#  ggtitle(expression(paste("True ", bar(gamma), "=3")))+
+#  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title 
+#################################################################################################################
+#################################################################################################################
+##################### true gamma.bar=4 ##########
+gene.prior=0.1 # use true value
+gene.fdr=list()
+actual.fdr.range=matrix(nrow=4, ncol=num.run)
+for (i in 3:6)
+{
+  #i=3
+ ############ compute posterior probability for every gene ##########
+ rm("all.delta.est", "all.BF.gene", "all.mirage.pvalue", "all.skat.pvalue", "all.fisher.pvalue", "all.Ui")
+ load(paste("../output/BayesianFDR/Mixed_Gene_Gammamean4_", "useGammabar", i, ".delta0.1_replicate100.RData", sep="")) 
+
+ actual.fdr.range.single.run=numeric()
+ for (run in 1:num.run)
+ { #run=1
+ Bayes.factor=tibble(BF=all.BF.gene[run,])
+ gene.post=Bayes.factor %>% mutate(post.prob=gene.prior*BF/(1-gene.prior+gene.prior*BF))
+ gene.post=as_tibble(cbind(gene.post, RiskStatus=all.Ui[run,]))
+
+ ################ calculate Bayesian FDR for every post prob cutoff ###########
+tau=seq(0, 0.999, by=0.001)
+num.pred=NULL
+false.disc=NULL
+FDR=NULL
+for (ii in 1:length(tau))
+{
+num.pred[ii]=sum(ifelse(gene.post$post.prob>tau[ii], 1, 0))
+false.disc[ii]=sum((1-gene.post$post.prob)*ifelse(gene.post$post.prob>tau[ii], 1, 0))
+FDR[ii]=false.disc[ii]/num.pred[ii]
+}
+tau.fdr=tibble(tau=tau, bar.fdr=FDR)%>%drop_na()  # drop rows with NA
+
+############### calculate actual FDR #################################
+bayes.fdr=seq(0, 0.5, length=100)
+actual.fdr=numeric()
+tau.select=numeric()
+for (ii in 1:length(bayes.fdr))
+{
+  tau.select[ii]=max(tau.fdr %>% filter(bar.fdr>bayes.fdr[ii] & bar.fdr<bayes.fdr[ii]+0.1 ) %>%  pull(tau))
+  No.Disc=gene.post %>% filter(post.prob>tau.select[ii]) %>% tally() %>% pull()
+  TP=gene.post %>% filter(post.prob>tau.select[ii]) %>% filter(RiskStatus==1) %>% tally() %>% pull()
+  # pull is used to convert tibble to a vector 
+  actual.fdr[ii]=1-TP/No.Disc
+} 
+bayes.actual.fdr=tibble(Bayes.FDR=bayes.fdr, Actual.FDR=actual.fdr) %>% mutate(Gamma.bar.use=i)
+#gene.fdr[[i]]=list( gene.post=gene.post, bayes.actual.fdr=bayes.actual.fdr)
+
+actual.fdr.range.single.run[run]=bayes.actual.fdr %>% filter(Bayes.FDR<bayesian.fdr-0.0001) %>% summarize(Actual.FDR=max(Actual.FDR)) %>% pull() # calculate the actual FDR when Bayesian.FDR=0.1
+ } # end of run
+ 
+ actual.fdr.range[i-2,]=actual.fdr.range.single.run
+} # end of i
+
+
+
+fdr.mean=rowMeans(actual.fdr.range)
+fdr.sd=c(sd(actual.fdr.range[1,]), sd(actual.fdr.range[2,]), sd(actual.fdr.range[3,]), sd(actual.fdr.range[4,]))
+
+bar.gamma=3:6
+actual.fdr.summary=data.frame(mean=fdr.mean, sd=fdr.sd, bar.gamma=bar.gamma)
+p2=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  ggtitle(expression(paste("True ", bar(gamma), "=4")))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  xlab(expression(paste(bar(gamma))))+
+  ylab("")+ylim(c(0, max.ylab))+  
+  guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+   geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")
+
+###############################################################################################################
+###############################################################################################################
+##################### true gamma.bar=5, use gamma.bar=3,4,5,6 ##########
+gene.prior=0.1 # use true value
+gene.fdr=list()
+actual.fdr.range=matrix(nrow=4, ncol=num.run)
+for (i in 3:6)
+{
+  #i=3
+ ############ compute posterior probability for every gene ##########
+ rm("all.delta.est", "all.BF.gene", "all.mirage.pvalue", "all.skat.pvalue", "all.fisher.pvalue", "all.Ui")
+ load(paste("../output/BayesianFDR/Mixed_Gene_Gammamean5_", "useGammabar", i, ".delta0.1_replicate100.RData", sep="")) 
+
+ actual.fdr.range.single.run=numeric()
+ for (run in 1:num.run)
+ { #run=1
+ Bayes.factor=tibble(BF=all.BF.gene[run,])
+ gene.post=Bayes.factor %>% mutate(post.prob=gene.prior*BF/(1-gene.prior+gene.prior*BF))
+ gene.post=as_tibble(cbind(gene.post, RiskStatus=all.Ui[run,]))
+
+ ################ calculate Bayesian FDR for every post prob cutoff ###########
+tau=seq(0, 0.999, by=0.001)
+num.pred=NULL
+false.disc=NULL
+FDR=NULL
+for (ii in 1:length(tau))
+{
+num.pred[ii]=sum(ifelse(gene.post$post.prob>tau[ii], 1, 0))
+false.disc[ii]=sum((1-gene.post$post.prob)*ifelse(gene.post$post.prob>tau[ii], 1, 0))
+FDR[ii]=false.disc[ii]/num.pred[ii]
+}
+tau.fdr=tibble(tau=tau, bar.fdr=FDR)%>%drop_na()  # drop rows with NA
+
+############### calculate actual FDR #################################
+bayes.fdr=seq(0, 0.5, length=100)
+actual.fdr=numeric()
+tau.select=numeric()
+for (ii in 1:length(bayes.fdr))
+{
+  tau.select[ii]=max(tau.fdr %>% filter(bar.fdr>bayes.fdr[ii] & bar.fdr<bayes.fdr[ii]+0.1 ) %>%  pull(tau))
+  No.Disc=gene.post %>% filter(post.prob>tau.select[ii]) %>% tally() %>% pull()
+  TP=gene.post %>% filter(post.prob>tau.select[ii]) %>% filter(RiskStatus==1) %>% tally() %>% pull()
+  # pull is used to convert tibble to a vector 
+  actual.fdr[ii]=1-TP/No.Disc
+} 
+bayes.actual.fdr=tibble(Bayes.FDR=bayes.fdr, Actual.FDR=actual.fdr) %>% mutate(Gamma.bar.use=i)
+#gene.fdr[[i]]=list( gene.post=gene.post, bayes.actual.fdr=bayes.actual.fdr)
+
+actual.fdr.range.single.run[run]=bayes.actual.fdr %>% filter(Bayes.FDR<bayesian.fdr-0.0001) %>% summarize(Actual.FDR=max(Actual.FDR)) %>% pull() # calculate the actual FDR when Bayesian.FDR=0.1
+ } # end of run
+ 
+ actual.fdr.range[i-2,]=actual.fdr.range.single.run
+} # end of i
+
+
+
+fdr.mean=rowMeans(actual.fdr.range)
+fdr.sd=c(sd(actual.fdr.range[1,]), sd(actual.fdr.range[2,]), sd(actual.fdr.range[3,]), sd(actual.fdr.range[4,]))
+
+bar.gamma=3:6
+actual.fdr.summary=data.frame(mean=fdr.mean, sd=fdr.sd, bar.gamma=bar.gamma)
+p3=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  ggtitle(expression(paste("True ", bar(gamma), "=5")))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  xlab(expression(paste(bar(gamma))))+
+  ylab("False Discovery Proportion")+ylim(c(0, max.ylab))+  
+  guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+   geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
+  theme(axis.title.y=element_text(size=8)) # adjust text size for y labels
+
+
+###############################################################################################################
+###############################################################################################################
+##################### true gamma.bar=6, use gamma.bar=3,4,5,6 ##########
+
+##################################################################
+gene.prior=0.1 # use true value
+gene.fdr=list()
+bayesian.fdr=0.05
+actual.fdr.range=matrix(nrow=4, ncol=num.run)
+for (i in 3:6)
+{
+  #i=3
+ ############ compute posterior probability for every gene ##########
+ rm("all.delta.est", "all.BF.gene", "all.mirage.pvalue", "all.skat.pvalue", "all.fisher.pvalue", "all.Ui")
+ load(paste("../output/BayesianFDR/Mixed_Gene_Gammamean6_", "useGammabar", i, ".delta0.1_replicate100.RData", sep="")) 
+
+ actual.fdr.range.single.run=numeric()
+ for (run in 1:num.run)
+ { #run=1
+ Bayes.factor=tibble(BF=all.BF.gene[run,])
+ gene.post=Bayes.factor %>% mutate(post.prob=gene.prior*BF/(1-gene.prior+gene.prior*BF))
+ gene.post=as_tibble(cbind(gene.post, RiskStatus=all.Ui[run,]))
+
+ ################ calculate Bayesian FDR for every post prob cutoff ###########
+tau=seq(0, 0.999, by=0.001)
+num.pred=NULL
+false.disc=NULL
+FDR=NULL
+for (ii in 1:length(tau))
+{
+num.pred[ii]=sum(ifelse(gene.post$post.prob>tau[ii], 1, 0))
+false.disc[ii]=sum((1-gene.post$post.prob)*ifelse(gene.post$post.prob>tau[ii], 1, 0))
+FDR[ii]=false.disc[ii]/num.pred[ii]
+}
+tau.fdr=tibble(tau=tau, bar.fdr=FDR)%>%drop_na()  # drop rows with NA
+
+############### calculate actual FDR #################################
+bayes.fdr=seq(0, 0.5, length=100)
+actual.fdr=numeric()
+tau.select=numeric()
+for (ii in 1:length(bayes.fdr))
+{
+  tau.select[ii]=max(tau.fdr %>% filter(bar.fdr>bayes.fdr[ii] & bar.fdr<bayes.fdr[ii]+0.1 ) %>%  pull(tau))
+  No.Disc=gene.post %>% filter(post.prob>tau.select[ii]) %>% tally() %>% pull()
+  TP=gene.post %>% filter(post.prob>tau.select[ii]) %>% filter(RiskStatus==1) %>% tally() %>% pull()
+  # pull is used to convert tibble to a vector 
+  actual.fdr[ii]=1-TP/No.Disc
+} 
+bayes.actual.fdr=tibble(Bayes.FDR=bayes.fdr, Actual.FDR=actual.fdr) %>% mutate(Gamma.bar.use=i)
+#gene.fdr[[i]]=list( gene.post=gene.post, bayes.actual.fdr=bayes.actual.fdr)
+
+actual.fdr.range.single.run[run]=bayes.actual.fdr %>% filter(Bayes.FDR<bayesian.fdr-0.0001) %>% summarize(Actual.FDR=max(Actual.FDR)) %>% pull() # calculate the actual FDR when Bayesian.FDR=0.1
+ } # end of run
+ 
+ actual.fdr.range[i-2,]=actual.fdr.range.single.run
+} # end of i
+
+
+
+fdr.mean=rowMeans(actual.fdr.range)
+fdr.sd=c(sd(actual.fdr.range[1,]), sd(actual.fdr.range[2,]), sd(actual.fdr.range[3,]), sd(actual.fdr.range[4,]))
+
+bar.gamma=3:6
+actual.fdr.summary=data.frame(mean=fdr.mean, sd=fdr.sd, bar.gamma=bar.gamma)
+p4=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) + 
+   geom_point() +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd))+
+  #geom_pointrange(aes(ymin=c(min(actual.fdr.range[1,]),min(actual.fdr.range[2,]), min(actual.fdr.range[3,]), min(actual.fdr.range[4,])), ymax=c(max(actual.fdr.range[1,]),max(actual.fdr.range[2,]), max(actual.fdr.range[3,]), max(actual.fdr.range[4,]))))+
+  ggtitle(expression(paste("True ", bar(gamma), "=6")))+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+  xlab(expression(paste(bar(gamma))))+
+  ylab("")+ylim(c(0, max.ylab))+  
+  guides(fill=guide_legend(title=NULL))+
+  #ylim(0.05,0.15)+
+   geom_hline(yintercept=bayesian.fdr,linetype="dashed", color = "red")+
+  theme(axis.title.y=element_text(size=8)) # adjust text size for y labels
+
+
+
+#pdf("C:/Users/hans/OneDrive - Marquette University/RareVariant/Fig-MIRAGE_gene_Bayes_FDR_misspecified_gammabar.pdf")
+#pdf("C:/Shengtong/Research/rare-var/RareVariant/2023_0413_Figure_for_paper/Fig-MIRAGE_gene_Bayes_FDR_misspecified_gammabar3456.pdf")
+#grid.arrange( p3, nrow=1)
+grid.arrange(p1, p2, p3, p4, nrow=2)
 
 ```
