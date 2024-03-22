@@ -1208,7 +1208,7 @@ theme(axis.text.y= element_text(size=6))+
 
 
 
-```{r,echo=T, message=F, warning=F}
+```{r,echo=F, message=F, warning=F}
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
 # this is from the code C:/Shengtong/Research/rare-var/RareVariant/rare-var-project/code/FullModelEM_MoreRiskVarCate_VaryGammabar.R
 load("../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.1_gammamean335_5rep.RData")
