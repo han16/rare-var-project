@@ -1285,6 +1285,11 @@ theme(axis.text.y= element_text(size=6))+
 
 ```
 
+* burden test: use fisher exact test in R  on total counts of transmitted and un-transmitted alleles 
+* SKAT-O test: use R package-SKAT with method "SKATO" chosen.   
+* ASUM: use ASUM function in R package AssotesteR, with 100 permutations 
+* CMC: use CMC function in R package AssotesteR, with 100 permutations, and `maf=10^(-4)*c(0.05, 0.2, 0.5)`. 
+
 * ACAT p value: within each of 3 variant groups, run ACAT on p value of every single variant by burden test (collapse variant if its MAC<10, as ACAT paper suggested) to obtain group level p value, then use ACAT to combine group level p value to get gene level p values  
 
 

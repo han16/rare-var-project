@@ -633,10 +633,19 @@ minimum</strong></p>
 <p><span class="math inline">\(\bar{\gamma}=3,3,5\)</span>. burden-comb:
 use Fisher method to combine p values from 3 independent tests.</p>
 <ul>
-<li>ACAT p value: within each of 3 variant groups, run ACAT on p value
-of every single variant by burden test (collapse variant if its
+<li><p>burden test: use fisher exact test in R on total counts of
+transmitted and un-transmitted alleles</p></li>
+<li><p>SKAT-O test: use R package-SKAT with method “SKATO” chosen.<br />
+</p></li>
+<li><p>ASUM: use ASUM function in R package AssotesteR, with 100
+permutations</p></li>
+<li><p>CMC: use CMC function in R package AssotesteR, with 100
+permutations, and <code>maf=10^(-4)*c(0.05, 0.2, 0.5)</code>.</p></li>
+<li><p>ACAT p value: within each of 3 variant groups, run ACAT on p
+value of every single variant by burden test (collapse variant if its
 MAC&lt;10, as ACAT paper suggested) to obtain group level p value, then
-use ACAT to combine group level p value to get gene level p values</li>
+use ACAT to combine group level p value to get gene level p
+values</p></li>
 </ul>
 <p><img src="simulation-study_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <p>Comparisons among three burden tests</p>
