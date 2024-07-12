@@ -69,6 +69,8 @@ output:
 
 * [QQ plot of burden and ACAT](qqplot_burden_acat.html)
 
+* [how correlated variants influence MIRAGE results](correlated_variants_analysis.html)
+
 
 
 [project]: https://www.dropbox.com/home/RareVariantProject?preview=RareVariant.pdf
