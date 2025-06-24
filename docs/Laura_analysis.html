@@ -14,7 +14,7 @@
 
 <title>Laura analysis</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -30,30 +30,31 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
-<script src="site_libs/datatables-binding-0.27/datatables.js"></script>
-<link href="site_libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
-<link href="site_libs/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
-<script src="site_libs/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
-<script src="site_libs/jszip-1.12.1/jszip.min.js"></script>
-<script src="site_libs/pdfmake-1.12.1/pdfmake.js"></script>
-<script src="site_libs/pdfmake-1.12.1/vfs_fonts.js"></script>
-<link href="site_libs/dt-ext-buttons-1.12.1/css/buttons.dataTables.min.css" rel="stylesheet" />
-<script src="site_libs/dt-ext-buttons-1.12.1/js/dataTables.buttons.min.js"></script>
-<script src="site_libs/dt-ext-buttons-1.12.1/js/buttons.html5.min.js"></script>
-<script src="site_libs/dt-ext-buttons-1.12.1/js/buttons.colVis.min.js"></script>
-<script src="site_libs/dt-ext-buttons-1.12.1/js/buttons.print.min.js"></script>
-<link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
-<script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.33/datatables.js"></script>
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="site_libs/jszip-1.13.6/jszip.min.js"></script>
+<script src="site_libs/pdfmake-1.13.6/pdfmake.js"></script>
+<script src="site_libs/pdfmake-1.13.6/vfs_fonts.js"></script>
+<link href="site_libs/dt-ext-buttons-1.13.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+<script src="site_libs/dt-ext-buttons-1.13.6/js/dataTables.buttons.min.js"></script>
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.html5.min.js"></script>
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.colVis.min.js"></script>
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.print.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -377,36 +378,36 @@ ones</li>
 </ul>
 <pre class="r"><code>Laura_Han_combine_v17 %&gt;% filter(is.na(No.case)==T &amp; is.na(Transmitted_proband)==F) # variants not in  Laura&#39;s data, but in mine </code></pre>
 <pre><code>## # A tibble: 215,249 × 8
-##    Variant         Gene    No.case No.contr group.index Transm…¹ Untra…² Group…³
-##    &lt;chr&gt;           &lt;chr&gt;     &lt;int&gt;    &lt;int&gt;       &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 1:100011430:G:C SLC35A3      NA       NA          NA       17      19       6
-##  2 1:100059932:G:A MFSD14A      NA       NA          NA        0       1       5
-##  3 1:100060000:C:A MFSD14A      NA       NA          NA        0       1       4
-##  4 1:100061912:T:C MFSD14A      NA       NA          NA        0       1       4
-##  5 1:100068032:T:C MFSD14A      NA       NA          NA        1       0       4
-##  6 1:100068061:G:A MFSD14A      NA       NA          NA        1       0       4
-##  7 1:100068062:T:C MFSD14A      NA       NA          NA        1       0       4
-##  8 1:100068103:A:G MFSD14A      NA       NA          NA        1       0       5
-##  9 1:100068127:T:A MFSD14A      NA       NA          NA        0       1       5
-## 10 1:100068152:C:G MFSD14A      NA       NA          NA        1       0       5
-## # … with 215,239 more rows, and abbreviated variable names
-## #   ¹​Transmitted_proband, ²​Untransmitted_proband, ³​Group_Index</code></pre>
+##    Variant         Gene    No.case No.contr group.index Transmitted_proband
+##    &lt;chr&gt;           &lt;chr&gt;     &lt;int&gt;    &lt;int&gt;       &lt;int&gt;               &lt;dbl&gt;
+##  1 1:100011430:G:C SLC35A3      NA       NA          NA                  17
+##  2 1:100059932:G:A MFSD14A      NA       NA          NA                   0
+##  3 1:100060000:C:A MFSD14A      NA       NA          NA                   0
+##  4 1:100061912:T:C MFSD14A      NA       NA          NA                   0
+##  5 1:100068032:T:C MFSD14A      NA       NA          NA                   1
+##  6 1:100068061:G:A MFSD14A      NA       NA          NA                   1
+##  7 1:100068062:T:C MFSD14A      NA       NA          NA                   1
+##  8 1:100068103:A:G MFSD14A      NA       NA          NA                   1
+##  9 1:100068127:T:A MFSD14A      NA       NA          NA                   0
+## 10 1:100068152:C:G MFSD14A      NA       NA          NA                   1
+## # ℹ 215,239 more rows
+## # ℹ 2 more variables: Untransmitted_proband &lt;dbl&gt;, Group_Index &lt;dbl&gt;</code></pre>
 <pre class="r"><code>Laura_Han_combine_v17 %&gt;% filter(is.na(No.case)==F &amp; is.na(Transmitted_proband)==T) # variants  in Laura&#39;s data, but not in mine</code></pre>
 <pre><code>## # A tibble: 98,570 × 8
-##    Variant                 Gene  No.case No.co…¹ group…² Trans…³ Untra…⁴ Group…⁵
-##    &lt;chr&gt;                   &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 16:53454840:AAGGTG:A    RBL2        0       1       1      NA      NA      NA
-##  2 19:5215597:T:C          PTPRS       0       1       1      NA      NA      NA
-##  3 3:70959303:CT:C         FOXP1       0       1       1      NA      NA      NA
-##  4 17:7323050:CT:C         NEUR…       1       0       1      NA      NA      NA
-##  5 9:117291486:G:T         ASTN2       0       1       1      NA      NA      NA
-##  6 14:71699102:T:TA        SIPA…       1       0       1      NA      NA      NA
-##  7 4:3131725:CT:C          HTT         0       1       1      NA      NA      NA
-##  8 6:43132689:T:C          PTK7        0       0       1      NA      NA      NA
-##  9 11:79064863:AGCACC:A    TENM4       1       0       1      NA      NA      NA
-## 10 6:107635302:A:ATGCTGCC… SOBP        1       0       1      NA      NA      NA
-## # … with 98,560 more rows, and abbreviated variable names ¹​No.contr,
-## #   ²​group.index, ³​Transmitted_proband, ⁴​Untransmitted_proband, ⁵​Group_Index</code></pre>
+##    Variant                Gene  No.case No.contr group.index Transmitted_proband
+##    &lt;chr&gt;                  &lt;chr&gt;   &lt;int&gt;    &lt;int&gt;       &lt;int&gt;               &lt;dbl&gt;
+##  1 16:53454840:AAGGTG:A   RBL2        0        1           1                  NA
+##  2 19:5215597:T:C         PTPRS       0        1           1                  NA
+##  3 3:70959303:CT:C        FOXP1       0        1           1                  NA
+##  4 17:7323050:CT:C        NEUR…       1        0           1                  NA
+##  5 9:117291486:G:T        ASTN2       0        1           1                  NA
+##  6 14:71699102:T:TA       SIPA…       1        0           1                  NA
+##  7 4:3131725:CT:C         HTT         0        1           1                  NA
+##  8 6:43132689:T:C         PTK7        0        0           1                  NA
+##  9 11:79064863:AGCACC:A   TENM4       1        0           1                  NA
+## 10 6:107635302:A:ATGCTGC… SOBP        1        0           1                  NA
+## # ℹ 98,560 more rows
+## # ℹ 2 more variables: Untransmitted_proband &lt;dbl&gt;, Group_Index &lt;dbl&gt;</code></pre>
 <div id="gene-set-overlapping" class="section level2">
 <h2>gene set overlapping</h2>
 <ul>
@@ -458,8 +459,8 @@ ASC_v17.</p></li>
 <div id="occurrence-of-top-20-asd-genes-in-other-gene-sets"
 class="section level3">
 <h3>Occurrence of top 20 ASD genes in other gene sets</h3>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9eceb20dc2a931752ae4" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-9eceb20dc2a931752ae4">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"caption":"<caption>Occurrence of top 20 genes in various gene sets<\/caption>","data":[["PLXNA1","MYH10","PCYOX1L","PTPRF","LMNB1","NAV3","ARAP2","AHNAK","SF3B3","IL1R2","ATP2B2","BTG3","MFSD10","OR52A5","PAN2","SYNGAP1","MYO5C","KATNAL1","DDX55","SLC5A6"],[164.8,126.29,92.24,72.06,61.9,45.84,45.06,34.14,32.55,31.73,30.65,30.49,28.7,25.43,22.03,21.47,20.98,20.9,16.77,16.63],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0],[0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0],[1,1,0,1,0,1,1,0,0,0,1,0,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0],[1,1,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0],[1,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0],[1,1,0,1,0,1,1,1,0,0,1,0,0,0,0,1,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>BF<\/th>\n      <th>ID gene<\/th>\n      <th>High<\/th>\n      <th>Mod<\/th>\n      <th>PSD<\/th>\n      <th>FMRP<\/th>\n      <th>AutismKB<\/th>\n      <th>constraint gene<\/th>\n      <th>RVIS<\/th>\n      <th>Haploinsuff<\/th>\n      <th>SCZ gene<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10,11]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9eceb20dc2a931752ae4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9eceb20dc2a931752ae4">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"caption":"<caption>Occurrence of top 20 genes in various gene sets<\/caption>","data":[["PLXNA1","MYH10","PCYOX1L","PTPRF","LMNB1","NAV3","ARAP2","AHNAK","SF3B3","IL1R2","ATP2B2","BTG3","MFSD10","OR52A5","PAN2","SYNGAP1","MYO5C","KATNAL1","DDX55","SLC5A6"],[164.8,126.29,92.23999999999999,72.06,61.9,45.84,45.06,34.14,32.55,31.73,30.65,30.49,28.7,25.43,22.03,21.47,20.98,20.9,16.77,16.63],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0],[0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0],[1,1,0,1,0,1,1,0,0,0,1,0,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0],[1,1,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0],[1,1,0,1,0,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0],[1,1,0,1,0,1,1,1,0,0,1,0,0,0,0,1,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>BF<\/th>\n      <th>ID gene<\/th>\n      <th>High<\/th>\n      <th>Mod<\/th>\n      <th>PSD<\/th>\n      <th>FMRP<\/th>\n      <th>AutismKB<\/th>\n      <th>constraint gene<\/th>\n      <th>RVIS<\/th>\n      <th>Haploinsuff<\/th>\n      <th>SCZ gene<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10,11]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"BF","targets":1},{"name":"ID gene","targets":2},{"name":"High","targets":3},{"name":"Mod","targets":4},{"name":"PSD","targets":5},{"name":"FMRP","targets":6},{"name":"AutismKB","targets":7},{"name":"constraint gene","targets":8},{"name":"RVIS","targets":9},{"name":"Haploinsuff","targets":10},{"name":"SCZ gene","targets":11}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
 <ul>
 <li>top 20 ASD genes by running MIRAGE on all inherited variants with
 <span class="math inline">\(\delta=5\%\)</span>.</li>
@@ -477,103 +478,7 @@ count and BF in every group</a></p>
 class="section level3">
 <h3>Enrichment of top 20 genes with fixed <span
 class="math inline">\(\delta=5\%\)</span></h3>
-<pre class="r"><code>path=&quot;C:\\Shengtong\\research\\rare-var\\&quot;
-topgene_number=20
-BF_para_all_est=as_tibble(read.table(paste(path, &quot;ASC\\Laura_result\\BF.PP.gene_2023_1009.txt&quot;, sep=&quot;&quot;), header=T))
-#burden_pvalues_001=as_tibble(read.csv(&quot;../output/KyleData/BF.proband.AllGene_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_AF0.01_1208_2022.csv&quot;)) # call top genes by burden 
-#sort_pvalue=burden_pvalues_001 %&gt;% arrange(All_variants_pvalue) # rank genes by p values 
-#topgenes_burden=as.character(sort_pvalue$X[1:topgene_number])
-#all.gene_burden=as.character(sort_pvalue$X)
-#topmirage.percent_burden=numeric()
-
-################
-SFARI.gene=read.csv(&quot;../data/GeneSet/SFARI-Gene_genes_06-20-2019release_07-15-2019export.csv&quot;, header=T)
-###################### strong ASD genes 
-
-SFARI_gene=c(as.character(SFARI.gene[which(SFARI.gene$gene.score==1), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==2), ]$gene.symbol), as.character(SFARI.gene[which(SFARI.gene$gene.score==3), ]$gene.symbol)) 
-
-################
-
-sort_BF=BF_para_all_est %&gt;% arrange(desc(BF))
-topgenes=as.character(sort_BF$Gene[1:topgene_number])
-all.gene=as.character(sort_BF$Gene)
-topmirage.percent=numeric(); all.gene.percent=numeric()
-pvalue=numeric()
-for ( i in 1:length(Gene_Set))
-{
-  overlap1=length(intersect(topgenes, Gene_Set_List[[i]]))
-  topmirage.percent[i]=overlap1/topgene_number
-  
-  overlap2=length(intersect(all.gene, Gene_Set_List[[i]]))
-  all.gene.percent[i]=overlap2/length(all.gene)
-  
-  pvalue[i]=fisher.test(matrix(c(overlap1, overlap2, topgene_number, length(all.gene)), nrow=2))$p.value
-  ####################
- # overlap_burden=length(intersect(topgenes_burden, Gene_Set_List[[i]]))
-#  topmirage.percent_burden[i]=overlap_burden/topgene_number
-}
-############ include SFARI gene in gene set 
-overlap1=length(intersect(topgenes, SFARI_gene))
-  topmirage.percent[i+1]=overlap1/topgene_number
-  
-  overlap2=length(intersect(all.gene, SFARI_gene))
-  all.gene.percent[i+1]=overlap2/length(all.gene)
-  
-#  overlap_burden=length(intersect(topgenes_burden, SFARI_gene))
-#  topmirage.percent_burden[i+1]=overlap_burden/topgene_number
-  
-
-#topmirage.enrichment.tidy=data.frame(class=c(rep(&quot;MIRAGE&quot;,length(Gene_Set)+1), rep(&quot;All Genes&quot;, length(Gene_Set)+1), rep(&quot;LoF+MPC&gt;2&quot;, length(Gene_Set)+1)), group=rep(c(Gene_Set, &quot;SFARI&quot;),3), percent=c(topmirage.percent, all.gene.percent, topmirage.percent_burden))
-  
-  ######## without burden test 
-  topmirage.enrichment.tidy=data.frame(class=c(rep(&quot;MIRAGE&quot;,length(Gene_Set)+1), rep(&quot;All Genes&quot;, length(Gene_Set)+1)), group=rep(c(Gene_Set, &quot;SFARI&quot;),2), percent=c(topmirage.percent, all.gene.percent))
-######################
-
-
-
-topmirage_enrichment=ggplot(topmirage.enrichment.tidy, aes(group, percent)) + 
-   geom_bar(aes(fill = class), stat = &quot;identity&quot;, position = &quot;dodge&quot;)+
-   theme_classic()+
-   xlab(&quot;&quot;)+ylab(&quot;Proportion of genes in the gene set&quot;)+
-  theme(axis.text.y = element_text(size = 10))+ # this is for numbers on y axis 
-   ylim(c(0, 0.5))+
-   theme(plot.title = element_text(hjust = 0.5, size=15, face=&quot;bold&quot;))+
-   ggtitle(&quot;Enrichment of top 20 ASD genes by burden and MIRAGE&quot;)+
-    theme(legend.title = element_blank())+
-   geom_signif(annotations =&quot;0.016&quot;, y_position = 0.115  ,xmin=0.7, xmax=1.3, size=1, vjust=-0.5, textsize=3.0)+ # textsize is for text over the bar; size is for width of lines 
-  geom_signif(annotations =&quot;0.169&quot;, y_position = 0.065  ,xmin=0.7, xmax=1.0, size=1, vjust=-0.5, textsize=3.0)+
-   geom_signif(annotations =&quot;3.32e-6&quot;, y_position = 0.465  ,xmin=1.7, xmax=2.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.618&quot;, y_position = 0.065  ,xmin=1.7, xmax=2.0, size=1, vjust=-0.5, textsize=3.0)+
-   geom_signif(annotations =&quot;6.09e-5&quot;, y_position = 0.365  ,xmin=2.7, xmax=3.3, size=1, vjust=-0.5, textsize=3.0)+
-   geom_signif(annotations =&quot;0.210&quot;, y_position = 0.115  ,xmin=2.7, xmax=3.0, size=1, vjust=-0.5, textsize=3.0)+
-   geom_signif(annotations =&quot;8.53e-3&quot;, y_position = 0.315  ,xmin=3.7, xmax=4.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.029&quot;, y_position = 0.265  ,xmin=3.7, xmax=4.0, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.069&quot;, y_position = 0.065,xmin=4.7, xmax=5.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;&quot;, y_position = 0.065,xmin=4.7, xmax=5.0, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.223&quot;, y_position = 0.065,xmin=5.7, xmax=6.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;1.000&quot;, y_position = 0.025,xmin=5.7, xmax=6.0, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.247&quot;, y_position = 0.065,xmin=6.7, xmax=7.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;1.000&quot;, y_position = 0.025,xmin=6.7, xmax=7.0, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.041&quot;, y_position = 0.165,xmin=7.7, xmax=8.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.513&quot;, y_position = 0.065,xmin=7.7, xmax=8.0, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;2.02e-6&quot;, y_position = 0.465,xmin=8.7, xmax=9.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.017&quot;, y_position = 0.215,xmin=8.7, xmax=9.0, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;5.06e-4&quot;, y_position = 0.465,xmin=9.7, xmax=10.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.057&quot;, y_position = 0.265,xmin=9.7, xmax=10.0, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.046&quot;, y_position = 0.113,xmin=10.7, xmax=11.3, size=1, vjust=-0.5, textsize=3.0)+
-  geom_signif(annotations =&quot;0.280&quot;, y_position = 0.065,xmin=10.7, xmax=11.0, size=1, vjust=-0.5, textsize=3.0)+
-    theme(legend.position=&quot;bottom&quot;)+
-   theme(axis.text.x = element_text(angle = 15, vjust = 0.5, size=13))+
- theme(text = element_text(size=13))+ # size is for labels on x axis 
-  theme(axis.title = element_text(size = 13))+ # Font Size of Axis Titles
- theme(legend.spacing.x = unit(1.0, &#39;cm&#39;)) # add space between symbols in legend 
-
-
- 
- #png(&quot;C:/Shengtong/Research/rare-var/RareVariant/2023_0413_Figure_for_paper/Fig-enrichment_of_top_genes.png&quot;)
- topmirage_enrichment</code></pre>
 <p><img src="Laura_analysis_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<pre class="r"><code> #dev.off()</code></pre>
 </div>
 <div id="manhattan-plot" class="section level3">
 <h3>Manhattan plot</h3>
@@ -586,8 +491,8 @@ class="math inline">\(\widehat{\delta}=0.017\)</span> with p value
 0.086, <span class="math inline">\(\widehat{\eta}=0.079\)</span> with p
 value 0.027.</li>
 </ul>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f30d7598595affc4f25a" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-f30d7598595affc4f25a">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"caption":"<caption>top genes when run MIRAGE on syn mutations<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],["HIST1H4B","ILK","EGR4","NLK","FLRT2","SMYD4","GCH1","NCSTN","PSD","PLA2G4D","NEB","RNF40","MCM3AP","NCKAP5L","TRPM4"],[75,37,119,67,155,138,63,107,204,184,790,173,317,236,167],[57,35,74,56,83,116,35,90,168,160,730,141,251,175,121],[1.3158,1.0571,1.6081,1.1964,1.8675,1.1897,1.8,1.1889,1.2143,1.15,1.0822,1.227,1.2629,1.3486,1.3802],[13.203,14.4552,16.3975,17.1632,17.23,19.8609,21.2146,21.9177,23.2502,25.1306,28.9546,50.6249,54.6934,73.855,658.994],[0.1825,0.1964,0.2171,0.2249,0.2256,0.2514,0.264,0.2704,0.2822,0.2982,0.3287,0.4612,0.4805,0.5553,0.9176]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Gene<\/th>\n      <th>Trans<\/th>\n      <th>Untrans<\/th>\n      <th>OR<\/th>\n      <th>BF<\/th>\n      <th>Post_prob<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f30d7598595affc4f25a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f30d7598595affc4f25a">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"caption":"<caption>top genes when run MIRAGE on syn mutations<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],["HIST1H4B","ILK","EGR4","NLK","FLRT2","SMYD4","GCH1","NCSTN","PSD","PLA2G4D","NEB","RNF40","MCM3AP","NCKAP5L","TRPM4"],[75,37,119,67,155,138,63,107,204,184,790,173,317,236,167],[57,35,74,56,83,116,35,90,168,160,730,141,251,175,121],[1.3158,1.0571,1.6081,1.1964,1.8675,1.1897,1.8,1.1889,1.2143,1.15,1.0822,1.227,1.2629,1.3486,1.3802],[13.203,14.4552,16.3975,17.1632,17.23,19.8609,21.2146,21.9177,23.2502,25.1306,28.9546,50.6249,54.6934,73.855,658.994],[0.1825,0.1964,0.2171,0.2249,0.2256,0.2514,0.264,0.2704,0.2822,0.2982,0.3287,0.4612,0.4805,0.5553,0.9176]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Gene<\/th>\n      <th>Trans<\/th>\n      <th>Untrans<\/th>\n      <th>OR<\/th>\n      <th>BF<\/th>\n      <th>Post_prob<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Blfrtip","buttons":["copy","csv","excel","pdf","print"],"lengthMenu":[[10,25,50,-1],["10","25","50","All"]],"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Gene","targets":1},{"name":"Trans","targets":2},{"name":"Untrans","targets":3},{"name":"OR","targets":4},{"name":"BF","targets":5},{"name":"Post_prob","targets":6}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
 <p><img src="Laura_analysis_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 </div>
 <div id="bf-breakdown-per-gene" class="section level3">

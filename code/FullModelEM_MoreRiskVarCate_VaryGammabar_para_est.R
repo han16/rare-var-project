@@ -33,7 +33,7 @@ gene.simu=function(N0, N1, m, alpha0, beta0, alpha, beta, gamma.mean, sigma, pi,
   q <- rbeta(m, alpha0, beta0)
   gamma <- rep(1,m)
   Zij=rep(0,m)
-  if (model==1)
+  if (model==1)  # risk gene 
   {
     for (k in 1:num.group)
     {

@@ -33,10 +33,13 @@ Basically, there are two sequential levels when generating the data. First under
 
 * gene level: $U_i$ denote the risk status of gene $i$, $U_i \sim Ber(1, \delta)$. All genes share the same risk probability $\delta$. 
 * variant level:
-    +  $U_i=0$, all variants for gene $i$ are non-causal, which is under null hypothesis. Given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$  
+    +  $U_i=0$, all variants for gene $i$ are non-causal, which is under null hypothesis. Given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$.   
     + $U_i=1$,  gene $i$ is a causal gene, the variant $(i,j)$ whose risk status is denoted by $Z_{ij}$ is generated as $Z_{ij} \sim Ber(1, \pi(\eta))$, $\pi(\eta)$ is a function linking annotations to the probability of being causal. 
-          *  $Z_{ij}=0$ (which is under null),  given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$
-          *   $Z_{ij}=1$ (which is under alternative), AF $q_{ij}^{(1)} \sim Beta(\alpha, \beta)$, $\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)$,  $X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})$, split into case and control by conditional binomial distribution with $p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}$. 
+    
+          1.   $Z_{ij}=0$ (which is under null),  given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$. 
+          
+          2.  $Z_{ij}=1$ (which is under alternative), AF $q_{ij}^{(1)} \sim Beta(\alpha, \beta)$, $\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)$,  $X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})$, split into case and control by conditional binomial distribution with $p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}$. 
+          
           
 Filtering step: filter variants that have null variant counts in both cases and controls.  
 
@@ -939,7 +942,7 @@ p1
 ```
 
 
-Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$, $\delta=0.1, 0.2, 0.3, 0.4$. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion  of risk variants  $\eta$ is varying at 0.05, 0.2, 0.5 and every risk category has its own    $\bar{\gamma}$ respectively. The basic idea is that the rarer the varinat is, the more effect size it tends to have. 
+Parameter settings: N1=N0=3000 $\alpha=\alpha_0=0.1$, $\beta=2000, \beta_0=1000$, $\delta=0.1, 0.2, 0.3, 0.4$. 1000 genes, each having 100 variants in three different groups, the first group has 60% variants, the second has 30% and the rest 10% are in the third group. In each variant group of every gene, the proportion  of risk variants  $\eta$ is varying at 0.05, 0.2, 0.5 and every risk category has its own    $\bar{\gamma}$ respectively. The basic idea is that the rarer the variant is, the more effect size it tends to have. 
 
 
 ```{r, echo=F, eval=F}

@@ -1,6 +1,9 @@
 ---
 title: "QQ plot of burden and ACAT"
-output: html_document
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+    toc: true
 date: "2023-11-07"
 ---
 
@@ -343,7 +346,7 @@ for STAAR analysis
 ## QQ plot of burden 
 
 
-```{r, echo=F, message=F, warning=F, eval=F}
+```{r, message=F, warning=F, eval=F}
 ################# calculate burden for each gene 
 colnames(mirage_input_with_gnomad_AF)[4:6]=c("Transmitted_proband", "Untransmitted_proband", "Group_Index")
 interest_gene=unique(mirage_input_with_gnomad_AF$Gene)  # use all genes 

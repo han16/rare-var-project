@@ -373,32 +373,23 @@ the same risk probability <span
 class="math inline">\(\delta\)</span>.</li>
 <li>variant level:
 <ul>
-<li><span class="math inline">\(U_i=0\)</span>, all variants for gene
+<li><p><span class="math inline">\(U_i=0\)</span>, all variants for gene
 <span class="math inline">\(i\)</span> are non-causal, which is under
 null hypothesis. Given the generated <span
 class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split into case and
 controls by conditional binomial distribution, with <span
-class="math inline">\(p=\frac{N1}{N1+N0}\)</span><br />
-</li>
-<li><span class="math inline">\(U_i=1\)</span>, gene <span
+class="math inline">\(p=\frac{N1}{N1+N0}\)</span>.<br />
+</p></li>
+<li><p><span class="math inline">\(U_i=1\)</span>, gene <span
 class="math inline">\(i\)</span> is a causal gene, the variant <span
 class="math inline">\((i,j)\)</span> whose risk status is denoted by
 <span class="math inline">\(Z_{ij}\)</span> is generated as <span
 class="math inline">\(Z_{ij} \sim Ber(1, \pi(\eta))\)</span>, <span
 class="math inline">\(\pi(\eta)\)</span> is a function linking
-annotations to the probability of being causal. * <span
-class="math inline">\(Z_{ij}=0\)</span> (which is under null), given the
-generated <span class="math inline">\(X_{1ij}+X_{0ij}\)</span>, split
-into case and controls by conditional binomial distribution, with <span
-class="math inline">\(p=\frac{N1}{N1+N0}\)</span> * <span
-class="math inline">\(Z_{ij}=1\)</span> (which is under alternative), AF
-<span class="math inline">\(q_{ij}^{(1)} \sim Beta(\alpha,
-\beta)\)</span>, <span class="math inline">\(\gamma_{ij} \sim
-Gamma(\bar{\gamma}*\sigma, \sigma)\)</span>, <span
-class="math inline">\(X_{1ij}+X_{0ij} \sim Pois(N1+N0,
-q_{ij}^{(1)})\)</span>, split into case and control by conditional
-binomial distribution with <span
-class="math inline">\(p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}\)</span>.</li>
+annotations to the probability of being causal.</p>
+<pre><code>1.   $Z_{ij}=0$ (which is under null),  given the generated $X_{1ij}+X_{0ij}$, split into case and controls by conditional binomial distribution, with $p=\frac{N1}{N1+N0}$. 
+
+2.  $Z_{ij}=1$ (which is under alternative), AF $q_{ij}^{(1)} \sim Beta(\alpha, \beta)$, $\gamma_{ij} \sim Gamma(\bar{\gamma}*\sigma, \sigma)$,  $X_{1ij}+X_{0ij} \sim Pois(N1+N0, q_{ij}^{(1)})$, split into case and control by conditional binomial distribution with $p=\frac{N1*\gamma_{ij}}{N1*\gamma_{ij}+N0}$. </code></pre></li>
 </ul></li>
 </ul>
 <p>Filtering step: filter variants that have null variant counts in both

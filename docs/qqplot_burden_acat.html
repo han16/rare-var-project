@@ -14,7 +14,7 @@
 
 <title>QQ plot of burden and ACAT</title>
 
-<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -36,8 +36,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -607,6 +607,114 @@ removed</p></li>
 </div>
 <div id="qq-plot-of-burden" class="section level2">
 <h2>QQ plot of burden</h2>
+<pre class="r"><code>################# calculate burden for each gene 
+colnames(mirage_input_with_gnomad_AF)[4:6]=c(&quot;Transmitted_proband&quot;, &quot;Untransmitted_proband&quot;, &quot;Group_Index&quot;)
+interest_gene=unique(mirage_input_with_gnomad_AF$Gene)  # use all genes 
+new_data=mirage_input_with_gnomad_AF %&gt;% filter(Gene %in% interest_gene) %&gt;% select(Variant, Gene, Gnomad_non_neuro_AF, Transmitted_proband, Untransmitted_proband, Group_Index)
+
+LoF_burden_005=matrix(nrow=length(interest_gene), ncol=4)
+Missense_burden_005=matrix(nrow=length(interest_gene), ncol=4)
+LoF_Missense_burden_005=matrix(nrow=length(interest_gene), ncol=4)
+p_value_005=matrix(nrow=length(interest_gene), ncol=5) # col1:LoF_pvalue; col2:LoF_missense_pvalue; col3: LoF_missense_fishercombined_pvalue; col4: LoF_ACAT_pvalue; col5: missense_ACAT_pvalue 
+
+LoF_burden_001=matrix(nrow=length(interest_gene), ncol=4)
+Missense_burden_001=matrix(nrow=length(interest_gene), ncol=4)
+LoF_Missense_burden_001=matrix(nrow=length(interest_gene), ncol=4)
+p_value_001=matrix(nrow=length(interest_gene), ncol=5) # col1:LoF_pvalue; col2:LoF_missense_pvalue; col3: LoF_missense_fishercombined_pvalue; col4: LoF_ACAT_pvalue; col5: missense_ACAT_pvalue
+threshold=1e-100
+num.family=14578
+
+for (i in 1:length(interest_gene))
+{
+  #i=6819
+  cat(i, &quot;th gene is running&quot;, &quot;\n&quot;)
+  single_gene_data=new_data %&gt;% filter(Gene==interest_gene[i])
+  
+  ############################ LoF variants 
+  LoF_burden_005[i,1]=sum(single_gene_data %&gt;% filter(Group_Index&lt;4) %&gt;% select(Transmitted_proband)%&gt;% pull) # sum over all T LoF variants   
+  LoF_burden_005[i,2]=sum(single_gene_data %&gt;% filter(Group_Index&lt;4) %&gt;% select(Untransmitted_proband)%&gt;% pull) # sum over all UT LoF variants  
+  burden_test=fisher.test(matrix(c(LoF_burden_005[i,1],num.family, LoF_burden_005[i,2], num.family), nrow=2)) # two sides burden test 
+  binom_test=binom.test(c(LoF_burden_005[i,1], LoF_burden_005[i,2]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+  LoF_burden_005[i,3]=burden_test$estimate
+  #LoF_burden_005[i,4]=burden_test$p.value
+  LoF_burden_005[i,4]=binom_test$p.value
+  p_value_005[i,1]=LoF_burden_005[i,4]
+  ########## use ACAT to combine individual variant p values 
+  single_gene_data_variant=data.frame(Trans=single_gene_data %&gt;% filter( Group_Index&lt;4) %&gt;% select(Transmitted_proband)%&gt;% pull, UTrans=single_gene_data %&gt;% filter( Group_Index&lt;4) %&gt;% select(Untransmitted_proband)%&gt;% pull) # use all LoF variants 
+  single_gene_data_variant_pvalue=numeric()
+  if (nrow(single_gene_data_variant)&gt;0)
+    { 
+     for ( j in 1:nrow(single_gene_data_variant))
+    single_gene_data_variant_pvalue[j]=binom.test(c(single_gene_data_variant$Trans[j], single_gene_data_variant$UTrans[j]), p=0.5, alternative = &quot;greater&quot;)$p.value# calculate p value under alternative: T&gt;UT for each single variant 
+  if (max(single_gene_data_variant_pvalue)==1 &amp; length(single_gene_data_variant_pvalue)&gt;1)   
+    p_value_005[i,4]=1-1/length(single_gene_data_variant_pvalue) # use adjust ACAT p value 
+  if (max(single_gene_data_variant_pvalue)==1 &amp; length(single_gene_data_variant_pvalue)==1)
+    p_value_005[i,4]=1
+  if (max(single_gene_data_variant_pvalue)&lt;1)
+    p_value_005[i,4]=ACAT(single_gene_data_variant_pvalue)  # use equal weight to every single variant 
+  }
+  
+  ##################################### missense (MPC&gt;=2)variants 
+  Missense_burden_005[i,1]=sum(single_gene_data %&gt;% filter( Group_Index==4) %&gt;% select(Transmitted_proband)%&gt;% pull)  # only MPC&gt;2 
+  Missense_burden_005[i,2]=sum(single_gene_data %&gt;% filter( Group_Index==4) %&gt;% select(Untransmitted_proband)%&gt;% pull) # only MPC&gt;2
+  burden_test=fisher.test(matrix(c(Missense_burden_005[i,1],num.family, Missense_burden_005[i,2], num.family), nrow=2))
+  binom_test=binom.test(c(Missense_burden_005[i,1], Missense_burden_005[i,2]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT; one side burden test 
+  Missense_burden_005[i,3]=burden_test$estimate
+  #LoF_burden_005[i,4]=burden_test$p.value
+  Missense_burden_005[i,4]=binom_test$p.value
+  ############## avoid p value of 0 or 1 
+  if (LoF_burden_005[i,4]==0)
+     LoF_burden_005[i,4]=threshold
+  if (LoF_burden_005[i,4]&gt;0.9999)
+     LoF_burden_005[i,4]=1-threshold
+  if (Missense_burden_005[i,4]==0)
+     Missense_burden_005[i,4]=threshold
+  if (Missense_burden_005[i,4]&gt;0.9999)
+     Missense_burden_005[i,4]=1-threshold
+    p_value_005[i,3]=fisher(c(LoF_burden_005[i,4], Missense_burden_005[i,4]))$p
+    
+    ########## use ACAT to combine individual variant p values 
+  single_gene_data_variant=data.frame(Trans=single_gene_data %&gt;% filter( Group_Index&gt;=4) %&gt;% select(Transmitted_proband)%&gt;% pull, UTrans=single_gene_data %&gt;% filter( Group_Index&gt;=4) %&gt;% select(Untransmitted_proband)%&gt;% pull) # use all missense variants 
+  single_gene_data_variant_pvalue=numeric()
+  if (nrow(single_gene_data_variant)&gt;0)
+    {
+     for ( j in 1:nrow(single_gene_data_variant))
+    single_gene_data_variant_pvalue[j]=binom.test(c(single_gene_data_variant$Trans[j], single_gene_data_variant$UTrans[j]), p=0.5, alternative = &quot;greater&quot;)$p.value# calculate p value under alternative: T&gt;UT for each single variant 
+  if (max(single_gene_data_variant_pvalue)==1 &amp; length(single_gene_data_variant_pvalue)&gt;1)   
+    p_value_005[i,5]=1-1/length(single_gene_data_variant_pvalue) # use adjusted ACAT p value 
+  if (max(single_gene_data_variant_pvalue)==1 &amp; length(single_gene_data_variant_pvalue)==1)
+    p_value_005[i,5]=1
+  if (max(single_gene_data_variant_pvalue)&lt;1)
+    p_value_005[i,5]=ACAT(single_gene_data_variant_pvalue)  # use equal weight to every single variant 
+  }
+  ################################## LoF+missense (MPC&gt;=2) variants 
+  LoF_Missense_burden_005[i,1]=sum(single_gene_data %&gt;% filter(Group_Index&lt;=4) %&gt;% select(Transmitted_proband)%&gt;% pull)  
+  LoF_Missense_burden_005[i,2]=sum(single_gene_data %&gt;% filter(Group_Index&lt;=4) %&gt;% select(Untransmitted_proband)%&gt;% pull)
+  burden_test=fisher.test(matrix(c(LoF_Missense_burden_005[i,1],num.family, LoF_Missense_burden_005[i,2], num.family), nrow=2))
+  binom_test=binom.test(c(LoF_Missense_burden_005[i,1], LoF_Missense_burden_005[i,2]), p=0.5, alternative = &quot;greater&quot;) # calculate p value under alternative: T&gt;UT
+  LoF_Missense_burden_005[i,3]=burden_test$estimate
+  #LoF_Missense_burden_005[i,4]=burden_test$p.value
+  LoF_Missense_burden_005[i,4]=binom_test$p.value
+  p_value_005[i,2]=LoF_Missense_burden_005[i,4]
+  
+} # end of for (i in 1:length(interest_gene))
+
+################
+  rownames(p_value_005)=interest_gene
+  colnames(p_value_005)=c(&quot;LoF_pvalue&quot;, &quot;LoF.Missense_pvalue&quot;, &quot;fisher_combine_pvalue&quot;, &quot;LoF_ACAT_pvalue&quot;, &quot;Missense_ACAT_pvalue&quot;)
+  
+  combine_005=cbind(LoF_burden_005, Missense_burden_005, LoF_Missense_burden_005)
+  rownames(combine_005)=interest_gene
+  colnames(combine_005)=paste(rep(c(&quot;LoF&quot;, &quot;Missense&quot;, &quot;LoF.Missense&quot;), each=4), c(&quot;T&quot;, &quot;UT&quot;, &quot;OR&quot;, &quot;P_value&quot;), sep=&quot;_&quot;)
+  ############### check the variants counts are correct 
+  check_gene=&quot;NAV3&quot;
+  sum(mirage_input %&gt;% filter(Gene==check_gene &amp; group.index==4) %&gt;% select(No.case) %&gt;% pull) 
+  sum(mirage_input %&gt;% filter(Gene==check_gene &amp; group.index==4) %&gt;% select(No.contr) %&gt;% pull)
+  combine_005[which(rownames(combine_005)==check_gene),]
+  
+  
+#  write.csv(p_value_005, file=&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_binom_oneside_pvalues_MPC_larger_than2_2023_1108.csv&quot;)
+#  write.csv(combine_005, file=&quot;../output/LauraData/All_inherited_variants_6vargroups_burden_counts_binom_oneside_pvalues_MPC_larger_than2_2023_1108.csv&quot;)</code></pre>
 <pre class="r"><code>plotQQ.unif &lt;- function(p.obs) {
   obs &lt;- (p.obs)
   theo &lt;- (ppoints(length(obs)))

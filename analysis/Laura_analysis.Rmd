@@ -1,6 +1,9 @@
 ---
 title: "Laura analysis"
-output: html_document
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+    toc: true
 date: "2023-05-24"
 ---
 
