@@ -366,6 +366,13 @@ N_all=14578  # from Laura&#39;s script: NOTES_wrap_mirage_100323
 ########## read into gnomAD allele frequency 
 ASC_v17_TDT_by_variant_20200916_gnomad=as_tibble(read.table(paste(path, &quot;ASC\\Laura_result\\ASC_v17_TDT_by_variant_2020-09-16_gnomad.txt&quot;, sep=&quot;&quot;), header=T))
 mirage_input_with_gnomad_AF=right_join(ASC_v17_TDT_by_variant_20200916_gnomad, mirage_input, by=&quot;Variant&quot;)</code></pre>
+<pre class="r"><code>variant_counts &lt;- mirage_input %&gt;%
+  group_by(Gene) %&gt;%
+  summarise(variant_count = n()) %&gt;%
+  arrange(desc(variant_count))
+ summary(variant_counts$variant_count)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     1.0    38.0    70.0    93.8   118.0  6425.0</code></pre>
 <div id="qq-plot-of-staar" class="section level2">
 <h2>QQ plot of STAAR</h2>
 <pre class="r"><code>################# calculate ACAT pvalue for every gene 
@@ -587,7 +594,7 @@ burden=tibble(sx=sx, sy=sy)
    geom_abline(intercept = 0, slope = 1, color=&quot;red&quot;, 
                  linetype=&quot;solid&quot;, size=1.5)+
 theme(text = element_text(size=10))</code></pre>
-<p><img src="qqplot_burden_acat_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="qqplot_burden_acat_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>for STAAR analysis</p>
 <ul>
 <li><p>apply AF filter <span
@@ -821,7 +828,7 @@ annotate_figure(figure,
 #                right = &quot;I&#39;m done, thanks :-)!&quot;,
 #                fig.lab = &quot;Figure 1&quot;, fig.lab.face = &quot;bold&quot;
 )</code></pre>
-<p><img src="qqplot_burden_acat_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="qqplot_burden_acat_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>#dev.off()</code></pre>
 </div>
 

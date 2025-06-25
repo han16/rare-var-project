@@ -100,6 +100,18 @@ mirage_input_with_gnomad_AF=right_join(ASC_v17_TDT_by_variant_20200916_gnomad, m
 ```
 
 
+
+
+
+```{r, message=F, warning=F}
+variant_counts <- mirage_input %>%
+  group_by(Gene) %>%
+  summarise(variant_count = n()) %>%
+  arrange(desc(variant_count))
+ summary(variant_counts$variant_count)
+```
+
+
 ## QQ plot of STAAR 
 
 ```{r, echo=T, message=F, warning=F, eval=F}
