@@ -13,6 +13,9 @@ output:
 
 * [modeling with logistic prior](model_logistic_prior.html)
 * [simulation experiments](simulation_logistic_prior.html)
+
+   - additional simulations
+
  
 ## Simulation studies  
  
