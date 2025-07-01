@@ -362,12 +362,12 @@ it is randomly drawn between 50 and 500.</li>
 <pre class="r"><code>############################################################################################################
 ################################ delta=0.05
 rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
-load(&quot;C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/7methods_delta0.02_MAC_threshold10.gammamean335_5rep.RData&quot;)
+load(&quot;C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/7methods_delta0.05_MAC_threshold10.gammamean335_5rep.RData&quot;)
 AUC_summary_0.05=matrix(nrow=5, ncol=6)
 colnames(AUC_summary_0.05)=c(&quot;ACAT&quot;, &quot;ASUM&quot;, &quot;Burden&quot;, &quot;CMC&quot;, &quot;MIRAGE&quot;, &quot;SKAT-O&quot;)
 #for (i in 1:5)
 {
-  i=3
+  i=2
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
 mirage_BF=MIRAGE.BF[[i]]
@@ -389,7 +389,7 @@ for (ii in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( &quot;Burden(0.8124)&quot;, &quot;SKAT-O(0.8762)&quot;, &quot;MIRAGE(0.9758)&quot;, &quot;CMC(0.8992)&quot;, &quot;ASUM(0.7617)&quot;, &quot;ACAT(0.6530)&quot;), each=num_run)
+method=rep(c( &quot;Burden(0.8877)&quot;, &quot;SKAT-O(0.9184)&quot;, &quot;MIRAGE(0.9840)&quot;, &quot;CMC(0.8987)&quot;, &quot;ASUM(0.8061)&quot;, &quot;ACAT(0.7560)&quot;), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
@@ -417,7 +417,7 @@ AUC_summary_0.05[i,]=calc_auc(p2.basic)$AUC
 p2_delta0.05</code></pre>
 <p><img src="additional_simulations_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre class="r"><code>round(calc_auc(p2.basic)$AUC, 4)</code></pre>
-<pre><code>## [1] 0.6530 0.7617 0.8124 0.8992 0.9758 0.8762</code></pre>
+<pre><code>## [1] 0.7560 0.8061 0.8877 0.8987 0.9840 0.9184</code></pre>
 <pre class="r"><code>#grid.arrange(p1, p2, top=grid.text(&quot;ROC curves&quot;), bottom=grid.text(expression(paste(alpha, &quot;=0.1,&quot;, alpha[0], &quot;=0.1,&quot;, beta, &quot;=2000,&quot;, beta[0], &quot;=1000&quot;))), nrow=1)
 #dev.off()
 ####################### comparison among three burdens ############

@@ -7,6 +7,9 @@ output:
 date: "2025-07-01"
 ---
 
+
+
+
 ```{r, echo=F, warning=F, message=F}
 rm(list=ls())
 library(ggplot2)
@@ -119,12 +122,12 @@ theme(axis.text.y= element_text(size=6))+
 ############################################################################################################
 ################################ delta=0.05
 rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
-load("C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/7methods_delta0.02_MAC_threshold10.gammamean335_5rep.RData")
+load("C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/7methods_delta0.05_MAC_threshold10.gammamean335_5rep.RData")
 AUC_summary_0.05=matrix(nrow=5, ncol=6)
 colnames(AUC_summary_0.05)=c("ACAT", "ASUM", "Burden", "CMC", "MIRAGE", "SKAT-O")
 #for (i in 1:5)
 {
-  i=3
+  i=2
 Ui=Gene.Risk.Status[[i]]
 mirage_pvalue=MIRAGE.pvalue[[i]]
 mirage_BF=MIRAGE.BF[[i]]
@@ -146,7 +149,7 @@ for (ii in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c( "Burden(0.8124)", "SKAT-O(0.8762)", "MIRAGE(0.9758)", "CMC(0.8992)", "ASUM(0.7617)", "ACAT(0.6530)"), each=num_run)
+method=rep(c( "Burden(0.8877)", "SKAT-O(0.9184)", "MIRAGE(0.9840)", "CMC(0.8987)", "ASUM(0.8061)", "ACAT(0.7560)"), each=num_run)
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
