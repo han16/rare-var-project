@@ -22,5 +22,6 @@ output:
     toc_float: true
     theme: cosmo
     highlight: textmate
+    code_folding: hide
     include:
       after_body: include/footer.html
