@@ -35,7 +35,7 @@ library(ACAT)
 
 
 
-```{r, echo=F, message=F, warning=F}
+```{r,  message=F, warning=F}
 ########## use fixed parameter estimate to calculate BF, this is very useful because it doesn't need to re-run analysis to BF of every gene which takes a long time and large space to store that information 
 intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
 {
@@ -685,7 +685,7 @@ datatable(extensions = 'Buttons',
 
 ### BF in each variant group with fixed $\delta=5\%$
 
-```{r, echo=F, message=F, warning=F, eval=F}
+```{r, message=F, warning=F, eval=F}
 ################# calculate BF in each group 
 #BF_proband_AllGene=as_tibble(read.csv("../output/kyleData/BF.proband.AllGene_1105_2022.csv"))
 ########## this is the result with parameters fixed at 5% 
