@@ -31,6 +31,18 @@ loadRData <- function(fileName){
 ```
 
 
+
+```{r, echo=F, message=F, warning=F}
+
+# ![data generation workflow](DataGeneration.png)
+
+```
+
+
+
+
+
+
 * same settings as the same number of variants for all genes, except it is randomly drawn between 50 and 500. 
 
 

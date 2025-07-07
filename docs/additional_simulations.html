@@ -357,7 +357,7 @@ div.tocify {
 <li>same settings as the same number of variants for all genes, except
 it is randomly drawn between 50 and 500.</li>
 </ul>
-<p><img src="additional_simulations_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre><code>## [1] 0.6530 0.7617 0.8124 0.8992 0.9758 0.8762</code></pre>
 <pre class="r"><code>############################################################################################################
 ################################ delta=0.05
@@ -437,7 +437,7 @@ p2_delta0.05=p2.basic+
 }
 
 p2_delta0.05</code></pre>
-<p><img src="additional_simulations_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre class="r"><code>round(calc_auc(p2.basic)$AUC, 4)</code></pre>
 <pre><code>## [1] 0.7560 0.8061 0.8877 0.8987 0.9840 0.9184</code></pre>
 <pre class="r"><code>#grid.arrange(p1, p2, top=grid.text(&quot;ROC curves&quot;), bottom=grid.text(expression(paste(alpha, &quot;=0.1,&quot;, alpha[0], &quot;=0.1,&quot;, beta, &quot;=2000,&quot;, beta[0], &quot;=1000&quot;))), nrow=1)
@@ -543,7 +543,7 @@ p_delta0.2=p2.basic+
 
 }
 p_delta0.2</code></pre>
-<p><img src="additional_simulations_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>round(calc_auc(p2.basic)$AUC, 4)</code></pre>
 <pre><code>## [1] 0.7450 0.8250 0.8583 0.9090 0.9739 0.9154</code></pre>
 <pre class="r"><code>################## comparison among three burdens ########
@@ -567,7 +567,7 @@ theme(axis.text.y= element_text(size=6))+
   theme(legend.text = element_text(size = 7))+ # adjust legend text size 
   theme(axis.title.y = element_blank())  # remove labels on y axis 
 #p_delta0.2_burden</code></pre>
-<p><img src="additional_simulations_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre><code>## [1] 0.7032 0.7304 0.8109 0.8794 0.9608 0.8777</code></pre>
 <pre class="r"><code>#all &lt;- grid.arrange(p1_delta[[&quot;delta-0.02&quot;]], p1_delta[[&quot;delta-0.1&quot;]], nrow=1) 
 

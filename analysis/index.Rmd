@@ -1,8 +1,9 @@
 ---
 title: "Statistical rare variant analysis for autism"
 output:
-  html_document:
-    toc: false
+  workflowr::wflow_html:
+    code_folding: hide
+    toc: true
 ---
 
 
