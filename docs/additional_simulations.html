@@ -34,6 +34,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
@@ -222,6 +223,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -345,6 +349,14 @@ div.tocify {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">07/01 2025</h1>
@@ -357,8 +369,107 @@ div.tocify {
 <li>same settings as the same number of variants for all genes, except
 it is randomly drawn between 50 and 500.</li>
 </ul>
+<pre class="r"><code>rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
+load(&quot;C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/7methods_delta0.02_MAC_threshold10.gammamean335_5rep.RData&quot;)
+AUC_summary_0.02=matrix(nrow=5, ncol=6)
+colnames(AUC_summary_0.02)=c(&quot;ACAT&quot;, &quot;ASUM&quot;, &quot;Burden&quot;, &quot;CMC&quot;, &quot;MIRAGE&quot;, &quot;SKAT-O&quot;)
+#for (i in 1:5)
+{
+  i=3
+Ui=Gene.Risk.Status[[i]]
+mirage_pvalue=MIRAGE.pvalue[[i]]
+mirage_BF=MIRAGE.BF[[i]]
+fisher_pvalue=Fisher.pvalue[[i]]
+skato_pvalue=SKATO.pvalue[[i]]
+cmc_pvalue=CMC.pvalue[[i]]
+asum_pvalue=ASUM.pvalue[[i]]
+fisher.separate.pvalue=Fisher.separate.pvalue[[i]]
+acat.pvalue=ACAT.pvalue[[i]]
+fisher.adj.pvalue=numeric()
+fisher.combine.pvalue=numeric()
+for (ii in 1:nrow(fisher.separate.pvalue))
+{
+  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = &quot;bonferroni&quot;, n = length(fisher.separate.pvalue[ii,])))
+  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
+}  
+  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
+
+num_run=length(mirage_pvalue)
+
+
+method=rep(c(&quot;Burden(0.821)&quot;, &quot;SKAT-O(0.879)&quot;, &quot;MIRAGE(0.976)&quot;, &quot;CMC(0.899)&quot;, &quot;ASUM(0.762)&quot;, &quot;ACAT(0.653)&quot;), each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
+
+roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
+
+p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0)+
+  style_roc(theme = theme_grey)
+
+##############
+#p1_delta0.02=p1.basic+
+ # annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+#           label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;, &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;, &quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
+#  ggtitle(expression(paste(delta, &quot;=0.02&quot;)))+
+#  theme_classic()+
+#theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+# theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+#theme(axis.text.y= element_text(size=6))+
+#  theme(axis.text = element_text(size = 1))+
+#  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
+#  theme(legend.title=element_blank())+   # nol legend title 
+#  theme(legend.justification=c(1,0), legend.position=c(1,0))+
+#  theme(legend.text = element_text(size = 5)) # adjust legend text size 
+#p1_delta0.01
+#calc_auc(p1.basic)$AUC
+AUC_summary_0.02[i,]=calc_auc(p1.basic)$AUC
+
+##################### Xiaotong&#39;s code 
+delta=0.02
+p1_delta0.02=p1.basic+
+  ggtitle(bquote(delta == .(delta)))+
+    theme_classic() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 14),
+      axis.text.x = element_text(size = 10),
+      axis.text.y = element_text(size = 14),
+      axis.title.y = element_text(size = 16),
+      axis.title.x = element_text(size = 16),
+      legend.title = element_blank(),
+      legend.justification = c(1, 0),
+      legend.position = c(1, 0),
+      legend.text = element_text(size = 11)
+    ) +
+    geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
+  
+}
+
+
+
+
+p1_delta0.02</code></pre>
 <p><img src="additional_simulations_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>round(calc_auc(p1.basic)$AUC, 4)</code></pre>
 <pre><code>## [1] 0.6530 0.7617 0.8124 0.8992 0.9758 0.8762</code></pre>
+<pre class="r"><code>################## comparison among three burden p values ##########
+method=rep(c( &quot;Burden(0.446)&quot;, &quot;Burden-adj(0.386)&quot;, &quot;Burden-combine(0.607)&quot;), each=num_run)
+
+roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, fisher.combine.pvalue), method=method)
+p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0, labels=F)+
+  style_roc(theme = theme_grey)
+p_delta0.02_burden=p.basic_burden+
+  #annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
+  #         label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;, &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;, &quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p.basic)$AUC, 2)), size=2)+
+  ggtitle(expression(paste(delta, &quot;=0.01&quot;)))+
+  theme_classic()+
+theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
+ theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
+theme(axis.text.y= element_text(size=6))+
+  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
+  theme(legend.title=element_blank())+   # no legend title 
+  theme(legend.justification=c(1,0), legend.position=c(1,0))+
+  theme(legend.text = element_text(size = 7)) # adjust legend text size 
+#p_delta0.02_burden</code></pre>
 <pre class="r"><code>############################################################################################################
 ################################ delta=0.05
 rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
@@ -721,6 +832,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
