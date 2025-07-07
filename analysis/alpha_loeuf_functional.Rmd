@@ -1,0 +1,93 @@
+---
+title: "07/03 2025"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+    toc: true
+date: "2025-07-03"
+---
+
+
+
+```{r, message=F, warning=F}
+rm(list = ls())
+set.seed(123)
+BiocManager::install("clusterProfiler")
+BiocManager::install("ReactomePA")
+BiocManager::install("org.Hs.eg.db")
+
+library(clusterProfiler)
+library(ReactomePA)
+library(org.Hs.eg.db)
+
+```
+
+
+
+```{r, message=F, warning=F}
+gene_list=c("APAR2", "PRTG", "PCYOX1L", "PTPRF", "UBR1", "SLC5A6", "USP31", "OR11H6", "OR52A5", "LMNB1", "OXER1", "SV2B", "LINGO2", "MYH10", "CABIN1", "PAN2", "PTPRE", "SMOC1", "NCKAP5L", "KIAA1109", "EML6", "ATG4C", "OSBPL3")  # top 23 genes from https://xsun1229.github.io/rarevariant/mirage_lofdecmis.html
+
+# Example: Convert gene symbols to Entrez IDs
+gene_df <- bitr(gene_list, fromType = "SYMBOL",
+                toType = "ENTREZID",
+                OrgDb = org.Hs.eg.db)
+
+# Extract only the Entrez IDs
+entrez_ids <- gene_df$ENTREZID
+
+
+
+reactome_enrich <- enrichPathway(gene = entrez_ids, organism = "human")
+reactome_enrich
+# View only neuron/brain pathways
+brain_terms <- reactome_enrich[grep("neuron|synapse|brain", reactome_enrich$Description, ignore.case = TRUE), ]
+brain_terms
+```
+
+
+
+
+```{r, message=F, warning=F}
+# Convert gene symbols to Entrez IDs
+gene_df <- bitr(gene_list, fromType = "SYMBOL",
+                toType = "ENTREZID", OrgDb = org.Hs.eg.db)
+
+# Run GO enrichment
+ego <- enrichGO(gene          = gene_df$ENTREZID,
+                OrgDb         = org.Hs.eg.db,
+                keyType       = "ENTREZID",
+                ont           = "BP",  # or "MF", "CC"
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 0.05,
+                qvalueCutoff  = 0.2)
+```
+
+
+
+```{r, message=F, warning=F, eval=F}
+dotplot(ego)
+```
+
+
+
+
+```{r, message=F, warning=F}
+library(gprofiler2)
+
+gostres <- gost(query = gene_list, organism = "hsapiens")
+
+gostres$result
+gostres$meta
+# Filter for brain/neuron-related terms
+brain_enrich <- gostres$result[grep("neuron|synapse|brain", gostres$result$term_name, ignore.case = TRUE), ]
+brain_enrich
+```
+
+
+```{r, message=F, warning=F}
+res <- gost(query = gene_list, organism = "hsapiens")
+head(res$result)
+
+# Show top results
+head(res$result[, c("term_name", "source", "p_value", "intersection_size")])
+```

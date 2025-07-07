@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-07-03" />
+
+<title>07/03 2025</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">rare-var-project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://han16.github.io/rare-var-project/">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">07/03 2025</h1>
+<h4 class="date">2025-07-03</h4>
+
+</div>
+
+
+<pre class="r"><code>rm(list = ls())
+set.seed(123)
+BiocManager::install(&quot;clusterProfiler&quot;)
+BiocManager::install(&quot;ReactomePA&quot;)
+BiocManager::install(&quot;org.Hs.eg.db&quot;)
+
+library(clusterProfiler)
+library(ReactomePA)
+library(org.Hs.eg.db)</code></pre>
+<pre class="r"><code>gene_list=c(&quot;APAR2&quot;, &quot;PRTG&quot;, &quot;PCYOX1L&quot;, &quot;PTPRF&quot;, &quot;UBR1&quot;, &quot;SLC5A6&quot;, &quot;USP31&quot;, &quot;OR11H6&quot;, &quot;OR52A5&quot;, &quot;LMNB1&quot;, &quot;OXER1&quot;, &quot;SV2B&quot;, &quot;LINGO2&quot;, &quot;MYH10&quot;, &quot;CABIN1&quot;, &quot;PAN2&quot;, &quot;PTPRE&quot;, &quot;SMOC1&quot;, &quot;NCKAP5L&quot;, &quot;KIAA1109&quot;, &quot;EML6&quot;, &quot;ATG4C&quot;, &quot;OSBPL3&quot;)  # top 23 genes from https://xsun1229.github.io/rarevariant/mirage_lofdecmis.html
+
+# Example: Convert gene symbols to Entrez IDs
+gene_df &lt;- bitr(gene_list, fromType = &quot;SYMBOL&quot;,
+                toType = &quot;ENTREZID&quot;,
+                OrgDb = org.Hs.eg.db)
+
+# Extract only the Entrez IDs
+entrez_ids &lt;- gene_df$ENTREZID
+
+
+
+reactome_enrich &lt;- enrichPathway(gene = entrez_ids, organism = &quot;human&quot;)
+reactome_enrich</code></pre>
+<pre><code>## #
+## # over-representation test
+## #
+## #...@organism     human 
+## #...@ontology     Reactome 
+## #...@keytype      ENTREZID 
+## #...@gene     chr [1:21] &quot;283659&quot; &quot;78991&quot; &quot;5792&quot; &quot;197131&quot; &quot;8884&quot; &quot;57478&quot; &quot;122748&quot; ...
+## #...pvalues adjusted by &#39;BH&#39; with cutoff &lt;0.05 
+## #...1 enriched terms found
+## &#39;data.frame&#39;:    1 obs. of  9 variables:
+##  $ ID         : chr &quot;R-HSA-2559584&quot;
+##  $ Description: chr &quot;Formation of Senescence-Associated Heterochromatin Foci (SAHF)&quot;
+##  $ GeneRatio  : chr &quot;2/14&quot;
+##  $ BgRatio    : chr &quot;16/11009&quot;
+##  $ pvalue     : num 0.000178
+##  $ p.adjust   : num 0.0128
+##  $ qvalue     : num 0.00864
+##  $ geneID     : chr &quot;4001/23523&quot;
+##  $ Count      : int 2
+## #...Citation
+##   Guangchuang Yu, Qing-Yu He. ReactomePA: an R/Bioconductor package for
+##   reactome pathway analysis and visualization. Molecular BioSystems
+##   2016, 12(2):477-479</code></pre>
+<pre class="r"><code># View only neuron/brain pathways
+brain_terms &lt;- reactome_enrich[grep(&quot;neuron|synapse|brain&quot;, reactome_enrich$Description, ignore.case = TRUE), ]
+brain_terms</code></pre>
+<pre><code>## [1] ID          Description GeneRatio   BgRatio     pvalue      p.adjust   
+## [7] qvalue      geneID      Count      
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code># Convert gene symbols to Entrez IDs
+gene_df &lt;- bitr(gene_list, fromType = &quot;SYMBOL&quot;,
+                toType = &quot;ENTREZID&quot;, OrgDb = org.Hs.eg.db)
+
+# Run GO enrichment
+ego &lt;- enrichGO(gene          = gene_df$ENTREZID,
+                OrgDb         = org.Hs.eg.db,
+                keyType       = &quot;ENTREZID&quot;,
+                ont           = &quot;BP&quot;,  # or &quot;MF&quot;, &quot;CC&quot;
+                pAdjustMethod = &quot;BH&quot;,
+                pvalueCutoff  = 0.05,
+                qvalueCutoff  = 0.2)</code></pre>
+<pre class="r"><code>dotplot(ego)</code></pre>
+<pre class="r"><code>library(gprofiler2)
+
+gostres &lt;- gost(query = gene_list, organism = &quot;hsapiens&quot;)
+
+gostres$result</code></pre>
+<pre><code>##     query significant    p_value term_size query_size intersection_size
+## 1 query_1        TRUE 0.04424869        17         21                 2
+## 2 query_1        TRUE 0.04424869        17         21                 2
+## 3 query_1        TRUE 0.04244051       670         19                 6
+##   precision      recall               term_id source
+## 1 0.0952381 0.117647059            GO:0005001  GO:MF
+## 2 0.0952381 0.117647059            GO:0019198  GO:MF
+## 3 0.3157895 0.008955224 MIRNA:hsa-mir-4639-5p  MIRNA
+##                                                      term_name
+## 1 transmembrane receptor protein tyrosine phosphatase activity
+## 2          transmembrane receptor protein phosphatase activity
+## 3                                              hsa-mir-4639-5p
+##   effective_domain_size source_order      parents
+## 1                 20246         1204 GO:00047....
+## 2                 20246         3411 GO:00047....
+## 3                 16638         2834 MIRNA:000000</code></pre>
+<pre class="r"><code>gostres$meta</code></pre>
+<pre><code>## $query_metadata
+## $query_metadata$queries
+## $query_metadata$queries$query_1
+##  [1] &quot;APAR2&quot;    &quot;PRTG&quot;     &quot;PCYOX1L&quot;  &quot;PTPRF&quot;    &quot;UBR1&quot;     &quot;SLC5A6&quot;  
+##  [7] &quot;USP31&quot;    &quot;OR11H6&quot;   &quot;OR52A5&quot;   &quot;LMNB1&quot;    &quot;OXER1&quot;    &quot;SV2B&quot;    
+## [13] &quot;LINGO2&quot;   &quot;MYH10&quot;    &quot;CABIN1&quot;   &quot;PAN2&quot;     &quot;PTPRE&quot;    &quot;SMOC1&quot;   
+## [19] &quot;NCKAP5L&quot;  &quot;KIAA1109&quot; &quot;EML6&quot;     &quot;ATG4C&quot;    &quot;OSBPL3&quot;  
+## 
+## 
+## $query_metadata$organism
+## [1] &quot;hsapiens&quot;
+## 
+## $query_metadata$all_results
+## [1] FALSE
+## 
+## $query_metadata$ordered
+## [1] FALSE
+## 
+## $query_metadata$no_iea
+## [1] FALSE
+## 
+## $query_metadata$sources
+##  [1] &quot;GO:MF&quot; &quot;GO:CC&quot; &quot;GO:BP&quot; &quot;KEGG&quot;  &quot;REAC&quot;  &quot;TF&quot;    &quot;MIRNA&quot; &quot;HPA&quot;   &quot;CORUM&quot;
+## [10] &quot;HP&quot;    &quot;WP&quot;   
+## 
+## $query_metadata$combined
+## [1] FALSE
+## 
+## $query_metadata$aresolve
+## named list()
+## 
+## $query_metadata$numeric_ns
+## [1] &quot;ENTREZGENE_ACC&quot;
+## 
+## $query_metadata$domain_scope
+## [1] &quot;annotated&quot;
+## 
+## $query_metadata$measure_underrepresentation
+## [1] FALSE
+## 
+## $query_metadata$significance_threshold_method
+## [1] &quot;g_SCS&quot;
+## 
+## $query_metadata$user_threshold
+## [1] 0.05
+## 
+## $query_metadata$no_evidences
+## [1] TRUE
+## 
+## $query_metadata$highlight
+## [1] FALSE
+## 
+## 
+## $result_metadata
+## $result_metadata$`GO:MF`
+## $result_metadata$`GO:MF`$domain_size
+## [1] 20246
+## 
+## $result_metadata$`GO:MF`$number_of_terms
+## [1] 10154
+## 
+## $result_metadata$`GO:MF`$threshold
+## [1] 0.000156
+## 
+## 
+## $result_metadata$`GO:CC`
+## $result_metadata$`GO:CC`$domain_size
+## [1] 22149
+## 
+## $result_metadata$`GO:CC`$number_of_terms
+## [1] 4023
+## 
+## $result_metadata$`GO:CC`$threshold
+## [1] 0.000284
+## 
+## 
+## $result_metadata$`GO:BP`
+## $result_metadata$`GO:BP`$domain_size
+## [1] 21026
+## 
+## $result_metadata$`GO:BP`$number_of_terms
+## [1] 26036
+## 
+## $result_metadata$`GO:BP`$threshold
+## [1] 3.1e-05
+## 
+## 
+## $result_metadata$KEGG
+## $result_metadata$KEGG$domain_size
+## [1] 8484
+## 
+## $result_metadata$KEGG$number_of_terms
+## [1] 570
+## 
+## $result_metadata$KEGG$threshold
+## [1] 0.000925
+## 
+## 
+## $result_metadata$REAC
+## $result_metadata$REAC$domain_size
+## [1] 11004
+## 
+## $result_metadata$REAC$number_of_terms
+## [1] 2770
+## 
+## $result_metadata$REAC$threshold
+## [1] 0.000157
+## 
+## 
+## $result_metadata$TF
+## $result_metadata$TF$domain_size
+## [1] 20092
+## 
+## $result_metadata$TF$number_of_terms
+## [1] 11991
+## 
+## $result_metadata$TF$threshold
+## [1] 2.6e-05
+## 
+## 
+## $result_metadata$MIRNA
+## $result_metadata$MIRNA$domain_size
+## [1] 16638
+## 
+## $result_metadata$MIRNA$number_of_terms
+## [1] 3045
+## 
+## $result_metadata$MIRNA$threshold
+## [1] 8.5e-05
+## 
+## 
+## $result_metadata$HPA
+## $result_metadata$HPA$domain_size
+## [1] 10995
+## 
+## $result_metadata$HPA$number_of_terms
+## [1] 874
+## 
+## $result_metadata$HPA$threshold
+## [1] 0.000337
+## 
+## 
+## $result_metadata$CORUM
+## $result_metadata$CORUM$domain_size
+## [1] 3383
+## 
+## $result_metadata$CORUM$number_of_terms
+## [1] 2917
+## 
+## $result_metadata$CORUM$threshold
+## [1] 0.000592
+## 
+## 
+## $result_metadata$HP
+## $result_metadata$HP$domain_size
+## [1] 5080
+## 
+## $result_metadata$HP$number_of_terms
+## [1] 19177
+## 
+## $result_metadata$HP$threshold
+## [1] 5.1e-05
+## 
+## 
+## $result_metadata$WP
+## $result_metadata$WP$domain_size
+## [1] 8752
+## 
+## $result_metadata$WP$number_of_terms
+## [1] 943
+## 
+## $result_metadata$WP$threshold
+## [1] 0.000381
+## 
+## 
+## 
+## $genes_metadata
+## $genes_metadata$failed
+## [1] &quot;APAR2&quot;    &quot;KIAA1109&quot;
+## 
+## $genes_metadata$ambiguous
+## named list()
+## 
+## $genes_metadata$duplicates
+## list()
+## 
+## $genes_metadata$query
+## $genes_metadata$query$query_1
+## $genes_metadata$query$query_1$mapping
+## $genes_metadata$query$query_1$mapping$PRTG
+## [1] &quot;ENSG00000166450&quot;
+## 
+## $genes_metadata$query$query_1$mapping$PCYOX1L
+## [1] &quot;ENSG00000145882&quot;
+## 
+## $genes_metadata$query$query_1$mapping$PTPRF
+## [1] &quot;ENSG00000142949&quot;
+## 
+## $genes_metadata$query$query_1$mapping$UBR1
+## [1] &quot;ENSG00000159459&quot;
+## 
+## $genes_metadata$query$query_1$mapping$SLC5A6
+## [1] &quot;ENSG00000138074&quot;
+## 
+## $genes_metadata$query$query_1$mapping$USP31
+## [1] &quot;ENSG00000103404&quot;
+## 
+## $genes_metadata$query$query_1$mapping$OR11H6
+## [1] &quot;ENSG00000176219&quot;
+## 
+## $genes_metadata$query$query_1$mapping$OR52A5
+## [1] &quot;ENSG00000171944&quot;
+## 
+## $genes_metadata$query$query_1$mapping$LMNB1
+## [1] &quot;ENSG00000113368&quot;
+## 
+## $genes_metadata$query$query_1$mapping$OXER1
+## [1] &quot;ENSG00000162881&quot;
+## 
+## $genes_metadata$query$query_1$mapping$SV2B
+## [1] &quot;ENSG00000185518&quot;
+## 
+## $genes_metadata$query$query_1$mapping$LINGO2
+## [1] &quot;ENSG00000174482&quot;
+## 
+## $genes_metadata$query$query_1$mapping$MYH10
+## [1] &quot;ENSG00000133026&quot;
+## 
+## $genes_metadata$query$query_1$mapping$CABIN1
+## [1] &quot;ENSG00000099991&quot;
+## 
+## $genes_metadata$query$query_1$mapping$PAN2
+## [1] &quot;ENSG00000135473&quot;
+## 
+## $genes_metadata$query$query_1$mapping$PTPRE
+## [1] &quot;ENSG00000132334&quot;
+## 
+## $genes_metadata$query$query_1$mapping$SMOC1
+## [1] &quot;ENSG00000198732&quot;
+## 
+## $genes_metadata$query$query_1$mapping$NCKAP5L
+## [1] &quot;ENSG00000167566&quot;
+## 
+## $genes_metadata$query$query_1$mapping$EML6
+## [1] &quot;ENSG00000214595&quot;
+## 
+## $genes_metadata$query$query_1$mapping$ATG4C
+## [1] &quot;ENSG00000125703&quot;
+## 
+## $genes_metadata$query$query_1$mapping$OSBPL3
+## [1] &quot;ENSG00000070882&quot;
+## 
+## 
+## $genes_metadata$query$query_1$ensgs
+##  [1] &quot;ENSG00000166450&quot; &quot;ENSG00000145882&quot; &quot;ENSG00000142949&quot; &quot;ENSG00000159459&quot;
+##  [5] &quot;ENSG00000138074&quot; &quot;ENSG00000103404&quot; &quot;ENSG00000176219&quot; &quot;ENSG00000171944&quot;
+##  [9] &quot;ENSG00000113368&quot; &quot;ENSG00000162881&quot; &quot;ENSG00000185518&quot; &quot;ENSG00000174482&quot;
+## [13] &quot;ENSG00000133026&quot; &quot;ENSG00000099991&quot; &quot;ENSG00000135473&quot; &quot;ENSG00000132334&quot;
+## [17] &quot;ENSG00000198732&quot; &quot;ENSG00000167566&quot; &quot;ENSG00000214595&quot; &quot;ENSG00000125703&quot;
+## [21] &quot;ENSG00000070882&quot;
+## 
+## 
+## 
+## 
+## $timestamp
+## [1] &quot;2025-07-03T19:28:43.462851+00:00&quot;
+## 
+## $version
+## [1] &quot;e113_eg59_p19_f6a03c19&quot;</code></pre>
+<pre class="r"><code># Filter for brain/neuron-related terms
+brain_enrich &lt;- gostres$result[grep(&quot;neuron|synapse|brain&quot;, gostres$result$term_name, ignore.case = TRUE), ]
+brain_enrich</code></pre>
+<pre><code>##  [1] query                 significant           p_value              
+##  [4] term_size             query_size            intersection_size    
+##  [7] precision             recall                term_id              
+## [10] source                term_name             effective_domain_size
+## [13] source_order          parents              
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>res &lt;- gost(query = gene_list, organism = &quot;hsapiens&quot;)
+head(res$result)</code></pre>
+<pre><code>##     query significant    p_value term_size query_size intersection_size
+## 1 query_1        TRUE 0.04424869        17         21                 2
+## 2 query_1        TRUE 0.04424869        17         21                 2
+## 3 query_1        TRUE 0.04244051       670         19                 6
+##   precision      recall               term_id source
+## 1 0.0952381 0.117647059            GO:0005001  GO:MF
+## 2 0.0952381 0.117647059            GO:0019198  GO:MF
+## 3 0.3157895 0.008955224 MIRNA:hsa-mir-4639-5p  MIRNA
+##                                                      term_name
+## 1 transmembrane receptor protein tyrosine phosphatase activity
+## 2          transmembrane receptor protein phosphatase activity
+## 3                                              hsa-mir-4639-5p
+##   effective_domain_size source_order      parents
+## 1                 20246         1204 GO:00047....
+## 2                 20246         3411 GO:00047....
+## 3                 16638         2834 MIRNA:000000</code></pre>
+<pre class="r"><code># Show top results
+head(res$result[, c(&quot;term_name&quot;, &quot;source&quot;, &quot;p_value&quot;, &quot;intersection_size&quot;)])</code></pre>
+<pre><code>##                                                      term_name source
+## 1 transmembrane receptor protein tyrosine phosphatase activity  GO:MF
+## 2          transmembrane receptor protein phosphatase activity  GO:MF
+## 3                                              hsa-mir-4639-5p  MIRNA
+##      p_value intersection_size
+## 1 0.04424869                 2
+## 2 0.04424869                 2
+## 3 0.04244051                 6</code></pre>
+
+<hr>
+<p>
+    This <a href="http://rmarkdown.rstudio.com">R Markdown</a> site was created with <a href="https://github.com/jdblischak/workflowr">workflowr</a>
+</p>
+<hr>
+
+<!-- To enable disqus, uncomment the section below and provide your disqus_shortname -->
+
+<!-- disqus
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'rmarkdown'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+-->
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

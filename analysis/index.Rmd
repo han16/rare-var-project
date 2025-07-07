@@ -14,12 +14,14 @@ output:
 * [modeling with logistic prior](model_logistic_prior.html)
 * [simulation experiments](simulation_logistic_prior.html)
 
-   - [additional simulations](additional_simulations.html)
 
  
 ## Simulation studies  
  
 * [numerical simulation studies](simulation-study.html) 
+
+  ----[additional simulations](additional_simulations.html)
+ 
 * [effect of case control ratio](effect_case_control_ratio.html)
 * [Figures](Figures.html)
 
@@ -73,6 +75,12 @@ output:
 * [QQ plot of burden and ACAT](qqplot_burden_acat.html)
 
 * [how correlated variants influence MIRAGE results](correlated_variants_analysis.html)
+
+
+
+## functional enrichment 
+
+* [using updated alpha missense variants and LOEUF](alpha_loeuf_functional.html)
 
 
 
