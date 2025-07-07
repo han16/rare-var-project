@@ -79,6 +79,13 @@ output:
 
 
 
+## cross cohort validation 
+
+* [use parameter estimate of one cohort to calculate BF of another cohort or entire cohort](cross_cohort_validation.html)
+
+
+
+
 ## functional enrichment 
 
 * [using updated alpha missense variants and LOEUF](alpha_loeuf_functional.html)
