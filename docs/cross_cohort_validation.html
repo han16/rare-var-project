@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-07-07" />
+
+<title>cross cohort validation</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">rare-var-project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://han16.github.io/rare-var-project/">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">cross cohort validation</h1>
+<h4 class="date">2025-07-07</h4>
+
+</div>
+
+
+<pre class="r"><code>########## use fixed parameter estimate to calculate BF, this is very useful because it doesn&#39;t need to re-run analysis to BF of every gene which takes a long time and large space to store that information 
+intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  marglik0.CC &lt;- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+
+  marglik1.CC &lt;- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+  BF.var &lt;- marglik1.CC/marglik0.CC
+
+  return(BF.var)
+}
+
+fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
+{
+  #######################
+  beta.k=beta
+  full.info.genevar=list()
+  gene.list=new.data$Gene; unique.gene=unique(gene.list) # find the gene list
+  num.gene=length(unique.gene)
+  BF.gene=numeric()
+  ########################
+  for (i in 1:num.gene)
+  {
+#    cat(i, &quot;th gene of &quot;, &quot;\t&quot;, num.gene, &quot;\t&quot;, &quot;is running&quot;, &quot;\n&quot;)
+    var.index.list=which(gene.list==unique.gene[i])
+    indi.gene=new.data[var.index.list,]   # note var.index.list matches new.data
+    bb=1; var.BF=numeric()
+    if (length(var.index.list)&gt;0) # calculate Bayes factor for variant (i,j)
+      for (j in 1:length(var.index.list))
+      {
+        if (new.data$group.index[var.index.list[j]]&lt;=3)   # note here bar.gamma is group specific, attention what bar.gamma goes to which group 
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=6, sig=sigma, N1, N0)
+        if (new.data$group.index[var.index.list[j]]&gt;3)
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=3, sig=sigma, N1, N0)
+        bb=bb*((1-beta.k[new.data$group.index[var.index.list[j]]])+beta.k[new.data$group.index[var.index.list[j]]]*var.BF[j])
+      }
+    full.info.genevar[[i]]=cbind(indi.gene, var.BF)
+    BF.gene[i]=bb
+  }
+  
+  return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
+}</code></pre>
+<div id="apply-asc-parameters-to-spark-data" class="section level2">
+<h2>apply ASC parameters to SPARK data</h2>
+<pre class="r"><code>beta=c(0.682825870568066,
+0.921371779633259,
+0.197311277809648,
+0.454608112873237,
+0.138217940881292,
+0.0997160018265602)  # ASC parameter estimate 
+new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\SPARK_combined\\mirage_input.txt&quot;, header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=7008, N0=7008, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv&quot;)</code></pre>
+<pre class="r"><code>SPARK_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\SPARK_combined\\mirage_result.txt&quot;, header=T)
+SPARK_BF_ASC_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv&quot;, header=T)</code></pre>
+<pre class="r"><code>merged_df &lt;- merge(SPARK_BF, SPARK_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_SPARK&quot;, &quot;SPARK_with_ASC_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_SPARK, y = BFSPARK_with_ASC_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;SPARK BF&quot;,
+    y = &quot;SPARK BF using ASC parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="apply-spark-parameters-to-asc-data" class="section level2">
+<h2>apply SPARK parameters to ASC data</h2>
+<pre class="r"><code>beta=c(0.882428410065275,
+0.729147736110148,
+0.0425038817075758,
+0.260898625054489,
+0.100050160878319,
+0.0267419820227973
+)  # SPARK parameter estimate 
+new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ASC_combined\\mirage_input.txt&quot;, header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=7570, N0=7570, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv&quot;)</code></pre>
+<pre class="r"><code>ASC_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ASC_combined\\mirage_result.txt&quot;, header=T)
+ASC_BF_SPARK_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv&quot;, header=T)</code></pre>
+<pre class="r"><code>merged_df &lt;- merge(ASC_BF, ASC_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_ASC&quot;, &quot;_ASC_with_SPARK_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_ASC, y = BF_ASC_with_SPARK_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;ASC BF&quot;,
+    y = &quot;ASC BF using SPARK parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="apply-spark-parameters-to-entire-data" class="section level2">
+<h2>apply SPARK parameters to entire data</h2>
+<pre class="r"><code>beta=c(0.882428410065275,
+0.729147736110148,
+0.0425038817075758,
+0.260898625054489,
+0.100050160878319,
+0.0267419820227973
+)  # SPARK parameter estimate 
+new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_input.txt&quot;, header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv&quot;)</code></pre>
+<pre class="r"><code>entire_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt&quot;, header=T)
+entire_BF_SPARK_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv&quot;, header=T)</code></pre>
+<pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_SPARK_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;BF of entire data&quot;,
+    y = &quot;BF of entire data using SPARK parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="apply-asc-parameters-to-entire-data" class="section level2">
+<h2>apply ASC parameters to entire data</h2>
+<pre class="r"><code>beta=c(0.682825870568066,
+0.921371779633259,
+0.197311277809648,
+0.454608112873237,
+0.138217940881292,
+0.0997160018265602)  # ASC parameter estimate  
+new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_input.txt&quot;, header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv&quot;)</code></pre>
+<pre class="r"><code>entire_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt&quot;, header=T)
+entire_BF_ASC_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv&quot;, header=T)</code></pre>
+<pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_ASC_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;BF of entire data&quot;,
+    y = &quot;BF of entire data using ASC parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+
+<hr>
+<p>
+    This <a href="http://rmarkdown.rstudio.com">R Markdown</a> site was created with <a href="https://github.com/jdblischak/workflowr">workflowr</a>
+</p>
+<hr>
+
+<!-- To enable disqus, uncomment the section below and provide your disqus_shortname -->
+
+<!-- disqus
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'rmarkdown'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+-->
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

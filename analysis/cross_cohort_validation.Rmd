@@ -1,0 +1,255 @@
+---
+title: "cross cohort validation"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+    toc: true
+date: "2025-07-07"
+---
+
+
+```{r, echo=F, warning=F, message=F}
+rm(list=ls())
+set.seed(123)
+library(knitr)
+library(RSQLite)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(RColorBrewer)
+library(gplots)
+library(tidyverse)
+library(gridExtra)
+library(ggpubr)
+library(DT)
+library(poolr) # use fisher method to combine p values 
+library("devtools")
+#install.packages("Rtools")
+#install_github('xinhe-lab/mirage')
+library(mirage)
+
+#############
+#devtools::install_github("yaowuliu/ACAT")  # install package ACAT once 
+library(ACAT)
+```
+
+
+
+
+```{r,  message=F, warning=F}
+########## use fixed parameter estimate to calculate BF, this is very useful because it doesn't need to re-run analysis to BF of every gene which takes a long time and large space to store that information 
+intergrand=function(aa, var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  ff=dbinom(var.case, sum(var.case, var.contr), aa*N1/(aa*N1+N0))*dgamma(aa, bar.gamma*sig, sig)
+  return(ff)
+}
+# calculate the bayes factor of a single variant via integration
+BF.var.inte=function(var.case, var.contr, bar.gamma, sig, N1, N0)
+{
+  marglik0.CC <- dbinom(var.case, sum(var.case, var.contr), N1/(N1+N0))    # Under H0: gamma=1
+
+  marglik1.CC <- integrate(intergrand, var.case, var.contr, bar.gamma, sig, N1, N0, low=0, upper=100, stop.on.error=F)$value # Under H1: gamma~gamma(gamma.mean*sigma, sigma)
+  BF.var <- marglik1.CC/marglik0.CC
+
+  return(BF.var)
+}
+
+fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data has one column specifying its group index
+{
+  #######################
+  beta.k=beta
+  full.info.genevar=list()
+  gene.list=new.data$Gene; unique.gene=unique(gene.list) # find the gene list
+  num.gene=length(unique.gene)
+  BF.gene=numeric()
+  ########################
+  for (i in 1:num.gene)
+  {
+#    cat(i, "th gene of ", "\t", num.gene, "\t", "is running", "\n")
+    var.index.list=which(gene.list==unique.gene[i])
+    indi.gene=new.data[var.index.list,]   # note var.index.list matches new.data
+    bb=1; var.BF=numeric()
+    if (length(var.index.list)>0) # calculate Bayes factor for variant (i,j)
+      for (j in 1:length(var.index.list))
+      {
+        if (new.data$group.index[var.index.list[j]]<=3)   # note here bar.gamma is group specific, attention what bar.gamma goes to which group 
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=6, sig=sigma, N1, N0)
+        if (new.data$group.index[var.index.list[j]]>3)
+          var.BF[j]=BF.var.inte(new.data$No.case[var.index.list[j]], new.data$No.contr[var.index.list[j]], bar.gamma=3, sig=sigma, N1, N0)
+        bb=bb*((1-beta.k[new.data$group.index[var.index.list[j]]])+beta.k[new.data$group.index[var.index.list[j]]]*var.BF[j])
+      }
+    full.info.genevar[[i]]=cbind(indi.gene, var.BF)
+    BF.gene[i]=bb
+  }
+  
+  return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
+}
+```
+
+
+
+
+## apply ASC parameters to SPARK data
+
+
+
+```{r, message=F, warning=F, eval=F}
+beta=c(0.682825870568066,
+0.921371779633259,
+0.197311277809648,
+0.454608112873237,
+0.138217940881292,
+0.0997160018265602)  # ASC parameter estimate 
+new.data=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\SPARK_combined\\mirage_input.txt", header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=7008, N0=7008, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file="C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv")
+```
+
+```{r, message=F, warning=F}
+SPARK_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\SPARK_combined\\mirage_result.txt", header=T)
+SPARK_BF_ASC_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv", header=T)
+```
+
+
+```{r, message=F, warning=F}
+merged_df <- merge(SPARK_BF, SPARK_BF_ASC_parameters, by = "Gene", suffixes = c("_SPARK", "SPARK_with_ASC_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_SPARK, y = BFSPARK_with_ASC_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "SPARK BF",
+    y = "SPARK BF using ASC parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+
+
+
+
+## apply SPARK parameters to ASC data
+
+
+
+```{r, message=F, warning=F, eval=F}
+beta=c(0.882428410065275,
+0.729147736110148,
+0.0425038817075758,
+0.260898625054489,
+0.100050160878319,
+0.0267419820227973
+)  # SPARK parameter estimate 
+new.data=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ASC_combined\\mirage_input.txt", header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=7570, N0=7570, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file="C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv")
+```
+
+```{r, message=F, warning=F}
+ASC_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ASC_combined\\mirage_result.txt", header=T)
+ASC_BF_SPARK_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv", header=T)
+```
+
+
+```{r, message=F, warning=F}
+merged_df <- merge(ASC_BF, ASC_BF_SPARK_parameters, by = "Gene", suffixes = c("_ASC", "_ASC_with_SPARK_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_ASC, y = BF_ASC_with_SPARK_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "ASC BF",
+    y = "ASC BF using SPARK parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+
+
+## apply SPARK parameters to entire data
+
+
+
+```{r, message=F, warning=F, eval=F}
+beta=c(0.882428410065275,
+0.729147736110148,
+0.0425038817075758,
+0.260898625054489,
+0.100050160878319,
+0.0267419820227973
+)  # SPARK parameter estimate 
+new.data=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_input.txt", header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file="C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv")
+```
+
+```{r, message=F, warning=F}
+entire_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt", header=T)
+entire_BF_SPARK_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv", header=T)
+```
+
+
+```{r, message=F, warning=F}
+merged_df <- merge(entire_BF, entire_BF_SPARK_parameters, by = "Gene", suffixes = c("_entire", "_entire_with_SPARK_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "BF of entire data",
+    y = "BF of entire data using SPARK parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+
+
+## apply ASC parameters to entire data
+
+
+
+```{r, message=F, warning=F, eval=F}
+beta=c(0.682825870568066,
+0.921371779633259,
+0.197311277809648,
+0.454608112873237,
+0.138217940881292,
+0.0997160018265602)  # ASC parameter estimate  
+new.data=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_input.txt", header=T)
+# SPARK:7008, ASC: 7570
+result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
+#write.csv(result$BayesFactor, file="C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv")
+```
+
+```{r, message=F, warning=F}
+entire_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt", header=T)
+entire_BF_ASC_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv", header=T)
+```
+
+
+```{r, message=F, warning=F}
+merged_df <- merge(entire_BF, entire_BF_ASC_parameters, by = "Gene", suffixes = c("_entire", "_entire_with_ASC_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "BF of entire data",
+    y = "BF of entire data using ASC parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
