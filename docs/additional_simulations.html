@@ -392,93 +392,81 @@ AUC_burden=list(
 &quot;0.1&quot;=c(&quot;Burden(0.811)&quot;, &quot;Burden-adj(0.843)&quot;, &quot;Burden-combine(0.836)&quot;),
 &quot;0.2&quot;=c( &quot;Burden(0.858)&quot;, &quot;Burden-adj(0.920)&quot;, &quot;Burden-combine(0.923)&quot;))
 
-
-
-
-for (i in 1:length(rep_use_index))
-{
-  rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
-  
- load(paste0(path, &quot;7methods_delta&quot;, delta[i], &quot;_MAC_threshold10.gammamean335_5rep.RData&quot;)) 
-Ui=Gene.Risk.Status[[rep_use_index[i]]]
-mirage_pvalue=MIRAGE.pvalue[[rep_use_index[i]]]
-mirage_BF=MIRAGE.BF[[rep_use_index[i]]]
-fisher_pvalue=Fisher.pvalue[[rep_use_index[i]]]
-skato_pvalue=SKATO.pvalue[[rep_use_index[i]]]
-cmc_pvalue=CMC.pvalue[[rep_use_index[i]]]
-asum_pvalue=ASUM.pvalue[[rep_use_index[i]]]
-fisher.separate.pvalue=Fisher.separate.pvalue[[rep_use_index[i]]]
-acat.pvalue=ACAT.pvalue[[rep_use_index[i]]]
-fisher.adj.pvalue=numeric()
-fisher.combine.pvalue=numeric()
-for (ii in 1:nrow(fisher.separate.pvalue))
-{
-  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = &quot;bonferroni&quot;, n = length(fisher.separate.pvalue[ii,])))
-  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
-}  
-  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
-
-num_run=length(mirage_pvalue)
-
-
-method=rep(AUC[[ as.character(delta[i]) ]], each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
-
-roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
-
-p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
-  geom_roc(increasing=F, n.cuts=0)+
-  style_roc(theme = theme_grey)
-
-##################### Xiaotong&#39;s code 
-
-p_delta[[i]]=p1.basic+
-  ggtitle(bquote(delta == .(delta[i])))+
-    theme_classic() +
+# Define reusable theme
+plot_roc &lt;- function(title_size = 14, axis_y_size = 14, legend_text_size = 13) {
+  list(
+    theme_classic(),
     theme(
-      plot.title = element_text(hjust = 0.5, size = 14),
-      axis.text.x = element_text(size = 10),
-      axis.text.y = element_text(size = 14),
+      plot.title = element_text(hjust = 0.5, size = title_size),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = axis_y_size),
       axis.title.y = element_text(size = 16),
       axis.title.x = element_text(size = 16),
       legend.title = element_blank(),
       legend.justification = c(1, 0),
       legend.position = c(1, 0),
-      legend.text = element_text(size = 11)
-    ) +
+      legend.text = element_text(size = legend_text_size)
+    ),
     geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
+  )
+}
 
-################## comparison among three burden p values ##########
-method=rep(AUC_burden[[ as.character(delta[i]) ]], each=num_run)
+# Loop over delta values
+for (i in seq_along(rep_use_index)) {
+  # Load data
+  load(paste0(path, &quot;7methods_delta&quot;, delta[i], &quot;_MAC_threshold10.gammamean335_5rep.RData&quot;))
 
-roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
-
-p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
-  geom_roc(increasing=F, n.cuts=0, labels=F)+
-  style_roc(theme = theme_grey)
-
-
-p_delta_burden[[i]]=p.basic_burden+
-ggtitle(bquote(delta == .(delta[i])))+
-    theme_classic() +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 14),
-      axis.text.x = element_text(size = 10),
-      axis.text.y = element_text(size = 10),
-      axis.title.y = element_text(size = 14),
-      axis.title.x = element_text(size = 16),
-      legend.title = element_blank(),
-      legend.justification = c(1, 0),
-      legend.position = c(1, 0),
-      legend.text = element_text(size = 12)
-    ) +
-    geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
-
-
-
-
+  idx &lt;- rep_use_index[i]
   
-}  # end of #for (i in 1:5)
+  # Extract required values
+  Ui &lt;- Gene.Risk.Status[[idx]]
+  mirage_pvalue &lt;- MIRAGE.pvalue[[idx]]
+  mirage_BF &lt;- MIRAGE.BF[[idx]]
+  fisher_pvalue &lt;- Fisher.pvalue[[idx]]
+  skato_pvalue &lt;- SKATO.pvalue[[idx]]
+  cmc_pvalue &lt;- CMC.pvalue[[idx]]
+  asum_pvalue &lt;- ASUM.pvalue[[idx]]
+  acat.pvalue &lt;- ACAT.pvalue[[idx]]
+  fisher.separate.pvalue &lt;- Fisher.separate.pvalue[[idx]]
+  
+  # Calculate adjusted and combined Fisher p-values
+  fisher.adj.pvalue &lt;- apply(fisher.separate.pvalue, 1, function(p) min(p.adjust(p, method = &quot;bonferroni&quot;)))
+  fisher.combine.pvalue &lt;- apply(fisher.separate.pvalue, 1, function(p) pchisq(-sum(log(p)), df = length(p), lower.tail = TRUE))
+  
+  num_run &lt;- length(mirage_pvalue)
 
+  ### ROC for 6 methods
+  method &lt;- rep(AUC[[as.character(delta[i])]], each = num_run)
+  roc_single_run &lt;- data.frame(
+    D = Ui,
+    m = c(fisher_pvalue, skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue),
+    method = method
+  )
+
+  p1.basic &lt;- ggplot(roc_single_run, aes(d = D, m = m, color = method), size = 2) +
+    geom_roc(increasing = FALSE, n.cuts = 0) +
+    style_roc(theme = theme_grey)
+
+  p_delta[[i]] &lt;- p1.basic +
+    ggtitle(bquote(delta == .(delta[i]))) +
+    plot_roc()
+
+  ### ROC for 3 burden methods
+  method_burden &lt;- rep(AUC_burden[[as.character(delta[i])]], each = num_run)
+  roc_single_run_burden &lt;- data.frame(
+    D = Ui,
+    m = c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue),
+    method = method_burden
+  )
+
+  p.basic_burden &lt;- ggplot(roc_single_run_burden, aes(d = D, m = m, color = method), size = 2) +
+    geom_roc(increasing = FALSE, n.cuts = 0, labels = FALSE) +
+    style_roc(theme = theme_grey)
+
+  p_delta_burden[[i]] &lt;- p.basic_burden +
+    ggtitle(bquote(delta == .(delta[i]))) +
+    plot_roc(axis_y_size = 14, legend_text_size = 13)
+}
 
 p_delta</code></pre>
 <pre><code>## [[1]]</code></pre>
@@ -504,8 +492,6 @@ p_delta</code></pre>
 <pre><code>## 
 ## [[4]]</code></pre>
 <p><img src="additional_simulations_files/figure-html/unnamed-chunk-3-8.png" width="672" /></p>
-<pre class="r"><code>#p1_delta0.02
-#round(calc_auc(p1.basic)$AUC, 4)</code></pre>
 <pre class="r"><code>#all &lt;- grid.arrange(p1_delta[[&quot;delta-0.02&quot;]], p1_delta[[&quot;delta-0.1&quot;]], nrow=1) 
 
 all &lt;- grid.arrange(p1_delta0.02,  p1_delta0.1, nrow=1) 

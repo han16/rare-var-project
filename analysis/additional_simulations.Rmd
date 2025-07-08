@@ -66,100 +66,87 @@ AUC_burden=list(
 "0.1"=c("Burden(0.811)", "Burden-adj(0.843)", "Burden-combine(0.836)"),
 "0.2"=c( "Burden(0.858)", "Burden-adj(0.920)", "Burden-combine(0.923)"))
 
-
-
-
-for (i in 1:length(rep_use_index))
-{
-  rm("Ui", "mirage_pvalue", "mirage_BF", "fisher_pvalue", "skato_pvalue", "cmc_pvalue", "asum_pvalue", "acat.pvalue", "fisher.separate.pvalue")
-  
- load(paste0(path, "7methods_delta", delta[i], "_MAC_threshold10.gammamean335_5rep.RData")) 
-Ui=Gene.Risk.Status[[rep_use_index[i]]]
-mirage_pvalue=MIRAGE.pvalue[[rep_use_index[i]]]
-mirage_BF=MIRAGE.BF[[rep_use_index[i]]]
-fisher_pvalue=Fisher.pvalue[[rep_use_index[i]]]
-skato_pvalue=SKATO.pvalue[[rep_use_index[i]]]
-cmc_pvalue=CMC.pvalue[[rep_use_index[i]]]
-asum_pvalue=ASUM.pvalue[[rep_use_index[i]]]
-fisher.separate.pvalue=Fisher.separate.pvalue[[rep_use_index[i]]]
-acat.pvalue=ACAT.pvalue[[rep_use_index[i]]]
-fisher.adj.pvalue=numeric()
-fisher.combine.pvalue=numeric()
-for (ii in 1:nrow(fisher.separate.pvalue))
-{
-  fisher.adj.pvalue[ii]=min(p.adjust(fisher.separate.pvalue[ii,], method = "bonferroni", n = length(fisher.separate.pvalue[ii,])))
-  fisher.combine.pvalue[ii]=pchisq(-sum(log(fisher.separate.pvalue[ii,])), df=6, ncp = 0, lower.tail = TRUE)
-}  
-  # fisher.adj.pvalue[i]=min(fisher.separate.pvalue[i,])
-
-num_run=length(mirage_pvalue)
-
-
-method=rep(AUC[[ as.character(delta[i]) ]], each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
-
-roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
-
-p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
-  geom_roc(increasing=F, n.cuts=0)+
-  style_roc(theme = theme_grey)
-
-##################### Xiaotong's code 
-
-p_delta[[i]]=p1.basic+
-  ggtitle(bquote(delta == .(delta[i])))+
-    theme_classic() +
+# Define reusable theme
+plot_roc <- function(title_size = 14, axis_y_size = 14, legend_text_size = 13) {
+  list(
+    theme_classic(),
     theme(
-      plot.title = element_text(hjust = 0.5, size = 14),
-      axis.text.x = element_text(size = 10),
-      axis.text.y = element_text(size = 14),
+      plot.title = element_text(hjust = 0.5, size = title_size),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = axis_y_size),
       axis.title.y = element_text(size = 16),
       axis.title.x = element_text(size = 16),
       legend.title = element_blank(),
       legend.justification = c(1, 0),
       legend.position = c(1, 0),
-      legend.text = element_text(size = 11)
-    ) +
+      legend.text = element_text(size = legend_text_size)
+    ),
     geom_abline(intercept = 0, slope = 1, col = "black")
+  )
+}
 
-################## comparison among three burden p values ##########
-method=rep(AUC_burden[[ as.character(delta[i]) ]], each=num_run)
+# Loop over delta values
+for (i in seq_along(rep_use_index)) {
+  # Load data
+  load(paste0(path, "7methods_delta", delta[i], "_MAC_threshold10.gammamean335_5rep.RData"))
 
-roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
-
-p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
-  geom_roc(increasing=F, n.cuts=0, labels=F)+
-  style_roc(theme = theme_grey)
-
-
-p_delta_burden[[i]]=p.basic_burden+
-ggtitle(bquote(delta == .(delta[i])))+
-    theme_classic() +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 14),
-      axis.text.x = element_text(size = 10),
-      axis.text.y = element_text(size = 10),
-      axis.title.y = element_text(size = 14),
-      axis.title.x = element_text(size = 16),
-      legend.title = element_blank(),
-      legend.justification = c(1, 0),
-      legend.position = c(1, 0),
-      legend.text = element_text(size = 12)
-    ) +
-    geom_abline(intercept = 0, slope = 1, col = "black")
-
-
-
-
+  idx <- rep_use_index[i]
   
-}  # end of #for (i in 1:5)
+  # Extract required values
+  Ui <- Gene.Risk.Status[[idx]]
+  mirage_pvalue <- MIRAGE.pvalue[[idx]]
+  mirage_BF <- MIRAGE.BF[[idx]]
+  fisher_pvalue <- Fisher.pvalue[[idx]]
+  skato_pvalue <- SKATO.pvalue[[idx]]
+  cmc_pvalue <- CMC.pvalue[[idx]]
+  asum_pvalue <- ASUM.pvalue[[idx]]
+  acat.pvalue <- ACAT.pvalue[[idx]]
+  fisher.separate.pvalue <- Fisher.separate.pvalue[[idx]]
+  
+  # Calculate adjusted and combined Fisher p-values
+  fisher.adj.pvalue <- apply(fisher.separate.pvalue, 1, function(p) min(p.adjust(p, method = "bonferroni")))
+  fisher.combine.pvalue <- apply(fisher.separate.pvalue, 1, function(p) pchisq(-sum(log(p)), df = length(p), lower.tail = TRUE))
+  
+  num_run <- length(mirage_pvalue)
 
+  ### ROC for 6 methods
+  method <- rep(AUC[[as.character(delta[i])]], each = num_run)
+  roc_single_run <- data.frame(
+    D = Ui,
+    m = c(fisher_pvalue, skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue),
+    method = method
+  )
+
+  p1.basic <- ggplot(roc_single_run, aes(d = D, m = m, color = method), size = 2) +
+    geom_roc(increasing = FALSE, n.cuts = 0) +
+    style_roc(theme = theme_grey)
+
+  p_delta[[i]] <- p1.basic +
+    ggtitle(bquote(delta == .(delta[i]))) +
+    plot_roc()
+
+  ### ROC for 3 burden methods
+  method_burden <- rep(AUC_burden[[as.character(delta[i])]], each = num_run)
+  roc_single_run_burden <- data.frame(
+    D = Ui,
+    m = c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue),
+    method = method_burden
+  )
+
+  p.basic_burden <- ggplot(roc_single_run_burden, aes(d = D, m = m, color = method), size = 2) +
+    geom_roc(increasing = FALSE, n.cuts = 0, labels = FALSE) +
+    style_roc(theme = theme_grey)
+
+  p_delta_burden[[i]] <- p.basic_burden +
+    ggtitle(bquote(delta == .(delta[i]))) +
+    plot_roc(axis_y_size = 14, legend_text_size = 13)
+}
 
 p_delta
 p_delta_burden
 
-#p1_delta0.02
-#round(calc_auc(p1.basic)$AUC, 4)
 ```
+
 
 
 
