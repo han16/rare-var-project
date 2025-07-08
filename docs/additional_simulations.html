@@ -397,7 +397,7 @@ for (ii in 1:nrow(fisher.separate.pvalue))
 num_run=length(mirage_pvalue)
 
 
-method=rep(c(&quot;Burden(0.821)&quot;, &quot;SKAT-O(0.879)&quot;, &quot;MIRAGE(0.976)&quot;, &quot;CMC(0.899)&quot;, &quot;ASUM(0.762)&quot;, &quot;ACAT(0.653)&quot;), each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
+method=rep(c(&quot;Burden(0.812)&quot;, &quot;SKAT-O(0.876)&quot;, &quot;MIRAGE(0.976)&quot;, &quot;CMC(0.899)&quot;, &quot;ASUM(0.762)&quot;, &quot;ACAT(0.653)&quot;), each=num_run) # AUC is from round(calc_auc(p1.basic)$AUC, 2) 
 
 roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_pvalue, asum_pvalue, acat.pvalue), method=method)
 
@@ -405,22 +405,6 @@ p1.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) +
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
 
-##############
-#p1_delta0.02=p1.basic+
- # annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-#           label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;, &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;, &quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p1.basic)$AUC, 2)), size=2)+
-#  ggtitle(expression(paste(delta, &quot;=0.02&quot;)))+
-#  theme_classic()+
-#theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
-# theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
-#theme(axis.text.y= element_text(size=6))+
-#  theme(axis.text = element_text(size = 1))+
-#  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
-#  theme(legend.title=element_blank())+   # nol legend title 
-#  theme(legend.justification=c(1,0), legend.position=c(1,0))+
-#  theme(legend.text = element_text(size = 5)) # adjust legend text size 
-#p1_delta0.01
-#calc_auc(p1.basic)$AUC
 AUC_summary_0.02[i,]=calc_auc(p1.basic)$AUC
 
 ##################### Xiaotong&#39;s code 
@@ -441,35 +425,45 @@ p1_delta0.02=p1.basic+
     ) +
     geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
   
-}
+}  # end of #for (i in 1:5)
 
 
 
 
 p1_delta0.02</code></pre>
-<p><img src="additional_simulations_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code>round(calc_auc(p1.basic)$AUC, 4)</code></pre>
 <pre><code>## [1] 0.6530 0.7617 0.8124 0.8992 0.9758 0.8762</code></pre>
 <pre class="r"><code>################## comparison among three burden p values ##########
-method=rep(c( &quot;Burden(0.446)&quot;, &quot;Burden-adj(0.386)&quot;, &quot;Burden-combine(0.607)&quot;), each=num_run)
+method=rep(c( &quot;Burden(0.812)&quot;, &quot;Burden-adj(0.839)&quot;, &quot;Burden-combine(0.837)&quot;), each=num_run)
 
-roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, fisher.combine.pvalue), method=method)
+roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
+
 p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0, labels=F)+
   style_roc(theme = theme_grey)
+
+
 p_delta0.02_burden=p.basic_burden+
-  #annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-  #         label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;, &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;, &quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p.basic)$AUC, 2)), size=2)+
-  ggtitle(expression(paste(delta, &quot;=0.01&quot;)))+
-  theme_classic()+
-theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
- theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
-theme(axis.text.y= element_text(size=6))+
-  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
-  theme(legend.title=element_blank())+   # no legend title 
-  theme(legend.justification=c(1,0), legend.position=c(1,0))+
-  theme(legend.text = element_text(size = 7)) # adjust legend text size 
-#p_delta0.02_burden</code></pre>
+ggtitle(bquote(delta == .(delta)))+
+    theme_classic() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 14),
+      axis.text.x = element_text(size = 10),
+      axis.text.y = element_text(size = 14),
+      axis.title.y = element_text(size = 16),
+      axis.title.x = element_text(size = 16),
+      legend.title = element_blank(),
+      legend.justification = c(1, 0),
+      legend.position = c(1, 0),
+      legend.text = element_text(size = 11)
+    ) +
+    geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
+  
+p_delta0.02_burden</code></pre>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>round(calc_auc(p.basic_burden)$AUC, 4)</code></pre>
+<pre><code>## [1] 0.8391 0.8370 0.8124</code></pre>
 <pre class="r"><code>############################################################################################################
 ################################ delta=0.05
 rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
@@ -506,21 +500,6 @@ roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
-#pdf(&quot;../../Figure/power_comparison_different_methods.pdf&quot;)
-#p2_delta0.05=p2.basic+
-#  annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.34, 0.4), 
-#           label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;,  &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;,&quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
-#  ggtitle(expression(paste(delta, &quot;=0.05&quot;)))+
-#  theme_classic()+
-#theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
-# theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
-#theme(axis.text.y= element_text(size=6))+
-#  theme(axis.text = element_text(size = 1))+
-#geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
-#  theme(legend.title=element_blank())+   # nol legend title 
-#  theme(legend.justification=c(1,0), legend.position=c(1,0))+
-#  theme(legend.text = element_text(size = 5))+ # adjust legend text size 
-#  theme(axis.title.y = element_blank())  # remove labels on y axis 
 
 AUC_summary_0.05[i,]=calc_auc(p2.basic)$AUC
 
@@ -554,26 +533,36 @@ p2_delta0.05</code></pre>
 <pre class="r"><code>#grid.arrange(p1, p2, top=grid.text(&quot;ROC curves&quot;), bottom=grid.text(expression(paste(alpha, &quot;=0.1,&quot;, alpha[0], &quot;=0.1,&quot;, beta, &quot;=2000,&quot;, beta[0], &quot;=1000&quot;))), nrow=1)
 #dev.off()
 ####################### comparison among three burdens ############
-method=rep(c( &quot;Burden(0.673)&quot;, &quot;Burden-adj(0.745)&quot;, &quot;Burden-combine(0.724)&quot;), each=num_run)
+method=rep(c( &quot;Burden(0.888)&quot;, &quot;Burden-adj(0.910)&quot;, &quot;Burden-combine(0.914)&quot;), each=num_run)
 
 roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
 p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0, labels=F)+
   style_roc(theme = theme_grey)
+
+
 p_delta0.05_burden=p.basic_burden+
-  #annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-  #         label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;, &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;, &quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p.basic)$AUC, 2)), size=2)+
-  ggtitle(expression(paste(delta, &quot;=0.05&quot;)))+
-  theme_classic()+
-theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
- theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
-theme(axis.text.y= element_text(size=6))+
-  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
-  theme(legend.title=element_blank())+   # nol legend title 
-  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
-  theme(legend.text = element_text(size = 7))+ # adjust legend text size 
-  theme(axis.title.y = element_blank())  # remove labels on y axis 
-#p_delta0.05_burden</code></pre>
+  ggtitle(bquote(delta == .(delta)))+
+    theme_classic() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 14),
+      axis.text.x = element_text(size = 10),
+      axis.text.y = element_text(size = 14),
+      axis.title.y = element_text(size = 16),
+      axis.title.x = element_text(size = 16),
+      legend.title = element_blank(),
+      legend.justification = c(1, 0),
+      legend.position = c(1, 0),
+      legend.text = element_text(size = 11)
+    ) +
+    geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
+
+
+
+p_delta0.05_burden</code></pre>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>round(calc_auc(p.basic_burden)$AUC, 4)</code></pre>
+<pre><code>## [1] 0.9101 0.9143 0.8877</code></pre>
 <pre class="r"><code>######################################################################################################
 ############################# delta=0.2
 rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
@@ -612,21 +601,6 @@ roc_single_run=data.frame(D=Ui, m=c(fisher_pvalue,skato_pvalue, -mirage_BF, cmc_
 p2.basic=ggplot(roc_single_run, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0)+
   style_roc(theme = theme_grey)
-#pdf(&quot;../../Figure/power_comparison_different_methods.pdf&quot;)
-#p_delta0.2=p2.basic+
- # annotate(&quot;text&quot;, x =rep(0.7,8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-#           label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;,  &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;,&quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p2.basic)$AUC, 2)), size=2)+
-#  ggtitle(expression(paste(delta, &quot;=0.2&quot;)))+
-#  theme_classic()+  # make the background as classic clear 
-#theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
-# theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
-#theme(axis.text.y= element_text(size=6))+
-#  theme(axis.text = element_text(size = 1))+
-#  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
-#  theme(legend.title=element_blank())+   # no legend title 
-#  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
-#  theme(legend.text = element_text(size = 5))+ # adjust legend text size 
-#  theme(axis.title.y = element_blank())  # remove labels on y axis 
 
 AUC_summary_0.2[i,]=calc_auc(p2.basic)$AUC
 
@@ -654,32 +628,64 @@ p_delta0.2=p2.basic+
 
 }
 p_delta0.2</code></pre>
-<p><img src="additional_simulations_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>round(calc_auc(p2.basic)$AUC, 4)</code></pre>
 <pre><code>## [1] 0.7450 0.8250 0.8583 0.9090 0.9739 0.9154</code></pre>
 <pre class="r"><code>################## comparison among three burdens ########
-method=rep(c( &quot;Burden(0.707)&quot;, &quot;Burden-adj(0.728)&quot;, &quot;Burden-combine(0.734)&quot;), each=num_run)
+method=rep(c( &quot;Burden(0.858)&quot;, &quot;Burden-adj(0.920)&quot;, &quot;Burden-combine(0.923)&quot;), each=num_run)
 
 roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
 p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
   geom_roc(increasing=F, n.cuts=0, labels=F)+
   style_roc(theme = theme_grey)
 p_delta0.2_burden=p.basic_burden+
-  #annotate(&quot;text&quot;, x =rep(0.7, 8), y = c(0.02,0.08, 0.14, 0.2, 0.25, 0.3, 0.35, 0.4), 
-  #         label = paste(c(&quot;ASUM:AUC&quot;, &quot;Burden_adj:AUC&quot;, &quot;Burden:AUC=&quot;, &quot;Burden_comb:AUC&quot;, &quot;CMC:AUC&quot;, &quot;MIRAGE-BF:AUC=&quot;, &quot;MIRAGE-LRT:AUC=&quot;, &quot;SKATO:AUC=&quot;), round(calc_auc(p.basic)$AUC, 2)), size=2)+
-  ggtitle(expression(paste(delta, &quot;=0.2&quot;)))+
-  theme_classic()+
-theme(plot.title = element_text(hjust = 0.5, size=10))+  #center the title 
- theme(axis.text.x= element_text(size=6))+  # custmorize the axis tick size 
-theme(axis.text.y= element_text(size=6))+
-  geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal line 
-  theme(legend.title=element_blank())+   # nol legend title 
-  theme(legend.justification=c(1,0), legend.position=c(1,0.05))+
-  theme(legend.text = element_text(size = 7))+ # adjust legend text size 
-  theme(axis.title.y = element_blank())  # remove labels on y axis 
-#p_delta0.2_burden</code></pre>
-<p><img src="additional_simulations_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+  ggtitle(bquote(delta == .(delta)))+
+    theme_classic() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 14),
+      axis.text.x = element_text(size = 10),
+      axis.text.y = element_text(size = 14),
+      axis.title.y = element_text(size = 16),
+      axis.title.x = element_text(size = 16),
+      legend.title = element_blank(),
+      legend.justification = c(1, 0),
+      legend.position = c(1, 0),
+      legend.text = element_text(size = 11)
+    ) +
+    geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
+
+p_delta0.2_burden</code></pre>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>round(calc_auc(p.basic_burden)$AUC, 4)</code></pre>
+<pre><code>## [1] 0.9203 0.9230 0.8583</code></pre>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre><code>## [1] 0.7032 0.7304 0.8109 0.8794 0.9608 0.8777</code></pre>
+<pre class="r"><code>################## comparison among three burdens ########
+method=rep(c( &quot;Burden(0.811)&quot;, &quot;Burden-adj(0.843)&quot;, &quot;Burden-combine(0.836)&quot;), each=num_run)
+
+roc_single_run_burden=data.frame(D=Ui, m=c(fisher_pvalue, fisher.adj.pvalue, -fisher.combine.pvalue), method=method)
+p.basic_burden=ggplot(roc_single_run_burden, aes(d = D, m = m, color=method), size=2) + 
+  geom_roc(increasing=F, n.cuts=0, labels=F)+
+  style_roc(theme = theme_grey)
+p_delta0.1_burden=p.basic_burden+
+  ggtitle(bquote(delta == .(delta)))+
+   theme_classic() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 14),
+      axis.text.x = element_text(size = 10),
+      axis.text.y = element_text(size = 14),
+      axis.title.y = element_text(size = 16),
+      axis.title.x = element_text(size = 16),
+      legend.title = element_blank(),
+      legend.justification = c(1, 0),
+      legend.position = c(1, 0),
+      legend.text = element_text(size = 11)
+    ) +
+    geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
+p_delta0.02_burden</code></pre>
+<p><img src="additional_simulations_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>round(calc_auc(p.basic_burden)$AUC,4)</code></pre>
+<pre><code>## [1] 0.8425 0.8364 0.8109</code></pre>
 <pre class="r"><code>#all &lt;- grid.arrange(p1_delta[[&quot;delta-0.02&quot;]], p1_delta[[&quot;delta-0.1&quot;]], nrow=1) 
 
 all &lt;- grid.arrange(p1_delta0.02,  p1_delta0.1, nrow=1) 
