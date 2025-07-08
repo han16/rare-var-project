@@ -424,8 +424,10 @@ new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\Rare
 # SPARK:7008, ASC: 7570
 result=fixed.beta.func(new.data, N1=7008, N0=7008, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
 #write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv&quot;)</code></pre>
-<pre class="r"><code>SPARK_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\SPARK_combined\\mirage_result.txt&quot;, header=T)
-SPARK_BF_ASC_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv&quot;, header=T)</code></pre>
+<pre class="r"><code>delta=0.05
+SPARK_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\SPARK_combined\\mirage_result.txt&quot;, header=T)
+SPARK_BF_ASC_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv&quot;, header=T)
+SPARK_BF_ASC_parameters=SPARK_BF_ASC_parameters %&gt;% mutate(post.prob=BF*delta/(delta*BF+1-delta))</code></pre>
 <pre class="r"><code>merged_df &lt;- merge(SPARK_BF, SPARK_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_SPARK&quot;, &quot;SPARK_with_ASC_parameters&quot;))
 library(ggplot2)
 
@@ -439,6 +441,19 @@ ggplot(merged_df, aes(x = BF_SPARK, y = BFSPARK_with_ASC_parameters)) +
   ) +
   theme_minimal(base_size = 14)</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>merged_df &lt;- merge(SPARK_BF, SPARK_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_SPARK&quot;, &quot;SPARK_with_ASC_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_SPARK, y = post.probSPARK_with_ASC_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;SPARK PP&quot;,
+    y = &quot;SPARK PP using ASC parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="apply-spark-parameters-to-asc-data" class="section level2">
 <h2>apply SPARK parameters to ASC data</h2>
@@ -454,7 +469,8 @@ new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\Rare
 result=fixed.beta.func(new.data, N1=7570, N0=7570, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
 #write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv&quot;)</code></pre>
 <pre class="r"><code>ASC_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ASC_combined\\mirage_result.txt&quot;, header=T)
-ASC_BF_SPARK_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv&quot;, header=T)</code></pre>
+ASC_BF_SPARK_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv&quot;, header=T)
+ASC_BF_SPARK_parameters=ASC_BF_SPARK_parameters %&gt;% mutate(post.prob=BF*delta/(delta*BF+1-delta))</code></pre>
 <pre class="r"><code>merged_df &lt;- merge(ASC_BF, ASC_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_ASC&quot;, &quot;_ASC_with_SPARK_parameters&quot;))
 library(ggplot2)
 
@@ -467,7 +483,20 @@ ggplot(merged_df, aes(x = BF_ASC, y = BF_ASC_with_SPARK_parameters)) +
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>merged_df &lt;- merge(ASC_BF, ASC_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_ASC&quot;, &quot;_ASC_with_SPARK_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_ASC, y = post.prob_ASC_with_SPARK_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;ASC PP&quot;,
+    y = &quot;ASC PP using SPARK parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="apply-spark-parameters-to-entire-data" class="section level2">
 <h2>apply SPARK parameters to entire data</h2>
@@ -483,7 +512,8 @@ new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\Rare
 result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
 #write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv&quot;)</code></pre>
 <pre class="r"><code>entire_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt&quot;, header=T)
-entire_BF_SPARK_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv&quot;, header=T)</code></pre>
+entire_BF_SPARK_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv&quot;, header=T)
+entire_BF_SPARK_parameters=entire_BF_SPARK_parameters %&gt;% mutate(post.prob=BF*delta/(delta*BF+1-delta))</code></pre>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_SPARK_parameters&quot;))
 library(ggplot2)
 
@@ -496,7 +526,20 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_SPARK_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;PP of entire data&quot;,
+    y = &quot;PP of entire data using SPARK parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="apply-asc-parameters-to-entire-data" class="section level2">
 <h2>apply ASC parameters to entire data</h2>
@@ -511,7 +554,8 @@ new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\Rare
 result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
 #write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv&quot;)</code></pre>
 <pre class="r"><code>entire_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt&quot;, header=T)
-entire_BF_ASC_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv&quot;, header=T)</code></pre>
+entire_BF_ASC_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv&quot;, header=T)
+entire_BF_ASC_parameters=entire_BF_ASC_parameters %&gt;% mutate(post.prob=BF*delta/(delta*BF+1-delta))</code></pre>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_ASC_parameters&quot;))
 library(ggplot2)
 
@@ -524,7 +568,20 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_ASC_parameters&quot;))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parameters)) +
+  geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  labs(
+    x = &quot;PP of entire data&quot;,
+    y = &quot;PP of entire data using ASC parameters&quot;,
+    title = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 14)</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 
 <hr>

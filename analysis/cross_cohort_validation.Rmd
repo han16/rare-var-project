@@ -107,8 +107,10 @@ result=fixed.beta.func(new.data, N1=7008, N0=7008, gamma.mean=c(rep(6,3),rep(3,3
 ```
 
 ```{r, message=F, warning=F}
+delta=0.05
 SPARK_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\SPARK_combined\\mirage_result.txt", header=T)
 SPARK_BF_ASC_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\SPARK_BF_using_ASC_parameters.csv", header=T)
+SPARK_BF_ASC_parameters=SPARK_BF_ASC_parameters %>% mutate(post.prob=BF*delta/(delta*BF+1-delta))
 ```
 
 
@@ -128,6 +130,21 @@ ggplot(merged_df, aes(x = BF_SPARK, y = BFSPARK_with_ASC_parameters)) +
 ```
 
 
+
+```{r, message=F, warning=F}
+merged_df <- merge(SPARK_BF, SPARK_BF_ASC_parameters, by = "Gene", suffixes = c("_SPARK", "SPARK_with_ASC_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_SPARK, y = post.probSPARK_with_ASC_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "SPARK PP",
+    y = "SPARK PP using ASC parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
 
 
 
@@ -153,6 +170,7 @@ result=fixed.beta.func(new.data, N1=7570, N0=7570, gamma.mean=c(rep(6,3),rep(3,3
 ```{r, message=F, warning=F}
 ASC_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ASC_combined\\mirage_result.txt", header=T)
 ASC_BF_SPARK_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\ASC_BF_using_SPARK_parameters.csv", header=T)
+ASC_BF_SPARK_parameters=ASC_BF_SPARK_parameters %>% mutate(post.prob=BF*delta/(delta*BF+1-delta))
 ```
 
 
@@ -172,6 +190,21 @@ ggplot(merged_df, aes(x = BF_ASC, y = BF_ASC_with_SPARK_parameters)) +
 ```
 
 
+
+```{r, message=F, warning=F}
+merged_df <- merge(ASC_BF, ASC_BF_SPARK_parameters, by = "Gene", suffixes = c("_ASC", "_ASC_with_SPARK_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_ASC, y = post.prob_ASC_with_SPARK_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "ASC PP",
+    y = "ASC PP using SPARK parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
 
 
 ## apply SPARK parameters to entire data
@@ -195,6 +228,7 @@ result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3
 ```{r, message=F, warning=F}
 entire_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt", header=T)
 entire_BF_SPARK_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv", header=T)
+entire_BF_SPARK_parameters=entire_BF_SPARK_parameters %>% mutate(post.prob=BF*delta/(delta*BF+1-delta))
 ```
 
 
@@ -208,6 +242,21 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
   labs(
     x = "BF of entire data",
     y = "BF of entire data using SPARK parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+```{r, message=F, warning=F}
+merged_df <- merge(entire_BF, entire_BF_SPARK_parameters, by = "Gene", suffixes = c("_entire", "_entire_with_SPARK_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "PP of entire data",
+    y = "PP of entire data using SPARK parameters",
     title = ""
   ) +
   theme_minimal(base_size = 14)
@@ -236,6 +285,7 @@ result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3
 ```{r, message=F, warning=F}
 entire_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt", header=T)
 entire_BF_ASC_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_ASC_parameters.csv", header=T)
+entire_BF_ASC_parameters=entire_BF_ASC_parameters %>% mutate(post.prob=BF*delta/(delta*BF+1-delta))
 ```
 
 
@@ -249,6 +299,22 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
   labs(
     x = "BF of entire data",
     y = "BF of entire data using ASC parameters",
+    title = ""
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+```{r, message=F, warning=F}
+merged_df <- merge(entire_BF, entire_BF_ASC_parameters, by = "Gene", suffixes = c("_entire", "_entire_with_ASC_parameters"))
+library(ggplot2)
+
+ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parameters)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(
+    x = "PP of entire data",
+    y = "PP of entire data using ASC parameters",
     title = ""
   ) +
   theme_minimal(base_size = 14)
