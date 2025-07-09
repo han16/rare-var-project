@@ -489,11 +489,15 @@ ggplot(merged_df, aes(x = BF_SPARK, y = BFSPARK_with_ASC_parameters)) +
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;SPARK BF&quot;,
-    y = &quot;SPARK BF using ASC parameters&quot;,
+    x = &quot;BF from SPARK dataset using parameters from SPARK dataset&quot;,
+    y = &quot;BF from SPARK dataset using parameters from ASC dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(SPARK_BF, SPARK_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_SPARK&quot;, &quot;SPARK_with_ASC_parameters&quot;))
 library(ggplot2)
@@ -502,11 +506,15 @@ ggplot(merged_df, aes(x = post.prob_SPARK, y = post.probSPARK_with_ASC_parameter
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;SPARK PP&quot;,
-    y = &quot;SPARK PP using ASC parameters&quot;,
+    x = &quot;PP from SPARK dataset using parameters from SPARK dataset&quot;,
+    y = &quot;PP from SPARK dataset using parameters  from ASC dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 11),
+    axis.title.y = element_text(size = 11)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="apply-spark-parameters-to-asc-data" class="section level2">
@@ -532,11 +540,15 @@ ggplot(merged_df, aes(x = BF_ASC, y = BF_ASC_with_SPARK_parameters)) +
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;ASC BF&quot;,
-    y = &quot;ASC BF using SPARK parameters&quot;,
+    x = &quot;BF from ASC dataset using parameters  from ASC dataset&quot;,
+    y = &quot;BF from ASC dataset using parameters from SPARK dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(ASC_BF, ASC_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_ASC&quot;, &quot;_ASC_with_SPARK_parameters&quot;))
 library(ggplot2)
@@ -545,11 +557,15 @@ ggplot(merged_df, aes(x = post.prob_ASC, y = post.prob_ASC_with_SPARK_parameters
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;ASC PP&quot;,
-    y = &quot;ASC PP using SPARK parameters&quot;,
+    x = &quot;PP from ASC dataset using parameters from ASC dataset&quot;,
+    y = &quot;PP from ASC dataset using parameters from SPARK dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 11),
+    axis.title.y = element_text(size = 11)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="apply-spark-parameters-to-entire-data" class="section level2">
@@ -575,11 +591,15 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;BF of entire data&quot;,
-    y = &quot;BF of entire data using SPARK parameters&quot;,
+    x = &quot;BF from entire dataset using parameters from entire dataset&quot;,
+    y = &quot;BF from entire dataset using parameters from SPARK dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_SPARK_parameters&quot;))
 library(ggplot2)
@@ -588,11 +608,15 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_para
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;PP of entire data&quot;,
-    y = &quot;PP of entire data using SPARK parameters&quot;,
+    x = &quot;PP from entire dataset using parameters from entire dataset&quot;,
+    y = &quot;PP from entire dataset using parameters from SPARK dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 11),
+    axis.title.y = element_text(size = 11)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="apply-asc-parameters-to-entire-data" class="section level2">
@@ -617,11 +641,15 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;BF of entire data&quot;,
-    y = &quot;BF of entire data using ASC parameters&quot;,
+    x = &quot;BF from entire dataset using parameters from entire dataset&quot;,
+    y = &quot;BF from entire dataset using parameters from ASC dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_ASC_parameters&quot;))
 library(ggplot2)
@@ -630,11 +658,15 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parame
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;PP of entire data&quot;,
-    y = &quot;PP of entire data using ASC parameters&quot;,
+    x = &quot;PP from entire dataset using parameters  from entire dataset&quot;,
+    y = &quot;PP from entire dataset using parameters  from ASC dataset&quot;,
     title = &quot;&quot;
   ) +
-  theme_minimal(base_size = 14)</code></pre>
+  theme_minimal(base_size = 14)+
+  theme(
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12)
+  )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 
