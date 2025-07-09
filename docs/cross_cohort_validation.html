@@ -412,6 +412,60 @@ fixed.beta.func=function(new.data, N1, N0, gamma.mean, sigma, beta) # new.data h
   
   return(result=list(BayesFactor=data.frame(Gene=unique.gene, BF=BF.gene), full.info=full.info.genevar))
 }</code></pre>
+<div id="parameter-estimates-across-different-samples"
+class="section level2">
+<h2>parameter estimates across different samples</h2>
+<p>The parameter estimates are from Laura who run MIRAGE on ASC, SPARK
+and combined cohort.</p>
+<pre class="r"><code>parameter_estimate=data.frame(estimate=c(0.738664291977854,
+0.701330924907413,
+0.0931459290392402,
+0.366135847737628,
+0.0731974976958973,
+0.0386167362363095, 
+0.682825870568066, 
+0.921371779633259,
+0.197311277809648,
+0.454608112873237,
+0.138217940881292,
+0.0997160018265602, 
+0.882428410065275,
+0.729147736110148,
+0.0425038817075758,
+0.260898625054489,
+0.100050160878319,
+0.0267419820227973
+), 
+parameters=rep(paste0(&quot;eta&quot;, seq(1,6)),3), 
+samples=rep(c(&quot;All_combined&quot;, &quot;ASC&quot;, &quot;SPARK&quot;), each=6))
+
+
+
+parameter_estimate &lt;- parameter_estimate %&gt;%
+  mutate(parameters = recode(parameters,
+    eta1 = &quot;high PLI&quot;,
+    eta2 = &quot;med PLI&quot;,
+    eta3 = &quot;low PLI&quot;,
+    eta4 = &quot;high MPC&quot;,
+    eta5 = &quot;med MPC&quot;,
+    eta6 = &quot;low MPC&quot;
+  ))
+
+parameter_estimate$parameters &lt;- factor(parameter_estimate$parameters,
+  levels = c(&quot;high PLI&quot;, &quot;med PLI&quot;, &quot;low PLI&quot;, &quot;high MPC&quot;, &quot;med MPC&quot;, &quot;low MPC&quot;)
+)
+
+# Plot with updated labels
+ggplot(parameter_estimate, aes(x = parameters, y = estimate, fill = samples)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(width = 0.8)) +
+  labs(x = &quot;&quot;, y = &quot;Estimate&quot;, fill = &quot;Sample&quot;) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 14),
+    axis.text.x = element_text(angle = 0, hjust = 1)
+  )</code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
 <div id="apply-asc-parameters-to-spark-data" class="section level2">
 <h2>apply ASC parameters to SPARK data</h2>
 <pre class="r"><code>beta=c(0.682825870568066,
@@ -440,7 +494,7 @@ ggplot(merged_df, aes(x = BF_SPARK, y = BFSPARK_with_ASC_parameters)) +
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(SPARK_BF, SPARK_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_SPARK&quot;, &quot;SPARK_with_ASC_parameters&quot;))
 library(ggplot2)
 
@@ -453,7 +507,7 @@ ggplot(merged_df, aes(x = post.prob_SPARK, y = post.probSPARK_with_ASC_parameter
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="apply-spark-parameters-to-asc-data" class="section level2">
 <h2>apply SPARK parameters to ASC data</h2>
@@ -483,7 +537,7 @@ ggplot(merged_df, aes(x = BF_ASC, y = BF_ASC_with_SPARK_parameters)) +
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(ASC_BF, ASC_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_ASC&quot;, &quot;_ASC_with_SPARK_parameters&quot;))
 library(ggplot2)
 
@@ -496,7 +550,7 @@ ggplot(merged_df, aes(x = post.prob_ASC, y = post.prob_ASC_with_SPARK_parameters
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="apply-spark-parameters-to-entire-data" class="section level2">
 <h2>apply SPARK parameters to entire data</h2>
@@ -526,7 +580,7 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_SPARK_parameters&quot;))
 library(ggplot2)
 
@@ -539,7 +593,7 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_para
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="apply-asc-parameters-to-entire-data" class="section level2">
 <h2>apply ASC parameters to entire data</h2>
@@ -568,7 +622,7 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_ASC_parameters&quot;))
 library(ggplot2)
 
@@ -581,7 +635,7 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parame
     title = &quot;&quot;
   ) +
   theme_minimal(base_size = 14)</code></pre>
-<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 
 <hr>

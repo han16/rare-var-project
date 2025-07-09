@@ -67,12 +67,12 @@ AUC_burden=list(
 "0.2"=c( "Burden(0.858)", "Burden-adj(0.920)", "Burden-combine(0.923)"))
 
 # Define reusable theme
-plot_roc <- function(title_size = 14, axis_y_size = 14, legend_text_size = 13) {
+plot_roc <- function(title_size = 14, axis_y_size = 14, legend_text_size = 11) {
   list(
     theme_classic(),
     theme(
       plot.title = element_text(hjust = 0.5, size = title_size),
-      axis.text.x = element_text(size = 14),
+      axis.text.x = element_text(size = 10),
       axis.text.y = element_text(size = axis_y_size),
       axis.title.y = element_text(size = 16),
       axis.title.x = element_text(size = 16),
@@ -142,6 +142,9 @@ for (i in seq_along(rep_use_index)) {
     plot_roc(axis_y_size = 14, legend_text_size = 13)
 }
 
+names(p_delta)=paste0("delta_", delta)
+names(p_delta_burden)=paste0("delta_", delta)
+
 p_delta
 p_delta_burden
 
@@ -163,10 +166,13 @@ p_delta_burden
 
 all <- grid.arrange(p1_delta0.02,  p1_delta0.1, nrow=1) 
 ggsave(all,filename = paste0("C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/fig2.roc.delta00201_rep",selected_rep,".pdf"),width = 8,height = 4,dpi = 600)
+```
 
 
-all <- grid.arrange(p2_delta0.05, p_delta0.2, nrow=1) 
-ggsave(all,filename = paste0("C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/fig2.roc.delta00502_rep",selected_rep,".pdf"),width = 8,height = 4,dpi = 600)
+```{r, message=F, warning=F}
+
+all <- grid.arrange(p_delta$delta_0.05, p_delta$delta_0.2, nrow=1) 
+ggsave(all,filename = paste0("C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/fig2.roc.delta00502_rep.pdf"),width = 8,height = 4,dpi = 600)
 ```
 
 
