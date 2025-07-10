@@ -47,8 +47,10 @@ loadRData <- function(fileName){
 ```{r, message=F, warning=F}
 
 path="C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/"
+save_folder="C:/Shengtong/Research/rare-var/RareVariant/CodeandDataforPaper/Data/"
 
 delta=c(0.02, 0.05, 0.1, 0.2)
+simulated_data=list()
 rep_use_index=c(3,2,1,3)
 p_delta=list()
 p_delta_burden=list()
@@ -103,6 +105,18 @@ for (i in seq_along(rep_use_index)) {
   acat.pvalue <- ACAT.pvalue[[idx]]
   fisher.separate.pvalue <- Fisher.separate.pvalue[[idx]]
   
+  simulated_data[[i]] <- list(     # output simulated_data for reproducibility 
+  Ui                     = Ui,
+  mirage_pvalue          = mirage_pvalue,
+  mirage_BF              = mirage_BF,
+  fisher_pvalue          = fisher_pvalue,
+  skato_pvalue           = skato_pvalue,
+  cmc_pvalue             = cmc_pvalue,
+  asum_pvalue            = asum_pvalue,
+  acat.pvalue            = acat.pvalue,
+  fisher.separate.pvalue = fisher.separate.pvalue
+)
+  
   # Calculate adjusted and combined Fisher p-values
   fisher.adj.pvalue <- apply(fisher.separate.pvalue, 1, function(p) min(p.adjust(p, method = "bonferroni")))
   fisher.combine.pvalue <- apply(fisher.separate.pvalue, 1, function(p) pchisq(-sum(log(p)), df = length(p), lower.tail = TRUE))
@@ -144,6 +158,9 @@ for (i in seq_along(rep_use_index)) {
 
 names(p_delta)=paste0("delta_", delta)
 names(p_delta_burden)=paste0("delta_", delta)
+names(simulated_data)=paste0("delta_", delta)
+
+#saveRDS(simulated_data, file =paste0(save_folder, "simulated_data_random_num_variants.rds"))
 
 p_delta
 p_delta_burden

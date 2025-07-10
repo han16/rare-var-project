@@ -14,7 +14,7 @@
 
 <title>Figures</title>
 
-<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -34,10 +34,11 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -222,6 +223,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -345,6 +349,14 @@ div.tocify {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Figures</h1>
@@ -353,6 +365,82 @@ div.tocify {
 </div>
 
 
+<div id="figures-in-the-manuscript" class="section level2">
+<h2>figures in the manuscript</h2>
+<pre class="r"><code>library(ggplot2)
+library(plotROC)
+library(gridExtra)
+
+delta_all &lt;- c(&quot;0.02&quot;,&quot;0.05&quot;,&quot;0.1&quot;,&quot;0.2&quot;)
+folder_path=&quot;C:/Shengtong/Research/rare-var/RareVariant/CodeandDataforPaper/Data/&quot;
+
+load(paste0(folder_path, &quot;AUC_summary.rdata&quot;))
+
+selected_rep &lt;- 5
+num_run &lt;- 1000
+p1_delta &lt;- list()
+for (delta in delta_all) {
+  
+  AUC_selected &lt;- AUC_summary_all[[paste0(&quot;delta-&quot;,delta)]][selected_rep,]
+  
+  method_labels &lt;- sprintf(&quot;%s(%.3f)&quot;, names(AUC_selected), round(AUC_selected, 3))
+  method &lt;- rep(method_labels, each = num_run)
+  
+  load(paste0(folder_path, &quot;7methods_delta&quot;,delta, &quot;_gammamean335_5rep.RData&quot;))
+  
+  Ui &lt;- Gene.Risk.Status[[selected_rep]]
+  mirage_BF &lt;- MIRAGE.BF[[selected_rep]]
+  fisher_pvalue &lt;- Fisher.pvalue[[selected_rep]]
+  skato_pvalue &lt;- SKATO.pvalue[[selected_rep]]
+  cmc_pvalue &lt;- CMC.pvalue[[selected_rep]]
+  asum_pvalue &lt;- ASUM.pvalue[[selected_rep]]
+  acat.pvalue &lt;- ACAT.pvalue[[selected_rep]]
+  
+  methods_order &lt;- c(&quot;ACAT&quot;, &quot;ASUM&quot;, &quot;Burden&quot;, &quot;CMC&quot;, &quot;MIRAGE&quot;,&quot;SKAT-O&quot;)
+  p_values_list &lt;- list(
+    acat.pvalue,
+    asum_pvalue,
+    fisher_pvalue,
+    cmc_pvalue,
+    -mirage_BF,  # Note: MIRAGE uses BF values, not p-values
+    skato_pvalue
+  )
+  names(p_values_list) &lt;- methods_order
+  
+  # Build ROC data frame
+  roc_single_run &lt;- data.frame(
+    D = Ui,
+    m = do.call(c, p_values_list),
+    method = method
+  )
+  
+  p1.basic &lt;- ggplot(roc_single_run, aes(d = D, m = m, color = method)) + 
+      geom_roc(increasing = FALSE, n.cuts = 0) +
+      style_roc(theme = theme_grey)
+    
+  p1_delta[[paste0(&quot;delta-&quot;,delta)]] &lt;- p1.basic + 
+    ggtitle(bquote(delta == .(delta)))+
+    theme_classic() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 14),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = 14),
+      axis.title.y = element_text(size = 16),
+      axis.title.x = element_text(size = 16),
+      legend.title = element_blank(),
+      legend.justification = c(1, 0),
+      legend.position = c(1, 0),
+      legend.text = element_text(size = 12)
+    ) +
+    geom_abline(intercept = 0, slope = 1, col = &quot;black&quot;)
+  
+}
+
+#all &lt;- grid.arrange(p1_delta[[&quot;delta-0.02&quot;]], p1_delta[[&quot;delta-0.1&quot;]], nrow=1) 
+#ggsave(all,filename = paste0(&quot;plots/fig2.roc.delta00201_rep&quot;,selected_rep,&quot;.pdf&quot;),width = 8,height = 4,dpi = 600)
+#all &lt;- grid.arrange(p1_delta[[&quot;delta-0.05&quot;]], p1_delta[[&quot;delta-0.2&quot;]], nrow=1) 
+#ggsave(all,filename = paste0(&quot;plots/fig2.roc.delta00502_rep&quot;,selected_rep,&quot;.pdf&quot;),width = 8,height = 4,dpi = 600)</code></pre>
+</div>
 <div id="power-comparison" class="section level2">
 <h2>power comparison</h2>
 <pre class="r"><code>rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
@@ -497,7 +585,7 @@ geom_abline(intercept = 0, slope =1, col=&quot;black&quot;)+  # add a diagnal li
 <pre><code>## NULL</code></pre>
 <pre class="r"><code>#p_delta0.1
 grid.arrange(p1_delta0.02, p_delta0.1, nrow=1) </code></pre>
-<p><img src="Figures_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="Figures_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre class="r"><code>################################ delta=0.05
 rm(&quot;Ui&quot;, &quot;mirage_pvalue&quot;, &quot;mirage_BF&quot;, &quot;fisher_pvalue&quot;, &quot;skato_pvalue&quot;, &quot;cmc_pvalue&quot;, &quot;asum_pvalue&quot;, &quot;acat.pvalue&quot;, &quot;fisher.separate.pvalue&quot;)
 load(&quot;../output/Var_specific_bargamma_MixedGene_MixtureVariant/7methods_delta0.05_gammamean335_5rep.RData&quot;)
@@ -657,7 +745,7 @@ theme(axis.text.y= element_text(size=6))+
 #p_delta0.2_burden
 
 grid.arrange(p2_delta0.05, p_delta0.2, nrow=1) </code></pre>
-<p><img src="Figures_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="Figures_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="sensitivity-analysis" class="section level2">
 <h2>sensitivity analysis</h2>
@@ -977,7 +1065,7 @@ p4=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
 #pdf(&quot;C:/Shengtong/Research/rare-var/RareVariant/2023_0413_Figure_for_paper/Fig-MIRAGE_gene_Bayes_FDR_misspecified_gammabar3456.pdf&quot;)
 #grid.arrange( p3, nrow=1)
 grid.arrange(p1, p2, p3, p4, nrow=2)</code></pre>
-<p><img src="Figures_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="Figures_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 
 <hr>
@@ -1039,6 +1127,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
