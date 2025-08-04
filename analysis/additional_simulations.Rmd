@@ -320,3 +320,17 @@ p <- ggplot(df_combined, aes(x = Group, fill = Method)) +
   theme(axis.text.x = element_text(angle = 0, hjust = 1, size=10))
 p
 ```
+
+## power improvement 
+
+
+```{r, message=F, warning=F}
+library(dplyr)
+tp_mirage=df_combined %>% filter(Method=="MIRAGE") %>% select(TP_Value) %>% pull
+tp_skato=df_combined %>% filter(Method=="SKAT-O") %>% select(TP_Value) %>% pull
+
+paste0("power improves:", round((tp_mirage-tp_skato)/tp_skato*100,4),  "%")
+
+```
+
+

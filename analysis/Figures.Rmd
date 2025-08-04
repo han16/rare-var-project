@@ -508,6 +508,12 @@ p1=ggplot(actual.fdr.summary, aes(x=bar.gamma, y=mean, group=1)) +
 #  geom_point()+
 #  ggtitle(expression(paste("True ", bar(gamma), "=3")))+
 #  theme(plot.title = element_text(hjust = 0.5, size=10))  #center the title 
+```
+
+
+
+
+```{r, message=F, warning=F}
 #################################################################################################################
 #################################################################################################################
 ##################### true gamma.bar=4 ##########
