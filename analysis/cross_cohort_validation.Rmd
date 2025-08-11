@@ -350,7 +350,7 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_para
   theme(
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18), 
-    plot.title = element_text(size = 22, hjust = 0.5, face = "bold")  # Center + enlarge + bold
+    plot.title = element_text(size = 21, hjust = 0.5, face = "bold")  # Center + enlarge + bold
   )
 ```
 
@@ -418,6 +418,6 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parame
   theme(
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18), 
-    plot.title = element_text(size = 22, hjust = 0.5, face = "bold")  # Center + enlarge + bold
+    plot.title = element_text(size = 21, hjust = 0.5, face = "bold")  # Center + enlarge + bold
   )
 ```
