@@ -305,6 +305,7 @@ result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3
 ```
 
 ```{r, message=F, warning=F}
+delta=0.05
 entire_BF=read.table("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt", header=T)
 entire_BF_SPARK_parameters=read.csv("C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv", header=T)
 entire_BF_SPARK_parameters=entire_BF_SPARK_parameters %>% mutate(post.prob=BF*delta/(delta*BF+1-delta))
@@ -341,14 +342,15 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_para
   geom_point(color = "steelblue", size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
   labs(
-    x = "PP from entire dataset using parameters from entire dataset",
-    y = "PP from entire dataset using parameters from SPARK dataset",
-    title = ""
+    x = "Entire dataset",
+    y = "SPARK dataset",
+    title = "(A) PP of SPARK parameteres vs. entire data"
   ) +
   theme_minimal(base_size = 14)+
   theme(
-    axis.title.x = element_text(size = 12),
-    axis.title.y = element_text(size = 12)
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18), 
+    plot.title = element_text(size = 22, hjust = 0.5, face = "bold")  # Center + enlarge + bold
   )
 ```
 
@@ -393,8 +395,9 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
   ) +
   theme_minimal(base_size = 14)+
   theme(
-    axis.title.x = element_text(size = 12),
-    axis.title.y = element_text(size = 12)
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18), 
+    plot.title = element_text(size = 22, hjust = 0.5, face = "bold")  # Center + enlarge + bold
   )
 ```
 
@@ -407,13 +410,14 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parame
   geom_point(color = "steelblue", size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
   labs(
-    x = "PP from entire dataset using parameters  from entire dataset",
-    y = "PP from entire dataset using parameters  from ASC dataset",
-    title = ""
+    x = "Entire dataset",
+    y = "ASC dataset",
+    title = "(B) PP of ASC parameteres vs. entire data"
   ) +
   theme_minimal(base_size = 14)+
   theme(
-    axis.title.x = element_text(size = 12),
-    axis.title.y = element_text(size = 12)
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18), 
+    plot.title = element_text(size = 22, hjust = 0.5, face = "bold")  # Center + enlarge + bold
   )
 ```

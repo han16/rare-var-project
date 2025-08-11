@@ -581,7 +581,8 @@ new.data=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\Rare
 # SPARK:7008, ASC: 7570
 result=fixed.beta.func(new.data, N1=14578, N0=14578, gamma.mean=c(rep(6,3),rep(3,3)), sigma=2,beta=beta) # use fixed beta to calculate Bayes factors
 #write.csv(result$BayesFactor, file=&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv&quot;)</code></pre>
-<pre class="r"><code>entire_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt&quot;, header=T)
+<pre class="r"><code>delta=0.05
+entire_BF=read.table(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\100323_delta_0.05\\ALL_combined\\mirage_result.txt&quot;, header=T)
 entire_BF_SPARK_parameters=read.csv(&quot;C:\\Users\\hans\\OneDrive - Marquette University\\RareVariant\\entire_data_BF_using_SPARK_parameters.csv&quot;, header=T)
 entire_BF_SPARK_parameters=entire_BF_SPARK_parameters %&gt;% mutate(post.prob=BF*delta/(delta*BF+1-delta))</code></pre>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_SPARK_parameters&quot;))
@@ -608,14 +609,15 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_para
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;PP from entire dataset using parameters from entire dataset&quot;,
-    y = &quot;PP from entire dataset using parameters from SPARK dataset&quot;,
-    title = &quot;&quot;
+    x = &quot;Entire dataset&quot;,
+    y = &quot;SPARK dataset&quot;,
+    title = &quot;(A) PP of SPARK parameteres vs. entire data&quot;
   ) +
   theme_minimal(base_size = 14)+
   theme(
-    axis.title.x = element_text(size = 12),
-    axis.title.y = element_text(size = 12)
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18), 
+    plot.title = element_text(size = 22, hjust = 0.5, face = &quot;bold&quot;)  # Center + enlarge + bold
   )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
@@ -647,8 +649,9 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
   ) +
   theme_minimal(base_size = 14)+
   theme(
-    axis.title.x = element_text(size = 12),
-    axis.title.y = element_text(size = 12)
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18), 
+    plot.title = element_text(size = 22, hjust = 0.5, face = &quot;bold&quot;)  # Center + enlarge + bold
   )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_ASC_parameters&quot;))
@@ -658,14 +661,15 @@ ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parame
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;PP from entire dataset using parameters  from entire dataset&quot;,
-    y = &quot;PP from entire dataset using parameters  from ASC dataset&quot;,
-    title = &quot;&quot;
+    x = &quot;Entire dataset&quot;,
+    y = &quot;ASC dataset&quot;,
+    title = &quot;(B) PP of ASC parameteres vs. entire data&quot;
   ) +
   theme_minimal(base_size = 14)+
   theme(
-    axis.title.x = element_text(size = 12),
-    axis.title.y = element_text(size = 12)
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18), 
+    plot.title = element_text(size = 22, hjust = 0.5, face = &quot;bold&quot;)  # Center + enlarge + bold
   )</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
