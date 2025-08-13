@@ -338,20 +338,21 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
 merged_df <- merge(entire_BF, entire_BF_SPARK_parameters, by = "Gene", suffixes = c("_entire", "_entire_with_SPARK_parameters"))
 library(ggplot2)
 
-ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_parameters)) +
+pp1=ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_parameters)) +
   geom_point(color = "steelblue", size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
   labs(
-    x = "Entire dataset",
-    y = "SPARK dataset",
-    title = "(A) PP of SPARK parameteres vs. entire data"
+    x = "PP using parameters of entire dataset",
+    y = "PP using parameters of SPARK dataset",
+    title = "(A) PP comparisons"
   ) +
   theme_minimal(base_size = 14)+
   theme(
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18), 
-    plot.title = element_text(size = 20, hjust = 0.5, face = "bold")  # Center + enlarge + bold
+    plot.title = element_text(size = 22, hjust = 0.5, face = "bold")  # Center + enlarge + bold
   )
+pp1
 ```
 
 
@@ -406,18 +407,26 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
 merged_df <- merge(entire_BF, entire_BF_ASC_parameters, by = "Gene", suffixes = c("_entire", "_entire_with_ASC_parameters"))
 library(ggplot2)
 
-ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parameters)) +
+pp2=ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parameters)) +
   geom_point(color = "steelblue", size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
   labs(
-    x = "Entire dataset",
-    y = "ASC dataset",
-    title = "(B) PP of ASC parameteres vs. entire data"
+    x = "PP using parameters of entire dataset",
+    y = "PP using parameetrs of ASC dataset",
+    title = "(B) PP comparions"
   ) +
   theme_minimal(base_size = 14)+
   theme(
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18), 
-    plot.title = element_text(size = 20, hjust = 0.5, face = "bold")  # Center + enlarge + bold
+    plot.title = element_text(size = 22, hjust = 0.5, face = "bold")  # Center + enlarge + bold
   )
+pp2
+```
+
+
+
+```{r, message=F, warning=F}
+all <- grid.arrange(pp1, pp2, nrow=1) 
+ggsave(all,filename = paste0("C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/posterior_probability_comparions.png"),width = 15,height = 9,dpi = 600)
 ```

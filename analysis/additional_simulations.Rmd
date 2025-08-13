@@ -319,6 +319,14 @@ p <- ggplot(df_combined, aes(x = Group, fill = Method)) +
   ) +
   theme(axis.text.x = element_text(angle = 0, hjust = 1, size=10))
 p
+
+```
+
+
+
+```{r, message=F, warning=F, eval=F}
+all <- grid.arrange(p, nrow=1) 
+ggsave(all,filename = paste0("C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/AdditionalSimulations/RandomNumberVariants/num_of_genes_identified.pdf"),width = 5.5,height = 3,dpi = 600)
 ```
 
 ## power improvement 

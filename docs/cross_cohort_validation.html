@@ -605,20 +605,21 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_SPARK_parameters)) +
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_SPARK_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_SPARK_parameters&quot;))
 library(ggplot2)
 
-ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_parameters)) +
+pp1=ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_SPARK_parameters)) +
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;Entire dataset&quot;,
-    y = &quot;SPARK dataset&quot;,
-    title = &quot;(A) PP of SPARK parameteres vs. entire data&quot;
+    x = &quot;PP using parameters of entire dataset&quot;,
+    y = &quot;PP using parameters of SPARK dataset&quot;,
+    title = &quot;(A) PP comparisons&quot;
   ) +
   theme_minimal(base_size = 14)+
   theme(
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18), 
-    plot.title = element_text(size = 20, hjust = 0.5, face = &quot;bold&quot;)  # Center + enlarge + bold
-  )</code></pre>
+    plot.title = element_text(size = 22, hjust = 0.5, face = &quot;bold&quot;)  # Center + enlarge + bold
+  )
+pp1</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="apply-asc-parameters-to-entire-data" class="section level2">
@@ -657,21 +658,25 @@ ggplot(merged_df, aes(x = BF_entire, y = BF_entire_with_ASC_parameters)) +
 <pre class="r"><code>merged_df &lt;- merge(entire_BF, entire_BF_ASC_parameters, by = &quot;Gene&quot;, suffixes = c(&quot;_entire&quot;, &quot;_entire_with_ASC_parameters&quot;))
 library(ggplot2)
 
-ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parameters)) +
+pp2=ggplot(merged_df, aes(x = post.prob_entire, y = post.prob_entire_with_ASC_parameters)) +
   geom_point(color = &quot;steelblue&quot;, size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   labs(
-    x = &quot;Entire dataset&quot;,
-    y = &quot;ASC dataset&quot;,
-    title = &quot;(B) PP of ASC parameteres vs. entire data&quot;
+    x = &quot;PP using parameters of entire dataset&quot;,
+    y = &quot;PP using parameetrs of ASC dataset&quot;,
+    title = &quot;(B) PP comparions&quot;
   ) +
   theme_minimal(base_size = 14)+
   theme(
     axis.title.x = element_text(size = 18),
     axis.title.y = element_text(size = 18), 
-    plot.title = element_text(size = 20, hjust = 0.5, face = &quot;bold&quot;)  # Center + enlarge + bold
-  )</code></pre>
+    plot.title = element_text(size = 22, hjust = 0.5, face = &quot;bold&quot;)  # Center + enlarge + bold
+  )
+pp2</code></pre>
 <p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre class="r"><code>all &lt;- grid.arrange(pp1, pp2, nrow=1) </code></pre>
+<p><img src="cross_cohort_validation_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre class="r"><code>ggsave(all,filename = paste0(&quot;C:/Shengtong/Research/rare-var/RareVariant/AJHG submisson/round1 revision/posterior_probability_comparions.png&quot;),width = 15,height = 9,dpi = 600)</code></pre>
 </div>
 
 <hr>
